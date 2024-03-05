@@ -1,0 +1,12 @@
+{
+  "process": "app_domain_verify_service",
+  "systemability": [
+    {
+      "name": 410,
+      "libpath": "libapp_domain_verify_service.z.so",
+      "run-on-create": true,
+      "distributed": false,
+      "dump_level": 1
+    }
+  ]
+}
