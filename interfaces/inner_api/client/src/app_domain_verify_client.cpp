@@ -66,7 +66,7 @@ bool AppDomainVerifyClient::ClearDomainVerifyStatus(const std::string &appIdenti
 bool AppDomainVerifyClient::FilterAbilities(const OHOS::AAFwk::Want &want,
     const std::vector<OHOS::AppExecFwk::AbilityInfo> &originAbilityInfos,
     std::vector<OHOS::AppExecFwk::AbilityInfo> &filtedAbilityInfos)
-{  
+{
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MODULE_CLIENT, "%s called", __func__);
     bool filterSuccess = false;
     if (IsServiceAvailable()) {
