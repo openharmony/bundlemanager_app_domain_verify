@@ -1,0 +1,113 @@
+{
+  "name": "@ohos/app_domain_verify",
+  "description": "app domain verify functions",
+  "version": "4.0",
+  "license": "Apache License 2.0",
+  "publishAs": "code-segment",
+  "segment": {
+    "destPath": "foundation/bundlemanager/app_domain_verify"
+  },
+  "dirs": {},
+  "scripts": {},
+  "component": {
+    "name": "app_domain_verify",
+    "subsystem": "bundlemanager",
+    "syscap": [],
+    "features": [],
+    "adapted_system_type": [
+      "standard"
+    ],
+    "rom": "300KB",
+    "ram": "1024KB",
+    "deps": {
+      "components": [
+        "ability_base",
+        "ability_runtime",
+        "bundle_framework",
+        "c_utils",
+        "hilog",
+        "ipc",
+        "relational_store",
+        "napi",
+        "safwk",
+        "samgr",
+        "netstack",
+        "os_account",
+        "ffrt",
+        "eventhandler"
+      ],
+      "third_party": [
+        "json",
+        "curl",
+        "openssl"
+      ]
+    },
+    "build": {
+      "group_type": {
+        "base_group": [],
+        "fwk_group": [
+          "//foundation/bundlemanager/app_domain_verify/interfaces/inner_api/client:app_domain_verify_client",
+          "//foundation/bundlemanager/app_domain_verify/interfaces/inner_api/client:app_domain_cloud_verify_client"
+        ],
+        "service_group": [
+          "//foundation/bundlemanager/app_domain_verify/etc/init:app_domain_verify.cfg",
+          "//foundation/bundlemanager/app_domain_verify/etc/init:cloud_verify.cfg",
+          "//foundation/bundlemanager/app_domain_verify/profile:bundlemanager_app_domain_verify_sa_profiles",
+          "//foundation/bundlemanager/app_domain_verify/services:app_domain_verify_service",
+          "//foundation/bundlemanager/app_domain_verify/services:app_domain_cloud_verify_service"
+        ]
+      },
+      "inner_kits": [
+        {
+          "name": "//foundation/bundlemanager/app_domain_verify/interfaces/inner_api/client:app_domain_verify_client",
+          "header": {
+            "header_files": [
+              "app_domain_verify_client.h"
+            ],
+            "header_base": "//foundation/bundlemanager/app_domain_verify/interfaces/inner_api/client/include"
+          }
+        },
+        {
+          "name": "//foundation/bundlemanager/app_domain_verify/interfaces/inner_api/client:app_domain_cloud_verify_client",
+          "header": {
+            "header_files": [
+              "app_domain_cloud_verify_client.h"
+            ],
+            "header_base": "//foundation/bundlemanager/app_domain_verify/interfaces/inner_api/client/include"
+          }
+        },
+        {
+          "name": "//foundation/bundlemanager/app_domain_verify/interfaces/inner_api/extension:app_domain_verify_extension_framework",
+          "header": {
+            "header_files": [
+              "app_domain_verify_ext_base.h",
+              "app_domain_verify_extension_mgr.h",
+              "app_domain_verify_extension_register.h",
+              "app_domain_verify_cloud_ext.h"
+            ],
+            "header_base": "//foundation/bundlemanager/app_domain_verify/interfaces/inner_api/extension/include"
+          }
+        },
+        {
+          "name": "//foundation/bundlemanager/app_domain_verify/interfaces/inner_api/common:app_domain_verify_common",
+          "header": {
+            "header_files": [
+              "app_domain_verify_error.h",
+              "app_domain_verify_hilog.h",
+              "app_verify_base_info.h",
+              "bundle_verify_status_info.h",
+              "domain_verify_status.h",
+              "inner_verify_status.h",
+              "skill_uri.h",
+              "parcel_util.h",
+              "utils/domain_url_util.h"
+            ],
+            "header_base": "//foundation/bundlemanager/app_domain_verify/interfaces/inner_api/common/include"
+          }
+        }
+      ],
+      "test": [
+      ]
+    }
+  }
+}
