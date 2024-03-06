@@ -19,7 +19,7 @@
 #include "app_domain_verify_extension_mgr.h"
 #include "app_domain_verify_hilog.h"
 #include "app_domain_verify_extension_register.h"
-#include "app_domain_verify_cloud_ext.h"
+#include "app_domain_verify_agent_ext.h"
 
 namespace OHOS {
 namespace AppDomainVerify {
@@ -69,16 +69,16 @@ ErrorCode AppDomainVerifyExtensionMgr::CompleteVerifyRefresh(const BundleVerifyS
     const std::vector<InnerVerifyStatus> &statuses, int delaySeconds)
 {
     if (Init()) {
-        std::string verifierExtName = APP_DOMAIN_VERIFIER_EXT_NAME;
+        std::string verifierExtName = APP_DOMAIN_VERIFY_AGENT_EXT_NAME;
         auto appDomainVerifierExt = AppDomainVerifyExtensionRegister::GetInstance().GetAppDomainVerifyExt(
             verifierExtName);
         if (appDomainVerifierExt == nullptr ||
-            std::static_pointer_cast<AppDomainVerifyCloudExt>(appDomainVerifierExt) == nullptr) {
+            std::static_pointer_cast<AppDomainVerifyAgentExt>(appDomainVerifierExt) == nullptr) {
             APP_DOMAIN_VERIFY_HILOGW(APP_DOMAIN_VERIFY_MODULE_EXTENSION, "get verifierExt: %{public}s failed.",
                 verifierExtName.c_str());
             return ErrorCode::E_EXTENSIONS_INTERNAL_ERROR;
         }
-        return std::static_pointer_cast<AppDomainVerifyCloudExt>(appDomainVerifierExt)
+        return std::static_pointer_cast<AppDomainVerifyAgentExt>(appDomainVerifierExt)
             ->CompleteVerifyRefresh(bundleVerifyStatusInfo, statuses, delaySeconds);
     }
     return ErrorCode::E_EXTENSIONS_LIB_NOT_FOUND;
@@ -88,16 +88,16 @@ ErrorCode AppDomainVerifyExtensionMgr::SingleVerify(const AppVerifyBaseInfo &app
     const std::vector<SkillUri> &skillUris)
 {
     if (Init()) {
-        std::string verifierExtName = APP_DOMAIN_VERIFIER_EXT_NAME;
+        std::string verifierExtName = APP_DOMAIN_VERIFY_AGENT_EXT_NAME;
         auto appDomainVerifierExt = AppDomainVerifyExtensionRegister::GetInstance().GetAppDomainVerifyExt(
             verifierExtName);
         if (appDomainVerifierExt == nullptr ||
-            std::static_pointer_cast<AppDomainVerifyCloudExt>(appDomainVerifierExt) == nullptr) {
+            std::static_pointer_cast<AppDomainVerifyAgentExt>(appDomainVerifierExt) == nullptr) {
             APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MODULE_EXTENSION, "get verifierExt: %{public}s failed.",
                 verifierExtName.c_str());
             return ErrorCode::E_EXTENSIONS_INTERNAL_ERROR;
         }
-        return std::static_pointer_cast<AppDomainVerifyCloudExt>(appDomainVerifierExt)
+        return std::static_pointer_cast<AppDomainVerifyAgentExt>(appDomainVerifierExt)
             ->SingleVerify(appVerifyBaseInfo, skillUris);
     }
     return ErrorCode::E_EXTENSIONS_LIB_NOT_FOUND;

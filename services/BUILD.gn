@@ -20,9 +20,11 @@ config("app_domain_verify_service_config") {
   visibility = [ ":*" ]
   include_dirs = [
     "${app_domain_verify_client_path}/include",
-    "include/adv/core",
-    "include/adv/zidl",
-    "include/cloud/core",
+    "include/manager/constant",
+    "include/manager/core",
+    "include/manager/rdb",
+    "include/manager/zidl",
+    "include/agent/core",
     "${app_domain_verify_common_path}/include",
     "${app_domain_verify_common_path}/include/utils",
     "//commonlibrary/c_utils/base/include",
@@ -39,9 +41,14 @@ config("app_domain_verify_service_config") {
   cflags_cc = []
 }
 
-ohos_shared_library("app_domain_verify_service") {
+ohos_shared_library("app_domain_verify_mgr_service") {
   sources = [
-    "src/adv/zidl/app_domain_verify_service_proxy.cpp",
+    "src/manager/core/app_domain_verify_data_mgr.cpp",
+    "src/manager/core/app_domain_verify_mgr_service.cpp",
+    "src/manager/zidl/app_domain_verify_mgr_service_stub.cpp",
+    "src/manager/zidl/app_domain_verify_mgr_service_proxy.cpp",
+    "src/manager/rdb/app_domain_verify_rdb_data_manager.cpp",
+    "src/manager/rdb/app_domain_verify_rdb_open_callback.cpp",
   ]
   public_configs = [
     "//commonlibrary/c_utils/base:utils_config",
@@ -49,7 +56,7 @@ ohos_shared_library("app_domain_verify_service") {
   ]
   deps = [
     "${app_domain_verify_common_path}:app_domain_verify_common",
-    "${app_domain_verify_client_path}:app_domain_cloud_verify_client",
+    "${app_domain_verify_client_path}:app_domain_verify_agent_client",
     "//third_party/json:nlohmann_json_static",
   ]
   defines = [ "API_EXPORT=__attribute__((visibility (\"default\")))" ]
@@ -72,14 +79,18 @@ ohos_shared_library("app_domain_verify_service") {
   part_name = "app_domain_verify"
 }
 
-config("app_domain_cloud_verify_service_config") {
+config("app_domain_verify_agent_service_config") {
   visibility = [ ":*" ]
   include_dirs = [
     "${app_domain_verify_client_path}/include",
-    "include/cloud/core",
-    "include/cloud/zidl",
-    "include/adv/core",
-    "include/adv/zidl",
+    "include/agent/bms",
+    "include/agent/constant",
+    "include/agent/core",
+    "include/agent/httpsession",
+    "include/agent/utils",
+    "include/agent/zidl",
+    "include/manager/core",
+    "include/manager/zidl",
     "${app_domain_verify_common_path}/include",
     "${app_domain_verify_common_path}/include/utils",
     "//commonlibrary/c_utils/base/include",
@@ -97,19 +108,27 @@ config("app_domain_cloud_verify_service_config") {
   cflags_cc = []
 }
 
-ohos_shared_library("app_domain_cloud_verify_service") {
+ohos_shared_library("app_domain_verify_agent_service") {
   sources = [
-    "src/cloud/zidl/cloud_verify_service_proxy.cpp",
+    "src/agent/bms/bundle_info_query.cpp",
+    "src/agent/core/app_domain_verify_agent_service.cpp",
+    "src/agent/core/domain_verifier.cpp",
+    "src/agent/httpsession/app_domain_verify_task_mgr.cpp",
+    "src/agent/httpsession/verify_http_task_factory.cpp",
+    "src/agent/httpsession/verify_http_task.cpp",
+    "src/agent/zidl/app_domain_verify_agent_service_stub.cpp",
+    "src/agent/zidl/app_domain_verify_agent_service_proxy.cpp",
+    "src/agent/utils/domain_json_util.cpp",
   ]
   public_configs = [
     "//commonlibrary/c_utils/base:utils_config",
-    ":app_domain_cloud_verify_service_config",
+    ":app_domain_verify_agent_service_config",
   ]
   defines = [ "API_EXPORT=__attribute__((visibility (\"default\")))" ]
   deps = [
     "${app_domain_verify_common_path}:app_domain_verify_common",
     "${app_domain_verify_extension_path}:app_domain_verify_extension_framework",
-    "${app_domain_verify_client_path}:app_domain_verify_client",
+    "${app_domain_verify_client_path}:app_domain_verify_mgr_client",
     "//third_party/json:nlohmann_json_static",
     "//third_party/curl:curl_shared",
   ]
