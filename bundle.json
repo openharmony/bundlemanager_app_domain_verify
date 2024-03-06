@@ -46,32 +46,32 @@
       "group_type": {
         "base_group": [],
         "fwk_group": [
-          "//foundation/bundlemanager/app_domain_verify/interfaces/inner_api/client:app_domain_verify_client",
-          "//foundation/bundlemanager/app_domain_verify/interfaces/inner_api/client:app_domain_cloud_verify_client"
+          "//foundation/bundlemanager/app_domain_verify/interfaces/inner_api/client:app_domain_verify_mgr_client",
+          "//foundation/bundlemanager/app_domain_verify/interfaces/inner_api/client:app_domain_verify_agent_client"
         ],
         "service_group": [
-          "//foundation/bundlemanager/app_domain_verify/etc/init:app_domain_verify.cfg",
-          "//foundation/bundlemanager/app_domain_verify/etc/init:cloud_verify.cfg",
+          "//foundation/bundlemanager/app_domain_verify/etc/init:app_domain_verify_mgr.cfg",
+          "//foundation/bundlemanager/app_domain_verify/etc/init:app_domain_verify_agent.cfg",
           "//foundation/bundlemanager/app_domain_verify/profile:bundlemanager_app_domain_verify_sa_profiles",
-          "//foundation/bundlemanager/app_domain_verify/services:app_domain_verify_service",
-          "//foundation/bundlemanager/app_domain_verify/services:app_domain_cloud_verify_service"
+          "//foundation/bundlemanager/app_domain_verify/services:app_domain_verify_mgr_service",
+          "//foundation/bundlemanager/app_domain_verify/services:app_domain_verify_agent_service"
         ]
       },
       "inner_kits": [
         {
-          "name": "//foundation/bundlemanager/app_domain_verify/interfaces/inner_api/client:app_domain_verify_client",
+          "name": "//foundation/bundlemanager/app_domain_verify/interfaces/inner_api/client:app_domain_verify_mgr_client",
           "header": {
             "header_files": [
-              "app_domain_verify_client.h"
+              "app_domain_verify_mgr_client.h"
             ],
             "header_base": "//foundation/bundlemanager/app_domain_verify/interfaces/inner_api/client/include"
           }
         },
         {
-          "name": "//foundation/bundlemanager/app_domain_verify/interfaces/inner_api/client:app_domain_cloud_verify_client",
+          "name": "//foundation/bundlemanager/app_domain_verify/interfaces/inner_api/client:app_domain_verify_agent_client",
           "header": {
             "header_files": [
-              "app_domain_cloud_verify_client.h"
+              "app_domain_verify_agent_client.h"
             ],
             "header_base": "//foundation/bundlemanager/app_domain_verify/interfaces/inner_api/client/include"
           }
@@ -83,7 +83,7 @@
               "app_domain_verify_ext_base.h",
               "app_domain_verify_extension_mgr.h",
               "app_domain_verify_extension_register.h",
-              "app_domain_verify_cloud_ext.h"
+              "app_domain_verify_agent_ext.h"
             ],
             "header_base": "//foundation/bundlemanager/app_domain_verify/interfaces/inner_api/extension/include"
           }
