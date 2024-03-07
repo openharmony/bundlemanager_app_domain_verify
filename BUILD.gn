@@ -18,14 +18,14 @@ import("//build/ohos.gni")
 group("app_domain_verify_packages") {
   if (is_standard_system) {
     deps = [
-      "etc/init:app_domain_verify.cfg",
-      "etc/init:cloud_verify.cfg",
+      "etc/init:app_domain_verify_mgr.cfg",
+      "etc/init:app_domain_verify_agent.cfg",
       "profile:bundlemanager_app_domain_verify_sa_profiles",
-      "services:app_domain_verify_service",
-      "services:app_domain_cloud_verify_service",
+      "services:app_domain_verify_mgr_service",
+      "services:app_domain_verify_agent_service",
       "interfaces/inner_api/common:app_domain_verify_common",
-      "interfaces/inner_api/client:app_domain_verify_client",
-      "interfaces/inner_api/client:app_domain_cloud_verify_client",
+      "interfaces/inner_api/client:app_domain_verify_mgr_client",
+      "interfaces/inner_api/client:app_domain_verify_agent_client",
       "interfaces/inner_api/extension:app_domain_verify_extension_framework",
     ]
   }

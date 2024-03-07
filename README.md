@@ -94,10 +94,10 @@
 
 ## 4. Inner API开发指导
 ### 4.1 接口说明<a id="inner_api"></a>
-#### 4.1.1 app_domain_verify_client.h
+#### 4.1.1 app_domain_verify_mgr_client.h
 接口调用需要引入以下头文件
 ```
-#include "app_domain_verify_client.h"
+#include "app_domain_verify_mgr_client.h"
 ```
 |接口|说明|
 |---|---|
@@ -129,13 +129,13 @@ skill_uri 信息结构体。
 ### 在模块gn文件中加入对客户端模块的依赖：
 ```
 external_deps = [
-  "app_domain_verify:app_domain_verify_client",
+  "app_domain_verify:app_domain_verify_mgr_client",
   "app_domain_verify:app_domain_verify_common"
 ]
 ```
 ### 在头文件中引入客户端的头文件：
 ```
-#include "app_domain_verify_client.h"
+#include "app_domain_verify_mgr_client.h"
 ```
 ### 发起接口调用
 参考[4.1 接口说明](#inner_api)调用接口
