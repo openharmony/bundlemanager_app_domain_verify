@@ -35,7 +35,6 @@ AppDomainVerifyMgrServiceStub::AppDomainVerifyMgrServiceStub()
         &AppDomainVerifyMgrServiceStub::OnQueryAllDomainVerifyStatus;
     memberFuncMap_[static_cast<uint32_t>(AppDomainVerifyMgrInterfaceCode::SAVE_VERIFY_STATUS)] =
         &AppDomainVerifyMgrServiceStub::OnSaveDomainVerifyStatus;
-        
 }
 AppDomainVerifyMgrServiceStub::~AppDomainVerifyMgrServiceStub()
 {
@@ -162,7 +161,8 @@ int32_t AppDomainVerifyMgrServiceStub::OnQueryAllDomainVerifyStatus(MessageParce
     BundleVerifyStatusInfo bundleVerifyStatusInfo;
     bool status = QueryAllDomainVerifyStatus(bundleVerifyStatusInfo);
     if (!reply.WriteBool(status)) {
-        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "write QueryAllDomainVerifyStatus result error.");
+        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE,
+            "write QueryAllDomainVerifyStatus result error.");
         return ERR_INVALID_VALUE;
     }
     if (!reply.WriteParcelable(&bundleVerifyStatusInfo)) {
@@ -180,7 +180,8 @@ int32_t AppDomainVerifyMgrServiceStub::OnSaveDomainVerifyStatus(MessageParcel &d
     std::unique_ptr<VerifyResultInfo> verifyResultInfo(data.ReadParcelable<VerifyResultInfo>());
     bool status = SaveDomainVerifyStatus(bundleName, *verifyResultInfo);
     if (!reply.WriteBool(status)) {
-        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "write QueryAllDomainVerifyStatus result error.");
+        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE,
+            "write QueryAllDomainVerifyStatus result error.");
         return ERR_INVALID_VALUE;
     }
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s call end", __func__);

@@ -36,7 +36,8 @@ public:
 
     void CompleteVerifyRefresh(const BundleVerifyStatusInfo &bundleVerifyStatusInfo,
         const std::vector<InnerVerifyStatus> &statuses, int delaySeconds) override;
-    API_EXPORT void SingleVerify(const AppVerifyBaseInfo &appVerifyBaseInfo, const std::vector<SkillUri> &skillUris) override;
+    API_EXPORT void SingleVerify(const AppVerifyBaseInfo &appVerifyBaseInfo,
+        const std::vector<SkillUri> &skillUris) override;
 
 protected:
     void OnStart(const SystemAbilityOnDemandReason &startReason) override;

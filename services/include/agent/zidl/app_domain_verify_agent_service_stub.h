@@ -37,7 +37,6 @@ private:
     int32_t OnCompleteVerifyRefresh(MessageParcel &data, MessageParcel &reply);
     int32_t OnSingleVerify(MessageParcel &data, MessageParcel &reply);
 
-
 private:
     std::map<uint32_t, ServiceFunc> memberFuncMap_;
     std::shared_ptr<AppExecFwk::EventHandler> unloadHandler_;

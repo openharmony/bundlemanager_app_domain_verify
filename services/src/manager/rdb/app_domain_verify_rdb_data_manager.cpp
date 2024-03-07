@@ -26,22 +26,6 @@ const int32_t DB_KEY_INDEX = 0;
 const int32_t DB_VALUE_INDEX = 1;
 const int32_t CLOSE_TIME = 20;  // delay 20s stop rdbStore
 
-#define CHECK_RDB_RESULT_RETURN_IF_OK(errmsg, errcode)                                   \
-    do {                                                                                 \
-        if ((errcode) != NativeRdb::E_OK) {                                              \
-            APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, errmsg, errcode); \
-            return false;                                                                \
-        }                                                                                \
-    } while (0)
-
-#define CHECK_RDBSTORE_EXIST(rdbStore)                                                      \
-    do {                                                                                    \
-        if ((rdbStore) == nullptr) {                                                        \
-            APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "RdbStore is null"); \
-            return false;                                                                   \
-        }                                                                                   \
-    } while (0)
-
 AppDomainVerifyRdbDataManager::AppDomainVerifyRdbDataManager(const AppDomainVerifyRdbConfig &rdbConfig)
     : appDomainVerifyRdbConfig_(rdbConfig)
 {
@@ -58,41 +42,41 @@ bool AppDomainVerifyRdbDataManager::InsertData(const std::string &key, const std
 {
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s called", __func__);
     auto rdbStore = GetRdbStore();
-    CHECK_RDBSTORE_EXIST(rdbStore);
+    if (!CheckRdbStoreExist(rdbStore)) {
+        return false;
+    }
     int64_t rowId = -1;
     NativeRdb::ValuesBucket valuesBucket;
     valuesBucket.PutString(DB_KEY, key);
     valuesBucket.PutString(DB_VALUE, value);
     auto ret = rdbStore->InsertWithConflictResolution(rowId, appDomainVerifyRdbConfig_.tableName, valuesBucket,
         NativeRdb::ConflictResolution::ON_CONFLICT_REPLACE);
-
-    CHECK_RDB_RESULT_RETURN_IF_OK("InsertData failed, ret: %{public}d", ret);
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s call end", __func__);
-    return true;
+    return CheckRdbReturnIfOk(ret);
 }
 
 bool AppDomainVerifyRdbDataManager::DeleteData(const std::string &key)
 {
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s called", __func__);
     auto rdbStore = GetRdbStore();
-    CHECK_RDBSTORE_EXIST(rdbStore);
-
+    if (!CheckRdbStoreExist(rdbStore)) {
+        return false;
+    }
     int32_t rowId = -1;
     NativeRdb::AbsRdbPredicates absRdbPredicates(appDomainVerifyRdbConfig_.tableName);
     absRdbPredicates.EqualTo(DB_KEY, key);
     auto ret = rdbStore->Delete(rowId, absRdbPredicates);
-
-    CHECK_RDB_RESULT_RETURN_IF_OK("DeleteData failed, ret: %{public}d", ret);
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s call end", __func__);
-    return true;
+    return CheckRdbReturnIfOk(ret);
 }
 
 bool AppDomainVerifyRdbDataManager::QueryAllData(std::unordered_map<std::string, std::string> &dataMap)
 {
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s called", __func__);
     auto rdbStore = GetRdbStore();
-    CHECK_RDBSTORE_EXIST(rdbStore);
-
+    if (!CheckRdbStoreExist(rdbStore)) {
+        return false;
+    }
     NativeRdb::AbsRdbPredicates absRdbPredicates(appDomainVerifyRdbConfig_.tableName);
     auto absSharedResultSet = rdbStore->Query(absRdbPredicates, std::vector<std::string>());
     if (absSharedResultSet == nullptr) {
@@ -105,17 +89,19 @@ bool AppDomainVerifyRdbDataManager::QueryAllData(std::unordered_map<std::string,
         return false;
     }
 
-    auto ret = absSharedResultSet->GoToFirstRow();
-    CHECK_RDB_RESULT_RETURN_IF_OK("GoToFirstRow failed, ret: %{public}d", ret);
-    do {
-        std::string key;
-        std::string value;
-        auto keyRet = absSharedResultSet->GetString(DB_KEY_INDEX, key);
-        auto valueRet = absSharedResultSet->GetString(DB_VALUE_INDEX, value);
-        CHECK_RDB_RESULT_RETURN_IF_OK("Get rdb item key failed, ret: %{public}d", keyRet);
-        CHECK_RDB_RESULT_RETURN_IF_OK("Get rdb item value failed, ret: %{public}d", valueRet);
-        dataMap.insert(std::make_pair(key, value));
-    } while (absSharedResultSet->GoToNextRow() == NativeRdb::E_OK);
+    if (CheckRdbReturnIfOk(absSharedResultSet->GoToFirstRow())) {
+        do {
+            std::string key;
+            std::string value;
+            if (!CheckRdbReturnIfOk(absSharedResultSet->GetString(DB_KEY_INDEX, key)) ||
+                !CheckRdbReturnIfOk(absSharedResultSet->GetString(DB_VALUE_INDEX, value))) {
+                return false;
+            }
+            dataMap.insert(std::make_pair(key, value));
+        } while (absSharedResultSet->GoToNextRow() == NativeRdb::E_OK);
+    } else {
+        APP_DOMAIN_VERIFY_HILOGW(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "GoToFirstRow fail, seems rdb table is empty");
+    }
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s call end", __func__);
     return true;
 }
@@ -130,18 +116,18 @@ bool AppDomainVerifyRdbDataManager::CreateTable()
         createTableSql = appDomainVerifyRdbConfig_.createTableSql;
     }
     auto rdbStore = GetRdbStore();
-    CHECK_RDBSTORE_EXIST(rdbStore);
-    int ret = rdbStore->ExecuteSql(createTableSql);
-    CHECK_RDB_RESULT_RETURN_IF_OK("CreateTable failed, ret: %{public}d", ret);
-
-    for (const auto &sql : appDomainVerifyRdbConfig_.insertColumnSql) {
-        int32_t insertRet = rdbStore->ExecuteSql(sql);
-        if (insertRet != NativeRdb::E_OK) {
-            APP_DOMAIN_VERIFY_HILOGW(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE,
-                "ExecuteSql insertColumnSql failed, insertRet: %{public}d", insertRet);
+    if (CheckRdbStoreExist(rdbStore) && CheckRdbReturnIfOk(rdbStore->ExecuteSql(createTableSql))) {
+        for (const auto &sql : appDomainVerifyRdbConfig_.insertColumnSql) {
+            int32_t insertRet = rdbStore->ExecuteSql(sql);
+            if (insertRet != NativeRdb::E_OK) {
+                APP_DOMAIN_VERIFY_HILOGW(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE,
+                    "ExecuteSql insertColumnSql failed, insertRet: %{public}d", insertRet);
+                return false;
+            }
         }
+        return true;
     }
-    return true;
+    return false;
 }
 
 void AppDomainVerifyRdbDataManager::DelayCloseRdbStore()
@@ -182,6 +168,24 @@ std::shared_ptr<NativeRdb::RdbStore> AppDomainVerifyRdbDataManager::GetRdbStore(
     DelayCloseRdbStore();
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s call end", __func__);
     return rdbStore_;
+}
+
+bool AppDomainVerifyRdbDataManager::CheckRdbReturnIfOk(int errcode)
+{
+    if (errcode != NativeRdb::E_OK) {
+        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "rdb failed, ret: %{public}d", errcode);
+        return false;
+    }
+    return true;
+}
+
+bool AppDomainVerifyRdbDataManager::CheckRdbStoreExist(const std::shared_ptr<NativeRdb::RdbStore> &rdbStore)
+{
+    if (rdbStore == nullptr) {
+        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "RdbStore is null");
+        return false;
+    }
+    return true;
 }
 }  // namespace AppDomainVerify
 }  // namespace OHOS

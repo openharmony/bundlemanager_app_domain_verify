@@ -37,7 +37,7 @@ namespace AppDomainVerify {
 const bool REGISTER_RESULT = SystemAbility::MakeAndRegisterAbility(new AppDomainVerifyMgrService());
 
 AppDomainVerifyMgrService::AppDomainVerifyMgrService()
-    : SystemAbility(APP_DOMAIN_VERIFY_MANAGER_SA_ID , true)
+    : SystemAbility(APP_DOMAIN_VERIFY_MANAGER_SA_ID, true)
 {
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "new instance create.");
 }

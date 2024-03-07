@@ -32,35 +32,36 @@ bool JsonUtil::Parse(const std::string &assetJsonsStr, AssetJsonObj &assetJsonOb
             return false;
         }
         if (jsonObj == nullptr || !jsonObj.is_object()) {
-            APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "assetLinksStr can not be parsed into obj.");
+            APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE,
+                "assetLinksStr can not be parsed into obj.");
             return false;
         }
-        if (jsonObj.find(ApplinkingAssetKeys::APP_LINKING) != jsonObj.end() &&
-            jsonObj.at(ApplinkingAssetKeys::APP_LINKING).is_object()) {
-            auto applinkingObj = jsonObj.at(ApplinkingAssetKeys::APP_LINKING);
-            if (applinkingObj.find(ApplinkingAssetKeys::APPS) != applinkingObj.end() &&
-                applinkingObj.at(ApplinkingAssetKeys::APPS).is_array()) {
-                auto appsArray = applinkingObj.at(ApplinkingAssetKeys::APPS);
-                for (size_t i = 0; i < appsArray.size(); i++) {
-                    AppVerifyBaseInfo appVerifyBaseInfo;
-                    auto arrayItem = appsArray[i];
-                    appVerifyBaseInfo.appIdentifier = arrayItem.find(ApplinkingAssetKeys::APP_IDENTIFIER) !=
-                                arrayItem.end() &&
-                            arrayItem.at(ApplinkingAssetKeys::APP_IDENTIFIER).is_string() ?
-                        arrayItem.at(ApplinkingAssetKeys::APP_IDENTIFIER) :
-                        "";
-                    appVerifyBaseInfo.bundleName = arrayItem.find(ApplinkingAssetKeys::BUNDLE_NAME) !=
-                                arrayItem.end() &&
-                            arrayItem.at(ApplinkingAssetKeys::BUNDLE_NAME).is_string() ?
-                        arrayItem.at(ApplinkingAssetKeys::BUNDLE_NAME) :
-                        "";
-                    appVerifyBaseInfo.fingerprint = arrayItem.find(ApplinkingAssetKeys::FINGERPRINT) !=
-                                arrayItem.end() &&
-                            arrayItem.at(ApplinkingAssetKeys::FINGERPRINT).is_string() ?
-                        arrayItem.at(ApplinkingAssetKeys::FINGERPRINT) :
-                        "";
-                    assetJsonObj.applinking.apps.emplace_back(appVerifyBaseInfo);
-                }
+        if (jsonObj.find(ApplinkingAssetKeys::APP_LINKING) == jsonObj.end() ||
+            !jsonObj.at(ApplinkingAssetKeys::APP_LINKING).is_object()) {
+            APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "can not parsed applinking into obj.");
+            return false;
+        }
+        auto applinkingObj = jsonObj.at(ApplinkingAssetKeys::APP_LINKING);
+        if (applinkingObj.find(ApplinkingAssetKeys::APPS) != applinkingObj.end() &&
+            applinkingObj.at(ApplinkingAssetKeys::APPS).is_array()) {
+            auto appsArray = applinkingObj.at(ApplinkingAssetKeys::APPS);
+            for (size_t i = 0; i < appsArray.size(); i++) {
+                AppVerifyBaseInfo appVerifyBaseInfo;
+                auto arrayItem = appsArray[i];
+                appVerifyBaseInfo.appIdentifier = arrayItem.find(ApplinkingAssetKeys::APP_IDENTIFIER) !=
+                            arrayItem.end() &&
+                        arrayItem.at(ApplinkingAssetKeys::APP_IDENTIFIER).is_string() ?
+                    arrayItem.at(ApplinkingAssetKeys::APP_IDENTIFIER) :
+                    "";
+                appVerifyBaseInfo.bundleName = arrayItem.find(ApplinkingAssetKeys::BUNDLE_NAME) != arrayItem.end() &&
+                        arrayItem.at(ApplinkingAssetKeys::BUNDLE_NAME).is_string() ?
+                    arrayItem.at(ApplinkingAssetKeys::BUNDLE_NAME) :
+                    "";
+                appVerifyBaseInfo.fingerprint = arrayItem.find(ApplinkingAssetKeys::FINGERPRINT) != arrayItem.end() &&
+                        arrayItem.at(ApplinkingAssetKeys::FINGERPRINT).is_string() ?
+                    arrayItem.at(ApplinkingAssetKeys::FINGERPRINT) :
+                    "";
+                assetJsonObj.applinking.apps.emplace_back(appVerifyBaseInfo);
             }
         }
     }
