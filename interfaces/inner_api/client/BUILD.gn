@@ -14,37 +14,37 @@
 import("//build/ohos.gni")
 import("//foundation/bundlemanager/app_domain_verify/app_domain_verify.gni")
 
-config("app_domain_verify_client_config") {
+config("app_domain_verify_mgr_client_config") {
   visibility = [ ":*" ]
   include_dirs = [
     "include",
-    "${app_domain_verify_service_path}/include/adv/core",
-    "${app_domain_verify_service_path}/include/adv/zidl",
+    "${app_domain_verify_service_path}/include/manager/core",
+    "${app_domain_verify_service_path}/include/manager/zidl",
     "//commonlibrary/c_utils/base/include",
     "${app_domain_verify_common_path}/include",
     "${appexecfwk_base_root_path}/include",
   ]
 }
 
-config("app_domain_cloud_verify_client_config") {
+config("app_domain_verify_agent_client_config") {
   visibility = [ ":*" ]
   include_dirs = [
     "include",
-    "${app_domain_verify_service_path}/include/cloud/core",
-    "${app_domain_verify_service_path}/include/cloud/zidl",
+    "${app_domain_verify_service_path}/include/agent/core",
+    "${app_domain_verify_service_path}/include/agent/zidl",
     "//commonlibrary/c_utils/base/include",
     "${app_domain_verify_common_path}/include",
     "${appexecfwk_base_root_path}/include",
   ]
 }
 
-ohos_shared_library("app_domain_verify_client") {
+ohos_shared_library("app_domain_verify_mgr_client") {
   sources = [
-    "${app_domain_verify_service_path}/src/adv/zidl/app_domain_verify_service_proxy.cpp",
-    "src/app_domain_verify_client.cpp",
+    "${app_domain_verify_service_path}/src/manager/zidl/app_domain_verify_mgr_service_proxy.cpp",
+    "src/app_domain_verify_mgr_client.cpp",
   ]
-  configs = [ ":app_domain_verify_client_config" ]
-  public_configs = [ ":app_domain_verify_client_config" ]
+  configs = [ ":app_domain_verify_mgr_client_config" ]
+  public_configs = [ ":app_domain_verify_mgr_client_config" ]
   deps = [
     "${app_domain_verify_common_path}:app_domain_verify_common",
   ]
@@ -62,13 +62,13 @@ ohos_shared_library("app_domain_verify_client") {
   part_name = "app_domain_verify"
 }
 
-ohos_shared_library("app_domain_cloud_verify_client") {
+ohos_shared_library("app_domain_verify_agent_client") {
   sources = [
-    "${app_domain_verify_service_path}/src/cloud/zidl/cloud_verify_service_proxy.cpp",
-    "src/app_domain_cloud_verify_client.cpp",
+    "${app_domain_verify_service_path}/src/agent/zidl/app_domain_verify_agent_service_proxy.cpp",
+    "src/app_domain_verify_agent_client.cpp",
   ]
-  configs = [ ":app_domain_cloud_verify_client_config" ]
-  public_configs = [ ":app_domain_cloud_verify_client_config" ]
+  configs = [ ":app_domain_verify_agent_client_config" ]
+  public_configs = [ ":app_domain_verify_agent_client_config" ]
   deps = [
     "${app_domain_verify_common_path}:app_domain_verify_common",
   ]
