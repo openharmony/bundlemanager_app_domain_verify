@@ -80,7 +80,7 @@ void AppDomainVerifyAgentService::CompleteVerifyRefresh(const BundleVerifyStatus
         AppVerifyBaseInfo appVerifyBaseInfo;
         appVerifyBaseInfo.bundleName = it->first;
         if (!BundleInfoQuery::GetBundleInfo(appVerifyBaseInfo.bundleName, appVerifyBaseInfo.appIdentifier,
-                appVerifyBaseInfo.fingerprint)) {
+            appVerifyBaseInfo.fingerprint)) {
             APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "GetBundleInfo failed.");
             // todo delete this bundleName or not
             continue;
