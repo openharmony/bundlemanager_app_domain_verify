@@ -138,7 +138,7 @@ void AppDomainVerifyTaskMgr::SaveVerifyResult(const AppVerifyBaseInfo &appVerify
     verifyResultInfo.appIdentifier = appVerifyBaseInfo.appIdentifier;
     verifyResultInfo.hostVerifyStatusMap = uriVerifyMap;
     if (!AppDomainVerifyMgrClient::GetInstance()->SaveDomainVerifyStatus(appVerifyBaseInfo.bundleName,
-            verifyResultInfo)) {
+        verifyResultInfo)) {
         APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "SaveVerifyResult failed");
     }
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "%s call end", __func__);
