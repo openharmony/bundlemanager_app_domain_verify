@@ -39,7 +39,7 @@ const std::set<std::string> SCHEME_WHITE_SET = { HTTPS };
 const std::string FUZZY_HOST_START = "*.";
 const bool REGISTER_RESULT = SystemAbility::MakeAndRegisterAbility(new AppDomainVerifyAgentService());
 constexpr int32_t UNLOAD_IMMEDIATELY = 0;
-constexpr int32_t UNLOAD_DELAY_TIME = 120000; // 2min
+constexpr int32_t UNLOAD_DELAY_TIME = 120000;  // 2min
 const std::string BOOT_COMPLETED_EVENT = "usual.event.BOOT_COMPLETED";
 const std::string LOOP_EVENT = "loopevent";
 AppDomainVerifyAgentService::AppDomainVerifyAgentService()
@@ -70,14 +70,11 @@ void AppDomainVerifyAgentService::CompleteVerifyRefresh(const BundleVerifyStatus
          it != bundleVerifyStatusInfo.bundleVerifyStatusInfoMap_.end(); it++) {
         std::vector<SkillUri> skillUris;
         for (auto itr = it->second.hostVerifyStatusMap.begin(); itr != it->second.hostVerifyStatusMap.end(); itr++) {
-                    // todo test log
-        APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MODULE_BUTT, "CompleteVerifyRefresh bundle name:%{public}s", it->first.c_str());
             if (std::find(statuses.begin(), statuses.end(), itr->second) != statuses.end()) {
                 SkillUri skillUri;
                 skillUri.host = UrlUtil::GetHost(itr->first);
                 skillUri.scheme = UrlUtil::GetScheme(itr->first);
                 skillUris.emplace_back(skillUri);
-                APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MODULE_BUTT, "CompleteVerifyRefresh skillUri uri:%{public}s, innerstatus:%{public}d", (skillUri.scheme + "://" + skillUri.host).c_str(),itr->second);
             }
         }
         AppVerifyBaseInfo appVerifyBaseInfo;
@@ -136,7 +133,8 @@ void AppDomainVerifyAgentService::InitUriVerifyMap(const std::vector<SkillUri> &
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "%s call end", __func__);
 }
 
-void AppDomainVerifyAgentService::QueryAndCompleteRefresh(const std::vector<InnerVerifyStatus> &statuses, int delaySeconds)
+void AppDomainVerifyAgentService::QueryAndCompleteRefresh(const std::vector<InnerVerifyStatus> &statuses,
+    int delaySeconds)
 {
     BundleVerifyStatusInfo bundleVerifyStatusInfo;
     if (AppDomainVerifyMgrClient::GetInstance()->QueryAllDomainVerifyStatus(bundleVerifyStatusInfo)) {
@@ -195,8 +193,9 @@ void AppDomainVerifyAgentService::ExitIdleState()
     CancelIdle();
 }
 
-bool AppDomainVerifyAgentService::IsIdle(){
-    if(appDomainVerifyTaskMgr_ == nullptr){
+bool AppDomainVerifyAgentService::IsIdle()
+{
+    if (appDomainVerifyTaskMgr_ == nullptr) {
         return true;
     } else {
         return appDomainVerifyTaskMgr_->IsIdle();

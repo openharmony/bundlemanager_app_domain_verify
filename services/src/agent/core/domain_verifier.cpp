@@ -65,26 +65,23 @@ InnerVerifyStatus DomainVerifier::VerifyHostWithAppIdentifier(const AssetJsonObj
     if (appVerifyBaseInfo.appIdentifier.empty()) {
         return InnerVerifyStatus::UNKNOWN;
     }
-    for (auto itr = assetJsonObj.applinking.apps.begin(); itr != assetJsonObj.applinking.apps.end(); ++itr) {
-        if (!itr->appIdentifier.empty()) {
-            // if appIdentifier equals
-            if (appVerifyBaseInfo.appIdentifier == itr->appIdentifier) {
-                if (!appVerifyBaseInfo.bundleName.empty() && !itr->bundleName.empty()) {
-                    if (appVerifyBaseInfo.bundleName != itr->bundleName) {
-                        return InnerVerifyStatus::STATE_FAIL;
-                    }
-                }
-                if (!appVerifyBaseInfo.fingerprint.empty() && !itr->fingerprint.empty()) {
-                    if (appVerifyBaseInfo.fingerprint != itr->fingerprint) {
-                        return InnerVerifyStatus::STATE_FAIL;
-                    }
-                }
-                return InnerVerifyStatus::STATE_SUCCESS;
-            }
-            // if appIdentifier not equal, bundleName must not equal
-            if (!appVerifyBaseInfo.bundleName.empty() && appVerifyBaseInfo.bundleName == itr->bundleName) {
+    for (auto itr = assetJsonObj.applinking.apps.begin();
+         itr != assetJsonObj.applinking.apps.end() && !itr->appIdentifier.empty(); ++itr) {
+        // if appIdentifier equals
+        if (appVerifyBaseInfo.appIdentifier == itr->appIdentifier) {
+            if (!appVerifyBaseInfo.bundleName.empty() && !itr->bundleName.empty() &&
+                appVerifyBaseInfo.bundleName != itr->bundleName) {
                 return InnerVerifyStatus::STATE_FAIL;
             }
+            if (!appVerifyBaseInfo.fingerprint.empty() && !itr->fingerprint.empty() &&
+                appVerifyBaseInfo.fingerprint != itr->fingerprint) {
+                return InnerVerifyStatus::STATE_FAIL;
+            }
+            return InnerVerifyStatus::STATE_SUCCESS;
+        }
+        // if appIdentifier not equal, bundleName must not equal
+        if (!appVerifyBaseInfo.bundleName.empty() && appVerifyBaseInfo.bundleName == itr->bundleName) {
+            return InnerVerifyStatus::STATE_FAIL;
         }
     }
     return InnerVerifyStatus::UNKNOWN;

@@ -57,7 +57,8 @@ sptr<AppExecFwk::IBundleMgr> BundleInfoQuery::GetBundleMgrProxy()
     sptr<ISystemAbilityManager> systemAbilityManager =
         SystemAbilityManagerClient::GetInstance().GetSystemAbilityManager();
     if (!systemAbilityManager) {
-        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "GetBundleMgrProxy, systemAbilityManager is null");
+        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE,
+            "GetBundleMgrProxy, systemAbilityManager is null");
         return nullptr;
     }
     sptr<IRemoteObject> remoteObject = systemAbilityManager->GetSystemAbility(BUNDLE_MGR_SERVICE_SYS_ABILITY_ID);
@@ -90,7 +91,8 @@ int32_t BundleInfoQuery::GetCurrentAccountId()
         APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "%s call end", __func__);
         return *iter;
     }
-    APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "GetCurrentAccountId failed, no osAccountIds now.");
+    APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE,
+        "GetCurrentAccountId failed, no osAccountIds now.");
     return -1;
 }
 }

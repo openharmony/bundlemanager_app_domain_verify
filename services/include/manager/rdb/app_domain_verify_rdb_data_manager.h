@@ -38,6 +38,8 @@ public:
 private:
     std::shared_ptr<NativeRdb::RdbStore> GetRdbStore();
     void DelayCloseRdbStore();
+    bool CheckRdbReturnIfOk(int errcode);
+    bool CheckRdbStoreExist(const std::shared_ptr<NativeRdb::RdbStore> &rdbStore);
 
 private:
     std::mutex rdbMutex_;
