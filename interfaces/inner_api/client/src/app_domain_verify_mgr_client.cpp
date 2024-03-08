@@ -32,6 +32,7 @@ AppDomainVerifyMgrClient::AppDomainVerifyMgrClient()
 }
 AppDomainVerifyMgrClient::~AppDomainVerifyMgrClient()
 {
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "%s called", __func__);
     std::lock_guard<std::mutex> autoLock(proxyLock_);
     if (appDomainVerifyMgrServiceProxy_ != nullptr && !staticDestoryMonitor_.IsDestoryed()) {
         auto remoteObject = appDomainVerifyMgrServiceProxy_->AsObject();
