@@ -1,0 +1,16 @@
+# Copyright (c) Huawei Technologies Co., Ltd. 2023. All rights reserved.
+
+import("//build/ohos.gni")
+import("//build/test.gni")
+
+group("app_domain_verify_unit_test") {
+  testonly = true
+
+  deps = [
+    "client:app_domain_verify_client_test",
+    "common:app_domain_verify_common_test",
+    "extension:app_domain_verify_extension_test",
+    "services:app_domain_verify_service_test",
+    "services:app_domain_verify_module_test",
+  ]
+}
