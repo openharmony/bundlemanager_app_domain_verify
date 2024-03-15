@@ -27,9 +27,7 @@
 
 namespace OHOS {
 namespace AppDomainVerify {
-
 class AppDomainVerifyDataMgr {
-
 public:
     AppDomainVerifyDataMgr();
     virtual ~AppDomainVerifyDataMgr();
@@ -79,5 +77,4 @@ private:
 };
 }  // namespace AppDomainVerify
 }  // namespace OHOS
-
 #endif  // APP_DOMAIN_VERIFY_DATA_MGR_H

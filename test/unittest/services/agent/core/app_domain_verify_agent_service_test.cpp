@@ -67,7 +67,7 @@ HWTEST_F(AgentServiceTest, AgentServiceTest001, TestSize.Level0)
         InnerVerifyStatus::STATE_FAIL, InnerVerifyStatus::FAILURE_REDIRECT, InnerVerifyStatus::FAILURE_CLIENT_ERROR,
         InnerVerifyStatus::FAILURE_REJECTED_BY_SERVER, InnerVerifyStatus::FAILURE_HTTP_UNKNOWN,
         InnerVerifyStatus::FAILURE_TIMEOUT };
-    appDomainVerifyAgentService->CompleteVerifyRefresh(bundleVerifyStatusInfo, statuses, 1);
+    appDomainVerifyAgentService->CompleteVerifyRefresh(bundleVerifyStatusInfo, statuses, 1, TaskType::IMMEDIATE_TASK);
 }
 
 /**

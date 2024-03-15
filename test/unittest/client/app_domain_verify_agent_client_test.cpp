@@ -42,18 +42,18 @@ public:
     void TearDown();
 };
 
-bool enterAgentInvokeOK = false;
+bool g_enterAgentInvokeOK = false;
 
 int AgentInvokeOK(uint32_t code, MessageParcel &data, MessageParcel &reply, MessageOption &option)
 {
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MODULE_BUTT, "%s call end", __func__);
-    enterAgentInvokeOK = true;
+    g_enterAgentInvokeOK = true;
     return 0;
 }
 
 int AgentInvokeFail(uint32_t code, MessageParcel &data, MessageParcel &reply, MessageOption &option)
 {
-    enterAgentInvokeOK = false;
+    g_enterAgentInvokeOK = false;
     return UNKNOWN_ERROR;
 }
 
@@ -118,7 +118,7 @@ HWTEST_F(AppDomainVerifyAgentClientTest, AppDomainVerifyAgentClientTest002, Test
     skillUri.host = HOST;
     skillUris.emplace_back(skillUri);
     AppDomainVerifyAgentClient::GetInstance()->SingleVerify(appVerifyBaseInfo, skillUris);
-    ASSERT_TRUE(enterAgentInvokeOK);
+    ASSERT_TRUE(g_enterAgentInvokeOK);
     AppDomainVerifyAgentClient::agentServiceProxy_.ForceSetRefPtr(nullptr);
 }
 
