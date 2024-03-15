@@ -40,10 +40,7 @@ bool AppVerifyBaseInfo::Marshalling(Parcel &parcel) const
 }
 bool AppVerifyBaseInfo::ReadFromParcel(Parcel &parcel)
 {
-    appIdentifier = parcel.ReadString();
-    bundleName = parcel.ReadString();
-    fingerprint = parcel.ReadString();
-    return true;
+    return parcel.ReadString(appIdentifier) && parcel.ReadString(bundleName) && parcel.ReadString(fingerprint);
 }
 
 AppVerifyBaseInfo *AppVerifyBaseInfo::Unmarshalling(Parcel &parcel)

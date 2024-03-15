@@ -65,8 +65,10 @@ InnerVerifyStatus DomainVerifier::VerifyHostWithAppIdentifier(const AssetJsonObj
     if (appVerifyBaseInfo.appIdentifier.empty()) {
         return InnerVerifyStatus::UNKNOWN;
     }
-    for (auto itr = assetJsonObj.applinking.apps.begin();
-         itr != assetJsonObj.applinking.apps.end() && !itr->appIdentifier.empty(); ++itr) {
+    for (auto itr = assetJsonObj.applinking.apps.begin(); itr != assetJsonObj.applinking.apps.end(); ++itr) {
+        if (itr->appIdentifier.empty()) {
+            continue;
+        }
         // if appIdentifier equals
         if (appVerifyBaseInfo.appIdentifier == itr->appIdentifier) {
             if (!appVerifyBaseInfo.bundleName.empty() && !itr->bundleName.empty() &&

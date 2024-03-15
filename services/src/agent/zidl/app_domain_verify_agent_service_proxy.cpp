@@ -15,6 +15,7 @@
 #include "app_domain_verify_agent_service_proxy.h"
 #include "agent_interface_code.h"
 #include "system_ability_definition.h"
+#include "parcel_util.h"
 
 namespace OHOS {
 namespace AppDomainVerify {
@@ -28,48 +29,6 @@ AppDomainVerifyAgentServiceProxy::~AppDomainVerifyAgentServiceProxy()
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "instance dead.");
 }
 
-void AppDomainVerifyAgentServiceProxy::CompleteVerifyRefresh(const BundleVerifyStatusInfo &bundleVerifyStatusInfo,
-    const std::vector<InnerVerifyStatus> &statuses, int delaySeconds)
-{
-    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "%s called", __func__);
-    MessageParcel data;
-    MessageParcel reply;
-    MessageOption option;
-    if (!data.WriteInterfaceToken(GetDescriptor())) {
-        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "failed to write interfaceToken");
-        return;
-    }
-
-    if (!data.WriteParcelable(&bundleVerifyStatusInfo)) {
-        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "failed to write parcelable");
-        return;
-    }
-
-    uint32_t size = static_cast<uint32_t>(statuses.size());
-    if (!data.WriteUint32(size)) {
-        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "failed to write uint32_t");
-        return;
-    }
-
-    for (uint32_t i = 0; i < statuses.size(); ++i) {
-        if (!data.WriteInt32(statuses[i])) {
-            APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "failed to write int32");
-            return;
-        }
-    }
-    if (!data.WriteInt32(delaySeconds)) {
-        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "failed to write int32");
-        return;
-    }
-
-    int32_t error = Remote()->SendRequest(AgentInterfaceCode::COMPLETE_VERIFY_REFRESH, data, reply, option);
-    if (error != ERR_NONE) {
-        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "CompleteVerifyRefresh failed, error: %d",
-            error);
-    }
-    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "%s call end", __func__);
-}
-
 void AppDomainVerifyAgentServiceProxy::SingleVerify(const AppVerifyBaseInfo &appVerifyBaseInfo,
     const std::vector<SkillUri> &skillUris)
 {
@@ -77,27 +36,13 @@ void AppDomainVerifyAgentServiceProxy::SingleVerify(const AppVerifyBaseInfo &app
     MessageParcel data;
     MessageParcel reply;
     MessageOption option;
-    if (!data.WriteInterfaceToken(GetDescriptor())) {
-        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "failed to write interfaceToken");
-        return;
-    }
-
-    if (!data.WriteParcelable(&appVerifyBaseInfo)) {
-        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "failed to write parcelable");
-        return;
-    }
-
+    WRITE_PARCEL_AND_RETURN_IF_FAIL(InterfaceToken, data, GetDescriptor());
+    WRITE_PARCEL_AND_RETURN_IF_FAIL(Parcelable, data, &appVerifyBaseInfo);
     uint32_t size = static_cast<uint32_t>(skillUris.size());
-    if (!data.WriteUint32(size)) {
-        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "failed to write uint32_t");
-        return;
-    }
+    WRITE_PARCEL_AND_RETURN_IF_FAIL(Uint32, data, size);
 
     for (uint32_t i = 0; i < skillUris.size(); ++i) {
-        if (!data.WriteParcelable(&skillUris[i])) {
-            APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "failed to write raw data");
-            return;
-        }
+        WRITE_PARCEL_AND_RETURN_IF_FAIL(Parcelable, data, &skillUris[i]);
     }
     int32_t error = Remote()->SendRequest(AgentInterfaceCode::SINGLE_VERIFY, data, reply, option);
     if (error != ERR_NONE) {

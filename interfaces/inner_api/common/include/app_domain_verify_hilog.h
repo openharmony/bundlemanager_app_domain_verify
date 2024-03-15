@@ -15,10 +15,12 @@
 #ifndef APP_DOMAIN_VERIFY_HILOG_H
 #define APP_DOMAIN_VERIFY_HILOG_H
 
+#include <string>
 #include "hilog/log.h"
 
 namespace OHOS {
 namespace AppDomainVerify {
+
 // param of log interface.
 enum AppDomainVerifySubModule {
     APP_DOMAIN_VERIFY_MODULE_EXTENSION = 0,
@@ -56,8 +58,7 @@ static constexpr OHOS::HiviewDFX::HiLogLabel APP_DOMAIN_VERIFY_MODULE_LABEL[APP_
     { LOG_CORE, APP_DOMAIN_VERIFY_BUTT, "AppDomainVerifytest" },
 };
 
-#define FILENAME (__builtin_strrchr(__FILE__, '/') ? __builtin_strrchr(__FILE__, '/') + 1 : __FILE__)
-#define FORMATED(fmt, ...) "[%{public}s] %{public}s# " fmt, FILENAME, __FUNCTION__, ##__VA_ARGS__
+#define FORMATED(fmt, ...) "%{public}s# " fmt, __FUNCTION__, ##__VA_ARGS__
 
 // In order to improve performance, do not check the module range.
 // Besides, make sure module is less than APP_DOMAIN_VERIFY_MODULE_BUTT.

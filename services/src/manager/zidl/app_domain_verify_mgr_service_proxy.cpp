@@ -15,6 +15,7 @@
 #include "app_domain_verify_mgr_service_proxy.h"
 #include "app_domain_verify_mgr_interface_code.h"
 #include "system_ability_definition.h"
+#include "parcel_util.h"
 
 namespace OHOS {
 namespace AppDomainVerify {
@@ -34,31 +35,20 @@ void AppDomainVerifyMgrServiceProxy::VerifyDomain(const std::string &appIdentifi
     MessageParcel data;
     MessageParcel reply;
     MessageOption option;
-    if (!data.WriteInterfaceToken(GetDescriptor())) {
-        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "failed to write interfaceToken");
-        return;
-    }
-
-    if (!data.WriteString(appIdentifier) || !data.WriteString(bundleName) || !data.WriteString(fingerprint)) {
-        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "failed to write string");
-        return;
-    }
+    WRITE_PARCEL_AND_RETURN_IF_FAIL(InterfaceToken, data, GetDescriptor());
+    WRITE_PARCEL_AND_RETURN_IF_FAIL(String, data, appIdentifier);
+    WRITE_PARCEL_AND_RETURN_IF_FAIL(String, data, bundleName);
+    WRITE_PARCEL_AND_RETURN_IF_FAIL(String, data, fingerprint);
 
     uint32_t size = static_cast<uint32_t>(skillUris.size());
-    if (!data.WriteUint32(size)) {
-        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "failed to write uint32_t");
-        return;
-    }
+    WRITE_PARCEL_AND_RETURN_IF_FAIL(Uint32, data, size);
 
     for (uint32_t i = 0; i < skillUris.size(); ++i) {
-        if (!data.WriteParcelable(&skillUris[i])) {
-            APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "failed to write parcelable");
-            return;
-        }
+        WRITE_PARCEL_AND_RETURN_IF_FAIL(Parcelable, data, &skillUris[i]);
     }
     int32_t error = Remote()->SendRequest(AppDomainVerifyMgrInterfaceCode::VERIFY_DOMAIN, data, reply, option);
     if (error != ERR_NONE) {
-        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "VerifyDomain failed, error: %d", error);
+        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "VerifyDomain failed, error: %{public}d", error);
     }
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "%s call end", __func__);
 }
@@ -70,15 +60,9 @@ bool AppDomainVerifyMgrServiceProxy::ClearDomainVerifyStatus(const std::string &
     MessageParcel data;
     MessageParcel reply;
     MessageOption option;
-    if (!data.WriteInterfaceToken(GetDescriptor())) {
-        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "failed to write interfaceToken");
-        return false;
-    }
-
-    if (!data.WriteString(appIdentifier) || !data.WriteString(bundleName)) {
-        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "failed to write string");
-        return false;
-    }
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(InterfaceToken, data, GetDescriptor());
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String, data, appIdentifier);
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String, data, bundleName);
     int32_t error = Remote()->SendRequest(AppDomainVerifyMgrInterfaceCode::CLEAR_DOMAIN_VERIFY_RESULT, data, reply,
         option);
     if (error != ERR_NONE) {
@@ -98,27 +82,13 @@ bool AppDomainVerifyMgrServiceProxy::FilterAbilities(const OHOS::AAFwk::Want &wa
     MessageParcel data;
     MessageParcel reply;
     MessageOption option;
-    if (!data.WriteInterfaceToken(GetDescriptor())) {
-        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "failed to write interfaceToken");
-        return false;
-    }
-
-    if (!data.WriteParcelable(&want)) {
-        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "failed to write parcelable");
-        return false;
-    }
-
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(InterfaceToken, data, GetDescriptor());
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Parcelable, data, &want);
     uint32_t originAbilityInfoSize = static_cast<uint32_t>(originAbilityInfos.size());
-    if (!data.WriteUint32(originAbilityInfoSize)) {
-        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "failed to write uint32_t");
-        return false;
-    }
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Uint32, data, originAbilityInfoSize);
 
     for (uint32_t i = 0; i < originAbilityInfos.size(); ++i) {
-        if (!data.WriteParcelable(&originAbilityInfos[i])) {
-            APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "failed to write parcelable");
-            return false;
-        }
+        WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Parcelable, data, &originAbilityInfos[i]);
     }
     int32_t error = Remote()->SendRequest(AppDomainVerifyMgrInterfaceCode::FILTER_ABILITIES, data, reply, option);
     if (error != ERR_NONE) {
@@ -149,15 +119,8 @@ bool AppDomainVerifyMgrServiceProxy::QueryDomainVerifyStatus(const std::string &
     MessageParcel data;
     MessageParcel reply;
     MessageOption option;
-    if (!data.WriteInterfaceToken(GetDescriptor())) {
-        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "failed to write interfaceToken");
-        return false;
-    }
-
-    if (!data.WriteString(bundleName)) {
-        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "failed to write string");
-        return false;
-    }
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(InterfaceToken, data, GetDescriptor());
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String, data, bundleName);
 
     int32_t error = Remote()->SendRequest(AppDomainVerifyMgrInterfaceCode::QUERY_VERIFY_STATUS, data, reply, option);
     if (error != ERR_NONE) {
@@ -181,11 +144,7 @@ bool AppDomainVerifyMgrServiceProxy::QueryAllDomainVerifyStatus(BundleVerifyStat
     MessageParcel data;
     MessageParcel reply;
     MessageOption option;
-    if (!data.WriteInterfaceToken(GetDescriptor())) {
-        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "failed to write interfaceToken");
-        return false;
-    }
-
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(InterfaceToken, data, GetDescriptor());
     int32_t error = Remote()->SendRequest(AppDomainVerifyMgrInterfaceCode::QUERY_ALL_VERIFY_STATUS, data, reply,
         option);
     if (error != ERR_NONE) {
@@ -214,18 +173,9 @@ bool AppDomainVerifyMgrServiceProxy::SaveDomainVerifyStatus(const std::string &b
     MessageParcel data;
     MessageParcel reply;
     MessageOption option;
-    if (!data.WriteInterfaceToken(GetDescriptor())) {
-        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "failed to write interfaceToken");
-        return false;
-    }
-    if (!data.WriteString(bundleName)) {
-        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "failed to write string");
-        return false;
-    }
-    if (!data.WriteParcelable(&verifyResultInfo)) {
-        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "failed to write parcelable");
-        return false;
-    }
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(InterfaceToken, data, GetDescriptor());
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String, data, bundleName);
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Parcelable, data, &verifyResultInfo);
     int32_t error = Remote()->SendRequest(AppDomainVerifyMgrInterfaceCode::SAVE_VERIFY_STATUS, data, reply, option);
     if (error != ERR_NONE) {
         APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "QueryAllDomainVerifyStatus failed, error: %d",

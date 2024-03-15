@@ -25,16 +25,15 @@ namespace OHOS {
 namespace AppDomainVerify {
 class AppDomainVerifyAgentServiceStub : public IRemoteStub<IAppDomainVerifyAgentService> {
 public:
-    AppDomainVerifyAgentServiceStub();
-    virtual ~AppDomainVerifyAgentServiceStub();
-    int32_t OnRemoteRequest(uint32_t code, MessageParcel &data, MessageParcel &reply, MessageOption &option) override;
+    API_EXPORT AppDomainVerifyAgentServiceStub();
+    API_EXPORT virtual ~AppDomainVerifyAgentServiceStub();
+    API_EXPORT int32_t OnRemoteRequest(uint32_t code, MessageParcel &data, MessageParcel &reply, MessageOption &option) override;
     void PostDelayUnloadTask();
 
 protected:
     virtual void ExitIdleState() = 0;
 private:
     using ServiceFunc = int32_t (AppDomainVerifyAgentServiceStub::*)(MessageParcel &data, MessageParcel &reply);
-    int32_t OnCompleteVerifyRefresh(MessageParcel &data, MessageParcel &reply);
     int32_t OnSingleVerify(MessageParcel &data, MessageParcel &reply);
 
 private:

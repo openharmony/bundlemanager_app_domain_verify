@@ -17,6 +17,7 @@
 #include "app_domain_verify_mgr_service_stub.h"
 #include "app_domain_verify_mgr_interface_code.h"
 #include "errors.h"
+#include "parcel_util.h"
 
 namespace OHOS {
 namespace AppDomainVerify {
@@ -92,7 +93,8 @@ int32_t AppDomainVerifyMgrServiceStub::OnClearDomainVerifyStatus(MessageParcel &
     bool status = ClearDomainVerifyStatus(appIdentifier, bundleName);
 
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s call end", __func__);
-    return reply.WriteBool(status) ? ERR_OK : ERR_INVALID_VALUE;
+    WRITE_PARCEL_AND_RETURN_INT_IF_FAIL(Bool, reply, status);
+    return ERR_OK;
 }
 
 int32_t AppDomainVerifyMgrServiceStub::OnFilterAbilities(MessageParcel &data, MessageParcel &reply)
@@ -117,20 +119,10 @@ int32_t AppDomainVerifyMgrServiceStub::OnFilterAbilities(MessageParcel &data, Me
     }
     std::vector<OHOS::AppExecFwk::AbilityInfo> filtedAbilityInfos;
     bool status = FilterAbilities(want, originAbilityInfos, filtedAbilityInfos);
-    if (!reply.WriteBool(status)) {
-        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "write filterAbilities result error.");
-        return ERR_INVALID_VALUE;
-    }
-    if (!reply.WriteInt32(filtedAbilityInfos.size())) {
-        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "write abilityInfo size failed.");
-        return ERR_INVALID_VALUE;
-    }
-
+    WRITE_PARCEL_AND_RETURN_INT_IF_FAIL(Bool, reply, status);
+    WRITE_PARCEL_AND_RETURN_INT_IF_FAIL(Int32, reply, filtedAbilityInfos.size());
     for (auto &it : filtedAbilityInfos) {
-        if (!reply.WriteParcelable(&it)) {
-            APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "write abilityInfo failed.");
-            return ERR_INVALID_VALUE;
-        }
+        WRITE_PARCEL_AND_RETURN_INT_IF_FAIL(Parcelable, reply, &it);
     }
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s call end", __func__);
     return ERR_OK;
@@ -142,14 +134,8 @@ int32_t AppDomainVerifyMgrServiceStub::OnQueryDomainVerifyStatus(MessageParcel &
     std::string bundleName = data.ReadString();
     DomainVerifyStatus domainVerificationState;
     bool status = QueryDomainVerifyStatus(bundleName, domainVerificationState);
-    if (!reply.WriteBool(status)) {
-        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "write QueryDomainVerifyStatus result error.");
-        return ERR_INVALID_VALUE;
-    }
-    if (!reply.WriteInt32(domainVerificationState)) {
-        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "write domainVerificationState failed.");
-        return ERR_INVALID_VALUE;
-    }
+    WRITE_PARCEL_AND_RETURN_INT_IF_FAIL(Bool, reply, status);
+    WRITE_PARCEL_AND_RETURN_INT_IF_FAIL(Int32, reply, domainVerificationState);
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s call end", __func__);
     return ERR_OK;
 }
@@ -160,15 +146,8 @@ int32_t AppDomainVerifyMgrServiceStub::OnQueryAllDomainVerifyStatus(MessageParce
 
     BundleVerifyStatusInfo bundleVerifyStatusInfo;
     bool status = QueryAllDomainVerifyStatus(bundleVerifyStatusInfo);
-    if (!reply.WriteBool(status)) {
-        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE,
-            "write QueryAllDomainVerifyStatus result error.");
-        return ERR_INVALID_VALUE;
-    }
-    if (!reply.WriteParcelable(&bundleVerifyStatusInfo)) {
-        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "write bundleVerifyStatusInfo failed.");
-        return ERR_INVALID_VALUE;
-    }
+    WRITE_PARCEL_AND_RETURN_INT_IF_FAIL(Bool, reply, status);
+    WRITE_PARCEL_AND_RETURN_INT_IF_FAIL(Parcelable, reply, &bundleVerifyStatusInfo);
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s call end", __func__);
     return ERR_OK;
 }
@@ -179,11 +158,7 @@ int32_t AppDomainVerifyMgrServiceStub::OnSaveDomainVerifyStatus(MessageParcel &d
     std::string bundleName = data.ReadString();
     std::unique_ptr<VerifyResultInfo> verifyResultInfo(data.ReadParcelable<VerifyResultInfo>());
     bool status = SaveDomainVerifyStatus(bundleName, *verifyResultInfo);
-    if (!reply.WriteBool(status)) {
-        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE,
-            "write QueryAllDomainVerifyStatus result error.");
-        return ERR_INVALID_VALUE;
-    }
+    WRITE_PARCEL_AND_RETURN_INT_IF_FAIL(Bool, reply, status);
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s call end", __func__);
     return ERR_OK;
 }

@@ -19,6 +19,7 @@
 #include "app_domain_verify_mgr_client.h"
 #include "refbase.h"
 #include "system_ability_definition.h"
+#include "app_domain_verify_hisysevent.h"
 
 namespace OHOS {
 namespace AppDomainVerify {
@@ -46,6 +47,7 @@ void AppDomainVerifyMgrClient::VerifyDomain(const std::string &appIdentifier, co
     const std::string &fingerprint, const std::vector<SkillUri> &skillUris)
 {
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "%s called", __func__);
+    INSTALL_EVENT(appIdentifier, bundleName);
     if (IsServiceAvailable()) {
         appDomainVerifyMgrServiceProxy_->VerifyDomain(appIdentifier, bundleName, fingerprint, skillUris);
     }
@@ -55,6 +57,7 @@ void AppDomainVerifyMgrClient::VerifyDomain(const std::string &appIdentifier, co
 bool AppDomainVerifyMgrClient::ClearDomainVerifyStatus(const std::string &appIdentifier, const std::string &bundleName)
 {
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "%s called", __func__);
+    UNINSTALL_EVENT(appIdentifier, bundleName);
     bool clearResult = false;
     if (IsServiceAvailable()) {
         clearResult = appDomainVerifyMgrServiceProxy_->ClearDomainVerifyStatus(appIdentifier, bundleName);
@@ -104,12 +107,12 @@ bool AppDomainVerifyMgrClient::SaveDomainVerifyStatus(const std::string &bundleN
     const VerifyResultInfo &verifyResultInfo)
 {
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "%s called", __func__);
-    bool querySuccess = false;
+    bool saveSuccess = false;
     if (IsServiceAvailable()) {
-        querySuccess = appDomainVerifyMgrServiceProxy_->SaveDomainVerifyStatus(bundleName, verifyResultInfo);
+        saveSuccess = appDomainVerifyMgrServiceProxy_->SaveDomainVerifyStatus(bundleName, verifyResultInfo);
     }
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "%s call end", __func__);
-    return querySuccess;
+    return saveSuccess;
 }
 
 bool AppDomainVerifyMgrClient::IsServiceAvailable()
@@ -136,6 +139,7 @@ void AppDomainVerifyMgrClient::ConnectService()
         return;
     }
     sptr<IRemoteObject> remoteObject = samgrProxy->CheckSystemAbility(APP_DOMAIN_VERIFY_MANAGER_SA_ID);
+
     if (remoteObject != nullptr) {
         APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "Get AppDomainVerifyMgrServiceProxy succeed.");
         if (deathRecipient_ == nullptr) {

@@ -28,8 +28,6 @@ const std::string TASK_ID = "unload";
 }
 AppDomainVerifyAgentServiceStub::AppDomainVerifyAgentServiceStub()
 {
-    memberFuncMap_[static_cast<uint32_t>(AgentInterfaceCode::COMPLETE_VERIFY_REFRESH)] =
-        &AppDomainVerifyAgentServiceStub::OnCompleteVerifyRefresh;
     memberFuncMap_[static_cast<uint32_t>(AgentInterfaceCode::SINGLE_VERIFY)] =
         &AppDomainVerifyAgentServiceStub::OnSingleVerify;
 }
@@ -60,26 +58,6 @@ int32_t AppDomainVerifyAgentServiceStub::OnRemoteRequest(uint32_t code, MessageP
     int ret = IPCObjectStub::OnRemoteRequest(code, data, reply, option);
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "end##ret = %{public}d", ret);
     return ret;
-}
-
-int32_t AppDomainVerifyAgentServiceStub::OnCompleteVerifyRefresh(MessageParcel &data, MessageParcel &reply)
-{
-    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "%s called", __func__);
-    std::unique_ptr<BundleVerifyStatusInfo> bundleVerifyStatusInfo(data.ReadParcelable<BundleVerifyStatusInfo>());
-    if (!bundleVerifyStatusInfo) {
-        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE,
-            "read parcelable BundleVerifyStatusInfo failed.");
-        return ERR_INVALID_VALUE;
-    }
-    int32_t statusesSize = data.ReadInt32();
-    std::vector<InnerVerifyStatus> statuses;
-    for (int32_t i = 0; i < statusesSize; i++) {
-        statuses.emplace_back(static_cast<InnerVerifyStatus>(data.ReadInt32()));
-    }
-    int delaySeconds = data.ReadInt32();
-    CompleteVerifyRefresh(*bundleVerifyStatusInfo, statuses, delaySeconds);
-    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "%s call end", __func__);
-    return ERR_OK;
 }
 
 int32_t AppDomainVerifyAgentServiceStub::OnSingleVerify(MessageParcel &data, MessageParcel &reply)

@@ -66,7 +66,7 @@ bool AppDomainVerifyExtensionMgr::Init()
 }
 
 ErrorCode AppDomainVerifyExtensionMgr::CompleteVerifyRefresh(const BundleVerifyStatusInfo &bundleVerifyStatusInfo,
-    const std::vector<InnerVerifyStatus> &statuses, int delaySeconds)
+    const std::vector<InnerVerifyStatus> &statuses, int delaySeconds, TaskType type)
 {
     if (Init()) {
         std::string verifierExtName = APP_DOMAIN_VERIFY_AGENT_EXT_NAME;
@@ -79,7 +79,7 @@ ErrorCode AppDomainVerifyExtensionMgr::CompleteVerifyRefresh(const BundleVerifyS
             return ErrorCode::E_EXTENSIONS_INTERNAL_ERROR;
         }
         return std::static_pointer_cast<AppDomainVerifyAgentExt>(appDomainVerifierExt)
-            ->CompleteVerifyRefresh(bundleVerifyStatusInfo, statuses, delaySeconds);
+            ->CompleteVerifyRefresh(bundleVerifyStatusInfo, statuses, delaySeconds, type);
     }
     return ErrorCode::E_EXTENSIONS_LIB_NOT_FOUND;
 }

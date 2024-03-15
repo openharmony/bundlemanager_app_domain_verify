@@ -31,6 +31,7 @@
 #include "app_domain_verify_task_mgr.h"
 #include "iservice_registry.h"
 #include "app_domain_verify_mgr_client.h"
+#include "app_domain_verify_hisysevent.h"
 
 namespace OHOS {
 namespace AppDomainVerify {
@@ -55,11 +56,11 @@ AppDomainVerifyAgentService::~AppDomainVerifyAgentService()
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "instance dead.");
 }
 void AppDomainVerifyAgentService::CompleteVerifyRefresh(const BundleVerifyStatusInfo &bundleVerifyStatusInfo,
-    const std::vector<InnerVerifyStatus> &statuses, int delaySeconds)
+    const std::vector<InnerVerifyStatus> &statuses, int delaySeconds, TaskType type)
 {
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "%s called", __func__);
     if (ErrorCode::E_EXTENSIONS_LIB_NOT_FOUND !=
-        appDomainVerifyExtMgr_->CompleteVerifyRefresh(bundleVerifyStatusInfo, statuses, delaySeconds)) {
+        appDomainVerifyExtMgr_->CompleteVerifyRefresh(bundleVerifyStatusInfo, statuses, delaySeconds, type)) {
         APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "extension call end");
         return;
     }
@@ -80,12 +81,12 @@ void AppDomainVerifyAgentService::CompleteVerifyRefresh(const BundleVerifyStatus
         AppVerifyBaseInfo appVerifyBaseInfo;
         appVerifyBaseInfo.bundleName = it->first;
         if (!BundleInfoQuery::GetBundleInfo(appVerifyBaseInfo.bundleName, appVerifyBaseInfo.appIdentifier,
-            appVerifyBaseInfo.fingerprint)) {
+                appVerifyBaseInfo.fingerprint)) {
             APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "GetBundleInfo failed.");
             // todo delete this bundleName or not
             continue;
         }
-        SingleVerify(appVerifyBaseInfo, skillUris);
+        AddVerifyTask(appVerifyBaseInfo, skillUris, type);
     }
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "%s call end", __func__);
 }
@@ -94,6 +95,13 @@ void AppDomainVerifyAgentService::SingleVerify(const AppVerifyBaseInfo &appVerif
     const std::vector<SkillUri> &skillUris)
 {
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "%s called", __func__);
+    AddVerifyTask(appVerifyBaseInfo, skillUris, TaskType::IMMEDIATE_TASK);
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "%s call end", __func__);
+}
+
+void AppDomainVerifyAgentService::AddVerifyTask(const AppVerifyBaseInfo &appVerifyBaseInfo,
+    const std::vector<SkillUri> &skillUris, TaskType type)
+{
     if (ErrorCode::E_EXTENSIONS_LIB_NOT_FOUND != appDomainVerifyExtMgr_->SingleVerify(appVerifyBaseInfo, skillUris)) {
         APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "extension call end");
         return;
@@ -104,11 +112,10 @@ void AppDomainVerifyAgentService::SingleVerify(const AppVerifyBaseInfo &appVerif
         APP_DOMAIN_VERIFY_HILOGW(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "no valid skillUris");
         return;
     }
-    auto task = std::make_shared<Task>(TaskType::IMMEDIATE_TASK, appVerifyBaseInfo, uriVerifyMap);
+    auto task = std::make_shared<Task>(type, appVerifyBaseInfo, uriVerifyMap);
     if (appDomainVerifyTaskMgr_ != nullptr) {
         appDomainVerifyTaskMgr_->AddTask(task);
     }
-    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "%s call end", __func__);
 }
 
 void AppDomainVerifyAgentService::InitUriVerifyMap(const std::vector<SkillUri> &skillUris,
@@ -134,11 +141,11 @@ void AppDomainVerifyAgentService::InitUriVerifyMap(const std::vector<SkillUri> &
 }
 
 void AppDomainVerifyAgentService::QueryAndCompleteRefresh(const std::vector<InnerVerifyStatus> &statuses,
-    int delaySeconds)
+    int delaySeconds, TaskType type)
 {
     BundleVerifyStatusInfo bundleVerifyStatusInfo;
     if (AppDomainVerifyMgrClient::GetInstance()->QueryAllDomainVerifyStatus(bundleVerifyStatusInfo)) {
-        CompleteVerifyRefresh(bundleVerifyStatusInfo, statuses, delaySeconds);
+        CompleteVerifyRefresh(bundleVerifyStatusInfo, statuses, delaySeconds, type);
     }
 }
 
@@ -153,13 +160,16 @@ void AppDomainVerifyAgentService::OnStart(const SystemAbilityOnDemandReason &sta
 
     if (startReason.GetName() == BOOT_COMPLETED_EVENT || startReason.GetName() == LOOP_EVENT) {
         // todo only for oobe
-        auto func = [this]() {
+        TaskType type = startReason.GetName() == BOOT_COMPLETED_EVENT ?
+            TaskType::BOOT_REFRESH_TASK :
+            TaskType::SCHEDULE_REFRESH_TASK;
+        auto func = [this, type]() {
             QueryAndCompleteRefresh(
                 std::vector<InnerVerifyStatus>{ InnerVerifyStatus::UNKNOWN, InnerVerifyStatus::STATE_FAIL,
                     InnerVerifyStatus::FAILURE_REDIRECT, InnerVerifyStatus::FAILURE_CLIENT_ERROR,
                     InnerVerifyStatus::FAILURE_REJECTED_BY_SERVER, InnerVerifyStatus::FAILURE_HTTP_UNKNOWN,
                     InnerVerifyStatus::FAILURE_TIMEOUT },
-                0);
+                0, type);
         };
         continuationHandler_->submit(func);
     }

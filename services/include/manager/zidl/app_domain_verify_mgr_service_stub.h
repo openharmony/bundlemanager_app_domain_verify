@@ -24,9 +24,9 @@ namespace OHOS {
 namespace AppDomainVerify {
 class AppDomainVerifyMgrServiceStub : public IRemoteStub<IAppDomainVerifyMgrService> {
 public:
-    AppDomainVerifyMgrServiceStub();
-    virtual ~AppDomainVerifyMgrServiceStub();
-    int32_t OnRemoteRequest(uint32_t code, MessageParcel &data, MessageParcel &reply, MessageOption &option) override;
+    API_EXPORT AppDomainVerifyMgrServiceStub();
+    API_EXPORT virtual ~AppDomainVerifyMgrServiceStub();
+    API_EXPORT int32_t OnRemoteRequest(uint32_t code, MessageParcel &data, MessageParcel &reply, MessageOption &option) override;
 
 private:
     using AppDomainVerifyServiceFunc = int32_t (AppDomainVerifyMgrServiceStub::*)(MessageParcel &data,
