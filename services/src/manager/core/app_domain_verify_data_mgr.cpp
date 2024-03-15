@@ -44,9 +44,6 @@ bool AppDomainVerifyDataMgr::GetVerifyStatus(const std::string &bundleName, Veri
     auto it = verifyMap_->find(key);
     if (it != verifyMap_->end()) {
         verifyResultInfo = it->second;
-        // todo only for test
-        APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MODULE_BUTT, "cur bundle %{public}s verifyInfo %{public}s",
-            bundleName.c_str(), VerifyResultInfo::VerifyResultInfoToJson(verifyResultInfo).dump().c_str());
     }
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s call end", __func__);
     return true;
@@ -66,11 +63,11 @@ bool AppDomainVerifyDataMgr::SaveVerifyStatus(const std::string &bundleName, con
     }
 
     std::lock_guard<std::mutex> lock(verifyMapMutex_);
+    verifyMap_->insert_or_assign(key, verifyResultInfo);
     if (!rdbDataManager_->InsertData(key, VerifyResultInfo::VerifyResultInfoToJson(verifyResultInfo).dump())) {
         APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "InnerVerifyStatus save to db failed");
         return false;
     }
-    verifyMap_->insert_or_assign(key, verifyResultInfo);
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s call end", __func__);
     return true;
 }
@@ -89,11 +86,11 @@ bool AppDomainVerifyDataMgr::DeleteVerifyStatus(const std::string &bundleName)
         return false;
     }
     std::lock_guard<std::mutex> lock(verifyMapMutex_);
+    verifyMap_->erase(key);
     if (!rdbDataManager_->DeleteData(key)) {
         APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "InnerVerifyStatus db delete failed");
         return false;
     }
-    verifyMap_->erase(key);
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s call end", __func__);
     return true;
 }

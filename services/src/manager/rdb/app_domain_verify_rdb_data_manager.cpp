@@ -117,14 +117,6 @@ bool AppDomainVerifyRdbDataManager::CreateTable()
     }
     auto rdbStore = GetRdbStore();
     if (CheckRdbStoreExist(rdbStore) && CheckRdbReturnIfOk(rdbStore->ExecuteSql(createTableSql))) {
-        for (const auto &sql : appDomainVerifyRdbConfig_.insertColumnSql) {
-            int32_t insertRet = rdbStore->ExecuteSql(sql);
-            if (insertRet != NativeRdb::E_OK) {
-                APP_DOMAIN_VERIFY_HILOGW(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE,
-                    "ExecuteSql insertColumnSql failed, insertRet: %{public}d", insertRet);
-                return false;
-            }
-        }
         return true;
     }
     return false;

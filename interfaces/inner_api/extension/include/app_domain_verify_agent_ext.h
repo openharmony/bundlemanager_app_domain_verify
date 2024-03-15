@@ -21,6 +21,7 @@
 #include "inner_verify_status.h"
 #include "app_verify_base_info.h"
 #include "bundle_verify_status_info.h"
+#include "app_domain_verify_hisysevent.h"
 
 #define APP_DOMAIN_VERIFY_AGENT_EXT_NAME ("AppDomainVerifyAgentExt")
 
@@ -29,7 +30,7 @@ namespace AppDomainVerify {
 class AppDomainVerifyAgentExt : public AppDomainVerifyExtBase {
 public:
     virtual ErrorCode CompleteVerifyRefresh(const BundleVerifyStatusInfo &bundleVerifyStatusInfo,
-        const std::vector<InnerVerifyStatus> &statuses, int delaySeconds)
+        const std::vector<InnerVerifyStatus> &statuses, int delaySeconds, TaskType type)
     {
         return ErrorCode::E_EXTENSIONS_LIB_NOT_FOUND;
     }

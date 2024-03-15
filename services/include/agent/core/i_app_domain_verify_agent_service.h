@@ -29,8 +29,6 @@ namespace OHOS {
 namespace AppDomainVerify {
 class IAppDomainVerifyAgentService : public IRemoteBroker {
 public:
-    virtual void CompleteVerifyRefresh(const BundleVerifyStatusInfo &bundleVerifyStatusInfo,
-        const std::vector<InnerVerifyStatus> &statuses, int delaySeconds) = 0;
     virtual void SingleVerify(const AppVerifyBaseInfo &appVerifyBaseInfo, const std::vector<SkillUri> &skillUris) = 0;
 
     DECLARE_INTERFACE_DESCRIPTOR(u"ohos.appDomainVerify.IAppDomainVerifyAgentService");

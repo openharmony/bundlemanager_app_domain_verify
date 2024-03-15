@@ -17,8 +17,7 @@
 namespace OHOS {
 namespace AppDomainVerify {
 enum AgentInterfaceCode {
-    COMPLETE_VERIFY_REFRESH = 0,
-    SINGLE_VERIFY = 1,
+    SINGLE_VERIFY = 0,
 };
 }
 }  // namespace OHOS

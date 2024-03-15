@@ -24,6 +24,7 @@
 #include "app_domain_verify_extension_mgr.h"
 #include "i_app_domain_verify_mgr_service.h"
 #include "app_domain_verify_task_mgr.h"
+#include "app_domain_verify_hisysevent.h"
 
 namespace OHOS {
 namespace AppDomainVerify {
@@ -33,9 +34,6 @@ class AppDomainVerifyAgentService : public SystemAbility, public AppDomainVerify
 public:
     API_EXPORT AppDomainVerifyAgentService();
     API_EXPORT virtual ~AppDomainVerifyAgentService();
-
-    void CompleteVerifyRefresh(const BundleVerifyStatusInfo &bundleVerifyStatusInfo,
-        const std::vector<InnerVerifyStatus> &statuses, int delaySeconds) override;
     API_EXPORT void SingleVerify(const AppVerifyBaseInfo &appVerifyBaseInfo,
         const std::vector<SkillUri> &skillUris) override;
 
@@ -48,7 +46,11 @@ protected:
 private:
     void InitUriVerifyMap(const std::vector<SkillUri> &skillUris,
         std::unordered_map<std::string, InnerVerifyStatus> &uriVerifyMap);
-    void QueryAndCompleteRefresh(const std::vector<InnerVerifyStatus> &statuses, int delaySeconds);
+    void QueryAndCompleteRefresh(const std::vector<InnerVerifyStatus> &statuses, int delaySeconds, TaskType type);
+    void CompleteVerifyRefresh(const BundleVerifyStatusInfo &bundleVerifyStatusInfo,
+        const std::vector<InnerVerifyStatus> &statuses, int delaySeconds, TaskType type);
+    void AddVerifyTask(const AppVerifyBaseInfo &appVerifyBaseInfo, const std::vector<SkillUri> &skillUris,
+        TaskType type);
     bool IsIdle();
 
 private:

@@ -29,7 +29,6 @@ struct AppDomainVerifyRdbConfig {
     std::string dbName;
     std::string tableName;
     std::string createTableSql;
-    std::vector<std::string> insertColumnSql;
     int32_t version{ Constants::RDB_VERSION };
 };
 }  // namespace AppDomainVerify
