@@ -36,17 +36,17 @@ public:
     void TearDown();
 };
 
-bool enterMgrInvokeOK = false;
+bool g_mgrInvokeOK = false;
 int MgrInvokeOK(uint32_t code, MessageParcel &data, MessageParcel &reply, MessageOption &option)
 {
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MODULE_BUTT, "%s call end", __func__);
-    enterMgrInvokeOK = true;
+    g_mgrInvokeOK = true;
     return 0;
 }
 
 int MgrInvokeFail(uint32_t code, MessageParcel &data, MessageParcel &reply, MessageOption &option)
 {
-    enterMgrInvokeOK = false;
+    g_mgrInvokeOK = false;
     return UNKNOWN_ERROR;
 }
 
@@ -125,10 +125,9 @@ HWTEST_F(AppDomainVerifyMgrClientTest, AppDomainVerifyMgrClientTest003, TestSize
  */
 HWTEST_F(AppDomainVerifyMgrClientTest, AppDomainVerifyMgrClientTest004, TestSize.Level0)
 {
-    std::shared_ptr<AppDomainVerifyMgrRemoteStubMock> mgrStubMock_ = std::make_shared<AppDomainVerifyMgrRemoteStubMock>();
-    EXPECT_CALL(*mgrStubMock_, SendRequest(_, _, _, _))
-        .Times(1)
-        .WillOnce(::testing::Invoke(MgrInvokeOK));
+    std::shared_ptr<AppDomainVerifyMgrRemoteStubMock> mgrStubMock_ =
+        std::make_shared<AppDomainVerifyMgrRemoteStubMock>();
+    EXPECT_CALL(*mgrStubMock_, SendRequest(_, _, _, _)).Times(1).WillOnce(::testing::Invoke(MgrInvokeOK));
     AppDomainVerifyMgrClient::appDomainVerifyMgrServiceProxy_ = sptr<AppDomainVerifyMgrServiceProxy>::MakeSptr(
         mgrStubMock_.get());
     std::vector<SkillUri> skillUris;
@@ -137,7 +136,7 @@ HWTEST_F(AppDomainVerifyMgrClientTest, AppDomainVerifyMgrClientTest004, TestSize
     skillUri.host = HOST;
     skillUris.emplace_back(skillUri);
     AppDomainVerifyMgrClient::GetInstance()->VerifyDomain(APP_IDENTIFIER, BUNDLE_NAME, FINGERPRINT, skillUris);
-    ASSERT_TRUE(enterMgrInvokeOK);
+    ASSERT_TRUE(g_mgrInvokeOK);
     AppDomainVerifyMgrClient::appDomainVerifyMgrServiceProxy_.ForceSetRefPtr(nullptr);
 }
 }

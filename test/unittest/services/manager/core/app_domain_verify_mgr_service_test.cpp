@@ -61,6 +61,5 @@ HWTEST_F(MgrServiceTest, MgrServiceTest001, TestSize.Level0)
     appDomainVerifyMgrService->OnStart();
     ASSERT_TRUE(appDomainVerifyMgrService->ClearDomainVerifyStatus(APP_IDENTIFIER, BUNDLE_NAME));
     appDomainVerifyMgrService->OnStop();
-} 
-
+}
 }

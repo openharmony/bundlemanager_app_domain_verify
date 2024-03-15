@@ -17,9 +17,9 @@
 #define MOC_CONSTANT_H
 #include <string>
 namespace OHOS::AppDomainVerify {
-   const std::string APP_IDENTIFIER = "appIdentifier";
-   const std::string BUNDLE_NAME = "com.openHarmony.test";
-   const std::string FINGERPRINT = "fingerprint";
-   const std::string HOST = "test.openharmony.com"; 
+const std::string APP_IDENTIFIER = "appIdentifier";
+const std::string BUNDLE_NAME = "com.openHarmony.test";
+const std::string FINGERPRINT = "fingerprint";
+const std::string HOST = "test.openharmony.com";
 }
 #endif

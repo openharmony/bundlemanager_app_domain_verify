@@ -15,6 +15,7 @@
 #include <gtest/gtest.h>
 #include <memory>
 #include "mock_constant.h"
+#include "app_domain_verify_hisysevent.h"
 #define private public
 #define protected public
 #include "app_domain_verify_task_mgr.h"
@@ -60,7 +61,7 @@ HWTEST_F(AppDomainVerifyTaskMgrTest, AppDomainVerifyTaskMgrTest001, TestSize.Lev
     std::unordered_map<std::string, InnerVerifyStatus> uriVerifyMap;
     auto task = std::make_shared<Task>(TaskType::UNKNOWN_TASK, appVerifyBaseInfo, uriVerifyMap);
     ASSERT_FALSE(appDomainVerifyTaskMgr->AddTask(task));
-} 
+}
 
 /**
  * @tc.name: AppDomainVerifyTaskMgrTest002
@@ -77,5 +78,5 @@ HWTEST_F(AppDomainVerifyTaskMgrTest, AppDomainVerifyTaskMgrTest002, TestSize.Lev
     auto task = std::make_shared<Task>(TaskType::IMMEDIATE_TASK, appVerifyBaseInfo, uriVerifyMap);
     appDomainVerifyTaskMgr->AddTask(task);
     ASSERT_FALSE(appDomainVerifyTaskMgr->IsIdle());
-} 
+}
 }

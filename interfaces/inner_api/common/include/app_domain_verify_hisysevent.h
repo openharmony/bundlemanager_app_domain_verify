@@ -44,19 +44,27 @@ enum VerifyWay {
     SCHEDULE_RETRY
 };
 
-#define INSTALL_EVENT(appIdentifier, bundleName)                                                                       \
-    HiSysEventWrite(APP_DOMAIN_VERIFY, EventType::APP_INSTALL_EVENT, OHOS::HiviewDFX::HiSysEvent::EventType::BEHAVIOR, \
-        EventParamKey::APP_ID, (appIdentifier), EventParamKey::BUNDLE_NAME, (bundleName))
+#define INSTALL_EVENT(appIdentifier, bundleName)                                                      \
+    do {                                                                                              \
+        HiSysEventWrite(APP_DOMAIN_VERIFY, EventType::APP_INSTALL_EVENT,                              \
+            OHOS::HiviewDFX::HiSysEvent::EventType::BEHAVIOR, EventParamKey::APP_ID, (appIdentifier), \
+            EventParamKey::BUNDLE_NAME, (bundleName));                                                \
+    } while (0)
 
-#define UNINSTALL_EVENT(appIdentifier, bundleName)                                                                    \
-    HiSysEventWrite(APP_DOMAIN_VERIFY, EventType::APP_DELETE_EVENT, OHOS::HiviewDFX::HiSysEvent::EventType::BEHAVIOR, \
-        EventParamKey::APP_ID, (appIdentifier), EventParamKey::BUNDLE_NAME, (bundleName))
+#define UNINSTALL_EVENT(appIdentifier, bundleName)                                                    \
+    do {                                                                                              \
+        HiSysEventWrite(APP_DOMAIN_VERIFY, EventType::APP_DELETE_EVENT,                               \
+            OHOS::HiviewDFX::HiSysEvent::EventType::BEHAVIOR, EventParamKey::APP_ID, (appIdentifier), \
+            EventParamKey::BUNDLE_NAME, (bundleName));                                                \
+    } while (0)
 
-#define VERIFY_RESULT_EVENT(appIdentifier, bundleName, type, status)                                                  \
-    HiSysEventWrite(APP_DOMAIN_VERIFY, EventType::APP_VERIFY_EVENT, OHOS::HiviewDFX::HiSysEvent::EventType::BEHAVIOR, \
-        EventParamKey::APP_ID, (appIdentifier), EventParamKey::BUNDLE_NAME, (bundleName), EventParamKey::VERIFY_WAY,  \
-        (type), EventParamKey::VERIFY_STATUS, (status))
-
+#define VERIFY_RESULT_EVENT(appIdentifier, bundleName, type, status)                                                   \
+    do {                                                                                                               \
+        HiSysEventWrite(APP_DOMAIN_VERIFY, EventType::APP_VERIFY_EVENT,                                                \
+            OHOS::HiviewDFX::HiSysEvent::EventType::BEHAVIOR, EventParamKey::APP_ID, (appIdentifier),                  \
+            EventParamKey::BUNDLE_NAME, (bundleName), EventParamKey::VERIFY_WAY, (type), EventParamKey::VERIFY_STATUS, \
+            (status));                                                                                                 \
+    } while (0)
 }
 }
 #endif

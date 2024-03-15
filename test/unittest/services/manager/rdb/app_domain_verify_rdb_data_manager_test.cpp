@@ -54,7 +54,7 @@ void RdbDataMgrTest::TearDown(void)
  * @tc.name: RdbDataMgrTest001
  * @tc.desc: Check test
  * @tc.type: FUNC
-*/
+ */
 HWTEST_F(RdbDataMgrTest, RdbDataMgrTest001, TestSize.Level0)
 {
     AppDomainVerifyRdbConfig rdbConfig;
@@ -63,6 +63,5 @@ HWTEST_F(RdbDataMgrTest, RdbDataMgrTest001, TestSize.Level0)
     auto appDomainVerifyRdbDataManager = std::make_shared<AppDomainVerifyRdbDataManager>(rdbConfig);
     ASSERT_FALSE(appDomainVerifyRdbDataManager->CheckRdbReturnIfOk(NativeRdb::E_DB_NOT_EXIST));
     ASSERT_FALSE(appDomainVerifyRdbDataManager->CheckRdbStoreExist(nullptr));
-} 
-
+}
 }

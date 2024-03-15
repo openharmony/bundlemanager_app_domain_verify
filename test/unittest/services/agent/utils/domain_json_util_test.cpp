@@ -61,5 +61,5 @@ HWTEST_F(JsonUtilTest, JsonUtilTest001, TestSize.Level0)
     ASSERT_FALSE(JsonUtil::Parse(assetJsonsStr, assetJsonObj));
     assetJsonsStr = R"({"applinking":{"apps":[{"appIdentifier":1,"bundleName":1,"fingerprint":1}]}})";
     ASSERT_TRUE(JsonUtil::Parse(assetJsonsStr, assetJsonObj));
-} 
+}
 }
