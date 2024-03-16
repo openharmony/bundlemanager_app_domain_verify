@@ -14,8 +14,8 @@
  */
 #include "if_system_ability_manager.h"
 #include "iservice_registry.h"
-#include "app_domain_verify_agent_client.h"
 #include "system_ability_definition.h"
+#include "app_domain_verify_agent_client.h"
 
 namespace OHOS {
 namespace AppDomainVerify {

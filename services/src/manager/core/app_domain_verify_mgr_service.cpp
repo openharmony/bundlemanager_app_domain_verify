@@ -25,7 +25,6 @@
 #include "system_ability_definition.h"
 #include "manager_constants.h"
 #include "domain_url_util.h"
-#include "app_domain_verify_data_mgr.h"
 #include "bundle_verify_status_info.h"
 #include "app_verify_base_info.h"
 #include "iservice_registry.h"
@@ -40,6 +39,7 @@ AppDomainVerifyMgrService::AppDomainVerifyMgrService()
     : SystemAbility(APP_DOMAIN_VERIFY_MANAGER_SA_ID, true)
 {
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "new instance create.");
+    dataManager_ = std::make_shared<AppDomainVerifyDataMgr>();
 }
 AppDomainVerifyMgrService::~AppDomainVerifyMgrService()
 {
@@ -61,7 +61,7 @@ void AppDomainVerifyMgrService::VerifyDomain(const std::string &appIdentifier, c
 bool AppDomainVerifyMgrService::ClearDomainVerifyStatus(const std::string &appIdentifier, const std::string &bundleName)
 {
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s called", __func__);
-    bool res = AppDomainVerifyDataMgr::GetInstance().DeleteVerifyStatus(bundleName);
+    bool res = dataManager_->DeleteVerifyStatus(bundleName);
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s call end", __func__);
     return res;
 }
@@ -88,7 +88,7 @@ bool AppDomainVerifyMgrService::FilterAbilities(const OHOS::AAFwk::Want &want,
         // todo bms AbilityInfo contains appIdentifier
         VerifyResultInfo verifyResultInfo;
         // get from emory variable, non-IO operation.
-        if (AppDomainVerifyDataMgr::GetInstance().GetVerifyStatus(it->bundleName, verifyResultInfo)) {
+        if (dataManager_->GetVerifyStatus(it->bundleName, verifyResultInfo)) {
             auto itr = verifyResultInfo.hostVerifyStatusMap.find(hostVerifyKey);
             if (itr != verifyResultInfo.hostVerifyStatusMap.end() && itr->second == InnerVerifyStatus::STATE_SUCCESS) {
                 filtedAbilityInfos.emplace_back(*it);
@@ -104,7 +104,7 @@ bool AppDomainVerifyMgrService::QueryDomainVerifyStatus(const std::string &bundl
 {
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s called", __func__);
     VerifyResultInfo verifyResultInfo;
-    bool res = AppDomainVerifyDataMgr::GetInstance().GetVerifyStatus(bundleName, verifyResultInfo);
+    bool res = dataManager_->GetVerifyStatus(bundleName, verifyResultInfo);
     domainVerificationState = DomainVerifyStatus::STATE_NONE;
     for (auto it = verifyResultInfo.hostVerifyStatusMap.begin();
          res && it != verifyResultInfo.hostVerifyStatusMap.end(); ++it) {
@@ -120,7 +120,7 @@ bool AppDomainVerifyMgrService::QueryDomainVerifyStatus(const std::string &bundl
 bool AppDomainVerifyMgrService::QueryAllDomainVerifyStatus(BundleVerifyStatusInfo &bundleVerifyStatusInfo)
 {
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s called", __func__);
-    bundleVerifyStatusInfo.bundleVerifyStatusInfoMap_ = AppDomainVerifyDataMgr::GetInstance().GetAllVerifyStatus();
+    bundleVerifyStatusInfo.bundleVerifyStatusInfoMap_ = dataManager_->GetAllVerifyStatus();
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s call end", __func__);
     return true;
 }
@@ -129,7 +129,7 @@ bool AppDomainVerifyMgrService::SaveDomainVerifyStatus(const std::string &bundle
     const VerifyResultInfo &verifyResultInfo)
 {
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s called", __func__);
-    bool res = AppDomainVerifyDataMgr::GetInstance().SaveVerifyStatus(bundleName, verifyResultInfo);
+    bool res = dataManager_->SaveVerifyStatus(bundleName, verifyResultInfo);
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s call end", __func__);
     return res;
 }

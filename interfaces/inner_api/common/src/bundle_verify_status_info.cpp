@@ -14,28 +14,16 @@
  */
 #include "bundle_verify_status_info.h"
 #include "app_domain_verify_hilog.h"
-
+#include "parcel_util.h"
 namespace OHOS {
 namespace AppDomainVerify {
 bool VerifyResultInfo::Marshalling(Parcel &parcel) const
 {
-    if (!parcel.WriteString(appIdentifier)) {
-        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MODULE_COMMON, "failed to WriteString for appIdentifier");
-        return false;
-    }
-    if (!parcel.WriteUint32(hostVerifyStatusMap.size())) {
-        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MODULE_COMMON, "failed to WriteInt32 for hostVerifyStatusMap size");
-        return false;
-    }
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String, parcel, appIdentifier);
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Uint32, parcel, hostVerifyStatusMap.size());
     for (auto &it : hostVerifyStatusMap) {
-        if (!parcel.WriteString(it.first)) {
-            APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MODULE_COMMON, "failed to WriteString for url");
-            return false;
-        }
-        if (!parcel.WriteInt32(it.second)) {
-            APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MODULE_COMMON, "failed to WriteInt32 for verifyStatus");
-            return false;
-        }
+        WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String, parcel, it.first);
+        WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, it.second);
     }
     return true;
 }
@@ -53,27 +41,16 @@ VerifyResultInfo *VerifyResultInfo::Unmarshalling(Parcel &parcel)
 
 bool VerifyResultInfo::ReadFromParcel(Parcel &parcel)
 {
-    if (!parcel.ReadString(appIdentifier)) {
-        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MODULE_COMMON, "failed to ReadString for appIdentifier");
-        return false;
-    }
+    READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(String, parcel, appIdentifier);
     uint32_t size = 0;
-    if (!parcel.ReadUint32(size)) {
-        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MODULE_COMMON, "failed to ReadUint32 for hostVerifyStatusMap size");
-        return false;
-    }
+    READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(Uint32, parcel, size);
+
     hostVerifyStatusMap.clear();
     for (uint32_t index = 0; index < size; ++index) {
         std::string url;
         int verifyStatus = 0;
-        if (!parcel.ReadString(url)) {
-            APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MODULE_COMMON, "failed to ReadString for url");
-            return false;
-        }
-        if (!parcel.ReadInt32(verifyStatus)) {
-            APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MODULE_COMMON, "failed to ReadInt32 for verifyStatus");
-            return false;
-        }
+        READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(String, parcel, url);
+        READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, verifyStatus);
         hostVerifyStatusMap.insert(std::make_pair(url, static_cast<InnerVerifyStatus>(verifyStatus)));
     }
     return true;
@@ -106,19 +83,10 @@ VerifyResultInfo VerifyResultInfo::JsonToVerifyResultInfo(const json &verifyResu
 
 bool BundleVerifyStatusInfo::Marshalling(Parcel &parcel) const
 {
-    if (!parcel.WriteUint32(bundleVerifyStatusInfoMap_.size())) {
-        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MODULE_COMMON, "failed to WriteInt32 for whole map size");
-        return false;
-    }
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Uint32, parcel, bundleVerifyStatusInfoMap_.size());
     for (auto &it : bundleVerifyStatusInfoMap_) {
-        if (!parcel.WriteString(it.first)) {
-            APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MODULE_COMMON, "failed to WriteString for bundlename");
-            return false;
-        }
-        if (!parcel.WriteString(it.second.appIdentifier)) {
-            APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MODULE_COMMON, "failed to WriteString for appIdentifier");
-            return false;
-        }
+        WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String, parcel, it.first);
+        WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String, parcel, it.second.appIdentifier);
         if (!WriteHostVerifyStatusMap(it.second.hostVerifyStatusMap, parcel)) {
             APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MODULE_COMMON, "failed to WriteHostVerifyStatusMap");
             return false;
@@ -130,19 +98,10 @@ bool BundleVerifyStatusInfo::Marshalling(Parcel &parcel) const
 bool BundleVerifyStatusInfo::WriteHostVerifyStatusMap(
     const std::unordered_map<std::string, InnerVerifyStatus> &hostVerifyStatusMap, Parcel &parcel) const
 {
-    if (!parcel.WriteUint32(hostVerifyStatusMap.size())) {
-        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MODULE_COMMON, "failed to WriteInt32 for hostVerifyStatusMap size");
-        return false;
-    }
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Uint32, parcel, hostVerifyStatusMap.size());
     for (auto &it : hostVerifyStatusMap) {
-        if (!parcel.WriteString(it.first)) {
-            APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MODULE_COMMON, "failed to WriteString for url");
-            return false;
-        }
-        if (!parcel.WriteInt32(it.second)) {
-            APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MODULE_COMMON, "failed to WriteInt32 for verifyStatus");
-            return false;
-        }
+        WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String, parcel, it.first);
+        WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, it.second);
     }
     return true;
 }
@@ -151,22 +110,13 @@ bool BundleVerifyStatusInfo::ReadHostVerifyStatusMap(
     std::unordered_map<std::string, InnerVerifyStatus> &hostVerifyStatusMap, Parcel &parcel)
 {
     uint32_t size = 0;
-    if (!parcel.ReadUint32(size)) {
-        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MODULE_COMMON, "failed to ReadUint32 for hostVerifyStatusMap size");
-        return false;
-    }
+    READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(Uint32, parcel, size);
     hostVerifyStatusMap.clear();
     for (uint32_t index = 0; index < size; ++index) {
         std::string url;
         int verifyStatus = 0;
-        if (!parcel.ReadString(url)) {
-            APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MODULE_COMMON, "failed to ReadString for url");
-            return false;
-        }
-        if (!parcel.ReadInt32(verifyStatus)) {
-            APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MODULE_COMMON, "failed to ReadInt32 for verifyStatus");
-            return false;
-        }
+        READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(String, parcel, url);
+        READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, verifyStatus);
         hostVerifyStatusMap.insert(std::make_pair(url, static_cast<InnerVerifyStatus>(verifyStatus)));
     }
     return true;
@@ -186,23 +136,14 @@ BundleVerifyStatusInfo *BundleVerifyStatusInfo::Unmarshalling(Parcel &parcel)
 bool BundleVerifyStatusInfo::ReadFromParcel(Parcel &parcel)
 {
     uint32_t size = 0;
-    if (!parcel.ReadUint32(size)) {
-        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MODULE_COMMON, "failed to ReadInt32 for size");
-        return false;
-    }
+    READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(Uint32, parcel, size);
     // todo 是否要设置包上限
     bundleVerifyStatusInfoMap_.clear();
     for (uint32_t index = 0; index < size; ++index) {
         std::string bundleName;
-        if (!parcel.ReadString(bundleName)) {
-            APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MODULE_COMMON, "failed to ReadString for bundleName");
-            return false;
-        }
+        READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(String, parcel, bundleName);
         VerifyResultInfo verifyResultInfo;
-        if (!parcel.ReadString(verifyResultInfo.appIdentifier)) {
-            APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MODULE_COMMON, "failed to ReadString for appIdentifier");
-            return false;
-        }
+        READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(String, parcel, verifyResultInfo.appIdentifier);
         if (!ReadHostVerifyStatusMap(verifyResultInfo.hostVerifyStatusMap, parcel)) {
             APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MODULE_COMMON, "failed to ReadHostVerifyStatusMap");
             return false;

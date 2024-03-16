@@ -25,8 +25,6 @@ class AppDomainVerifyAgentServiceProxy : public IRemoteProxy<IAppDomainVerifyAge
 public:
     explicit AppDomainVerifyAgentServiceProxy(const sptr<IRemoteObject> &object);
     virtual ~AppDomainVerifyAgentServiceProxy();
-    virtual void CompleteVerifyRefresh(const BundleVerifyStatusInfo &bundleVerifyStatusInfo,
-        const std::vector<InnerVerifyStatus> &statuses, int delaySeconds) override;
     virtual void SingleVerify(const AppVerifyBaseInfo &appVerifyBaseInfo,
         const std::vector<SkillUri> &skillUris) override;
 

@@ -26,6 +26,7 @@
         "bundle_framework",
         "c_utils",
         "hilog",
+        "hisysevent",
         "ipc",
         "relational_store",
         "napi",
@@ -43,20 +44,9 @@
       ]
     },
     "build": {
-      "group_type": {
-        "base_group": [],
-        "fwk_group": [
-          "//foundation/bundlemanager/app_domain_verify/interfaces/inner_api/client:app_domain_verify_mgr_client",
-          "//foundation/bundlemanager/app_domain_verify/interfaces/inner_api/client:app_domain_verify_agent_client"
-        ],
-        "service_group": [
-          "//foundation/bundlemanager/app_domain_verify/etc/init:app_domain_verify_mgr.cfg",
-          "//foundation/bundlemanager/app_domain_verify/etc/init:app_domain_verify_agent.cfg",
-          "//foundation/bundlemanager/app_domain_verify/profile:bundlemanager_app_domain_verify_sa_profiles",
-          "//foundation/bundlemanager/app_domain_verify/services:app_domain_verify_mgr_service",
-          "//foundation/bundlemanager/app_domain_verify/services:app_domain_verify_agent_service"
-        ]
-      },
+      "sub_component": [
+        "//foundation/bundlemanager/app_domain_verify:app_domain_verify_packages"
+      ],
       "inner_kits": [
         {
           "name": "//foundation/bundlemanager/app_domain_verify/interfaces/inner_api/client:app_domain_verify_mgr_client",
@@ -107,6 +97,7 @@
         }
       ],
       "test": [
+        "//foundation/bundlemanager/app_domain_verify/test/unittest:app_domain_verify_unit_test"
       ]
     }
   }

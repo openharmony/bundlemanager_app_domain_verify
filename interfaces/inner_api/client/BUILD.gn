@@ -56,6 +56,7 @@ ohos_shared_library("app_domain_verify_mgr_client") {
     "hilog:libhilog",
     "ipc:ipc_core",
     "samgr:samgr_proxy",
+    "hisysevent:libhisysevent",
   ]
 
   subsystem_name = "bundlemanager"
@@ -80,6 +81,7 @@ ohos_shared_library("app_domain_verify_agent_client") {
     "hilog:libhilog",
     "ipc:ipc_core",
     "samgr:samgr_proxy",
+    "hisysevent:libhisysevent",
   ]
 
   subsystem_name = "bundlemanager"

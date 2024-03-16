@@ -18,12 +18,35 @@
 #include "app_domain_verify_hilog.h"
 #include "string_ex.h"
 
-#define WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(type, parcel, data)         \
-    do {                                                                  \
-        if (!(parcel).Write##type(data)) {                                \
+#define WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(type, parcel, data)                                              \
+    do {                                                                                                       \
+        if (!(parcel).Write##type(data)) {                                                                     \
             APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MODULE_COMMON, "fail to write %{public}s type", #type); \
-            return false;                                                 \
-        }                                                                 \
+            return false;                                                                                      \
+        }                                                                                                      \
     } while (0)
 
+#define WRITE_PARCEL_AND_RETURN_IF_FAIL(type, parcel, data)                                                    \
+    do {                                                                                                       \
+        if (!(parcel).Write##type(data)) {                                                                     \
+            APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MODULE_COMMON, "fail to write %{public}s type", #type); \
+            return;                                                                                            \
+        }                                                                                                      \
+    } while (0)
+
+#define WRITE_PARCEL_AND_RETURN_INT_IF_FAIL(type, parcel, data)                                                \
+    do {                                                                                                       \
+        if (!(parcel).Write##type(data)) {                                                                     \
+            APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MODULE_COMMON, "fail to write %{public}s type", #type); \
+            return ERR_INVALID_VALUE;                                                                          \
+        }                                                                                                      \
+    } while (0)
+
+#define READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(type, parcel, data)                                              \
+    do {                                                                                                      \
+        if (!(parcel).Read##type(data)) {                                                                     \
+            APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MODULE_COMMON, "fail to read %{public}s type", #type); \
+            return false;                                                                                     \
+        }                                                                                                     \
+    } while (0)
 #endif
