@@ -27,11 +27,6 @@
 
 namespace OHOS {
 namespace AppDomainVerify {
-typedef enum EnumTaskType {
-    IMMEDIATE_TASK,
-    FULL_REFRESH_TASK,
-    UNKNOWN_TASK
-} TaskType;
 
 class Task {
 public:

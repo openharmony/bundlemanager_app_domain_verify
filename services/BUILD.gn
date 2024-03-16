@@ -32,13 +32,14 @@ config("app_domain_verify_service_config") {
     "//third_party/json/include",
   ]
   configs = [ "//build/config/compiler:exceptions" ]
-  ldflags = [ "-Wl,--exclude-libs=ALL" ]
+  ldflags = [ 
+    "-Wl,--exclude-libs=ALL",
+    ]
   cflags = [
     "-fdata-sections",
     "-ffunction-sections",
     "-fvisibility=hidden",
   ]
-  cflags_cc = []
 }
 
 ohos_shared_library("app_domain_verify_mgr_service") {
@@ -73,6 +74,7 @@ ohos_shared_library("app_domain_verify_mgr_service") {
     "bundle_framework:appexecfwk_base",
     "bundle_framework:appexecfwk_core",
     "ffrt:libffrt",
+    "hisysevent:libhisysevent",
   ]
 
   subsystem_name = "bundlemanager"
@@ -99,13 +101,14 @@ config("app_domain_verify_agent_service_config") {
     "${app_domain_verify_extension_path}/include"
   ]
   configs = [ "//build/config/compiler:exceptions" ]
-  ldflags = [ "-Wl,--exclude-libs=ALL" ]
+  ldflags = [ 
+    "-Wl,--exclude-libs=ALL",
+    ]
   cflags = [
     "-fdata-sections",
     "-ffunction-sections",
     "-fvisibility=hidden",
   ]
-  cflags_cc = []
 }
 
 ohos_shared_library("app_domain_verify_agent_service") {
@@ -148,6 +151,7 @@ ohos_shared_library("app_domain_verify_agent_service") {
     "os_account:os_account_innerkits",
     "ffrt:libffrt",
     "eventhandler:libeventhandler",
+    "hisysevent:libhisysevent",
   ]
 
   subsystem_name = "bundlemanager"

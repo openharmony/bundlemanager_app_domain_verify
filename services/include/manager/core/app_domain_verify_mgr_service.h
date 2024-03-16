@@ -22,6 +22,7 @@
 #include "system_ability.h"
 #include "i_app_domain_verify_mgr_service.h"
 #include "i_app_domain_verify_agent_service.h"
+#include "app_domain_verify_data_mgr.h"
 
 namespace OHOS {
 namespace AppDomainVerify {
@@ -31,23 +32,27 @@ class AppDomainVerifyMgrService : public SystemAbility, public AppDomainVerifyMg
 public:
     API_EXPORT AppDomainVerifyMgrService();
     API_EXPORT virtual ~AppDomainVerifyMgrService();
-    void VerifyDomain(const std::string &appIdentifier, const std::string &bundleName, const std::string &fingerprint,
-        const std::vector<SkillUri> &skillUris) override;
-    bool ClearDomainVerifyStatus(const std::string &appIdentifier, const std::string &bundleName) override;
-    bool FilterAbilities(const OHOS::AAFwk::Want &want,
+    API_EXPORT void VerifyDomain(const std::string &appIdentifier, const std::string &bundleName,
+        const std::string &fingerprint, const std::vector<SkillUri> &skillUris) override;
+    API_EXPORT bool ClearDomainVerifyStatus(const std::string &appIdentifier, const std::string &bundleName) override;
+    API_EXPORT bool FilterAbilities(const OHOS::AAFwk::Want &want,
         const std::vector<OHOS::AppExecFwk::AbilityInfo> &originAbilityInfos,
         std::vector<OHOS::AppExecFwk::AbilityInfo> &filtedAbilityInfos) override;
-    bool QueryDomainVerifyStatus(const std::string &bundleName,
+    API_EXPORT bool QueryDomainVerifyStatus(const std::string &bundleName,
         DomainVerifyStatus &domainVerificationState) override;
-    bool QueryAllDomainVerifyStatus(BundleVerifyStatusInfo &bundleVerifyStatusInfo) override;
-    bool SaveDomainVerifyStatus(const std::string &bundleName, const VerifyResultInfo &verifyResultInfo) override;
-    
+    API_EXPORT bool QueryAllDomainVerifyStatus(BundleVerifyStatusInfo &bundleVerifyStatusInfo) override;
+    API_EXPORT bool SaveDomainVerifyStatus(const std::string &bundleName,
+        const VerifyResultInfo &verifyResultInfo) override;
+
 protected:
     void OnStart() override;
     void OnStop() override;
 
 private:
     bool IsWantImplicit(const OHOS::AAFwk::Want &want);
+
+private:
+    std::shared_ptr<AppDomainVerifyDataMgr> dataManager_ = nullptr;
 };
 }  // namespace AppDomainVerify
 }  // namespace OHOS

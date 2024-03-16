@@ -23,6 +23,7 @@
 #include "bundle_verify_status_info.h"
 #include "app_domain_verify_mgr_client.h"
 #include "agent_constants.h"
+#include "app_domain_verify_hisysevent.h"
 
 namespace OHOS {
 namespace AppDomainVerify {
@@ -40,7 +41,7 @@ bool AppDomainVerifyTaskMgr::AddTask(const std::shared_ptr<Task> &task)
         APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "input task is null!");
         return false;
     }
-    if (task->type_ >= TaskType::UNKNOWN_TASK) {
+    if (task->type_ > TaskType::SCHEDULE_REFRESH_TASK) {
         APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "input task type error: %d", task->type_);
         return false;
     }
@@ -103,22 +104,27 @@ void AppDomainVerifyTaskMgr::HttpSessionTaskStart(const std::shared_ptr<Task> &v
         auto uri = *it;
         httpClientRequest.SetURL(uri + ApplinkingAssetKeys::ASSET_PATH + ApplinkingAssetKeys::ASSET_NAME);
         httpClientRequest.SetMethod("GET");
-
         auto httpTask = httpClientTaskFactory_->CreateTask(httpClientRequest);
         // All callbacks will execute on the same sub-thread.
         httpTask->OnSuccess([=](const HttpClientRequest &request, const HttpClientResponse &response) {
             APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "Task OnSuccess, retcode : %{public}d.",
                 response.GetResponseCode());
-            verifyTask->uriVerifyMap_.insert_or_assign(uri,
-                DomainVerifier::VerifyHost(response.GetResponseCode(), response.GetResult(),
-                    verifyTask->appVerifyBaseInfo_));
+            auto status = DomainVerifier::VerifyHost(response.GetResponseCode(), response.GetResult(),
+                verifyTask->appVerifyBaseInfo_);
+            verifyTask->uriVerifyMap_.insert_or_assign(uri, status);
+            VERIFY_RESULT_EVENT(verifyTask->appVerifyBaseInfo_.appIdentifier, verifyTask->appVerifyBaseInfo_.bundleName,
+                verifyTask->type_, status);
             HttpSessionTaskStart(verifyTask, urisQueue);
         });
         httpTask->OnFail(
             [=](const HttpClientRequest &request, const HttpClientResponse &response, const HttpClientError &error) {
                 APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE,
                     "OnFail,cause: %{public}d, %{public}s.", error.GetErrorCode(), error.GetErrorMessage().c_str());
-                verifyTask->uriVerifyMap_.insert_or_assign(uri, InnerVerifyStatus::FAILURE_HTTP_UNKNOWN);
+                auto status = DomainVerifier::VerifyHost(response.GetResponseCode(), response.GetResult(),
+                    verifyTask->appVerifyBaseInfo_);
+                verifyTask->uriVerifyMap_.insert_or_assign(uri, status);
+                VERIFY_RESULT_EVENT(verifyTask->appVerifyBaseInfo_.appIdentifier,
+                    verifyTask->appVerifyBaseInfo_.bundleName, verifyTask->type_, status);
                 HttpSessionTaskStart(verifyTask, urisQueue);
             });
 

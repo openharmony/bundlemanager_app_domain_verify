@@ -19,7 +19,6 @@
 namespace OHOS {
 namespace AppDomainVerify {
 
-
 bool SkillUri::Marshalling(Parcel &parcel) const
 {
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String, parcel, scheme);
@@ -33,15 +32,16 @@ bool SkillUri::Marshalling(Parcel &parcel) const
 }
 bool SkillUri::ReadFromParcel(Parcel &parcel)
 {
-    scheme = parcel.ReadString();
-    // todo 判断host是否要string16
-    host = parcel.ReadString();
-    port = parcel.ReadString();
-    path = parcel.ReadString();
-    pathStartWith = parcel.ReadString();
-    pathRegex = parcel.ReadString();
-    type = parcel.ReadString();
-    return true;
+    if (parcel.ReadString(scheme) && parcel.ReadString(host)) {
+        // todo 判断host是否要string16
+        port = parcel.ReadString();
+        path = parcel.ReadString();
+        pathStartWith = parcel.ReadString();
+        pathRegex = parcel.ReadString();
+        type = parcel.ReadString();
+        return true;
+    }
+    return false;
 }
 
 SkillUri *SkillUri::Unmarshalling(Parcel &parcel)

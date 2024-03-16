@@ -21,6 +21,7 @@
 #include "app_verify_base_info.h"
 #include "inner_verify_status.h"
 #include "bundle_verify_status_info.h"
+#include "app_domain_verify_hisysevent.h"
 
 namespace OHOS {
 namespace AppDomainVerify {
@@ -29,7 +30,7 @@ public:
     AppDomainVerifyExtensionMgr();
     virtual ~AppDomainVerifyExtensionMgr();
     ErrorCode CompleteVerifyRefresh(const BundleVerifyStatusInfo &bundleVerifyStatusInfo,
-        const std::vector<InnerVerifyStatus> &statuses, int delaySeconds);
+        const std::vector<InnerVerifyStatus> &statuses, int delaySeconds, TaskType type);
     ErrorCode SingleVerify(const AppVerifyBaseInfo &appVerifyBaseInfo, const std::vector<SkillUri> &skillUris);
 
 private:

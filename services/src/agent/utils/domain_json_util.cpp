@@ -63,9 +63,10 @@ bool JsonUtil::Parse(const std::string &assetJsonsStr, AssetJsonObj &assetJsonOb
                     "";
                 assetJsonObj.applinking.apps.emplace_back(appVerifyBaseInfo);
             }
+            return true;
         }
     }
-    return true;
+    return false;
 }
 }
 }
