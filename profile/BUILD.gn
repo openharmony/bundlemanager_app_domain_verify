@@ -14,9 +14,9 @@
 import("//build/ohos/sa_profile/sa_profile.gni")
 
 ohos_sa_profile("bundlemanager_app_domain_verify_sa_profiles") {
-  sources = [ 
-              "6200.json",
-              "6201.json" 
-            ]
+  sources = [
+    "6200.json",
+    "6201.json",
+  ]
   part_name = "app_domain_verify"
 }
