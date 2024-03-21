@@ -19,7 +19,6 @@ config("app_domain_verify_common_config") {
   include_dirs = [
     "include",
     "include/utils",
-    "//third_party/json/include",
   ]
 }
 
@@ -32,13 +31,11 @@ ohos_shared_library("app_domain_verify_common") {
   ]
 
   public_configs = [ ":app_domain_verify_common_config" ]
-  deps = [
-    "//third_party/json:nlohmann_json_static",
-  ]
 
   external_deps = [
     "hilog:libhilog",
     "c_utils:utils",
+    "json:nlohmann_json_static",
   ]
 
   subsystem_name = "bundlemanager"

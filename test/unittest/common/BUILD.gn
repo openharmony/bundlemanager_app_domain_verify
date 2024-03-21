@@ -13,7 +13,6 @@
 
 import("//build/test.gni")
 import("//foundation/bundlemanager/app_domain_verify/app_domain_verify.gni")
-import("//foundation/communication/netstack/netstack_config.gni")
 
 config("module_private_config") {
   visibility = [ ":*" ]
@@ -21,7 +20,6 @@ config("module_private_config") {
   include_dirs = [
     "${app_domain_verify_client_path}/include",
     "${app_domain_verify_service_path}/include",
-    "${appexecfwk_base_root_path}/include",
     "${app_domain_verify_common_path}/include",
     "${app_domain_verify_common_path}/include/utils",
     "${app_domain_verify_extension_path}/include",
@@ -69,6 +67,7 @@ ohos_unittest("app_domain_verify_common_test") {
     "netstack:http_client",
     "hisysevent:libhisysevent",
   ]
+
   defines = [ "API_EXPORT=__attribute__((visibility (\"default\")))" ]
   deps = [
     "//third_party/googletest:gtest_main",
