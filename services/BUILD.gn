@@ -27,7 +27,6 @@ config("app_domain_verify_service_config") {
     "include/agent/core",
     "${app_domain_verify_common_path}/include",
     "${app_domain_verify_common_path}/include/utils",
-    "//commonlibrary/c_utils/base/include",
     "${relational_store_innerapi_path}/rdb/include",
     "//third_party/json/include",
   ]
@@ -52,7 +51,6 @@ ohos_shared_library("app_domain_verify_mgr_service") {
     "src/manager/rdb/app_domain_verify_rdb_open_callback.cpp",
   ]
   public_configs = [
-    "//commonlibrary/c_utils/base:utils_config",
     ":app_domain_verify_service_config",
   ]
   deps = [
@@ -95,7 +93,6 @@ config("app_domain_verify_agent_service_config") {
     "include/manager/zidl",
     "${app_domain_verify_common_path}/include",
     "${app_domain_verify_common_path}/include/utils",
-    "//commonlibrary/c_utils/base/include",
     "//third_party/json/include",
     "${appexecfwk_base_root_path}/include",
     "${app_domain_verify_extension_path}/include"
@@ -124,7 +121,6 @@ ohos_shared_library("app_domain_verify_agent_service") {
     "src/agent/utils/domain_json_util.cpp",
   ]
   public_configs = [
-    "//commonlibrary/c_utils/base:utils_config",
     ":app_domain_verify_agent_service_config",
   ]
   defines = [ "API_EXPORT=__attribute__((visibility (\"default\")))" ]

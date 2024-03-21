@@ -53,7 +53,6 @@ ohos_unittest("app_domain_verify_client_test") {
     "${app_domain_verify_client_path}/src/app_domain_verify_agent_client.cpp",
   ]
   configs = [
-    "//commonlibrary/c_utils/base:utils_config",
     ":module_private_config",
   ]
   external_deps = [
