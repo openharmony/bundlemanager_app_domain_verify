@@ -52,7 +52,6 @@ ohos_unittest("app_domain_verify_module_test") {
   "app_domain_verify_mgr_module_test.cpp",
   ]
   configs = [
-    "//commonlibrary/c_utils/base:utils_config",
     ":module_private_config",
   ]
   external_deps = [
@@ -122,7 +121,6 @@ ohos_unittest("app_domain_verify_module_test") {
     "${app_domain_verify_service_path}/src/manager/zidl/app_domain_verify_mgr_service_stub.cpp",
   ]
   configs = [
-    "//commonlibrary/c_utils/base:utils_config",
     ":module_private_config",
   ]
   external_deps = [

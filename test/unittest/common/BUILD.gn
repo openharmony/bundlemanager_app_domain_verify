@@ -52,7 +52,6 @@ ohos_unittest("app_domain_verify_common_test") {
     "${app_domain_verify_common_path}/src/utils/domain_url_util.cpp",
   ]
   configs = [
-    "//commonlibrary/c_utils/base:utils_config",
     ":module_private_config",
   ]
   external_deps = [
