@@ -49,6 +49,7 @@ ohos_shared_library("app_domain_verify_extension_framework") {
     "hilog:libhilog",
     "ipc:ipc_single",
     "samgr:samgr_proxy",
+    "json:nlohmann_json_static",
   ]
 
   subsystem_name = "bundlemanager"

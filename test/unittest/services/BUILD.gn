@@ -13,8 +13,6 @@
 
 import("//build/test.gni")
 import("//foundation/bundlemanager/app_domain_verify/app_domain_verify.gni")
-import("//foundation/communication/netstack/netstack_config.gni")
-import("//foundation/distributeddatamgr/relational_store/relational_store.gni")
 
 config("module_private_config") {
   visibility = [ ":*" ]
@@ -32,13 +30,10 @@ config("module_private_config") {
     "${app_domain_verify_service_path}/include/manager/core",
     "${app_domain_verify_service_path}/include/manager/constant",
     "${app_domain_verify_service_path}/include/manager/zidl",
-    "${appexecfwk_base_root_path}/include",
     "${app_domain_verify_common_path}/include",
     "${app_domain_verify_common_path}/include/utils",
     "${app_domain_verify_extension_path}/include",
     "../mock/include",
-    "${NETSTACK_INNERKITS_DIR}/http_client/include",
-    "${relational_store_innerapi_path}/rdb/include",
   ]
 }
 
@@ -72,6 +67,7 @@ ohos_unittest("app_domain_verify_module_test") {
     "eventhandler:libeventhandler",
     "hisysevent:libhisysevent",
   ]
+
   defines = [ "API_EXPORT=__attribute__((visibility (\"default\")))" ]
   deps = [
     "${app_domain_verify_client_path}:app_domain_verify_agent_client",
@@ -141,6 +137,7 @@ ohos_unittest("app_domain_verify_module_test") {
     "init:libbegetutil",
     "hisysevent:libhisysevent",
   ]
+
   defines = [ "API_EXPORT=__attribute__((visibility (\"default\")))" ]
   deps = [
     "${app_domain_verify_client_path}:app_domain_verify_agent_client",
