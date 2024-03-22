@@ -24,17 +24,17 @@ config("app_domain_verify_common_config") {
 
 ohos_shared_library("app_domain_verify_common") {
   sources = [
-    "src/skill_uri.cpp",
     "src/app_verify_base_info.cpp",
     "src/bundle_verify_status_info.cpp",
+    "src/skill_uri.cpp",
     "src/utils/domain_url_util.cpp",
   ]
 
   public_configs = [ ":app_domain_verify_common_config" ]
 
   external_deps = [
-    "hilog:libhilog",
     "c_utils:utils",
+    "hilog:libhilog",
     "json:nlohmann_json_static",
   ]
 
