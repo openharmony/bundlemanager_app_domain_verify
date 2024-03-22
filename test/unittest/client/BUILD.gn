@@ -33,7 +33,7 @@ config("module_private_config") {
     "${app_domain_verify_service_path}/include/manager/core",
     "${app_domain_verify_service_path}/include/manager/constant",
     "${app_domain_verify_service_path}/include/manager/zidl",
-     "../mock/include",
+    "../mock/include",
   ]
 }
 
@@ -43,38 +43,35 @@ ohos_unittest("app_domain_verify_client_test") {
   module_out_path = module_output_path
 
   sources = [
-    "app_domain_verify_agent_client_test.cpp",
-    "app_domain_verify_mgr_client_test.cpp",
-    "${app_domain_verify_service_path}/src/manager/zidl/app_domain_verify_mgr_service_proxy.cpp",
+    "${app_domain_verify_client_path}/src/app_domain_verify_agent_client.cpp",
     "${app_domain_verify_client_path}/src/app_domain_verify_mgr_client.cpp",
     "${app_domain_verify_service_path}/src/agent/zidl/app_domain_verify_agent_service_proxy.cpp",
-    "${app_domain_verify_client_path}/src/app_domain_verify_agent_client.cpp",
+    "${app_domain_verify_service_path}/src/manager/zidl/app_domain_verify_mgr_service_proxy.cpp",
+    "app_domain_verify_agent_client_test.cpp",
+    "app_domain_verify_mgr_client_test.cpp",
   ]
-  configs = [
-    ":module_private_config",
-  ]
+  configs = [ ":module_private_config" ]
   external_deps = [
     "ability_base:want",
     "ability_base:zuri",
-    "c_utils:utils",
-    "hilog:libhilog",
-    "image_framework:image_native",
-    "ipc:ipc_core",
-    "safwk:system_ability_fwk",
-    "samgr:samgr_proxy",
     "bundle_framework:appexecfwk_base",
     "bundle_framework:appexecfwk_core",
+    "c_utils:utils",
     "ffrt:libffrt",
-    "netstack:http_client",
+    "hilog:libhilog",
     "hisysevent:libhisysevent",
+    "image_framework:image_native",
+    "ipc:ipc_core",
+    "netstack:http_client",
+    "safwk:system_ability_fwk",
+    "samgr:samgr_proxy",
   ]
 
   defines = [ "API_EXPORT=__attribute__((visibility (\"default\")))" ]
   deps = [
     "${app_domain_verify_common_path}:app_domain_verify_common",
     "${app_domain_verify_extension_path}:app_domain_verify_extension_framework",
-    "//third_party/googletest:gtest_main",
     "//third_party/googletest:gmock_main",
+    "//third_party/googletest:gtest_main",
   ]
 }
-

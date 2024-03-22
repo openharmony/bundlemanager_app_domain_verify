@@ -40,16 +40,14 @@ ohos_shared_library("app_domain_verify_extension_framework") {
   ]
   configs = [ ":app_domain_verify_extension_config" ]
   public_configs = [ ":app_domain_verify_extension_public_config" ]
-  deps = [
-      "${app_domain_verify_common_path}:app_domain_verify_common",
-  ]
+  deps = [ "${app_domain_verify_common_path}:app_domain_verify_common" ]
 
   external_deps = [
     "c_utils:utils",
     "hilog:libhilog",
     "ipc:ipc_single",
-    "samgr:samgr_proxy",
     "json:nlohmann_json_static",
+    "samgr:samgr_proxy",
   ]
 
   subsystem_name = "bundlemanager"

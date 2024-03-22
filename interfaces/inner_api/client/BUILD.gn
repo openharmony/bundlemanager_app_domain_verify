@@ -41,18 +41,16 @@ ohos_shared_library("app_domain_verify_mgr_client") {
   ]
   configs = [ ":app_domain_verify_mgr_client_config" ]
   public_configs = [ ":app_domain_verify_mgr_client_config" ]
-  deps = [
-    "${app_domain_verify_common_path}:app_domain_verify_common",
-  ]
+  deps = [ "${app_domain_verify_common_path}:app_domain_verify_common" ]
 
   external_deps = [
     "ability_base:want",
     "bundle_framework:appexecfwk_base",
     "c_utils:utils",
     "hilog:libhilog",
+    "hisysevent:libhisysevent",
     "ipc:ipc_core",
     "samgr:samgr_proxy",
-    "hisysevent:libhisysevent",
   ]
 
   subsystem_name = "bundlemanager"
@@ -66,18 +64,16 @@ ohos_shared_library("app_domain_verify_agent_client") {
   ]
   configs = [ ":app_domain_verify_agent_client_config" ]
   public_configs = [ ":app_domain_verify_agent_client_config" ]
-  deps = [
-    "${app_domain_verify_common_path}:app_domain_verify_common",
-  ]
+  deps = [ "${app_domain_verify_common_path}:app_domain_verify_common" ]
 
   external_deps = [
     "ability_base:want",
     "bundle_framework:appexecfwk_base",
     "c_utils:utils",
     "hilog:libhilog",
+    "hisysevent:libhisysevent",
     "ipc:ipc_core",
     "samgr:samgr_proxy",
-    "hisysevent:libhisysevent",
   ]
 
   subsystem_name = "bundlemanager"
