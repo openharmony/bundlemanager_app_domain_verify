@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-#include "bundle_info_query.h"
+#include "bms/bundle_info_query.h"
 #include "bundle_mgr_client.h"
 #include "bundle_info.h"
 #include "os_account_manager.h"

@@ -16,7 +16,7 @@
 #ifndef MOC_HTTP_CLIENT_TASK_FACTORY_H
 #define MOC_HTTP_CLIENT_TASK_FACTORY_H
 #include <gmock/gmock.h>
-#include "agent/httpsession/verify_http_task_factory.h"
+#include "verify_http_task_factory.h"
 
 namespace OHOS::AppDomainVerify {
 class MocHttpClientTaskFactory : public VerifyHttpTaskFactory {

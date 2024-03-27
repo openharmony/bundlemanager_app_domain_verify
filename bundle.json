@@ -92,9 +92,24 @@
               "inner_verify_status.h",
               "skill_uri.h",
               "parcel_util.h",
+              "httpsession/i_verify_task.h",
+              "httpsession/app_domain_verify_task_mgr.h",
               "utils/domain_url_util.h"
             ],
             "header_base": "//foundation/bundlemanager/app_domain_verify/interfaces/inner_api/common/include"
+          }
+        },
+        {
+          "name": "//foundation/bundlemanager/app_domain_verify/interfaces/inner_api/verifier:app_domain_verify_agent_verifier",
+          "header": {
+            "header_files": [
+              "verify_task.h",
+              "domain_verifier.h",
+              "domain_json_util.h",
+              "constant/agent_constants.h",
+              "asset_json_obj.h"
+            ],
+            "header_base": "//foundation/bundlemanager/app_domain_verify/interfaces/inner_api/verifier/include"
           }
         }
       ],
