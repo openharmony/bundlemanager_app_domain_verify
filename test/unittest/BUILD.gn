@@ -21,7 +21,7 @@ group("app_domain_verify_unit_test") {
     "client:app_domain_verify_client_test",
     "common:app_domain_verify_common_test",
     "extension:app_domain_verify_extension_test",
-    "services:app_domain_verify_service_test",
     "services:app_domain_verify_module_test",
+    "services:app_domain_verify_service_test",
   ]
 }

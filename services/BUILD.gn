@@ -13,8 +13,6 @@
 
 import("//build/ohos.gni")
 import("//foundation/bundlemanager/app_domain_verify/app_domain_verify.gni")
-import("//foundation/distributeddatamgr/relational_store/relational_store.gni")
-import("//foundation/communication/netstack/netstack_config.gni")
 
 config("app_domain_verify_service_config") {
   visibility = [ ":*" ]
@@ -27,14 +25,9 @@ config("app_domain_verify_service_config") {
     "include/agent/core",
     "${app_domain_verify_common_path}/include",
     "${app_domain_verify_common_path}/include/utils",
-    "//commonlibrary/c_utils/base/include",
-    "${relational_store_innerapi_path}/rdb/include",
-    "//third_party/json/include",
   ]
   configs = [ "//build/config/compiler:exceptions" ]
-  ldflags = [ 
-    "-Wl,--exclude-libs=ALL",
-    ]
+  ldflags = [ "-Wl,--exclude-libs=ALL" ]
   cflags = [
     "-fdata-sections",
     "-ffunction-sections",
@@ -46,35 +39,32 @@ ohos_shared_library("app_domain_verify_mgr_service") {
   sources = [
     "src/manager/core/app_domain_verify_data_mgr.cpp",
     "src/manager/core/app_domain_verify_mgr_service.cpp",
-    "src/manager/zidl/app_domain_verify_mgr_service_stub.cpp",
-    "src/manager/zidl/app_domain_verify_mgr_service_proxy.cpp",
     "src/manager/rdb/app_domain_verify_rdb_data_manager.cpp",
     "src/manager/rdb/app_domain_verify_rdb_open_callback.cpp",
+    "src/manager/zidl/app_domain_verify_mgr_service_proxy.cpp",
+    "src/manager/zidl/app_domain_verify_mgr_service_stub.cpp",
   ]
-  public_configs = [
-    "//commonlibrary/c_utils/base:utils_config",
-    ":app_domain_verify_service_config",
-  ]
+  public_configs = [ ":app_domain_verify_service_config" ]
   deps = [
-    "${app_domain_verify_common_path}:app_domain_verify_common",
     "${app_domain_verify_client_path}:app_domain_verify_agent_client",
-    "//third_party/json:nlohmann_json_static",
+    "${app_domain_verify_common_path}:app_domain_verify_common",
   ]
   defines = [ "API_EXPORT=__attribute__((visibility (\"default\")))" ]
   external_deps = [
     "ability_base:base",
     "ability_base:want",
     "ability_runtime:ability_manager",
-    "c_utils:utils",
-    "hilog:libhilog",
-    "ipc:ipc_core",
-    "safwk:system_ability_fwk",
-    "samgr:samgr_proxy",
-    "relational_store:native_rdb",
     "bundle_framework:appexecfwk_base",
     "bundle_framework:appexecfwk_core",
+    "c_utils:utils",
     "ffrt:libffrt",
+    "hilog:libhilog",
     "hisysevent:libhisysevent",
+    "ipc:ipc_core",
+    "json:nlohmann_json_static",
+    "relational_store:native_rdb",
+    "safwk:system_ability_fwk",
+    "samgr:samgr_proxy",
   ]
 
   subsystem_name = "bundlemanager"
@@ -95,15 +85,10 @@ config("app_domain_verify_agent_service_config") {
     "include/manager/zidl",
     "${app_domain_verify_common_path}/include",
     "${app_domain_verify_common_path}/include/utils",
-    "//commonlibrary/c_utils/base/include",
-    "//third_party/json/include",
-    "${appexecfwk_base_root_path}/include",
-    "${app_domain_verify_extension_path}/include"
+    "${app_domain_verify_extension_path}/include",
   ]
   configs = [ "//build/config/compiler:exceptions" ]
-  ldflags = [ 
-    "-Wl,--exclude-libs=ALL",
-    ]
+  ldflags = [ "-Wl,--exclude-libs=ALL" ]
   cflags = [
     "-fdata-sections",
     "-ffunction-sections",
@@ -117,41 +102,38 @@ ohos_shared_library("app_domain_verify_agent_service") {
     "src/agent/core/app_domain_verify_agent_service.cpp",
     "src/agent/core/domain_verifier.cpp",
     "src/agent/httpsession/app_domain_verify_task_mgr.cpp",
-    "src/agent/httpsession/verify_http_task_factory.cpp",
     "src/agent/httpsession/verify_http_task.cpp",
-    "src/agent/zidl/app_domain_verify_agent_service_stub.cpp",
-    "src/agent/zidl/app_domain_verify_agent_service_proxy.cpp",
+    "src/agent/httpsession/verify_http_task_factory.cpp",
     "src/agent/utils/domain_json_util.cpp",
+    "src/agent/zidl/app_domain_verify_agent_service_proxy.cpp",
+    "src/agent/zidl/app_domain_verify_agent_service_stub.cpp",
   ]
-  public_configs = [
-    "//commonlibrary/c_utils/base:utils_config",
-    ":app_domain_verify_agent_service_config",
-  ]
+  public_configs = [ ":app_domain_verify_agent_service_config" ]
   defines = [ "API_EXPORT=__attribute__((visibility (\"default\")))" ]
   deps = [
+    "${app_domain_verify_client_path}:app_domain_verify_mgr_client",
     "${app_domain_verify_common_path}:app_domain_verify_common",
     "${app_domain_verify_extension_path}:app_domain_verify_extension_framework",
-    "${app_domain_verify_client_path}:app_domain_verify_mgr_client",
-    "//third_party/json:nlohmann_json_static",
-    "//third_party/curl:curl_shared",
   ]
 
   external_deps = [
     "ability_base:base",
     "ability_base:want",
     "ability_runtime:ability_manager",
-    "c_utils:utils",
-    "hilog:libhilog",
-    "ipc:ipc_core",
-    "safwk:system_ability_fwk",
-    "samgr:samgr_proxy",
-    "netstack:http_client",
     "bundle_framework:appexecfwk_base",
     "bundle_framework:appexecfwk_core",
-    "os_account:os_account_innerkits",
-    "ffrt:libffrt",
+    "c_utils:utils",
+    "curl:curl_shared",
     "eventhandler:libeventhandler",
+    "ffrt:libffrt",
+    "hilog:libhilog",
     "hisysevent:libhisysevent",
+    "ipc:ipc_core",
+    "json:nlohmann_json_static",
+    "netstack:http_client",
+    "os_account:os_account_innerkits",
+    "safwk:system_ability_fwk",
+    "samgr:samgr_proxy",
   ]
 
   subsystem_name = "bundlemanager"

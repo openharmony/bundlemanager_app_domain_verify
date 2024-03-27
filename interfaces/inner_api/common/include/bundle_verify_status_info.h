@@ -16,7 +16,7 @@
 #ifndef APP_DOMAIN_BUNDLE_VERIFY_STATUS_INFO_H
 #define APP_DOMAIN_BUNDLE_VERIFY_STATUS_INFO_H
 #include <string>
-#include <nlohmann/json.hpp>
+#include "nlohmann/json.hpp"
 #include "parcel.h"
 #include "inner_verify_status.h"
 
