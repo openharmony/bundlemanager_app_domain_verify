@@ -35,6 +35,8 @@
         "netstack",
         "os_account",
         "ffrt",
+        "json",
+        "curl",
         "eventhandler"
       ],
       "third_party": [
