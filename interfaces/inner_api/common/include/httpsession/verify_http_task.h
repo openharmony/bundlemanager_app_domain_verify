@@ -21,14 +21,14 @@ namespace AppDomainVerify {
 
 class VerifyHttpTask : public OHOS::NetStack::HttpClient::HttpClientTask {
 public:
-    API_EXPORT VerifyHttpTask(const OHOS::NetStack::HttpClient::HttpClientRequest &request)
+    VerifyHttpTask(const OHOS::NetStack::HttpClient::HttpClientRequest &request)
         : OHOS::NetStack::HttpClient::HttpClientTask(request){};
 
-    API_EXPORT VerifyHttpTask(const OHOS::NetStack::HttpClient::HttpClientRequest &request,
+    VerifyHttpTask(const OHOS::NetStack::HttpClient::HttpClientRequest &request,
         OHOS::NetStack::HttpClient::TaskType type, const std::string &filePath)
         : OHOS::NetStack::HttpClient::HttpClientTask(request, type, filePath){};
 
-    API_EXPORT virtual ~VerifyHttpTask(){};
+    virtual ~VerifyHttpTask(){};
 
     virtual bool Start();
     virtual void OnSuccess(const std::function<void(const OHOS::NetStack::HttpClient::HttpClientRequest &request,

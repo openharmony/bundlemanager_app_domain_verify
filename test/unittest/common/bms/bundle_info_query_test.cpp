@@ -13,13 +13,12 @@
  * limitations under the License.
  */
 
-#include <gtest/gtest.h>
+#include "gtest/gtest.h"
 #include <memory>
 #include "mock_constant.h"
-#include "rdb_helper.h"
 #define private public
 #define protected public
-#include "bundle_info_query.h"
+#include "bms/bundle_info_query.h"
 #undef private
 #undef protected
 namespace OHOS::AppDomainVerify {

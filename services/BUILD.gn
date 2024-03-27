@@ -85,7 +85,9 @@ config("app_domain_verify_agent_service_config") {
     "include/manager/zidl",
     "${app_domain_verify_common_path}/include",
     "${app_domain_verify_common_path}/include/utils",
+    "${app_domain_verify_common_path}/include/bms",
     "${app_domain_verify_extension_path}/include",
+    "${app_domain_verify_verifier_path}/include",
   ]
   configs = [ "//build/config/compiler:exceptions" ]
   ldflags = [ "-Wl,--exclude-libs=ALL" ]
@@ -98,13 +100,7 @@ config("app_domain_verify_agent_service_config") {
 
 ohos_shared_library("app_domain_verify_agent_service") {
   sources = [
-    "src/agent/bms/bundle_info_query.cpp",
     "src/agent/core/app_domain_verify_agent_service.cpp",
-    "src/agent/core/domain_verifier.cpp",
-    "src/agent/httpsession/app_domain_verify_task_mgr.cpp",
-    "src/agent/httpsession/verify_http_task.cpp",
-    "src/agent/httpsession/verify_http_task_factory.cpp",
-    "src/agent/utils/domain_json_util.cpp",
     "src/agent/zidl/app_domain_verify_agent_service_proxy.cpp",
     "src/agent/zidl/app_domain_verify_agent_service_stub.cpp",
   ]
@@ -114,14 +110,13 @@ ohos_shared_library("app_domain_verify_agent_service") {
     "${app_domain_verify_client_path}:app_domain_verify_mgr_client",
     "${app_domain_verify_common_path}:app_domain_verify_common",
     "${app_domain_verify_extension_path}:app_domain_verify_extension_framework",
+    "${app_domain_verify_verifier_path}:app_domain_verify_agent_verifier",
   ]
 
   external_deps = [
     "ability_base:base",
     "ability_base:want",
     "ability_runtime:ability_manager",
-    "bundle_framework:appexecfwk_base",
-    "bundle_framework:appexecfwk_core",
     "c_utils:utils",
     "curl:curl_shared",
     "eventhandler:libeventhandler",
@@ -131,7 +126,6 @@ ohos_shared_library("app_domain_verify_agent_service") {
     "ipc:ipc_core",
     "json:nlohmann_json_static",
     "netstack:http_client",
-    "os_account:os_account_innerkits",
     "safwk:system_ability_fwk",
     "samgr:samgr_proxy",
   ]

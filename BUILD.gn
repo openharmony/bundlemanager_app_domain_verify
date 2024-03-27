@@ -24,6 +24,7 @@ group("app_domain_verify_packages") {
       "interfaces/inner_api/client:app_domain_verify_mgr_client",
       "interfaces/inner_api/common:app_domain_verify_common",
       "interfaces/inner_api/extension:app_domain_verify_extension_framework",
+      "interfaces/inner_api/verifier:app_domain_verify_agent_verifier",
       "profile:bundlemanager_app_domain_verify_sa_profiles",
       "services:app_domain_verify_agent_service",
       "services:app_domain_verify_mgr_service",

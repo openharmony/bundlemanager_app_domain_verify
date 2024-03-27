@@ -12,7 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include <nlohmann/json.hpp>
+#include "json.hpp"
 #include "domain_json_util.h"
 #include "agent_constants.h"
 #include "app_domain_verify_hilog.h"
