@@ -12,13 +12,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include <gtest/gtest.h>
+#include "gtest/gtest.h"
 #include <memory>
 #include "mock_constant.h"
 #include "app_domain_verify_hisysevent.h"
 #define private public
 #define protected public
 #include "app_domain_verify_task_mgr.h"
+#include "verify_task.h"
 #undef private
 #undef protected
 namespace OHOS::AppDomainVerify {
@@ -58,8 +59,8 @@ HWTEST_F(AppDomainVerifyTaskMgrTest, AppDomainVerifyTaskMgrTest001, TestSize.Lev
     auto appDomainVerifyTaskMgr = std::make_shared<AppDomainVerifyTaskMgr>();
     ASSERT_FALSE(appDomainVerifyTaskMgr->AddTask(nullptr));
     AppVerifyBaseInfo appVerifyBaseInfo;
-    std::unordered_map<std::string, InnerVerifyStatus> uriVerifyMap;
-    auto task = std::make_shared<Task>(TaskType::UNKNOWN_TASK, appVerifyBaseInfo, uriVerifyMap);
+    std::vector<SkillUri> skillUris;
+    auto task = std::make_shared<VerifyTask>(TaskType::UNKNOWN_TASK, appVerifyBaseInfo, skillUris);
     ASSERT_FALSE(appDomainVerifyTaskMgr->AddTask(task));
 }
 
@@ -71,11 +72,11 @@ HWTEST_F(AppDomainVerifyTaskMgrTest, AppDomainVerifyTaskMgrTest001, TestSize.Lev
 HWTEST_F(AppDomainVerifyTaskMgrTest, AppDomainVerifyTaskMgrTest002, TestSize.Level0)
 {
     auto appDomainVerifyTaskMgr = std::make_shared<AppDomainVerifyTaskMgr>();
-    appDomainVerifyTaskMgr->taskRunning = true;
+    appDomainVerifyTaskMgr->taskRunning_ = true;
     appDomainVerifyTaskMgr->Run();
     AppVerifyBaseInfo appVerifyBaseInfo;
-    std::unordered_map<std::string, InnerVerifyStatus> uriVerifyMap;
-    auto task = std::make_shared<Task>(TaskType::IMMEDIATE_TASK, appVerifyBaseInfo, uriVerifyMap);
+    std::vector<SkillUri> skillUris;
+    auto task = std::make_shared<VerifyTask>(TaskType::IMMEDIATE_TASK, appVerifyBaseInfo, skillUris);
     appDomainVerifyTaskMgr->AddTask(task);
     ASSERT_FALSE(appDomainVerifyTaskMgr->IsIdle());
 }

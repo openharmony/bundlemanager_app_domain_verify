@@ -44,8 +44,6 @@ protected:
     void ExitIdleState() override;
 
 private:
-    void InitUriVerifyMap(const std::vector<SkillUri> &skillUris,
-        std::unordered_map<std::string, InnerVerifyStatus> &uriVerifyMap);
     void QueryAndCompleteRefresh(const std::vector<InnerVerifyStatus> &statuses, int delaySeconds, TaskType type);
     void CompleteVerifyRefresh(const BundleVerifyStatusInfo &bundleVerifyStatusInfo,
         const std::vector<InnerVerifyStatus> &statuses, int delaySeconds, TaskType type);
@@ -56,7 +54,7 @@ private:
 private:
     std::shared_ptr<ffrt::queue> continuationHandler_;
     std::shared_ptr<AppDomainVerifyExtensionMgr> appDomainVerifyExtMgr_;
-    std::unique_ptr<AppDomainVerifyTaskMgr> appDomainVerifyTaskMgr_;
+    std::shared_ptr<AppDomainVerifyTaskMgr> appDomainVerifyTaskMgr_;
 };
 
 }  // namespace AppDomainVerify

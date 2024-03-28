@@ -26,3 +26,6 @@ app_domain_verify_common_path =
     "${app_domain_verify_root_path}/interfaces/inner_api/common"
 
 app_domain_verify_service_path = "${app_domain_verify_root_path}/services"
+
+app_domain_verify_verifier_path =
+    "${app_domain_verify_root_path}/interfaces/inner_api/verifier"

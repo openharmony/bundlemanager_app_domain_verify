@@ -18,36 +18,55 @@
 #include <string>
 #include "app_domain_verify_task_mgr.h"
 #include "app_domain_verify_hilog.h"
-#include "http_client.h"
-#include "domain_verifier.h"
-#include "bundle_verify_status_info.h"
-#include "app_domain_verify_mgr_client.h"
-#include "agent_constants.h"
-#include "app_domain_verify_hisysevent.h"
 
 namespace OHOS {
 namespace AppDomainVerify {
+std::shared_ptr<AppDomainVerifyTaskMgr> AppDomainVerifyTaskMgr::instance_ = nullptr;
+std::mutex AppDomainVerifyTaskMgr::mutex_;
+
 using namespace OHOS::NetStack::HttpClient;
 const int URI_IN_TASK_ONCE_REQUEST_SIZE = 1;
-
+std::shared_ptr<AppDomainVerifyTaskMgr> AppDomainVerifyTaskMgr::GetInstance()
+{
+    if (instance_ == nullptr) {
+        std::lock_guard<std::mutex> lock(mutex_);
+        if (instance_ == nullptr) {
+            instance_ = std::make_shared<AppDomainVerifyTaskMgr>();
+        }
+    }
+    return instance_;
+}
+void AppDomainVerifyTaskMgr::DestroyInstance()
+{
+    std::lock_guard<std::mutex> lock(mutex_);
+    if (instance_ != nullptr) {
+        instance_.reset();
+        instance_ = nullptr;
+    }
+}
 AppDomainVerifyTaskMgr::AppDomainVerifyTaskMgr()
 {
+    APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "AppDomainVerifyTaskMgr new!");
     httpClientTaskFactory_ = std::make_unique<VerifyHttpTaskFactory>();
 }
+AppDomainVerifyTaskMgr::~AppDomainVerifyTaskMgr()
+{
+    APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "AppDomainVerifyTaskMgr destory!");
+}
 
-bool AppDomainVerifyTaskMgr::AddTask(const std::shared_ptr<Task> &task)
+bool AppDomainVerifyTaskMgr::AddTask(const std::shared_ptr<IVerifyTask> &task)
 {
     if (task == nullptr) {
         APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "input task is null!");
         return false;
     }
-    if (task->type_ > TaskType::SCHEDULE_REFRESH_TASK) {
-        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "input task type error: %d", task->type_);
+    if (task->GetType() > TaskType::SCHEDULE_REFRESH_TASK) {
+        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "input task type error: %d", task->GetType());
         return false;
     }
     {
-        std::unique_lock<std::shared_mutex> lock(queueMutex);
-        taskQueue.push_back(task);
+        std::unique_lock<std::shared_mutex> lock(queueMutex_);
+        taskQueue_.push_back(task);
     }
     Run();
     return true;
@@ -55,44 +74,49 @@ bool AppDomainVerifyTaskMgr::AddTask(const std::shared_ptr<Task> &task)
 
 void AppDomainVerifyTaskMgr::Run()
 {
-    if (taskRunning) {
+    if (taskRunning_) {
         return;
     }
-    taskRunning = true;
-    std::shared_ptr<Task> verifyTask = nullptr;
+    taskRunning_ = true;
+    std::shared_ptr<IVerifyTask> verifyTask = nullptr;
     {
-        std::unique_lock<std::shared_mutex> lock(queueMutex);
-        if (taskQueue.empty()) {
-            taskRunning = false;
+        std::unique_lock<std::shared_mutex> lock(queueMutex_);
+        if (taskQueue_.empty()) {
+            taskRunning_ = false;
             return;
         }
-        verifyTask = taskQueue.front();
-        taskQueue.pop_front();
+        verifyTask = taskQueue_.front();
+        taskQueue_.pop_front();
     }
 
     if (verifyTask != nullptr) {
         std::queue<std::vector<std::string>> urisQueue;
         std::vector<std::string> uris;
-        for (auto it = verifyTask->uriVerifyMap_.begin(); it != verifyTask->uriVerifyMap_.end(); ++it) {
+        auto uriVerifyMap = verifyTask->GetUriVerifyMap();
+        for (auto it = uriVerifyMap.begin(); it != uriVerifyMap.end(); ++it) {
             uris.emplace_back(it->first);
-            if (uris.size() == URI_IN_TASK_ONCE_REQUEST_SIZE || std::next(it) == verifyTask->uriVerifyMap_.end()) {
+            if (uris.size() == URI_IN_TASK_ONCE_REQUEST_SIZE || std::next(it) == uriVerifyMap.end()) {
                 urisQueue.push(uris);
                 uris.clear();
             }
         }
         HttpSessionTaskStart(verifyTask, urisQueue);
     } else {
-        taskRunning = false;
+        taskRunning_ = false;
         Run();
     }
 }
 
-void AppDomainVerifyTaskMgr::HttpSessionTaskStart(const std::shared_ptr<Task> &verifyTask,
+void AppDomainVerifyTaskMgr::HttpSessionTaskStart(const std::shared_ptr<IVerifyTask> &verifyTask,
     std::queue<std::vector<std::string>> urisQueue)
 {
+    if (verifyTask == nullptr) {
+        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "HttpSessionTaskStart nullptr!");
+        return;
+    }
     if (urisQueue.empty()) {
-        SaveVerifyResult(verifyTask->appVerifyBaseInfo_, verifyTask->uriVerifyMap_);
-        taskRunning = false;
+        verifyTask->OnSaveVerifyResult();
+        taskRunning_ = false;
         Run();
         return;
     }
@@ -102,29 +126,20 @@ void AppDomainVerifyTaskMgr::HttpSessionTaskStart(const std::shared_ptr<Task> &v
     urisQueue.pop();
     for (auto it = urisOnceRequest.begin(); it != urisOnceRequest.end(); ++it) {
         auto uri = *it;
-        httpClientRequest.SetURL(uri + ApplinkingAssetKeys::ASSET_PATH + ApplinkingAssetKeys::ASSET_NAME);
-        httpClientRequest.SetMethod("GET");
+        verifyTask->OnPreRequest(httpClientRequest, uri);
         auto httpTask = httpClientTaskFactory_->CreateTask(httpClientRequest);
         // All callbacks will execute on the same sub-thread.
         httpTask->OnSuccess([=](const HttpClientRequest &request, const HttpClientResponse &response) {
             APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "Task OnSuccess, retcode : %{public}d.",
                 response.GetResponseCode());
-            auto status = DomainVerifier::VerifyHost(response.GetResponseCode(), response.GetResult(),
-                verifyTask->appVerifyBaseInfo_);
-            verifyTask->uriVerifyMap_.insert_or_assign(uri, status);
-            VERIFY_RESULT_EVENT(verifyTask->appVerifyBaseInfo_.appIdentifier, verifyTask->appVerifyBaseInfo_.bundleName,
-                verifyTask->type_, status);
+            verifyTask->OnPostVerify(uri, response);
             HttpSessionTaskStart(verifyTask, urisQueue);
         });
         httpTask->OnFail(
             [=](const HttpClientRequest &request, const HttpClientResponse &response, const HttpClientError &error) {
                 APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE,
                     "OnFail,cause: %{public}d, %{public}s.", error.GetErrorCode(), error.GetErrorMessage().c_str());
-                auto status = DomainVerifier::VerifyHost(response.GetResponseCode(), response.GetResult(),
-                    verifyTask->appVerifyBaseInfo_);
-                verifyTask->uriVerifyMap_.insert_or_assign(uri, status);
-                VERIFY_RESULT_EVENT(verifyTask->appVerifyBaseInfo_.appIdentifier,
-                    verifyTask->appVerifyBaseInfo_.bundleName, verifyTask->type_, status);
+                verifyTask->OnPostVerify(uri, response);
                 HttpSessionTaskStart(verifyTask, urisQueue);
             });
 
@@ -135,24 +150,10 @@ void AppDomainVerifyTaskMgr::HttpSessionTaskStart(const std::shared_ptr<Task> &v
     }
 }
 
-void AppDomainVerifyTaskMgr::SaveVerifyResult(const AppVerifyBaseInfo &appVerifyBaseInfo,
-    const std::unordered_map<std::string, InnerVerifyStatus> &uriVerifyMap)
-{
-    // todo
-    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "%s called", __func__);
-    VerifyResultInfo verifyResultInfo;
-    verifyResultInfo.appIdentifier = appVerifyBaseInfo.appIdentifier;
-    verifyResultInfo.hostVerifyStatusMap = uriVerifyMap;
-    if (!AppDomainVerifyMgrClient::GetInstance()->SaveDomainVerifyStatus(appVerifyBaseInfo.bundleName,
-        verifyResultInfo)) {
-        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "SaveVerifyResult failed");
-    }
-    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "%s call end", __func__);
-}
 bool AppDomainVerifyTaskMgr::IsIdle()
 {
-    std::unique_lock<std::shared_mutex> lock(queueMutex);
-    return taskQueue.empty() && !taskRunning;
+    std::unique_lock<std::shared_mutex> lock(queueMutex_);
+    return taskQueue_.empty() && !taskRunning_;
 }
 
 }

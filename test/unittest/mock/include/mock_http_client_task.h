@@ -16,7 +16,7 @@
 #ifndef MOC_HTTP_CLIENT_TASK_H
 #define MOC_HTTP_CLIENT_TASK_H
 #include <gmock/gmock.h>
-#include "agent/httpsession/verify_http_task.h"
+#include "verify_http_task.h"
 #include "app_domain_verify_hilog.h"
 
 namespace OHOS::AppDomainVerify {

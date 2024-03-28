@@ -23,8 +23,8 @@ namespace AppDomainVerify {
 
 class VerifyHttpTaskFactory {
 public:
-    API_EXPORT VerifyHttpTaskFactory() = default;
-    API_EXPORT virtual ~VerifyHttpTaskFactory() = default;
+    VerifyHttpTaskFactory() = default;
+    virtual ~VerifyHttpTaskFactory() = default;
     virtual std::shared_ptr<VerifyHttpTask> CreateTask(
         const OHOS::NetStack::HttpClient::HttpClientRequest &httpClientRequest);
 };
