@@ -19,47 +19,39 @@
 #include <memory>
 #include <queue>
 #include <shared_mutex>
-#include <map>
+#include <unordered_map>
 #include "singleton.h"
 #include "inner_verify_status.h"
 #include "app_verify_base_info.h"
 #include "verify_http_task_factory.h"
+#include "i_verify_task.h"
 
 namespace OHOS {
 namespace AppDomainVerify {
 
-class Task {
-public:
-    Task(int type, const AppVerifyBaseInfo &appVerifyBaseInfo,
-        const std::unordered_map<std::string, InnerVerifyStatus> &uriVerifyMap)
-        : type_(type),
-          appVerifyBaseInfo_(appVerifyBaseInfo),
-          uriVerifyMap_(uriVerifyMap){};
-    virtual ~Task(){};
-    int type_;
-    AppVerifyBaseInfo appVerifyBaseInfo_;
-    std::unordered_map<std::string, InnerVerifyStatus> uriVerifyMap_;
-};
-
 class AppDomainVerifyTaskMgr {
 public:
-    API_EXPORT AppDomainVerifyTaskMgr();
-    API_EXPORT virtual ~AppDomainVerifyTaskMgr() = default;
+    AppDomainVerifyTaskMgr();
+    ~AppDomainVerifyTaskMgr();
+    static std::shared_ptr<AppDomainVerifyTaskMgr> GetInstance();
+    static void DestroyInstance();
+    DISALLOW_COPY_AND_MOVE(AppDomainVerifyTaskMgr);
 
-    bool AddTask(const std::shared_ptr<Task> &task);
+    bool AddTask(const std::shared_ptr<IVerifyTask> &task);
     bool IsIdle();
 
 private:
     void Run();
-    void HttpSessionTaskStart(const std::shared_ptr<Task> &verifyTask, std::queue<std::vector<std::string>> urisQueue);
-    void SaveVerifyResult(const AppVerifyBaseInfo &appVerifyBaseInfo,
-        const std::unordered_map<std::string, InnerVerifyStatus> &uriVerifyMap);
+    void HttpSessionTaskStart(const std::shared_ptr<IVerifyTask> &verifyTask,
+        std::queue<std::vector<std::string>> urisQueue);
 
 private:
-    std::deque<std::shared_ptr<Task>> taskQueue;
-    std::shared_mutex queueMutex;
-    std::atomic<bool> taskRunning = false;
+    std::deque<std::shared_ptr<IVerifyTask>> taskQueue_;
+    std::shared_mutex queueMutex_;
+    std::atomic<bool> taskRunning_ = false;
     std::unique_ptr<VerifyHttpTaskFactory> httpClientTaskFactory_;
+    static std::shared_ptr<AppDomainVerifyTaskMgr> instance_;
+    static std::mutex mutex_;
 };
 }
 }

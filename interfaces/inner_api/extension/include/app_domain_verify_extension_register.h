@@ -16,6 +16,8 @@
 #ifndef APP_DOMAIN_VERIFY_EXTENSION_REGISTER_H
 #define APP_DOMAIN_VERIFY_EXTENSION_REGISTER_H
 #include <mutex>
+#include <memory>
+#include <functional>
 #include "app_domain_verify_ext_base.h"
 #include "nocopyable.h"
 
@@ -25,7 +27,7 @@ namespace AppDomainVerify {
     __attribute__((constructor)) void RegisterVerifierExt##className()                                  \
     {                                                                                                   \
         AppDomainVerifyExtensionRegister::GetInstance().RegisterAppDomainVerifyExt(#baseClassName,      \
-            []()->std::shared_ptr<AppDomainVerifyExtBase> { return std::make_shared<(className)>(); }); \
+            []()->std::shared_ptr<AppDomainVerifyExtBase> { return std::make_shared<className>(); }); \
     }
 
 using CreateFunc = std::function<std::shared_ptr<AppDomainVerifyExtBase>(void)>;

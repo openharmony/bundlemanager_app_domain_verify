@@ -23,5 +23,6 @@ group("app_domain_verify_unit_test") {
     "extension:app_domain_verify_extension_test",
     "services:app_domain_verify_module_test",
     "services:app_domain_verify_service_test",
+    "verifier:app_domain_verify_agent_verifier_test",
   ]
 }

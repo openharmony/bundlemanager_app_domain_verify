@@ -22,13 +22,12 @@ config("module_private_config") {
     "${app_domain_verify_service_path}/include",
     "${app_domain_verify_common_path}/include",
     "${app_domain_verify_common_path}/include/utils",
+    "${app_domain_verify_common_path}/include/httpsession",
+    "${app_domain_verify_verifier_path}/include",
     "${app_domain_verify_extension_path}/include",
     "${app_domain_verify_service_path}/include/agent/core",
     "${app_domain_verify_service_path}/include/agent/zidl",
     "${app_domain_verify_service_path}/include/agent/bms",
-    "${app_domain_verify_service_path}/include/agent/constant",
-    "${app_domain_verify_service_path}/include/agent/httpsession",
-    "${app_domain_verify_service_path}/include/agent/utils",
     "${app_domain_verify_service_path}/include/manager/rdb",
     "${app_domain_verify_service_path}/include/manager/core",
     "${app_domain_verify_service_path}/include/manager/constant",
@@ -45,9 +44,19 @@ ohos_unittest("app_domain_verify_common_test") {
   sources = [
     "${app_domain_verify_common_path}/src/app_verify_base_info.cpp",
     "${app_domain_verify_common_path}/src/bundle_verify_status_info.cpp",
+    "${app_domain_verify_common_path}/src/httpsession/app_domain_verify_task_mgr.cpp",
+    "${app_domain_verify_common_path}/src/httpsession/verify_http_task.cpp",
+    "${app_domain_verify_common_path}/src/httpsession/verify_http_task_factory.cpp",
     "${app_domain_verify_common_path}/src/skill_uri.cpp",
     "${app_domain_verify_common_path}/src/utils/domain_url_util.cpp",
+    "../mock/src/mock_bundle_manager.cpp",
+    "../mock/src/mock_os_account_manager.cpp",
+    "../mock/src/mock_service_registry.cpp",
+    "../mock/src/mock_system_ability.cpp",
+    "../mock/src/mock_system_ability_ondemand_reason.cpp",
     "bean_test.cpp",
+    "bms/bundle_info_query_test.cpp",
+    "httpsession/app_domain_verify_task_mgr_test.cpp",
   ]
   configs = [ ":module_private_config" ]
   external_deps = [
@@ -56,18 +65,23 @@ ohos_unittest("app_domain_verify_common_test") {
     "bundle_framework:appexecfwk_base",
     "bundle_framework:appexecfwk_core",
     "c_utils:utils",
+    "eventhandler:libeventhandler",
     "ffrt:libffrt",
     "hilog:libhilog",
     "hisysevent:libhisysevent",
     "image_framework:image_native",
+    "init:libbegetutil",
     "ipc:ipc_core",
     "netstack:http_client",
-    "safwk:system_ability_fwk",
+    "os_account:os_account_innerkits",
+    "relational_store:native_rdb",
     "samgr:samgr_proxy",
   ]
 
   defines = [ "API_EXPORT=__attribute__((visibility (\"default\")))" ]
   deps = [
+    "${app_domain_verify_common_path}:app_domain_verify_common",
+    "${app_domain_verify_verifier_path}:app_domain_verify_agent_verifier",
     "//third_party/googletest:gmock_main",
     "//third_party/googletest:gtest_main",
   ]

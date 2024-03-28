@@ -26,18 +26,16 @@
 #include "system_ability_definition.h"
 #include "domain_url_util.h"
 #include "app_domain_verify_hilog.h"
-#include "domain_json_util.h"
-#include "bundle_info_query.h"
+#include "bms/bundle_info_query.h"
 #include "app_domain_verify_task_mgr.h"
 #include "iservice_registry.h"
 #include "app_domain_verify_mgr_client.h"
 #include "app_domain_verify_hisysevent.h"
+#include "verify_task.h"
 
 namespace OHOS {
 namespace AppDomainVerify {
-const std::string HTTPS = "https";
-const std::set<std::string> SCHEME_WHITE_SET = { HTTPS };
-const std::string FUZZY_HOST_START = "*.";
+
 const bool REGISTER_RESULT = SystemAbility::MakeAndRegisterAbility(new AppDomainVerifyAgentService());
 constexpr int32_t UNLOAD_IMMEDIATELY = 0;
 constexpr int32_t UNLOAD_DELAY_TIME = 120000;  // 2min
@@ -47,12 +45,18 @@ AppDomainVerifyAgentService::AppDomainVerifyAgentService()
     : SystemAbility(APP_DOMAIN_VERIFY_AGENT_SA_ID, true)
 {
     appDomainVerifyExtMgr_ = std::make_shared<AppDomainVerifyExtensionMgr>();
-    appDomainVerifyTaskMgr_ = std::make_unique<AppDomainVerifyTaskMgr>();
+    appDomainVerifyTaskMgr_ = AppDomainVerifyTaskMgr::GetInstance();
 
-    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "new instance create.");
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "new instance create %p.",
+        appDomainVerifyTaskMgr_.get());
 }
 AppDomainVerifyAgentService::~AppDomainVerifyAgentService()
 {
+    AppDomainVerifyTaskMgr::DestroyInstance();
+    if (appDomainVerifyTaskMgr_ != nullptr) {
+        APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "appDomainVerifyTaskMgr_ reset.");
+        appDomainVerifyTaskMgr_ = nullptr;
+    }
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "instance dead.");
 }
 void AppDomainVerifyAgentService::CompleteVerifyRefresh(const BundleVerifyStatusInfo &bundleVerifyStatusInfo,
@@ -106,38 +110,15 @@ void AppDomainVerifyAgentService::AddVerifyTask(const AppVerifyBaseInfo &appVeri
         APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "extension call end");
         return;
     }
-    std::unordered_map<std::string, InnerVerifyStatus> uriVerifyMap;
-    InitUriVerifyMap(skillUris, uriVerifyMap);
-    if (uriVerifyMap.empty()) {
+
+    auto task = std::make_shared<VerifyTask>(type, appVerifyBaseInfo, skillUris);
+    if (task->GetUriVerifyMap().empty()) {
         APP_DOMAIN_VERIFY_HILOGW(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "no valid skillUris");
         return;
     }
-    auto task = std::make_shared<Task>(type, appVerifyBaseInfo, uriVerifyMap);
     if (appDomainVerifyTaskMgr_ != nullptr) {
         appDomainVerifyTaskMgr_->AddTask(task);
     }
-}
-
-void AppDomainVerifyAgentService::InitUriVerifyMap(const std::vector<SkillUri> &skillUris,
-    std::unordered_map<std::string, InnerVerifyStatus> &uriVerifyMap)
-{
-    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "%s called", __func__);
-    for (auto it = skillUris.begin(); it != skillUris.end(); ++it) {
-        if (it->scheme.empty() || it->host.empty() || !UrlUtil::IsValidAppDomainVerifyHost(it->host) ||
-            SCHEME_WHITE_SET.find(it->scheme) == SCHEME_WHITE_SET.end()) {
-            APP_DOMAIN_VERIFY_HILOGW(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "invalid skillUri skip.");
-            continue;
-        }
-
-        std::string host = it->host;
-        if (it->host.substr(0, FUZZY_HOST_START.size()) == FUZZY_HOST_START) {
-            // Hosts with *.
-            host = it->host.substr(FUZZY_HOST_START.size());
-        }
-        // validUris remove duplicates
-        uriVerifyMap.insert(make_pair(it->scheme + "://" + host, InnerVerifyStatus::UNKNOWN));
-    }
-    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "%s call end", __func__);
 }
 
 void AppDomainVerifyAgentService::QueryAndCompleteRefresh(const std::vector<InnerVerifyStatus> &statuses,
