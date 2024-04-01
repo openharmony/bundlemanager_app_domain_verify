@@ -85,5 +85,17 @@ VerifyTask::VerifyTask(OHOS::AppDomainVerify::TaskType type, const AppVerifyBase
 {
     InitUriVerifyMap(skillUris);
 }
+OHOS::AppDomainVerify::TaskType &VerifyTask::GetTaskType()
+{
+    return type_;
+}
+AppVerifyBaseInfo &VerifyTask::GetAppVerifyBaseInfo()
+{
+    return appVerifyBaseInfo_;
+}
+std::unordered_map<std::string, InnerVerifyStatus> &VerifyTask::GetInnerUriVerifyMap()
+{
+    return uriVerifyMap_;
+}
 }
 }
