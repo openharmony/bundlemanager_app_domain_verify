@@ -36,6 +36,10 @@ public:
         const std::vector<SkillUri> &skillUris);
     void InitUriVerifyMap(const std::vector<SkillUri> &skillUris);
 
+protected:
+    OHOS::AppDomainVerify::TaskType& GetTaskType();
+    AppVerifyBaseInfo& GetAppVerifyBaseInfo();
+    std::unordered_map<std::string, InnerVerifyStatus>& GetInnerUriVerifyMap();
 private:
     OHOS::AppDomainVerify::TaskType type_;
     AppVerifyBaseInfo appVerifyBaseInfo_;
