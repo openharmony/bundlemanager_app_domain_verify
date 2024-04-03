@@ -26,7 +26,7 @@ const std::string BUNDLE_NAME = "bundleName";
 const std::string APP_IDENTIFIER = "appIdentifier";
 const std::string FINGERPRINT = "fingerprint";
 const std::string ASSET_PATH = "/.well-known/";
-const std::string ASSET_NAME = "applinking.json";
+const std::string ASSET_NAME = "applinkings.json";
 }  // namespace ApplinkingAssetKeys
 }  // namespace AppDomainVerify
 }  // namespace OHOS
