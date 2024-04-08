@@ -27,7 +27,7 @@ namespace AppDomainVerify {
     __attribute__((constructor)) void RegisterVerifierExt##className()                                  \
     {                                                                                                   \
         AppDomainVerifyExtensionRegister::GetInstance().RegisterAppDomainVerifyExt(#baseClassName,      \
-            []()->std::shared_ptr<AppDomainVerifyExtBase> { return std::make_shared<(className)>(); }); \
+            []()->std::shared_ptr<AppDomainVerifyExtBase> { return std::make_shared<className>(); }); \
     }
 
 using CreateFunc = std::function<std::shared_ptr<AppDomainVerifyExtBase>(void)>;
