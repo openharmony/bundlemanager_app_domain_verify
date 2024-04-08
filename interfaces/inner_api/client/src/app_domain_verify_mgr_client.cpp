@@ -26,6 +26,7 @@ namespace AppDomainVerify {
 std::mutex AppDomainVerifyMgrClient::proxyLock_;
 sptr<IAppDomainVerifyMgrService> AppDomainVerifyMgrClient::appDomainVerifyMgrServiceProxy_;
 AppDomainVerifyMgrClient::StaticDestoryMonitor AppDomainVerifyMgrClient::staticDestoryMonitor_;
+constexpr int32_t LOADSA_TIMEOUT_MS = 10000;
 
 AppDomainVerifyMgrClient::AppDomainVerifyMgrClient()
 {
@@ -139,7 +140,11 @@ void AppDomainVerifyMgrClient::ConnectService()
         return;
     }
     sptr<IRemoteObject> remoteObject = samgrProxy->CheckSystemAbility(APP_DOMAIN_VERIFY_MANAGER_SA_ID);
-
+    if (remoteObject == nullptr) {
+        APP_DOMAIN_VERIFY_HILOGW(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "try load.");
+        
+        remoteObject = samgrProxy->LoadSystemAbility(APP_DOMAIN_VERIFY_MANAGER_SA_ID, LOADSA_TIMEOUT_MS);
+    }
     if (remoteObject != nullptr) {
         APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "Get AppDomainVerifyMgrServiceProxy succeed.");
         if (deathRecipient_ == nullptr) {

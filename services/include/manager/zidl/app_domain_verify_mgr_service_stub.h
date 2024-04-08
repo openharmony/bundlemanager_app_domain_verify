@@ -19,6 +19,8 @@
 
 #include "i_app_domain_verify_mgr_service.h"
 #include "iremote_stub.h"
+#include "event_handler.h"
+#include "event_runner.h"
 
 namespace OHOS {
 namespace AppDomainVerify {
@@ -28,7 +30,8 @@ public:
     API_EXPORT virtual ~AppDomainVerifyMgrServiceStub();
     API_EXPORT int32_t OnRemoteRequest(uint32_t code, MessageParcel &data, MessageParcel &reply,
         MessageOption &option) override;
-
+protected:
+    void PostDelayUnloadTask();
 private:
     using AppDomainVerifyServiceFunc = int32_t (AppDomainVerifyMgrServiceStub::*)(MessageParcel &data,
         MessageParcel &reply);
@@ -41,6 +44,7 @@ private:
 
 private:
     std::map<uint32_t, AppDomainVerifyServiceFunc> memberFuncMap_;
+    std::shared_ptr<AppExecFwk::EventHandler> unloadHandler_;
 };
 }  // namespace AppDomainVerify
 }  // namespace OHOS
