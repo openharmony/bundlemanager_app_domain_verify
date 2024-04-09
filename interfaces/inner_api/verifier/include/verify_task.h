@@ -28,7 +28,7 @@ class VerifyTask : public IVerifyTask {
 public:
     void OnPostVerify(const std::string &uri, const OHOS::NetStack::HttpClient::HttpClientResponse &response) override;
     void OnSaveVerifyResult() override;
-    void OnPreRequest(OHOS::NetStack::HttpClient::HttpClientRequest &request, const std::string &uri) override;
+    bool OnPreRequest(OHOS::NetStack::HttpClient::HttpClientRequest &request, const std::string &uri) override;
     OHOS::AppDomainVerify::TaskType GetType() override;
     const std::unordered_map<std::string, InnerVerifyStatus> &GetUriVerifyMap() override;
 

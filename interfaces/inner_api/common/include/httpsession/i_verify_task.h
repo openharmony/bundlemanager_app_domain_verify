@@ -29,7 +29,7 @@ public:
     virtual void OnPostVerify(const std::string &uri,
         const OHOS::NetStack::HttpClient::HttpClientResponse &response) = 0;
     virtual void OnSaveVerifyResult() = 0;
-    virtual void OnPreRequest(OHOS::NetStack::HttpClient::HttpClientRequest &request, const std::string &uri) = 0;
+    virtual bool OnPreRequest(OHOS::NetStack::HttpClient::HttpClientRequest &request, const std::string &uri) = 0;
     virtual const std::unordered_map<std::string, InnerVerifyStatus> &GetUriVerifyMap() = 0;
     virtual OHOS::AppDomainVerify::TaskType GetType() = 0;
 };
