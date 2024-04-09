@@ -154,7 +154,6 @@ void AppDomainVerifyMgrService::OnStart()
     if (!res) {
         APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "Publish failed");
     }
-    AppDomainVerifyMgrServiceStub::PostDelayUnloadTask();
 }
 
 void AppDomainVerifyMgrService::OnStop()
