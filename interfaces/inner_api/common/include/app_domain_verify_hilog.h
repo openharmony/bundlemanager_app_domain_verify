@@ -71,7 +71,7 @@ static constexpr OHOS::HiviewDFX::HiLogLabel APP_DOMAIN_VERIFY_MODULE_LABEL[APP_
 #define APP_DOMAIN_VERIFY_HILOGI(module, ...) \
     (void)OHOS::HiviewDFX::HiLog::Info(APP_DOMAIN_VERIFY_MODULE_LABEL[module], FORMATED(__VA_ARGS__))
 #define APP_DOMAIN_VERIFY_HILOGD(module, ...) \
-    (void)OHOS::HiviewDFX::HiLog::Info(APP_DOMAIN_VERIFY_MODULE_LABEL[module], FORMATED(__VA_ARGS__))
+    (void)OHOS::HiviewDFX::HiLog::Debug(APP_DOMAIN_VERIFY_MODULE_LABEL[module], FORMATED(__VA_ARGS__))
 } // namespace AppDomainVerify
 } // namespace OHOS
 
