@@ -12,11 +12,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+ 
+#include "app_domain_verify_task_mgr.h"
 #include <deque>
 #include <memory>
 #include <string>
-#include "app_domain_verify_task_mgr.h"
 #include "app_domain_verify_hilog.h"
 
 namespace OHOS {
@@ -126,7 +126,11 @@ void AppDomainVerifyTaskMgr::HttpSessionTaskStart(const std::shared_ptr<IVerifyT
     urisQueue.pop();
     for (auto it = urisOnceRequest.begin(); it != urisOnceRequest.end(); ++it) {
         auto uri = *it;
-        verifyTask->OnPreRequest(httpClientRequest, uri);
+        if (!verifyTask->OnPreRequest(httpClientRequest, uri)) {
+            APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE,
+                                   "OnPreRequest failed %{public}s, continue.", uri.c_str());
+            continue;
+        }
         auto httpTask = httpClientTaskFactory_->CreateTask(httpClientRequest);
         // All callbacks will execute on the same sub-thread.
         httpTask->OnSuccess([=](const HttpClientRequest &request, const HttpClientResponse &response) {
