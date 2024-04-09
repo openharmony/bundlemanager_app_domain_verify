@@ -128,7 +128,7 @@ void AppDomainVerifyTaskMgr::HttpSessionTaskStart(const std::shared_ptr<IVerifyT
         auto uri = *it;
         if (!verifyTask->OnPreRequest(httpClientRequest, uri)) {
             APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE,
-                                   "OnPreRequest failed %{public}s, continue.", uri.c_str());
+                "OnPreRequest failed %{public}s, continue.", uri.c_str());
             continue;
         }
         auto httpTask = httpClientTaskFactory_->CreateTask(httpClientRequest);
