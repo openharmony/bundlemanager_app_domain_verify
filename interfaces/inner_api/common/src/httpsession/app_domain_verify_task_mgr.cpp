@@ -12,7 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- 
+
 #include "app_domain_verify_task_mgr.h"
 #include <deque>
 #include <memory>
@@ -23,6 +23,7 @@ namespace OHOS {
 namespace AppDomainVerify {
 std::shared_ptr<AppDomainVerifyTaskMgr> AppDomainVerifyTaskMgr::instance_ = nullptr;
 std::mutex AppDomainVerifyTaskMgr::mutex_;
+const size_t MAX_RESPONSE_LEN = 20*1024;
 
 using namespace OHOS::NetStack::HttpClient;
 const int URI_IN_TASK_ONCE_REQUEST_SIZE = 1;
@@ -147,9 +148,21 @@ void AppDomainVerifyTaskMgr::HttpSessionTaskStart(const std::shared_ptr<IVerifyT
                 HttpSessionTaskStart(verifyTask, urisQueue);
             });
 
-        httpTask->OnDataReceive([](const HttpClientRequest &request, const uint8_t *data, size_t length) {
-            APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "OnDataReceive.");
+        httpTask->OnDataReceive([httpTask](const HttpClientRequest &request, const uint8_t *data, size_t length) {
+            APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "OnDataReceive size:%{public}zu.", length);
+            if (httpTask->GetLen() + length > MAX_RESPONSE_LEN) {
+                APP_DOMAIN_VERIFY_HILOGW(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "recieve data exceeds, will cancel.");
+                httpTask->Cancel();
+            } else {
+                httpTask->SetLen(httpTask->GetLen() + length);
+            }
         });
+        httpTask->OnCancel([=](const HttpClientRequest &request, const HttpClientResponse &response){
+            APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE,
+                "OnCancel,cause: %{public}d.", response.GetResponseCode());
+            verifyTask->OnPostVerify(uri, response);
+            HttpSessionTaskStart(verifyTask, urisQueue);
+         });
         httpTask->Start();
     }
 }

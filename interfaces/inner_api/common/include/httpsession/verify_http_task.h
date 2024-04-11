@@ -38,6 +38,11 @@ public:
             const OHOS::NetStack::HttpClient::HttpClientError &error)> &onFailed);
     virtual void OnDataReceive(const std::function<void(const OHOS::NetStack::HttpClient::HttpClientRequest &request,
             const uint8_t *data, size_t length)> &onDataReceive);
+
+    size_t GetLen();
+    void SetLen(size_t len);
+private:
+    size_t len_{0};
 };
 }
 }
