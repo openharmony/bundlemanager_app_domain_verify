@@ -52,6 +52,8 @@ private:
     std::unique_ptr<VerifyHttpTaskFactory> httpClientTaskFactory_;
     static std::shared_ptr<AppDomainVerifyTaskMgr> instance_;
     static std::mutex mutex_;
+    void StartHttpTask(const std::shared_ptr<IVerifyTask>& verifyTask, std::queue<std::vector<std::string>>& urisQueue,
+        const NetStack::HttpClient::HttpClientRequest& httpClientRequest, const std::string& uri);
 };
 }
 }
