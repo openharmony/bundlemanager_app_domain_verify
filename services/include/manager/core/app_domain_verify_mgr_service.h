@@ -45,10 +45,13 @@ public:
         const VerifyResultInfo &verifyResultInfo) override;
 
 protected:
+    void OnDump() override;
+    int Dump(int fd, const std::vector<std::u16string>& args) override;
     void OnStart() override;
     void OnStop() override;
 
 private:
+    void DumpAllVerifyInfos(std::string& dumpString);
     bool IsWantImplicit(const OHOS::AAFwk::Want &want);
 
 private:
