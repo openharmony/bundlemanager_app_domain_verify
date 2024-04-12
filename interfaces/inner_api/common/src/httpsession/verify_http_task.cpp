@@ -36,5 +36,13 @@ void VerifyHttpTask::OnDataReceive(
 {
     HttpClientTask::OnDataReceive(onDataReceive);
 }
+size_t VerifyHttpTask::GetLen()
+{
+    return len_;
+}
+void VerifyHttpTask::SetLen(size_t len)
+{
+    len_ = len;
+}
 }
 }
