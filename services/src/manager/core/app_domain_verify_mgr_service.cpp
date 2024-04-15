@@ -161,6 +161,35 @@ void AppDomainVerifyMgrService::OnStop()
 {
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s called", __func__);
 }
+void AppDomainVerifyMgrService::OnDump()
+{
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "OnDump");
+}
 
+int AppDomainVerifyMgrService::Dump(int fd, const std::vector<std::u16string>& args)
+{
+    std::string dumpString{};
+    DumpAllVerifyInfos(dumpString);
+    (void)write(fd, dumpString.c_str(), dumpString.size());
+    return 0;
+}
+void AppDomainVerifyMgrService::DumpAllVerifyInfos(std::string& dumpString)
+{
+    BundleVerifyStatusInfo allBundleVerifyStatusInfo;
+    if (!QueryAllDomainVerifyStatus(allBundleVerifyStatusInfo)) {
+        return;
+    }
+    for (const auto& bundleVerifyStatusInfo : allBundleVerifyStatusInfo.bundleVerifyStatusInfoMap_) {
+        dumpString.append(bundleVerifyStatusInfo.first + ":\n");
+        auto verifyResultInfo = bundleVerifyStatusInfo.second;
+        dumpString.append("  appIdentifier:" + verifyResultInfo.appIdentifier);
+        dumpString.append("\n");
+        dumpString.append("  domain verify status:\n");
+        for (const auto& hostVerifyStatus : verifyResultInfo.hostVerifyStatusMap) {
+            dumpString.append("    " + hostVerifyStatus.first + ":" + InnerVerifyStatusMap[hostVerifyStatus.second]);
+            dumpString.append("\n");
+        }
+    }
+}
 }  // namespace AppDomainVerify
 }  // namespace OHOS
