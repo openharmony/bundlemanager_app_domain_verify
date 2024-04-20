@@ -44,8 +44,7 @@ bool BundleInfoQuery::GetBundleInfo(const std::string &bundleName, std::string &
         APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "GetBundleInfo failed, ret: %{public}d.", ret);
         return false;
     }
-    // todo replace with real appIdentifier
-    appIdentifier = "";
+    appIdentifier = bundleInfo.signatureInfo.appIdentifier;
     fingerprint = bundleInfo.signatureInfo.fingerprint;
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "%s call end", __func__);
     return true;
