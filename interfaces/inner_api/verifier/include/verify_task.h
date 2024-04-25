@@ -21,6 +21,7 @@
 #include "inner_verify_status.h"
 #include "app_domain_verify_hisysevent.h"
 #include "skill_uri.h"
+#include "app_domain_verify_mgr_client.h"
 
 namespace OHOS {
 namespace AppDomainVerify {
@@ -41,6 +42,7 @@ protected:
     AppVerifyBaseInfo& GetAppVerifyBaseInfo();
     std::unordered_map<std::string, InnerVerifyStatus>& GetInnerUriVerifyMap();
 private:
+    virtual bool SaveDomainVerifyStatus(const std::string& bundleName, const VerifyResultInfo& verifyResultInfo);
     OHOS::AppDomainVerify::TaskType type_;
     AppVerifyBaseInfo appVerifyBaseInfo_;
     std::unordered_map<std::string, InnerVerifyStatus> uriVerifyMap_;

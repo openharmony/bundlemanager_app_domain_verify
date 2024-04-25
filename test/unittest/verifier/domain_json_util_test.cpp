@@ -51,15 +51,71 @@ void JsonUtilTest::TearDown(void)
  * @tc.name: JsonUtilTest001
  * @tc.desc: Parse test
  * @tc.type: FUNC
-*/
+ */
 HWTEST_F(JsonUtilTest, JsonUtilTest001, TestSize.Level0)
 {
-    std::string assetJsonsStr = R"({"applinking":{})";
+    // empty
     AssetJsonObj assetJsonObj;
+    ASSERT_FALSE(JsonUtil::Parse("", assetJsonObj));
+
+    // parse exception
+    ASSERT_FALSE(JsonUtil::Parse("123", assetJsonObj));
+
+    // obj null
+    std::string assetJsonsStr = R"({})";
     ASSERT_FALSE(JsonUtil::Parse(assetJsonsStr, assetJsonObj));
+
+    // obj not obj
     assetJsonsStr = R"({"applinking":1})";
     ASSERT_FALSE(JsonUtil::Parse(assetJsonsStr, assetJsonObj));
+
+    // applinking null
+    assetJsonsStr = R"({"applinkings":1})";
+    ASSERT_FALSE(JsonUtil::Parse(assetJsonsStr, assetJsonObj));
+
+    // applinking not obj
+    assetJsonsStr = R"({"applinking":1})";
+    ASSERT_FALSE(JsonUtil::Parse(assetJsonsStr, assetJsonObj));
+
+    // apps null
+    assetJsonsStr = R"({"applinking":{})";
+    ASSERT_FALSE(JsonUtil::Parse(assetJsonsStr, assetJsonObj));
+
+    // apps not array
+    assetJsonsStr = R"({"applinking":{"apps":123})";
+    ASSERT_FALSE(JsonUtil::Parse(assetJsonsStr, assetJsonObj));
+
+    // appIdentifier null
+    assetJsonsStr = R"({"applinking":{"apps":[{"bundleName":1,"fingerprint":1}]}})";
+    ASSERT_TRUE(JsonUtil::Parse(assetJsonsStr, assetJsonObj));
+
+    // bundleName null
+    assetJsonsStr = R"({"applinking":{"apps":[{"appIdentifier":1,"fingerprint":1}]}})";
+    ASSERT_TRUE(JsonUtil::Parse(assetJsonsStr, assetJsonObj));
+
+    // fingerprint null
+    assetJsonsStr = R"({"applinking":{"apps":[{"appIdentifier":1,"bundleName":1,}]}})";
+    ASSERT_FALSE(JsonUtil::Parse(assetJsonsStr, assetJsonObj));
+
+    // appIdentifier null
+    assetJsonsStr = R"({"applinking":{"apps":[{"bundleName":"bundleName","fingerprint":"fingerprint"}]}})";
+    ASSERT_TRUE(JsonUtil::Parse(assetJsonsStr, assetJsonObj));
+
+    // bundleName null
+    assetJsonsStr = R"({"applinking":{"apps":[{"appIdentifier":"appIdentifier","fingerprint":"fingerprint"}]}})";
+    ASSERT_TRUE(JsonUtil::Parse(assetJsonsStr, assetJsonObj));
+
+    // fingerprint null
+    assetJsonsStr = R"({"applinking":{"apps":[{"appIdentifier":"appIdentifier","bundleName":"bundleName"}]}})";
+    ASSERT_TRUE(JsonUtil::Parse(assetJsonsStr, assetJsonObj));
+
+    // all
     assetJsonsStr = R"({"applinking":{"apps":[{"appIdentifier":1,"bundleName":1,"fingerprint":1}]}})";
+    ASSERT_TRUE(JsonUtil::Parse(assetJsonsStr, assetJsonObj));
+
+    // all
+    assetJsonsStr =
+        R"({"applinking":{"apps":[{"appIdentifier":"appIdentifier","bundleName":"bundleName","fingerprint":"fingerprint"}]}})";
     ASSERT_TRUE(JsonUtil::Parse(assetJsonsStr, assetJsonObj));
 }
 }

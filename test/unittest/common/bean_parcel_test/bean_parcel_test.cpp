@@ -1,0 +1,104 @@
+/*
+ * Copyright (C) 2023 Huawei Device Co., Ltd.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+#include "gtest/gtest.h"
+#include "parcel.h"
+#define private public
+#define protected public
+#include "skill_uri.h"
+#include "app_verify_base_info.h"
+#include "bundle_verify_status_info.h"
+#include "domain_url_util.h"
+#undef private
+#undef protected
+#include "app_domain_verify_hilog.h"
+
+namespace OHOS::AppDomainVerify {
+using namespace testing;
+using namespace testing::ext;
+
+class AppDomainVerifyBeanParcelTest : public testing::Test {
+public:
+    static void SetUpTestCase(void);
+    static void TearDownTestCase(void);
+    void SetUp();
+    void TearDown();
+};
+void AppDomainVerifyBeanParcelTest::SetUpTestCase(void)
+{
+}
+
+void AppDomainVerifyBeanParcelTest::TearDownTestCase(void)
+{
+}
+
+void AppDomainVerifyBeanParcelTest::SetUp(void)
+{
+}
+
+void AppDomainVerifyBeanParcelTest::TearDown(void)
+{
+}
+
+/**
+ * @tc.name: AppDomainVerifyBeanParcelTest006
+ * @tc.desc: UrlUtil test.
+ * @tc.type: FUNC
+ */
+HWTEST_F(AppDomainVerifyBeanParcelTest, AppDomainVerifyBeanParcelTest001, TestSize.Level0)
+{
+    APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MODULE_COMMON, "AppDomainVerifyBeanParcelTest001");
+    printf("AppDomainVerifyBeanParcelTest001 \n");
+    SkillUri skillUri;
+    skillUri.scheme = "scheme";
+    skillUri.host = "host";
+    skillUri.port = "port";
+    skillUri.path = "path";
+    skillUri.pathStartWith = "pathStartWith";
+    skillUri.pathRegex = "pathRegex";
+    skillUri.type = "type";
+    Parcel parcel;
+    MockWriteString(false, 0);
+    ASSERT_FALSE(skillUri.Marshalling(parcel));
+    ResetParcelState();
+
+    MockWriteString(false, 1);
+    ASSERT_FALSE(skillUri.Marshalling(parcel));
+    ResetParcelState();
+
+    MockWriteString(false, 2);
+    ASSERT_FALSE(skillUri.Marshalling(parcel));
+    ResetParcelState();
+
+    MockWriteString(false, 3);
+    ASSERT_FALSE(skillUri.Marshalling(parcel));
+    ResetParcelState();
+
+    MockWriteString(false, 4);
+    ASSERT_FALSE(skillUri.Marshalling(parcel));
+    ResetParcelState();
+
+    MockWriteString(false, 5);
+    ASSERT_FALSE(skillUri.Marshalling(parcel));
+    ResetParcelState();
+
+    MockWriteString(false, 6);
+    ASSERT_FALSE(skillUri.Marshalling(parcel));
+    ResetParcelState();
+    APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MODULE_COMMON, "AppDomainVerifyBeanParcelTest001 end");
+    printf("AppDomainVerifyBeanParcelTest001 end\n");
+}
+
+}

@@ -20,7 +20,9 @@ group("app_domain_verify_unit_test") {
   deps = [
     "client:app_domain_verify_client_test",
     "common:app_domain_verify_common_test",
-    "extension:app_domain_verify_extension_test",
+    "common/bean_parcel_test:bean_parcel_test",
+    "extension/app_domain_verify_extension_mgr_test:app_domain_verify_extension_mgr_test",
+    "extension/app_domain_verify_extension_register_test:app_domain_verify_extension_register_test",
     "services:app_domain_verify_module_test",
     "services:app_domain_verify_service_test",
     "verifier:app_domain_verify_agent_verifier_test",

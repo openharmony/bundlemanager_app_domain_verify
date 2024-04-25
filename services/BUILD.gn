@@ -29,9 +29,15 @@ config("app_domain_verify_service_config") {
   configs = [ "//build/config/compiler:exceptions" ]
   ldflags = [ "-Wl,--exclude-libs=ALL" ]
   cflags = [
+    "-fvisibility=hidden",
     "-fdata-sections",
     "-ffunction-sections",
-    "-fvisibility=hidden",
+    "-Os",
+  ]
+
+  cflags_cc = [
+    "-fvisibility-inlines-hidden",
+    "-Os",
   ]
 }
 
@@ -93,9 +99,15 @@ config("app_domain_verify_agent_service_config") {
   configs = [ "//build/config/compiler:exceptions" ]
   ldflags = [ "-Wl,--exclude-libs=ALL" ]
   cflags = [
+    "-fvisibility=hidden",
     "-fdata-sections",
     "-ffunction-sections",
-    "-fvisibility=hidden",
+    "-Os",
+  ]
+
+  cflags_cc = [
+    "-fvisibility-inlines-hidden",
+    "-Os",
   ]
 }
 
