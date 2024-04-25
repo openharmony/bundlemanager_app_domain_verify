@@ -16,10 +16,12 @@ import("//foundation/bundlemanager/app_domain_verify/app_domain_verify.gni")
 
 config("module_private_config") {
   visibility = [ ":*" ]
-  configs = [ "//build/config/compiler:exceptions" ]
+
   include_dirs = [
     "${app_domain_verify_client_path}/include",
     "${app_domain_verify_service_path}/include",
+    "${app_domain_verify_common_path}/include",
+    "${app_domain_verify_common_path}/include/utils",
     "${app_domain_verify_service_path}/include/agent/core",
     "${app_domain_verify_service_path}/include/agent/zidl",
     "${app_domain_verify_service_path}/include/agent/bms",
@@ -30,28 +32,20 @@ config("module_private_config") {
     "${app_domain_verify_service_path}/include/manager/core",
     "${app_domain_verify_service_path}/include/manager/constant",
     "${app_domain_verify_service_path}/include/manager/zidl",
-    "${app_domain_verify_common_path}/include",
-    "${app_domain_verify_common_path}/include/utils",
-    "${app_domain_verify_common_path}/include/httpsession",
     "${app_domain_verify_extension_path}/include",
-    "${app_domain_verify_verifier_path}/include",
-    "${app_domain_verify_verifier_path}/include/constant",
     "../mock/include",
   ]
 }
 
 module_output_path = "app_domain_verify/app_domain_verify"
 
-ohos_unittest("app_domain_verify_agent_verifier_test") {
+ohos_unittest("app_domain_verify_extension_mgr_test") {
   module_out_path = module_output_path
 
   sources = [
-    "${app_domain_verify_verifier_path}/src/domain_json_util.cpp",
-    "${app_domain_verify_verifier_path}/src/domain_verifier.cpp",
-    "${app_domain_verify_verifier_path}/src/verify_task.cpp",
-    "domain_json_util_test.cpp",
-    "domain_verifier_test.cpp",
-    "verify_task_test.cpp",
+    "${app_domain_verify_extension_path}/src/app_domain_verify_extension_mgr.cpp",
+    "${app_domain_verify_extension_path}/src/app_domain_verify_extension_register.cpp",
+    "app_domain_verify_extension_mgr_test.cpp",
   ]
   configs = [ ":module_private_config" ]
   external_deps = [
@@ -60,23 +54,18 @@ ohos_unittest("app_domain_verify_agent_verifier_test") {
     "bundle_framework:appexecfwk_base",
     "bundle_framework:appexecfwk_core",
     "c_utils:utils",
-    "eventhandler:libeventhandler",
     "ffrt:libffrt",
     "hilog:libhilog",
     "hisysevent:libhisysevent",
     "image_framework:image_native",
     "ipc:ipc_core",
-    "json:nlohmann_json_static",
     "netstack:http_client",
-    "os_account:os_account_innerkits",
-    "relational_store:native_rdb",
     "safwk:system_ability_fwk",
     "samgr:samgr_proxy",
   ]
 
   defines = [ "API_EXPORT=__attribute__((visibility (\"default\")))" ]
   deps = [
-    "${app_domain_verify_client_path}:app_domain_verify_mgr_client",
     "${app_domain_verify_common_path}:app_domain_verify_common",
     "//third_party/googletest:gmock_main",
     "//third_party/googletest:gtest_main",

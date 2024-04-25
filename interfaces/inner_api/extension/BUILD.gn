@@ -23,6 +23,13 @@ config("app_domain_verify_extension_config") {
   } else if (target_cpu == "x86_64") {
     defines += [ "APP_USE_X86_64" ]
   }
+  cflags = [
+    "-fdata-sections",
+    "-ffunction-sections",
+    "-Os",
+  ]
+
+  cflags_cc = [ "-Os" ]
 }
 
 config("app_domain_verify_extension_public_config") {
@@ -41,12 +48,11 @@ ohos_shared_library("app_domain_verify_extension_framework") {
   configs = [ ":app_domain_verify_extension_config" ]
   public_configs = [ ":app_domain_verify_extension_public_config" ]
   deps = [ "${app_domain_verify_common_path}:app_domain_verify_common" ]
-
+  version_script = "extension.versionscript"
   external_deps = [
     "c_utils:utils",
     "hilog:libhilog",
     "ipc:ipc_single",
-    "json:nlohmann_json_static",
     "samgr:samgr_proxy",
   ]
 

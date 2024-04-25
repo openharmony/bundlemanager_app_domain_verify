@@ -28,7 +28,10 @@ config("app_domain_verify_agent_verifier_config") {
   cflags = [
     "-fdata-sections",
     "-ffunction-sections",
+    "-Os",
   ]
+
+  cflags_cc = [ "-Os" ]
 }
 
 ohos_shared_library("app_domain_verify_agent_verifier") {
@@ -43,6 +46,7 @@ ohos_shared_library("app_domain_verify_agent_verifier") {
     "${app_domain_verify_client_path}:app_domain_verify_mgr_client",
     "${app_domain_verify_common_path}:app_domain_verify_common",
   ]
+  version_script = "verifier.versionscript"
 
   external_deps = [
     "ability_base:base",

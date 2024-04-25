@@ -17,7 +17,6 @@
 #include "domain_verifier.h"
 #include "app_domain_verify_hilog.h"
 #include "bundle_verify_status_info.h"
-#include "app_domain_verify_mgr_client.h"
 #include "agent_constants.h"
 #include "domain_url_util.h"
 
@@ -27,7 +26,7 @@ const std::string HTTPS = "https";
 const std::set<std::string> SCHEME_WHITE_SET = { HTTPS };
 const std::string FUZZY_HOST_START = "*.";
 
-void VerifyTask::OnPostVerify(const std::string &uri, const OHOS::NetStack::HttpClient::HttpClientResponse &response)
+void VerifyTask::OnPostVerify(const std::string& uri, const OHOS::NetStack::HttpClient::HttpClientResponse& response)
 {
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "%s called", __func__);
     auto status = DomainVerifier::VerifyHost(response.GetResponseCode(), response.GetResult(), appVerifyBaseInfo_);
@@ -40,13 +39,12 @@ void VerifyTask::OnSaveVerifyResult()
     VerifyResultInfo verifyResultInfo;
     verifyResultInfo.appIdentifier = appVerifyBaseInfo_.appIdentifier;
     verifyResultInfo.hostVerifyStatusMap = uriVerifyMap_;
-    if (!AppDomainVerifyMgrClient::GetInstance()->SaveDomainVerifyStatus(appVerifyBaseInfo_.bundleName,
-        verifyResultInfo)) {
+    if (!SaveDomainVerifyStatus(appVerifyBaseInfo_.bundleName, verifyResultInfo)) {
         APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "SaveVerifyResult failed");
     }
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "%s call end", __func__);
 }
-bool VerifyTask::OnPreRequest(OHOS::NetStack::HttpClient::HttpClientRequest &request, const std::string &uri)
+bool VerifyTask::OnPreRequest(OHOS::NetStack::HttpClient::HttpClientRequest& request, const std::string& uri)
 {
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "%s called", __func__);
     request.SetURL(uri + ApplinkingAssetKeys::ASSET_PATH + ApplinkingAssetKeys::ASSET_NAME);
@@ -57,11 +55,11 @@ OHOS::AppDomainVerify::TaskType VerifyTask::GetType()
 {
     return type_;
 }
-const std::unordered_map<std::string, InnerVerifyStatus> &VerifyTask::GetUriVerifyMap()
+const std::unordered_map<std::string, InnerVerifyStatus>& VerifyTask::GetUriVerifyMap()
 {
     return uriVerifyMap_;
 }
-void VerifyTask::InitUriVerifyMap(const std::vector<SkillUri> &skillUris)
+void VerifyTask::InitUriVerifyMap(const std::vector<SkillUri>& skillUris)
 {
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "%s called", __func__);
     for (auto it = skillUris.begin(); it != skillUris.end(); ++it) {
@@ -81,24 +79,28 @@ void VerifyTask::InitUriVerifyMap(const std::vector<SkillUri> &skillUris)
     }
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "%s call end", __func__);
 }
-VerifyTask::VerifyTask(OHOS::AppDomainVerify::TaskType type, const AppVerifyBaseInfo &appVerifyBaseInfo,
-    const std::vector<SkillUri> &skillUris)
+VerifyTask::VerifyTask(OHOS::AppDomainVerify::TaskType type, const AppVerifyBaseInfo& appVerifyBaseInfo,
+    const std::vector<SkillUri>& skillUris)
     : type_(type),
       appVerifyBaseInfo_(appVerifyBaseInfo)
 {
     InitUriVerifyMap(skillUris);
 }
-OHOS::AppDomainVerify::TaskType &VerifyTask::GetTaskType()
+OHOS::AppDomainVerify::TaskType& VerifyTask::GetTaskType()
 {
     return type_;
 }
-AppVerifyBaseInfo &VerifyTask::GetAppVerifyBaseInfo()
+AppVerifyBaseInfo& VerifyTask::GetAppVerifyBaseInfo()
 {
     return appVerifyBaseInfo_;
 }
-std::unordered_map<std::string, InnerVerifyStatus> &VerifyTask::GetInnerUriVerifyMap()
+std::unordered_map<std::string, InnerVerifyStatus>& VerifyTask::GetInnerUriVerifyMap()
 {
     return uriVerifyMap_;
+}
+bool VerifyTask::SaveDomainVerifyStatus(const std::string& bundleName, const VerifyResultInfo& verifyResultInfo)
+{
+    return AppDomainVerifyMgrClient::GetInstance()->SaveDomainVerifyStatus(bundleName, verifyResultInfo);
 }
 }
 }

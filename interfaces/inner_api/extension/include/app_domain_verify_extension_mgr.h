@@ -22,6 +22,7 @@
 #include "inner_verify_status.h"
 #include "bundle_verify_status_info.h"
 #include "app_domain_verify_hisysevent.h"
+#include "app_domain_verify_agent_ext.h"
 
 namespace OHOS {
 namespace AppDomainVerify {
@@ -33,12 +34,14 @@ public:
         const std::vector<InnerVerifyStatus> &statuses, int delaySeconds, TaskType type);
     ErrorCode SingleVerify(const AppVerifyBaseInfo &appVerifyBaseInfo, const std::vector<SkillUri> &skillUris);
 
-private:
-    bool Init();
+protected:
+    virtual bool Init();
+    virtual std::shared_ptr<AppDomainVerifyAgentExt> GetAppDomainVerifyExt(const std::string& extName);
+    virtual void* OpenLib();
 
 private:
     static std::mutex sHandlerMutex;
-    static void *sHandler;
+    static void* sHandler;
 };
 }
 }
