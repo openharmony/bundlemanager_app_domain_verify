@@ -431,7 +431,6 @@ HWTEST_F(AppDomainVerifyBeanParcelTest, AppDomainVerifyBeanParcelTest011, TestSi
     verifyResultInfo.hostVerifyStatusMap.insert_or_assign("https://" + HOST, InnerVerifyStatus::STATE_SUCCESS);
     verifyResultInfo.hostVerifyStatusMap.insert_or_assign("https://", InnerVerifyStatus::STATE_FAIL);
     auto jsonObj = VerifyResultInfo::VerifyResultInfoToJson(verifyResultInfo);
-    printf("jsonObj %s\n", jsonObj.dump().c_str());
 
     auto verifyResultInfoOut = VerifyResultInfo::JsonToVerifyResultInfo(jsonObj);
     ASSERT_TRUE(verifyResultInfoOut.appIdentifier == APP_IDENTIFIER);
@@ -448,19 +447,14 @@ HWTEST_F(AppDomainVerifyBeanParcelTest, AppDomainVerifyBeanParcelTest0012, TestS
 {
     APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MODULE_COMMON, "AppDomainVerifyBeanParcelTest002");
     printf("AppDomainVerifyBeanParcelTest0012 \n");
-    printf("0 \n");
-    json jsonObj = 
-        R"({"appIdentifier":"appIdentifier","hostVerifyStatusMap":{"https://":2,"https://test.openharmony.com":1}})";
-    printf("1 \n");
+    json jsonObj;
     VerifyResultInfo verifyResultInfoOut;
 
-    printf("1 \n");
 
     jsonObj = json::parse(R"({"appIdentifier":5,"hostVerifyStatusMap":{"key":1}})");
     verifyResultInfoOut = VerifyResultInfo::JsonToVerifyResultInfo(jsonObj);
     ASSERT_TRUE(verifyResultInfoOut.appIdentifier.empty());
 
-    printf("2 \n");
     jsonObj = json::parse(R"({"appIdentifier":"appIdentifier","hostVerifyStatusMap":5})");
     verifyResultInfoOut = VerifyResultInfo::JsonToVerifyResultInfo(jsonObj);
     ASSERT_TRUE(verifyResultInfoOut.appIdentifier == "appIdentifier");
