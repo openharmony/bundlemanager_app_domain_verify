@@ -19,6 +19,11 @@
 namespace OHOS {
 namespace {
 bool g_mockWriteUint32 = true;
+bool g_mockWriteInt32 = true;
+
+bool g_mockReadUint32 = true;
+bool g_mockReadInt32 = true;
+
 bool g_mockWriteString = true;
 bool g_mockWriteParcelable = true;
 bool g_mockReadParcelable = true;
@@ -32,6 +37,21 @@ uint8_t g_mockReadStringMax = 0;
 void MockWriteUint32(bool state)
 {
     g_mockWriteUint32 = state;
+}
+
+void MockWriteInt32(bool state)
+{
+    g_mockWriteInt32 = state;
+}
+
+void MockReadUint32(int state)
+{
+    g_mockReadUint32 = state;
+}
+
+void MockReadInt32(bool state)
+{
+    g_mockReadInt32 = state;
 }
 
 void MockWriteString(bool state, uint8_t count)
@@ -109,15 +129,15 @@ bool Parcel::ReadString(const std::string&)
 }
 bool Parcel::ReadUint32(uint32_t& value)
 {
-    return false;
+    return g_mockReadUint32;
 }
 bool Parcel::WriteInt32(int32_t value)
 {
-    return false;
+    return g_mockWriteInt32;
 }
 bool Parcel::ReadInt32(int32_t& value)
 {
-    return false;
+    return g_mockReadInt32;
 }
 
 }  // namespace OHOS

@@ -20,8 +20,13 @@
 
 namespace OHOS {
 void MockWriteUint32(bool state);
+void MockWriteInt32(bool state);
+void MockReadUint32(int state);
+void MockReadInt32(bool state);
 
 void MockWriteString(bool state, uint8_t count);
+
+void MockReadString(bool state, uint8_t count);
 
 void MockWriteParcelable(bool state);
 

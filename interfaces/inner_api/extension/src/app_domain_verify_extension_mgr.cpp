@@ -33,7 +33,7 @@ const std::string EXTENSION_LIB_PATH = "/system/lib/libapp_domain_verify_extensi
 #endif
 
 std::mutex AppDomainVerifyExtensionMgr::sHandlerMutex;
-void *AppDomainVerifyExtensionMgr::sHandler = nullptr;
+void* AppDomainVerifyExtensionMgr::sHandler = nullptr;
 
 AppDomainVerifyExtensionMgr::AppDomainVerifyExtensionMgr()
 {
@@ -84,6 +84,7 @@ ErrorCode AppDomainVerifyExtensionMgr::SingleVerify(const AppVerifyBaseInfo& app
     if (Init()) {
         std::string verifierExtName = APP_DOMAIN_VERIFY_AGENT_EXT_NAME;
         auto appDomainVerifierExt = GetAppDomainVerifyExt(verifierExtName);
+
         if (appDomainVerifierExt != nullptr) {
             return std::static_pointer_cast<AppDomainVerifyAgentExt>(appDomainVerifierExt)
                 ->SingleVerify(appVerifyBaseInfo, skillUris);

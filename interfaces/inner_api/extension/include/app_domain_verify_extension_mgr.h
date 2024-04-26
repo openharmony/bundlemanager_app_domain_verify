@@ -30,9 +30,9 @@ class AppDomainVerifyExtensionMgr {
 public:
     AppDomainVerifyExtensionMgr();
     virtual ~AppDomainVerifyExtensionMgr();
-    ErrorCode CompleteVerifyRefresh(const BundleVerifyStatusInfo &bundleVerifyStatusInfo,
-        const std::vector<InnerVerifyStatus> &statuses, int delaySeconds, TaskType type);
-    ErrorCode SingleVerify(const AppVerifyBaseInfo &appVerifyBaseInfo, const std::vector<SkillUri> &skillUris);
+    ErrorCode CompleteVerifyRefresh(const BundleVerifyStatusInfo& bundleVerifyStatusInfo,
+        const std::vector<InnerVerifyStatus>& statuses, int delaySeconds, TaskType type);
+    ErrorCode SingleVerify(const AppVerifyBaseInfo& appVerifyBaseInfo, const std::vector<SkillUri>& skillUris);
 
 protected:
     virtual bool Init();
