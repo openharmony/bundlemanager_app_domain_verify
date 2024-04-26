@@ -101,7 +101,6 @@ HWTEST_F(AppDomainVerifyExtensionMgrTest, AppDomainVerifyExtensionMgrTest002, Te
  */
 HWTEST_F(AppDomainVerifyExtensionMgrTest, AppDomainVerifyExtensionMgrTest003, TestSize.Level0)
 {
-
     MockAppDomainVerifyExtensionMgr appDomainVerifyExtensionMgr;
     EXPECT_CALL(appDomainVerifyExtensionMgr, Init()).Times(1).WillOnce(Return(true));
     EXPECT_CALL(appDomainVerifyExtensionMgr, GetAppDomainVerifyExt(APP_DOMAIN_VERIFY_AGENT_EXT_NAME))
