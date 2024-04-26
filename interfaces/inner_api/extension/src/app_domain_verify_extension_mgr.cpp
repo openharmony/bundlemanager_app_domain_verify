@@ -84,7 +84,6 @@ ErrorCode AppDomainVerifyExtensionMgr::SingleVerify(const AppVerifyBaseInfo& app
     if (Init()) {
         std::string verifierExtName = APP_DOMAIN_VERIFY_AGENT_EXT_NAME;
         auto appDomainVerifierExt = GetAppDomainVerifyExt(verifierExtName);
-
         if (appDomainVerifierExt != nullptr) {
             return std::static_pointer_cast<AppDomainVerifyAgentExt>(appDomainVerifierExt)
                 ->SingleVerify(appVerifyBaseInfo, skillUris);
