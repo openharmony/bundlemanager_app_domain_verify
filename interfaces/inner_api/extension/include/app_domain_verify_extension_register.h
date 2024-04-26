@@ -23,19 +23,19 @@
 
 namespace OHOS {
 namespace AppDomainVerify {
-#define REGISTER_VERIFIER_EXT(baseClassName, className)                                                 \
-    __attribute__((constructor)) void RegisterVerifierExt##className()                                  \
-    {                                                                                                   \
-        AppDomainVerifyExtensionRegister::GetInstance().RegisterAppDomainVerifyExt(#baseClassName,      \
+#define REGISTER_VERIFIER_EXT(baseClassName, className)                                                  \
+    __attribute__((constructor)) void RegisterVerifierExt##className()                                   \
+    {                                                                                                    \
+        AppDomainVerifyExtensionRegister::GetInstance().RegisterAppDomainVerifyExt(#baseClassName,       \
             []() -> std::shared_ptr<AppDomainVerifyAgentExt> { return std::make_shared<className>(); }); \
     }
 
 using CreateFunc = std::function<std::shared_ptr<AppDomainVerifyAgentExt>(void)>;
 class AppDomainVerifyExtensionRegister {
 public:
-    static AppDomainVerifyExtensionRegister &GetInstance();
+    static AppDomainVerifyExtensionRegister& GetInstance();
     ~AppDomainVerifyExtensionRegister();
-    void RegisterAppDomainVerifyExt(const std::string &extName, const CreateFunc &createFunc);
+    void RegisterAppDomainVerifyExt(const std::string& extName, const CreateFunc& createFunc);
     std::shared_ptr<AppDomainVerifyAgentExt> GetAppDomainVerifyExt(const std::string& extName);
 
 private:
