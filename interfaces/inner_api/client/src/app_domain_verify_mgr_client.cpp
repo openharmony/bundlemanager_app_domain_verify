@@ -168,7 +168,6 @@ void AppDomainVerifyMgrClient::OnRemoteSaDied(const wptr<IRemoteObject> &remote)
         }
     }
     appDomainVerifyMgrServiceProxy_ = nullptr;
-    ConnectService();
 }
 
 AppDomainVerifyMgrSaDeathRecipient::AppDomainVerifyMgrSaDeathRecipient()
