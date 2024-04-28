@@ -18,25 +18,25 @@
 #include <mutex>
 #include <memory>
 #include <functional>
-#include "app_domain_verify_ext_base.h"
+#include "app_domain_verify_agent_ext.h"
 #include "nocopyable.h"
 
 namespace OHOS {
 namespace AppDomainVerify {
-#define REGISTER_VERIFIER_EXT(baseClassName, className)                                                 \
-    __attribute__((constructor)) void RegisterVerifierExt##className()                                  \
-    {                                                                                                   \
-        AppDomainVerifyExtensionRegister::GetInstance().RegisterAppDomainVerifyExt(#baseClassName,      \
-            []()->std::shared_ptr<AppDomainVerifyExtBase> { return std::make_shared<className>(); }); \
+#define REGISTER_VERIFIER_EXT(baseClassName, className)                                                  \
+    __attribute__((constructor)) void RegisterVerifierExt##className()                                   \
+    {                                                                                                    \
+        AppDomainVerifyExtensionRegister::GetInstance().RegisterAppDomainVerifyExt(#baseClassName,       \
+            []() -> std::shared_ptr<AppDomainVerifyAgentExt> { return std::make_shared<className>(); }); \
     }
 
-using CreateFunc = std::function<std::shared_ptr<AppDomainVerifyExtBase>(void)>;
+using CreateFunc = std::function<std::shared_ptr<AppDomainVerifyAgentExt>(void)>;
 class AppDomainVerifyExtensionRegister {
 public:
-    static AppDomainVerifyExtensionRegister &GetInstance();
+    static AppDomainVerifyExtensionRegister& GetInstance();
     ~AppDomainVerifyExtensionRegister();
-    void RegisterAppDomainVerifyExt(const std::string &extName, const CreateFunc &createFunc);
-    std::shared_ptr<AppDomainVerifyExtBase> GetAppDomainVerifyExt(const std::string &extName);
+    void RegisterAppDomainVerifyExt(const std::string& extName, const CreateFunc& createFunc);
+    std::shared_ptr<AppDomainVerifyAgentExt> GetAppDomainVerifyExt(const std::string& extName);
 
 private:
     static std::mutex sMutex_;

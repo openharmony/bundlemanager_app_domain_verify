@@ -33,7 +33,7 @@ const std::string EXTENSION_LIB_PATH = "/system/lib/libapp_domain_verify_extensi
 #endif
 
 std::mutex AppDomainVerifyExtensionMgr::sHandlerMutex;
-void *AppDomainVerifyExtensionMgr::sHandler = nullptr;
+void* AppDomainVerifyExtensionMgr::sHandler = nullptr;
 
 AppDomainVerifyExtensionMgr::AppDomainVerifyExtensionMgr()
 {
@@ -48,13 +48,9 @@ bool AppDomainVerifyExtensionMgr::Init()
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MODULE_EXTENSION, "%{public}s called.", __func__);
     std::lock_guard<std::mutex> lock(sHandlerMutex);
     auto handle = &sHandler;
-    if (handle == nullptr) {
-        APP_DOMAIN_VERIFY_HILOGW(APP_DOMAIN_VERIFY_MODULE_EXTENSION, "OpenHandler error handle is nullptr.");
-        return false;
-    }
     if (*handle == nullptr) {
         APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MODULE_EXTENSION, "dlopen extension lib");
-        *handle = dlopen(EXTENSION_LIB_PATH.c_str(), RTLD_NOW | RTLD_GLOBAL);
+        *handle = OpenLib();
         if (*handle == nullptr) {
             APP_DOMAIN_VERIFY_HILOGW(APP_DOMAIN_VERIFY_MODULE_EXTENSION, "failed to open %{public}s, err:%{public}s",
                 EXTENSION_LIB_PATH.c_str(), dlerror());
@@ -65,15 +61,13 @@ bool AppDomainVerifyExtensionMgr::Init()
     return true;
 }
 
-ErrorCode AppDomainVerifyExtensionMgr::CompleteVerifyRefresh(const BundleVerifyStatusInfo &bundleVerifyStatusInfo,
-    const std::vector<InnerVerifyStatus> &statuses, int delaySeconds, TaskType type)
+ErrorCode AppDomainVerifyExtensionMgr::CompleteVerifyRefresh(const BundleVerifyStatusInfo& bundleVerifyStatusInfo,
+    const std::vector<InnerVerifyStatus>& statuses, int delaySeconds, TaskType type)
 {
     if (Init()) {
         std::string verifierExtName = APP_DOMAIN_VERIFY_AGENT_EXT_NAME;
-        auto appDomainVerifierExt = AppDomainVerifyExtensionRegister::GetInstance().GetAppDomainVerifyExt(
-            verifierExtName);
-        if (appDomainVerifierExt == nullptr ||
-            std::static_pointer_cast<AppDomainVerifyAgentExt>(appDomainVerifierExt) == nullptr) {
+        auto appDomainVerifierExt = GetAppDomainVerifyExt(verifierExtName);
+        if (appDomainVerifierExt == nullptr) {
             APP_DOMAIN_VERIFY_HILOGW(APP_DOMAIN_VERIFY_MODULE_EXTENSION, "get verifierExt: %{public}s failed.",
                 verifierExtName.c_str());
             return ErrorCode::E_EXTENSIONS_INTERNAL_ERROR;
@@ -84,23 +78,29 @@ ErrorCode AppDomainVerifyExtensionMgr::CompleteVerifyRefresh(const BundleVerifyS
     return ErrorCode::E_EXTENSIONS_LIB_NOT_FOUND;
 }
 
-ErrorCode AppDomainVerifyExtensionMgr::SingleVerify(const AppVerifyBaseInfo &appVerifyBaseInfo,
-    const std::vector<SkillUri> &skillUris)
+ErrorCode AppDomainVerifyExtensionMgr::SingleVerify(const AppVerifyBaseInfo& appVerifyBaseInfo,
+    const std::vector<SkillUri>& skillUris)
 {
     if (Init()) {
         std::string verifierExtName = APP_DOMAIN_VERIFY_AGENT_EXT_NAME;
-        auto appDomainVerifierExt = AppDomainVerifyExtensionRegister::GetInstance().GetAppDomainVerifyExt(
-            verifierExtName);
-        if (appDomainVerifierExt == nullptr ||
-            std::static_pointer_cast<AppDomainVerifyAgentExt>(appDomainVerifierExt) == nullptr) {
-            APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MODULE_EXTENSION, "get verifierExt: %{public}s failed.",
-                verifierExtName.c_str());
-            return ErrorCode::E_EXTENSIONS_INTERNAL_ERROR;
+        auto appDomainVerifierExt = GetAppDomainVerifyExt(verifierExtName);
+        if (appDomainVerifierExt != nullptr) {
+            return std::static_pointer_cast<AppDomainVerifyAgentExt>(appDomainVerifierExt)
+                ->SingleVerify(appVerifyBaseInfo, skillUris);
         }
-        return std::static_pointer_cast<AppDomainVerifyAgentExt>(appDomainVerifierExt)
-            ->SingleVerify(appVerifyBaseInfo, skillUris);
+        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MODULE_EXTENSION, "get verifierExt: %{public}s failed.",
+            verifierExtName.c_str());
+        return ErrorCode::E_EXTENSIONS_INTERNAL_ERROR;
     }
     return ErrorCode::E_EXTENSIONS_LIB_NOT_FOUND;
+}
+std::shared_ptr<AppDomainVerifyAgentExt> AppDomainVerifyExtensionMgr::GetAppDomainVerifyExt(const std::string& extName)
+{
+    return AppDomainVerifyExtensionRegister::GetInstance().GetAppDomainVerifyExt(extName);
+}
+void* AppDomainVerifyExtensionMgr::OpenLib()
+{
+    return dlopen(EXTENSION_LIB_PATH.c_str(), RTLD_NOW | RTLD_GLOBAL);
 }
 }
 }

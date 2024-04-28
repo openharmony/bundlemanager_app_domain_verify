@@ -30,20 +30,20 @@ AppDomainVerifyExtensionRegister::~AppDomainVerifyExtensionRegister()
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MODULE_EXTENSION, "instance dead.");
 }
 
-AppDomainVerifyExtensionRegister &AppDomainVerifyExtensionRegister::GetInstance()
+AppDomainVerifyExtensionRegister& AppDomainVerifyExtensionRegister::GetInstance()
 {
     std::lock_guard<std::mutex> lock(sMutex_);
     static AppDomainVerifyExtensionRegister extRegister;
     return extRegister;
 }
-void AppDomainVerifyExtensionRegister::RegisterAppDomainVerifyExt(const std::string &extName,
-    const CreateFunc &createFunc)
+void AppDomainVerifyExtensionRegister::RegisterAppDomainVerifyExt(const std::string& extName,
+    const CreateFunc& createFunc)
 {
     std::lock_guard<std::mutex> lock(mutex_);
     verifyExts_.emplace(extName, createFunc);
 }
-std::shared_ptr<AppDomainVerifyExtBase> AppDomainVerifyExtensionRegister::GetAppDomainVerifyExt(
-    const std::string &extName)
+std::shared_ptr<AppDomainVerifyAgentExt> AppDomainVerifyExtensionRegister::GetAppDomainVerifyExt(
+    const std::string& extName)
 {
     std::lock_guard<std::mutex> lock(mutex_);
     auto it = verifyExts_.find(extName);

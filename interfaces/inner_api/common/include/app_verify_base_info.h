@@ -20,9 +20,9 @@
 namespace OHOS {
 namespace AppDomainVerify {
 struct AppVerifyBaseInfo : public Parcelable {
-    std::string appIdentifier;
-    std::string bundleName;
-    std::string fingerprint;
+    std::string appIdentifier{};
+    std::string bundleName{};
+    std::string fingerprint{};
     AppVerifyBaseInfo();
     AppVerifyBaseInfo(const AppVerifyBaseInfo &appVerifyBaseInfo);
 

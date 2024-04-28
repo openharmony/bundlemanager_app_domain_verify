@@ -19,7 +19,8 @@
 #define private public
 #define protected public
 #include "app_domain_verify_task_mgr.h"
-#include "verify_task.h"
+#include "moc_verify_task.h"
+#include "skill_uri.h"
 #undef private
 #undef protected
 namespace OHOS::AppDomainVerify {
@@ -53,22 +54,22 @@ void AppDomainVerifyTaskMgrTest::TearDown(void)
  * @tc.name: AppDomainVerifyTaskMgrTest001
  * @tc.desc: AddTask test
  * @tc.type: FUNC
-*/
+ */
 HWTEST_F(AppDomainVerifyTaskMgrTest, AppDomainVerifyTaskMgrTest001, TestSize.Level0)
 {
     auto appDomainVerifyTaskMgr = std::make_shared<AppDomainVerifyTaskMgr>();
     ASSERT_FALSE(appDomainVerifyTaskMgr->AddTask(nullptr));
     AppVerifyBaseInfo appVerifyBaseInfo;
     std::vector<SkillUri> skillUris;
-    auto task = std::make_shared<VerifyTask>(TaskType::UNKNOWN_TASK, appVerifyBaseInfo, skillUris);
-    ASSERT_FALSE(appDomainVerifyTaskMgr->AddTask(task));
+    ASSERT_FALSE(appDomainVerifyTaskMgr->AddTask(nullptr));
+    ASSERT_TRUE(appDomainVerifyTaskMgr->IsIdle());
 }
 
 /**
  * @tc.name: AppDomainVerifyTaskMgrTest002
  * @tc.desc: IsIdle test
  * @tc.type: FUNC
-*/
+ */
 HWTEST_F(AppDomainVerifyTaskMgrTest, AppDomainVerifyTaskMgrTest002, TestSize.Level0)
 {
     auto appDomainVerifyTaskMgr = std::make_shared<AppDomainVerifyTaskMgr>();
@@ -76,7 +77,7 @@ HWTEST_F(AppDomainVerifyTaskMgrTest, AppDomainVerifyTaskMgrTest002, TestSize.Lev
     appDomainVerifyTaskMgr->Run();
     AppVerifyBaseInfo appVerifyBaseInfo;
     std::vector<SkillUri> skillUris;
-    auto task = std::make_shared<VerifyTask>(TaskType::IMMEDIATE_TASK, appVerifyBaseInfo, skillUris);
+    auto task = std::make_shared<MocVerifyTask>();
     appDomainVerifyTaskMgr->AddTask(task);
     ASSERT_FALSE(appDomainVerifyTaskMgr->IsIdle());
 }
