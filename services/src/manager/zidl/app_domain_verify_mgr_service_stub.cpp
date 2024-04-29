@@ -49,7 +49,7 @@ AppDomainVerifyMgrServiceStub::~AppDomainVerifyMgrServiceStub()
 int32_t AppDomainVerifyMgrServiceStub::OnRemoteRequest(uint32_t code, MessageParcel &data, MessageParcel &reply,
     MessageOption &option)
 {
-    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "onRemoteRequest##code = %{public}u", code);
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "onRemoteRequest##code = %{public}u", code);
     PostDelayUnloadTask();
     std::u16string myDescripter = AppDomainVerifyMgrServiceStub::GetDescriptor();
     std::u16string remoteDescripter = data.ReadInterfaceToken();
@@ -65,7 +65,7 @@ int32_t AppDomainVerifyMgrServiceStub::OnRemoteRequest(uint32_t code, MessagePar
         }
     }
     int ret = IPCObjectStub::OnRemoteRequest(code, data, reply, option);
-    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "end##ret = %{public}d", ret);
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "end##ret = %{public}d", ret);
     return ret;
 }
 
@@ -172,7 +172,9 @@ int32_t AppDomainVerifyMgrServiceStub::OnSaveDomainVerifyStatus(MessageParcel &d
 void AppDomainVerifyMgrServiceStub::PostDelayUnloadTask()
 {
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s called", __func__);
-    auto runner = AppExecFwk::EventRunner::Create("unload");
+    if (runner_ == nullptr) {
+        runner_ = AppExecFwk::EventRunner::Create("unload");
+    }
     if (unloadHandler_ == nullptr) {
         unloadHandler_ = std::make_shared<AppExecFwk::EventHandler>(runner);
     }
