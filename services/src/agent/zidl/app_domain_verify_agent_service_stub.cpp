@@ -90,7 +90,7 @@ void AppDomainVerifyAgentServiceStub::PostDelayUnloadTask()
         runner_ = AppExecFwk::EventRunner::Create("unload");
     }
     if (unloadHandler_ == nullptr) {
-        unloadHandler_ = std::make_shared<AppExecFwk::EventHandler>(runner);
+        unloadHandler_ = std::make_shared<AppExecFwk::EventHandler>(runner_);
     }
     if (unloadHandler_ == nullptr) {
         APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "unloadHandler init failed!");
