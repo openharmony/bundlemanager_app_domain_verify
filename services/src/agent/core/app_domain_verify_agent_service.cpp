@@ -62,10 +62,10 @@ AppDomainVerifyAgentService::~AppDomainVerifyAgentService()
 void AppDomainVerifyAgentService::CompleteVerifyRefresh(const BundleVerifyStatusInfo &bundleVerifyStatusInfo,
     const std::vector<InnerVerifyStatus> &statuses, int delaySeconds, TaskType type)
 {
-    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "%s called", __func__);
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "%s called", __func__);
     if (ErrorCode::E_EXTENSIONS_LIB_NOT_FOUND !=
         appDomainVerifyExtMgr_->CompleteVerifyRefresh(bundleVerifyStatusInfo, statuses, delaySeconds, type)) {
-        APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "extension call end");
+        APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "extension call end");
         return;
     }
     if (delaySeconds > 0) {
@@ -92,15 +92,15 @@ void AppDomainVerifyAgentService::CompleteVerifyRefresh(const BundleVerifyStatus
         }
         AddVerifyTask(appVerifyBaseInfo, skillUris, type);
     }
-    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "%s call end", __func__);
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "%s call end", __func__);
 }
 
 void AppDomainVerifyAgentService::SingleVerify(const AppVerifyBaseInfo &appVerifyBaseInfo,
     const std::vector<SkillUri> &skillUris)
 {
-    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "%s called", __func__);
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "%s called", __func__);
     AddVerifyTask(appVerifyBaseInfo, skillUris, TaskType::IMMEDIATE_TASK);
-    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "%s call end", __func__);
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "%s call end", __func__);
 }
 
 void AppDomainVerifyAgentService::AddVerifyTask(const AppVerifyBaseInfo &appVerifyBaseInfo,
@@ -154,11 +154,12 @@ void AppDomainVerifyAgentService::OnStart(const SystemAbilityOnDemandReason &sta
         };
         continuationHandler_->submit(func);
     }
+    
+    AppDomainVerifyAgentServiceStub::PostDelayUnloadTask();
     bool res = Publish(this);
     if (!res) {
         APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "Publish failed");
     }
-    AppDomainVerifyAgentServiceStub::PostDelayUnloadTask();
 }
 
 void AppDomainVerifyAgentService::OnStop()

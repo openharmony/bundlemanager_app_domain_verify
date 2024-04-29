@@ -45,6 +45,7 @@ private:
 private:
     std::map<uint32_t, AppDomainVerifyServiceFunc> memberFuncMap_;
     std::shared_ptr<AppExecFwk::EventHandler> unloadHandler_;
+    std::shared_ptr<AppExecFwk::EventRunner> runner_;
 };
 }  // namespace AppDomainVerify
 }  // namespace OHOS
