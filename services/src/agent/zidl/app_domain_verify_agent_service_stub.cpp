@@ -38,10 +38,10 @@ AppDomainVerifyAgentServiceStub::~AppDomainVerifyAgentServiceStub()
 int32_t AppDomainVerifyAgentServiceStub::OnRemoteRequest(uint32_t code, MessageParcel &data, MessageParcel &reply,
     MessageOption &option)
 {
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "onRemoteRequest##code = %{public}u", code);
     ExitIdleState();
     PostDelayUnloadTask();
 
-    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "onRemoteRequest##code = %{public}u", code);
     std::u16string myDescripter = AppDomainVerifyAgentServiceStub::GetDescriptor();
     std::u16string remoteDescripter = data.ReadInterfaceToken();
     if (myDescripter != remoteDescripter) {
@@ -86,9 +86,11 @@ int32_t AppDomainVerifyAgentServiceStub::OnSingleVerify(MessageParcel &data, Mes
 void AppDomainVerifyAgentServiceStub::PostDelayUnloadTask()
 {
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "%s called", __func__);
-    auto runner = AppExecFwk::EventRunner::Create("unload");
+    if (runner_ == nullptr) {
+        runner_ = AppExecFwk::EventRunner::Create("unload");
+    }
     if (unloadHandler_ == nullptr) {
-        unloadHandler_ = std::make_shared<AppExecFwk::EventHandler>(runner);
+        unloadHandler_ = std::make_shared<AppExecFwk::EventHandler>(runner_);
     }
     if (unloadHandler_ == nullptr) {
         APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "unloadHandler init failed!");
