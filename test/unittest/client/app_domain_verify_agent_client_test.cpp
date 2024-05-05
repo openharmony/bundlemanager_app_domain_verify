@@ -142,5 +142,52 @@ HWTEST_F(AppDomainVerifyAgentClientTest, AppDomainVerifyAgentClientTest003, Test
     auto unmarshallingSkillUri = SkillUri::Unmarshalling(parcel);
     ASSERT_TRUE(unmarshallingSkillUri->host == "host");
 }
+/**
+ * @tc.name: AppDomainVerifyAgentSaDeathRecipientTest001
+ * @tc.desc: VerifyDomain test.
+ * @tc.type: FUNC
+ */
+HWTEST_F(AppDomainVerifyAgentClientTest, AppDomainVerifyAgentSaDeathRecipientTest001, TestSize.Level0)
+{
+    std::unique_ptr<AppDomainVerifyAgentRemoteStubMock> impl = std::make_unique<AppDomainVerifyAgentRemoteStubMock>();
+    sptr<AppDomainVerifyAgentRemoteStubMock> mgrStubMock_(impl.get());
+    EXPECT_CALL(*mgrStubMock_, AsObject()).Times(1).WillOnce(::testing::Return(mgrStubMock_));
+    AppDomainVerifyAgentClient::agentServiceProxy_ = mgrStubMock_;
+    AgentSaDeathRecipient AppDomainVerifyAgentSaDeathRecipient;
+    AppDomainVerifyAgentSaDeathRecipient.OnRemoteDied(nullptr);
+    ASSERT_TRUE(AppDomainVerifyAgentClient::agentServiceProxy_ == nullptr);
+    mgrStubMock_.ForceSetRefPtr(nullptr);
+    printf("reset mgrStubMock_ \n");
+}
 
+/**
+ * @tc.name: AppDomainVerifyAgentSaDeathRecipientTest002
+ * @tc.desc: VerifyDomain test.
+ * @tc.type: FUNC
+ */
+HWTEST_F(AppDomainVerifyAgentClientTest, AppDomainVerifyAgentSaDeathRecipientTest002, TestSize.Level0)
+{
+    std::unique_ptr<AppDomainVerifyAgentRemoteStubMock> impl = std::make_unique<AppDomainVerifyAgentRemoteStubMock>();
+    sptr<AppDomainVerifyAgentRemoteStubMock> mgrStubMock_(impl.get());
+    EXPECT_CALL(*mgrStubMock_, AsObject()).Times(1).WillOnce(::testing::Return(nullptr));
+    AppDomainVerifyAgentClient::agentServiceProxy_ = mgrStubMock_;
+
+    AgentSaDeathRecipient AppDomainVerifyAgentSaDeathRecipient;
+    AppDomainVerifyAgentSaDeathRecipient.OnRemoteDied(nullptr);
+    ASSERT_TRUE(AppDomainVerifyAgentClient::agentServiceProxy_ == nullptr);
+    mgrStubMock_.ForceSetRefPtr(nullptr);
+    printf("reset mgrStubMock_ \n");
+}
+
+/**
+ * @tc.name: AppDomainVerifyAgentSaDeathRecipientTest003
+ * @tc.desc: VerifyDomain test.
+ * @tc.type: FUNC
+ */
+HWTEST_F(AppDomainVerifyAgentClientTest, AppDomainVerifyAgentSaDeathRecipientTest003, TestSize.Level0)
+{
+    AgentSaDeathRecipient AppDomainVerifyAgentSaDeathRecipient;
+    AppDomainVerifyAgentSaDeathRecipient.OnRemoteDied(nullptr);
+    ASSERT_TRUE(AppDomainVerifyAgentClient::agentServiceProxy_ == nullptr);
+}
 }

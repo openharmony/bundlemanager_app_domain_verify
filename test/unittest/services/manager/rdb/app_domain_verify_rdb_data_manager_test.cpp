@@ -25,7 +25,6 @@
 namespace OHOS::AppDomainVerify {
 using namespace testing;
 using namespace testing::ext;
-
 class RdbDataMgrTest : public testing::Test {
 public:
     static void SetUpTestCase(void);

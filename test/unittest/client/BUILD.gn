@@ -33,7 +33,7 @@ config("module_private_config") {
     "${app_domain_verify_service_path}/include/manager/core",
     "${app_domain_verify_service_path}/include/manager/constant",
     "${app_domain_verify_service_path}/include/manager/zidl",
-    "../mock/include",
+    "${app_domain_verify_test_path}/mock/include",
   ]
 }
 

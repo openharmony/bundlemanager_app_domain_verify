@@ -20,8 +20,8 @@
 namespace OHOS::AppDomainVerify {
 class MocVerifyTask : public IVerifyTask {
 public:
-    MocVerifyTask() = default;
-    ~MocVerifyTask() override = default;
+    MocVerifyTask(){printf("MocVerifyTask\n");};
+    ~MocVerifyTask(){printf("~MocVerifyTask\n");};
     MOCK_METHOD(void, OnPostVerify,
         (const std::string& uri, const OHOS::NetStack::HttpClient::HttpClientResponse& response), (override));
     MOCK_METHOD(void, OnSaveVerifyResult, (), (override));
