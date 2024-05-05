@@ -57,13 +57,13 @@ void MgrDataMgrTest::TearDown(void)
  */
 HWTEST_F(MgrDataMgrTest, MgrDataMgrTest001, TestSize.Level0)
 {
-   auto appDomainVerifyDataMgr = std::make_shared<AppDomainVerifyDataMgr>();
-   std::string bundleName = "";
-   VerifyResultInfo verifyResultInfo;
-   ASSERT_FALSE(appDomainVerifyDataMgr->GetVerifyStatus(bundleName, verifyResultInfo));
-   ASSERT_FALSE(appDomainVerifyDataMgr->SaveVerifyStatus(bundleName, verifyResultInfo));
-   ASSERT_FALSE(appDomainVerifyDataMgr->DeleteVerifyStatus(bundleName));
-   appDomainVerifyDataMgr->DeleteVerifyStatus(BUNDLE_NAME);
-   ASSERT_TRUE(appDomainVerifyDataMgr->GetAllVerifyStatus().empty());
+    auto appDomainVerifyDataMgr = std::make_shared<AppDomainVerifyDataMgr>();
+    std::string bundleName = "";
+    VerifyResultInfo verifyResultInfo;
+    ASSERT_FALSE(appDomainVerifyDataMgr->GetVerifyStatus(bundleName, verifyResultInfo));
+    ASSERT_FALSE(appDomainVerifyDataMgr->SaveVerifyStatus(bundleName, verifyResultInfo));
+    ASSERT_FALSE(appDomainVerifyDataMgr->DeleteVerifyStatus(bundleName));
+    appDomainVerifyDataMgr->DeleteVerifyStatus(BUNDLE_NAME);
+    ASSERT_TRUE(appDomainVerifyDataMgr->GetAllVerifyStatus().empty());
 }
 }

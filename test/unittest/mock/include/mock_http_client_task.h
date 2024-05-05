@@ -20,6 +20,7 @@
 #include "app_domain_verify_hilog.h"
 
 namespace OHOS::AppDomainVerify {
+const int block10k = 10*1024;
 class MocHttpClientTask : public VerifyHttpTask {
 public:
     explicit MocHttpClientTask(const OHOS::NetStack::HttpClient::HttpClientRequest& request)
@@ -53,9 +54,9 @@ public:
                 std::string jsonString =
                     R"({"applinking":{"apps":[{"appIdentifier":"appIdentifier","bundleName":"com.openHarmony.test","fingerprint":"fingerprint"}]}})";
                 response.SetResult(jsonString);
-                onDataReceive_(request, nullptr, 10 * 1024);
-                onDataReceive_(request, nullptr, 10 * 1024);
-                onDataReceive_(request, nullptr, 10 * 1024);
+                onDataReceive_(request, nullptr, block10k);
+                onDataReceive_(request, nullptr, block10k);
+                onDataReceive_(request, nullptr, block10k);
             }
         }
         if (sTaskRunOk) {

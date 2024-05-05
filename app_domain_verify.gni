@@ -30,5 +30,4 @@ app_domain_verify_service_path = "${app_domain_verify_root_path}/services"
 app_domain_verify_verifier_path =
     "${app_domain_verify_root_path}/interfaces/inner_api/verifier"
 
-app_domain_verify_test_path =
-    "${app_domain_verify_root_path}/test/unittest"
+app_domain_verify_test_path = "${app_domain_verify_root_path}/test/unittest"
