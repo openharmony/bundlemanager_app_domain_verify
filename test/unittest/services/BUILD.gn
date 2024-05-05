@@ -30,52 +30,11 @@ config("module_private_config") {
     "${app_domain_verify_common_path}/include",
     "${app_domain_verify_common_path}/include/utils",
     "${app_domain_verify_extension_path}/include",
-    "../mock/include",
+    "${app_domain_verify_test_path}/mock/include",
   ]
 }
 
 module_output_path = "app_domain_verify/app_domain_verify"
-
-ohos_unittest("app_domain_verify_module_test") {
-  module_out_path = module_output_path
-
-  sources = [
-    "app_domain_verify_agent_module_test.cpp",
-    "app_domain_verify_mgr_module_test.cpp",
-  ]
-  configs = [ ":module_private_config" ]
-  external_deps = [
-    "ability_base:want",
-    "ability_base:zuri",
-    "bundle_framework:appexecfwk_base",
-    "bundle_framework:appexecfwk_core",
-    "c_utils:utils",
-    "eventhandler:libeventhandler",
-    "ffrt:libffrt",
-    "hilog:libhilog",
-    "hisysevent:libhisysevent",
-    "image_framework:image_native",
-    "ipc:ipc_core",
-    "netstack:http_client",
-    "os_account:os_account_innerkits",
-    "relational_store:native_rdb",
-    "safwk:system_ability_fwk",
-    "samgr:samgr_proxy",
-  ]
-
-  defines = [ "API_EXPORT=__attribute__((visibility (\"default\")))" ]
-  deps = [
-    "${app_domain_verify_client_path}:app_domain_verify_agent_client",
-    "${app_domain_verify_client_path}:app_domain_verify_mgr_client",
-    "${app_domain_verify_common_path}:app_domain_verify_common",
-    "${app_domain_verify_extension_path}:app_domain_verify_extension_framework",
-    "${app_domain_verify_service_path}:app_domain_verify_agent_service",
-    "${app_domain_verify_service_path}:app_domain_verify_mgr_service",
-    "${app_domain_verify_verifier_path}:app_domain_verify_agent_verifier",
-    "//third_party/googletest:gmock_main",
-    "//third_party/googletest:gtest_main",
-  ]
-}
 ohos_unittest("app_domain_verify_service_test") {
   module_out_path = module_output_path
 
@@ -89,11 +48,11 @@ ohos_unittest("app_domain_verify_service_test") {
     "${app_domain_verify_service_path}/src/manager/rdb/app_domain_verify_rdb_open_callback.cpp",
     "${app_domain_verify_service_path}/src/manager/zidl/app_domain_verify_mgr_service_proxy.cpp",
     "${app_domain_verify_service_path}/src/manager/zidl/app_domain_verify_mgr_service_stub.cpp",
-    "../mock/src/mock_bundle_manager.cpp",
-    "../mock/src/mock_os_account_manager.cpp",
-    "../mock/src/mock_service_registry.cpp",
-    "../mock/src/mock_system_ability.cpp",
-    "../mock/src/mock_system_ability_ondemand_reason.cpp",
+    "${app_domain_verify_test_path}/mock/src/mock_bundle_manager.cpp",
+    "${app_domain_verify_test_path}/mock/src/mock_os_account_manager.cpp",
+    "${app_domain_verify_test_path}/mock/src/mock_service_registry.cpp",
+    "${app_domain_verify_test_path}/mock/src/mock_system_ability.cpp",
+    "${app_domain_verify_test_path}/mock/src/mock_system_ability_ondemand_reason.cpp",
     "./agent/core/app_domain_verify_agent_service_test.cpp",
     "./manager/core/app_domain_verify_data_mgr_test.cpp",
     "./manager/core/app_domain_verify_mgr_service_test.cpp",

@@ -193,6 +193,7 @@ HWTEST_F(AppDomainVerifyBeanTest, AppDomainVerifyBeanTest004, TestSize.Level0)
  */
 HWTEST_F(AppDomainVerifyBeanTest, AppDomainVerifyBeanTest005, TestSize.Level0)
 {
+    ASSERT_TRUE(UrlUtil::IsValidAppDomainVerifyHost("https://" + HOST));
     ASSERT_TRUE(UrlUtil::IsValidUrl("https://" + HOST));
     ASSERT_TRUE(UrlUtil::GetHost("ftp://" + HOST) == "");
     ASSERT_TRUE(UrlUtil::GetScheme(HOST) == "");

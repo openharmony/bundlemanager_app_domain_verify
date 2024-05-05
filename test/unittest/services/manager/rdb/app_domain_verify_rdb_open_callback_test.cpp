@@ -69,5 +69,5 @@ HWTEST_F(RdbOpenCallbackTest, RdbOpenCallbackTest001, TestSize.Level0)
     ASSERT_TRUE(appDomainVerifyRdbOpenCallback.OnDowngrade(*rdbStored, 2, 1) == NativeRdb::E_OK);
     ASSERT_TRUE(appDomainVerifyRdbOpenCallback.onCorruption("") == NativeRdb::E_OK);
 }
- 
+
 }

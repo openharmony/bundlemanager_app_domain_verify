@@ -40,7 +40,6 @@ bool MocHttpClientTask::sTaskRunOk;
 bool MocHttpClientTask::sHttpOk;
 bool MocHttpClientTask::sIsDataRecv = false;
 bool MocHttpClientTask::sIsCancel = false;
-
 class AppDomainVerifyAgentModuleTest : public testing::Test {
 public:
     static void SetUpTestCase(void);
@@ -51,19 +50,23 @@ public:
 
 void AppDomainVerifyAgentModuleTest::SetUpTestCase(void)
 {
+    printf("SetUpTestCase \n");
 }
 
 void AppDomainVerifyAgentModuleTest::TearDownTestCase(void)
 {
+    printf("TearDownTestCase \n");
 }
 
 void AppDomainVerifyAgentModuleTest::SetUp(void)
 {
+    printf("SetUp \n");
     AppDomainVerifyMgrClient::GetInstance()->ClearDomainVerifyStatus(APP_IDENTIFIER, BUNDLE_NAME);
 }
 
 void AppDomainVerifyAgentModuleTest::TearDown(void)
 {
+    printf("TearDown \n");
 }
 
 std::shared_ptr<VerifyHttpTask> InvokeGetTask(const OHOS::NetStack::HttpClient::HttpClientRequest &httpClientRequest)
@@ -328,7 +331,7 @@ HWTEST_F(AppDomainVerifyAgentModuleTest, AppDomainVerifyAgentModuleTest008, Test
  */
 HWTEST_F(AppDomainVerifyAgentModuleTest, AppDomainVerifyAgentModuleTest009, TestSize.Level0)
 {
-    auto appDomainVerifyAgentStubMock = std::make_shared<AppDomainVerifyAgentStubMock>();
+    auto appDomainVerifyAgentService = std::make_shared<AppDomainVerifyAgentService>();
     MessageParcel data;
     MessageParcel reply;
     MessageOption option;
@@ -340,7 +343,7 @@ HWTEST_F(AppDomainVerifyAgentModuleTest, AppDomainVerifyAgentModuleTest009, Test
     skillUri.scheme = "https";
     skillUri.host = HOST;
     data.WriteParcelable(&skillUri);
-    auto res = appDomainVerifyAgentStubMock->OnRemoteRequest(AgentInterfaceCode::SINGLE_VERIFY, data,
+    auto res = appDomainVerifyAgentService->OnRemoteRequest(AgentInterfaceCode::SINGLE_VERIFY, data,
         reply, option);
     ASSERT_TRUE(res == ERR_OK);
 }

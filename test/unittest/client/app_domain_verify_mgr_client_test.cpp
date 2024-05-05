@@ -115,7 +115,7 @@ HWTEST_F(AppDomainVerifyMgrClientTest, AppDomainVerifyMgrClientTest003, TestSize
     bundleVerifyStatusInfo.bundleVerifyStatusInfoMap_.insert_or_assign(BUNDLE_NAME, verifyResultInfo);
     auto queryRes = AppDomainVerifyMgrClient::GetInstance()->QueryAllDomainVerifyStatus(bundleVerifyStatusInfo);
     ASSERT_TRUE(queryRes);
-    ASSERT_TRUE(bundleVerifyStatusInfo.bundleVerifyStatusInfoMap_.empty());
+    ASSERT_FALSE(bundleVerifyStatusInfo.bundleVerifyStatusInfoMap_.empty());
 }
 
 /**
@@ -139,4 +139,71 @@ HWTEST_F(AppDomainVerifyMgrClientTest, AppDomainVerifyMgrClientTest004, TestSize
     ASSERT_TRUE(g_mgrInvokeOK);
     AppDomainVerifyMgrClient::appDomainVerifyMgrServiceProxy_.ForceSetRefPtr(nullptr);
 }
+/**
+ * @tc.name: AppDomainVerifyMgrClientTest004
+ * @tc.desc: VerifyDomain test.
+ * @tc.type: FUNC
+ */
+HWTEST_F(AppDomainVerifyMgrClientTest, AppDomainVerifyMgrClientTest005, TestSize.Level0)
+{
+    std::shared_ptr<AppDomainVerifyMgrRemoteStubMock> mgrStubMock_ =
+        std::make_shared<AppDomainVerifyMgrRemoteStubMock>();
+    EXPECT_CALL(*mgrStubMock_, SendRequest(_, _, _, _)).Times(1).WillOnce(::testing::Invoke(MgrInvokeOK));
+    AppDomainVerifyMgrClient::appDomainVerifyMgrServiceProxy_ = sptr<AppDomainVerifyMgrServiceProxy>::MakeSptr(
+        mgrStubMock_.get());
+    std::string bundleName = BUNDLE_NAME;
+    VerifyResultInfo verifyResultInfo;
+    verifyResultInfo.hostVerifyStatusMap.insert_or_assign("https://" + HOST, InnerVerifyStatus::STATE_SUCCESS);
+    AppDomainVerifyMgrClient::GetInstance()->SaveDomainVerifyStatus(BUNDLE_NAME, verifyResultInfo);
+    ASSERT_TRUE(g_mgrInvokeOK);
+    AppDomainVerifyMgrClient::appDomainVerifyMgrServiceProxy_.ForceSetRefPtr(nullptr);
+}
+/**
+ * @tc.name: AppDomainVerifyMgrSaDeathRecipientTest001
+ * @tc.desc: VerifyDomain test.
+ * @tc.type: FUNC
+ */
+HWTEST_F(AppDomainVerifyMgrClientTest, AppDomainVerifyMgrSaDeathRecipientTest001, TestSize.Level0)
+{
+    std::unique_ptr<AppDomainVerifyMgrRemoteStubMock> impl = std::make_unique<AppDomainVerifyMgrRemoteStubMock>();
+    sptr<AppDomainVerifyMgrRemoteStubMock> mgrStubMock_(impl.get());
+    EXPECT_CALL(*mgrStubMock_, AsObject()).Times(1).WillOnce(::testing::Return(nullptr));
+    AppDomainVerifyMgrClient::appDomainVerifyMgrServiceProxy_ = mgrStubMock_;
+
+    AppDomainVerifyMgrSaDeathRecipient AppDomainVerifyMgrSaDeathRecipient;
+    AppDomainVerifyMgrSaDeathRecipient.OnRemoteDied(nullptr);
+    ASSERT_TRUE(AppDomainVerifyMgrClient::appDomainVerifyMgrServiceProxy_ == nullptr);
+    mgrStubMock_.ForceSetRefPtr(nullptr);
+}
+
+/**
+ * @tc.name: AppDomainVerifyMgrSaDeathRecipientTest002
+ * @tc.desc: VerifyDomain test.
+ * @tc.type: FUNC
+ */
+HWTEST_F(AppDomainVerifyMgrClientTest, AppDomainVerifyMgrSaDeathRecipientTest002, TestSize.Level0)
+{
+    std::unique_ptr<AppDomainVerifyMgrRemoteStubMock> impl = std::make_unique<AppDomainVerifyMgrRemoteStubMock>();
+    sptr<AppDomainVerifyMgrRemoteStubMock> mgrStubMock_(impl.get());
+    EXPECT_CALL(*mgrStubMock_, AsObject()).Times(1).WillOnce(::testing::Return(mgrStubMock_));
+    AppDomainVerifyMgrClient::appDomainVerifyMgrServiceProxy_ = mgrStubMock_;
+
+    AppDomainVerifyMgrSaDeathRecipient AppDomainVerifyMgrSaDeathRecipient;
+    AppDomainVerifyMgrSaDeathRecipient.OnRemoteDied(nullptr);
+    ASSERT_TRUE(AppDomainVerifyMgrClient::appDomainVerifyMgrServiceProxy_ == nullptr);
+    mgrStubMock_.ForceSetRefPtr(nullptr);
+}
+
+/**
+ * @tc.name: AppDomainVerifyMgrSaDeathRecipientTest003
+ * @tc.desc: VerifyDomain test.
+ * @tc.type: FUNC
+ */
+HWTEST_F(AppDomainVerifyMgrClientTest, AppDomainVerifyMgrSaDeathRecipientTest003, TestSize.Level0)
+{
+    AppDomainVerifyMgrSaDeathRecipient AppDomainVerifyMgrSaDeathRecipient;
+    AppDomainVerifyMgrSaDeathRecipient.OnRemoteDied(nullptr);
+    ASSERT_TRUE(AppDomainVerifyMgrClient::appDomainVerifyMgrServiceProxy_ == nullptr);
+}
+
 }

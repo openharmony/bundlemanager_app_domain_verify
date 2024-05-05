@@ -18,7 +18,7 @@
 #include <gmock/gmock.h>
 #include <iremote_object.h>
 #include <iremote_stub.h>
-#include "manager/zidl/app_domain_verify_mgr_service_stub.h"
+#include "app_domain_verify_mgr_service_stub.h"
 
 namespace OHOS {
 namespace AppDomainVerify {
@@ -27,36 +27,36 @@ public:
     DECLARE_INTERFACE_DESCRIPTOR(u"IAppDomainVerifyMgrServiceMock");
     AppDomainVerifyMgrRemoteStubMock(){};
     virtual ~AppDomainVerifyMgrRemoteStubMock(){};
-    virtual void VerifyDomain(const std::string &appIdentifier, const std::string &bundleName,
-        const std::string &fingerprint, const std::vector<SkillUri> &skillUris) override
+    virtual void VerifyDomain(const std::string& appIdentifier, const std::string& bundleName,
+        const std::string& fingerprint, const std::vector<SkillUri>& skillUris) override
     {
     }
-    virtual bool ClearDomainVerifyStatus(const std::string &appIdentifier, const std::string &bundleName) override
-    {
-        return true;
-    }
-    virtual bool FilterAbilities(const OHOS::AAFwk::Want &want,
-        const std::vector<OHOS::AppExecFwk::AbilityInfo> &originAbilityInfos,
-        std::vector<OHOS::AppExecFwk::AbilityInfo> &filtedAbilityInfos) override
+    virtual bool ClearDomainVerifyStatus(const std::string& appIdentifier, const std::string& bundleName) override
     {
         return true;
     }
-    virtual bool QueryDomainVerifyStatus(const std::string &bundleName,
-        DomainVerifyStatus &domainVerificationState) override
+    virtual bool FilterAbilities(const OHOS::AAFwk::Want& want,
+        const std::vector<OHOS::AppExecFwk::AbilityInfo>& originAbilityInfos,
+        std::vector<OHOS::AppExecFwk::AbilityInfo>& filtedAbilityInfos) override
     {
         return true;
     }
-    virtual bool QueryAllDomainVerifyStatus(BundleVerifyStatusInfo &bundleVerifyStatusInfo) override
+    virtual bool QueryDomainVerifyStatus(
+        const std::string& bundleName, DomainVerifyStatus& domainVerificationState) override
     {
         return true;
     }
-    virtual bool SaveDomainVerifyStatus(const std::string &bundleName,
-        const VerifyResultInfo &verifyResultInfo) override
+    virtual bool QueryAllDomainVerifyStatus(BundleVerifyStatusInfo& bundleVerifyStatusInfo) override
     {
         return true;
     }
-
-    MOCK_METHOD4(SendRequest, int(uint32_t, MessageParcel &, MessageParcel &, MessageOption &));
+    virtual bool SaveDomainVerifyStatus(
+        const std::string& bundleName, const VerifyResultInfo& verifyResultInfo) override
+    {
+        return true;
+    }
+    MOCK_METHOD4(SendRequest, int(uint32_t, MessageParcel&, MessageParcel&, MessageOption&));
+    MOCK_METHOD(sptr<IRemoteObject>, AsObject, (), (override));
 };
 
 class AppDomainVerifyMgrStubMock : public AppDomainVerifyMgrServiceStub {
@@ -64,33 +64,33 @@ public:
     AppDomainVerifyMgrStubMock(){};
     virtual ~AppDomainVerifyMgrStubMock(){};
 
-    virtual void VerifyDomain(const std::string &appIdentifier, const std::string &bundleName,
-        const std::string &fingerprint, const std::vector<SkillUri> &skillUris) override
+    virtual void VerifyDomain(const std::string& appIdentifier, const std::string& bundleName,
+        const std::string& fingerprint, const std::vector<SkillUri>& skillUris) override
     {
     }
-    virtual bool ClearDomainVerifyStatus(const std::string &appIdentifier, const std::string &bundleName) override
+    virtual bool ClearDomainVerifyStatus(const std::string& appIdentifier, const std::string& bundleName) override
     {
         return true;
     }
-    virtual bool FilterAbilities(const OHOS::AAFwk::Want &want,
-        const std::vector<OHOS::AppExecFwk::AbilityInfo> &originAbilityInfos,
-        std::vector<OHOS::AppExecFwk::AbilityInfo> &filtedAbilityInfos) override
+    virtual bool FilterAbilities(const OHOS::AAFwk::Want& want,
+        const std::vector<OHOS::AppExecFwk::AbilityInfo>& originAbilityInfos,
+        std::vector<OHOS::AppExecFwk::AbilityInfo>& filtedAbilityInfos) override
     {
         std::vector<OHOS::AppExecFwk::AbilityInfo> abilityInfos;
         filtedAbilityInfos = abilityInfos;
         return true;
     }
-    virtual bool QueryDomainVerifyStatus(const std::string &bundleName,
-        DomainVerifyStatus &domainVerificationState) override
+    virtual bool QueryDomainVerifyStatus(
+        const std::string& bundleName, DomainVerifyStatus& domainVerificationState) override
     {
         return true;
     }
-    virtual bool QueryAllDomainVerifyStatus(BundleVerifyStatusInfo &bundleVerifyStatusInfo) override
+    virtual bool QueryAllDomainVerifyStatus(BundleVerifyStatusInfo& bundleVerifyStatusInfo) override
     {
         return true;
     }
-    virtual bool SaveDomainVerifyStatus(const std::string &bundleName,
-        const VerifyResultInfo &verifyResultInfo) override
+    virtual bool SaveDomainVerifyStatus(
+        const std::string& bundleName, const VerifyResultInfo& verifyResultInfo) override
     {
         return true;
     }

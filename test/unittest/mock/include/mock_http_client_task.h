@@ -20,13 +20,14 @@
 #include "app_domain_verify_hilog.h"
 
 namespace OHOS::AppDomainVerify {
+const int block10k = 10*1024;
 class MocHttpClientTask : public VerifyHttpTask {
 public:
-    MocHttpClientTask(const OHOS::NetStack::HttpClient::HttpClientRequest &request)
+    explicit MocHttpClientTask(const OHOS::NetStack::HttpClient::HttpClientRequest& request)
         : VerifyHttpTask(request){};
 
-    MocHttpClientTask(const OHOS::NetStack::HttpClient::HttpClientRequest &request,
-        OHOS::NetStack::HttpClient::TaskType type, const std::string &filePath)
+    MocHttpClientTask(const OHOS::NetStack::HttpClient::HttpClientRequest& request,
+        OHOS::NetStack::HttpClient::TaskType type, const std::string& filePath)
         : VerifyHttpTask(request, type, filePath){};
 
     virtual ~MocHttpClientTask(){};
@@ -34,6 +35,30 @@ public:
     bool Start()
     {
         APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MODULE_BUTT, "%s called", __func__);
+        if (sIsCancel) {
+            if (onCanceled_) {
+                OHOS::NetStack::HttpClient::HttpClientRequest request;
+                OHOS::NetStack::HttpClient::HttpClientResponse response;
+                response.SetResponseCode(OHOS::NetStack::HttpClient::ResponseCode::OK);
+                std::string jsonString =
+                    R"({"applinking":{"apps":[{"appIdentifier":"appIdentifier","bundleName":"com.openHarmony.test","fingerprint":"fingerprint"}]}})";
+                response.SetResult(jsonString);
+                onSucceeded_(request, response);
+            }
+        }
+        if (sIsDataRecv) {
+            if (onDataReceive_) {
+                OHOS::NetStack::HttpClient::HttpClientRequest request;
+                OHOS::NetStack::HttpClient::HttpClientResponse response;
+                response.SetResponseCode(OHOS::NetStack::HttpClient::ResponseCode::OK);
+                std::string jsonString =
+                    R"({"applinking":{"apps":[{"appIdentifier":"appIdentifier","bundleName":"com.openHarmony.test","fingerprint":"fingerprint"}]}})";
+                response.SetResult(jsonString);
+                onDataReceive_(request, nullptr, block10k);
+                onDataReceive_(request, nullptr, block10k);
+                onDataReceive_(request, nullptr, block10k);
+            }
+        }
         if (sTaskRunOk) {
             if (onSucceeded_) {
                 OHOS::NetStack::HttpClient::HttpClientRequest request;
@@ -82,6 +107,8 @@ public:
         onDataReceive_ = onDataReceive;
     }
 
+    static bool sIsDataRecv;
+    static bool sIsCancel;
     static bool sTaskRunOk;
     static bool sHttpOk;
 
@@ -96,6 +123,9 @@ private:
     std::function<void(const OHOS::NetStack::HttpClient::HttpClientRequest &request, const uint8_t *data,
         size_t length)>
         onDataReceive_;
+    std::function<void(const OHOS::NetStack::HttpClient::HttpClientRequest& request,
+        const OHOS::NetStack::HttpClient::HttpClientResponse& response)>
+        onCanceled_;
 };
 }
 
