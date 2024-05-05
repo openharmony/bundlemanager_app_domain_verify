@@ -177,21 +177,16 @@ HWTEST_F(AppDomainVerifyTaskMgrTest, AppDomainVerifyTaskMgrTest007, TestSize.Lev
     EXPECT_CALL(*task, OnPostVerify(_, _)).Times(1);
     EXPECT_CALL(*task, OnSaveVerifyResult()).Times(1);
     EXPECT_CALL(*task, OnPreRequest(_, _)).Times(1).WillOnce(Return(true));
-    {
     MocHttpClientTask::sTaskRunOk = false;
     MocHttpClientTask::sHttpOk = true;
+
     auto appDomainVerifyTaskMgr = std::make_shared<AppDomainVerifyTaskMgr>();
     OHOS::NetStack::HttpClient::HttpClientRequest request;
     auto mockTask = std::make_shared<MocHttpClientTask>(request);
     auto httpClientTaskFactory_ = std::make_unique<MocHttpClientTaskFactory>();
     EXPECT_CALL(*httpClientTaskFactory_, CreateTask(_)).Times(1).WillOnce(Return(mockTask));
     appDomainVerifyTaskMgr->httpClientTaskFactory_ = std::move(httpClientTaskFactory_);
-
-
-
     appDomainVerifyTaskMgr->AddTask(task);
-    }
-    printf("task.use_count():%lu\n", task.use_count());
 }
 
 /**

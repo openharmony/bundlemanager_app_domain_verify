@@ -27,29 +27,31 @@ namespace AppDomainVerify {
 class AppDomainVerifyAgentRemoteStubMock : public IRemoteStub<IAppDomainVerifyAgentService> {
 public:
     DECLARE_INTERFACE_DESCRIPTOR(u"IAppDomainVerifyAgentServiceMock");
-    AppDomainVerifyAgentRemoteStubMock(){
+    AppDomainVerifyAgentRemoteStubMock()
+    {
         printf("AppDomainVerifyAgentRemoteStubMock \n");
     };
-    virtual ~AppDomainVerifyAgentRemoteStubMock(){
+    virtual ~AppDomainVerifyAgentRemoteStubMock()
+    {
         printf("~AppDomainVerifyAgentRemoteStubMock \n");
     };
-    virtual void SingleVerify(const AppVerifyBaseInfo &appVerifyBaseInfo,
-        const std::vector<SkillUri> &skillUris) override
+    virtual void SingleVerify(
+        const AppVerifyBaseInfo& appVerifyBaseInfo, const std::vector<SkillUri>& skillUris) override
     {
     }
-    MOCK_METHOD4(SendRequest, int(uint32_t, MessageParcel &, MessageParcel &, MessageOption &));
-    MOCK_METHOD(sptr<IRemoteObject>, AsObject,(), (override));
+    MOCK_METHOD4(SendRequest, int(uint32_t, MessageParcel&, MessageParcel&, MessageOption&));
+    MOCK_METHOD(sptr<IRemoteObject>, AsObject, (), (override));
 };
 
 class AppDomainVerifyAgentStubMock : public AppDomainVerifyAgentServiceStub {
 public:
     AppDomainVerifyAgentStubMock(){};
     virtual ~AppDomainVerifyAgentStubMock(){};
-    virtual void SingleVerify(const AppVerifyBaseInfo &appVerifyBaseInfo,
-        const std::vector<SkillUri> &skillUris) override
+    virtual void SingleVerify(
+        const AppVerifyBaseInfo& appVerifyBaseInfo, const std::vector<SkillUri>& skillUris) override
     {
     }
-    virtual void ExitIdleState()override
+    virtual void ExitIdleState() override
     {
     }
 };

@@ -17,14 +17,13 @@
 
 namespace OHOS {
 namespace AppDomainVerify {
-ErrorCode AppDomainVerifyAgentExt::CompleteVerifyRefresh(const BundleVerifyStatusInfo &bundleVerifyStatusInfo,
-                                        const std::vector<InnerVerifyStatus> &statuses,
-                                        int delaySeconds, TaskType type)
+ErrorCode AppDomainVerifyAgentExt::CompleteVerifyRefresh(const BundleVerifyStatusInfo& bundleVerifyStatusInfo,
+    const std::vector<InnerVerifyStatus>& statuses, int delaySeconds, TaskType type)
 {
     return ErrorCode::E_EXTENSIONS_LIB_NOT_FOUND;
 }
-ErrorCode AppDomainVerifyAgentExt::SingleVerify(const AppVerifyBaseInfo &appVerifyBaseInfo,
-                                                const std::vector<SkillUri> &skillUris)
+ErrorCode AppDomainVerifyAgentExt::SingleVerify(
+    const AppVerifyBaseInfo& appVerifyBaseInfo, const std::vector<SkillUri>& skillUris)
 {
     return ErrorCode::E_EXTENSIONS_LIB_NOT_FOUND;
 }
