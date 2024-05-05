@@ -30,14 +30,8 @@ namespace AppDomainVerify {
 class AppDomainVerifyAgentExt : public AppDomainVerifyExtBase {
 public:
     virtual ErrorCode CompleteVerifyRefresh(const BundleVerifyStatusInfo &bundleVerifyStatusInfo,
-        const std::vector<InnerVerifyStatus> &statuses, int delaySeconds, TaskType type)
-    {
-        return ErrorCode::E_EXTENSIONS_LIB_NOT_FOUND;
-    }
-    virtual ErrorCode SingleVerify(const AppVerifyBaseInfo &appVerifyBaseInfo, const std::vector<SkillUri> &skillUris)
-    {
-        return ErrorCode::E_EXTENSIONS_LIB_NOT_FOUND;
-    }
+        const std::vector<InnerVerifyStatus> &statuses, int delaySeconds, TaskType type);
+    virtual ErrorCode SingleVerify(const AppVerifyBaseInfo &appVerifyBaseInfo, const std::vector<SkillUri> &skillUris);
 };
 }
 }

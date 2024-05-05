@@ -42,6 +42,7 @@ config("app_domain_verify_extension_public_config") {
 
 ohos_shared_library("app_domain_verify_extension_framework") {
   sources = [
+    "${app_domain_verify_extension_path}/src/app_domain_verify_agent_ext.cpp",
     "${app_domain_verify_extension_path}/src/app_domain_verify_extension_mgr.cpp",
     "${app_domain_verify_extension_path}/src/app_domain_verify_extension_register.cpp",
   ]

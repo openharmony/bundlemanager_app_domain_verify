@@ -18,7 +18,7 @@
 #include <gmock/gmock.h>
 #include <iremote_object.h>
 #include <iremote_stub.h>
-#include "manager/zidl/app_domain_verify_mgr_service_stub.h"
+#include "app_domain_verify_mgr_service_stub.h"
 
 namespace OHOS {
 namespace AppDomainVerify {
@@ -57,6 +57,8 @@ public:
     }
 
     MOCK_METHOD4(SendRequest, int(uint32_t, MessageParcel &, MessageParcel &, MessageOption &));
+    MOCK_METHOD(sptr<IRemoteObject>, AsObject,(), (override));
+
 };
 
 class AppDomainVerifyMgrStubMock : public AppDomainVerifyMgrServiceStub {

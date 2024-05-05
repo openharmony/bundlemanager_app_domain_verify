@@ -32,13 +32,13 @@ config("module_private_config") {
     "${app_domain_verify_service_path}/include/manager/core",
     "${app_domain_verify_service_path}/include/manager/constant",
     "${app_domain_verify_service_path}/include/manager/zidl",
-    "../mock/include",
+    "${app_domain_verify_test_path}/mock/include",
   ]
 }
 
 module_output_path = "app_domain_verify/app_domain_verify"
 
-ohos_unittest("app_domain_verify_common_test") {
+ohos_unittest("app_domain_verify_bean_test") {
   module_out_path = module_output_path
 
   sources = [
@@ -50,14 +50,12 @@ ohos_unittest("app_domain_verify_common_test") {
     "${app_domain_verify_common_path}/src/httpsession/verify_http_task_factory.cpp",
     "${app_domain_verify_common_path}/src/skill_uri.cpp",
     "${app_domain_verify_common_path}/src/utils/domain_url_util.cpp",
-    "../mock/src/mock_bundle_manager.cpp",
-    "../mock/src/mock_os_account_manager.cpp",
-    "../mock/src/mock_service_registry.cpp",
-    "../mock/src/mock_system_ability.cpp",
-    "../mock/src/mock_system_ability_ondemand_reason.cpp",
+    "${app_domain_verify_test_path}/mock/src/mock_bundle_manager.cpp",
+    "${app_domain_verify_test_path}/mock/src/mock_os_account_manager.cpp",
+    "${app_domain_verify_test_path}/mock/src/mock_service_registry.cpp",
+    "${app_domain_verify_test_path}/mock/src/mock_system_ability.cpp",
+    "${app_domain_verify_test_path}/mock/src/mock_system_ability_ondemand_reason.cpp",
     "bean_test.cpp",
-    "bms/bundle_info_query_test.cpp",
-    "httpsession/app_domain_verify_task_mgr_test.cpp",
   ]
   configs = [ ":module_private_config" ]
   external_deps = [
