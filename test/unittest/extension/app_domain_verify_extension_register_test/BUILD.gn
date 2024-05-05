@@ -33,7 +33,7 @@ config("module_private_config") {
     "${app_domain_verify_service_path}/include/manager/constant",
     "${app_domain_verify_service_path}/include/manager/zidl",
     "${app_domain_verify_extension_path}/include",
-    "../mock/include",
+    "${app_domain_verify_test_path}/mock/include",
   ]
 }
 
@@ -43,6 +43,7 @@ ohos_unittest("app_domain_verify_extension_register_test") {
   module_out_path = module_output_path
 
   sources = [
+    "${app_domain_verify_extension_path}/src/app_domain_verify_agent_ext.cpp",
     "${app_domain_verify_extension_path}/src/app_domain_verify_extension_register.cpp",
     "app_domain_verify_extension_register_test.cpp",
   ]

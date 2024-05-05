@@ -25,7 +25,6 @@
 namespace OHOS::AppDomainVerify {
 using namespace testing;
 using namespace testing::ext;
-
 class RdbDataMgrTest : public testing::Test {
 public:
     static void SetUpTestCase(void);
@@ -64,4 +63,64 @@ HWTEST_F(RdbDataMgrTest, RdbDataMgrTest001, TestSize.Level0)
     ASSERT_FALSE(appDomainVerifyRdbDataManager->CheckRdbReturnIfOk(NativeRdb::E_DB_NOT_EXIST));
     ASSERT_FALSE(appDomainVerifyRdbDataManager->CheckRdbStoreExist(nullptr));
 }
+///**
+// * @tc.name: RdbDataMgrTest002
+// * @tc.desc: Check test
+// * @tc.type: FUNC
+// */
+//HWTEST_F(RdbDataMgrTest, RdbDataMgrTest002, TestSize.Level0)
+//{
+//    AppDomainVerifyRdbConfig rdbConfig;
+//    rdbConfig.dbName = Constants::RDB_NAME;
+//    rdbConfig.tableName = Constants::RDB_TABLE_NAME;
+//    auto appDomainVerifyRdbDataManager = std::make_shared<AppDomainVerifyRdbDataManager>(rdbConfig);
+//    appDomainVerifyRdbDataManager->appDomainVerifyRdbConfig_.dbPath = "";
+//    ASSERT_FALSE(appDomainVerifyRdbDataManager->InsertData("key", "value"));
+//}
+///**
+// * @tc.name: RdbDataMgrTest003
+// * @tc.desc: Check test
+// * @tc.type: FUNC
+// */
+//HWTEST_F(RdbDataMgrTest, RdbDataMgrTest003, TestSize.Level0)
+//{
+//    AppDomainVerifyRdbConfig rdbConfig;
+//    rdbConfig.dbName = Constants::RDB_NAME;
+//    rdbConfig.tableName = Constants::RDB_TABLE_NAME;
+//    auto appDomainVerifyRdbDataManager = std::make_shared<AppDomainVerifyRdbDataManager>(rdbConfig);
+//    appDomainVerifyRdbDataManager->appDomainVerifyRdbConfig_.dbPath = "";
+//    ASSERT_TRUE(appDomainVerifyRdbDataManager->CreateTable());
+//}
+///**
+// * @tc.name: RdbDataMgrTest004
+// * @tc.desc: Check test
+// * @tc.type: FUNC
+// */
+//HWTEST_F(RdbDataMgrTest, RdbDataMgrTest004, TestSize.Level0)
+//{
+//    AppDomainVerifyRdbConfig rdbConfig;
+//    rdbConfig.dbName = Constants::RDB_NAME;
+//    rdbConfig.tableName = Constants::RDB_TABLE_NAME;
+//    auto appDomainVerifyRdbDataManager = std::make_shared<AppDomainVerifyRdbDataManager>(rdbConfig);
+//    appDomainVerifyRdbDataManager->appDomainVerifyRdbConfig_.dbPath = "";
+//    std::unordered_map<std::string, std::string> keys;
+//    keys.emplace("key", "value");
+//    ASSERT_TRUE(appDomainVerifyRdbDataManager->QueryAllData(keys));
+//}
+///**
+// * @tc.name: RdbDataMgrTest005
+// * @tc.desc: Check test
+// * @tc.type: FUNC
+// */
+//HWTEST_F(RdbDataMgrTest, RdbDataMgrTest005, TestSize.Level0)
+//{
+//    AppDomainVerifyRdbConfig rdbConfig;
+//    rdbConfig.dbName = Constants::RDB_NAME;
+//    rdbConfig.tableName = Constants::RDB_TABLE_NAME;
+//    auto appDomainVerifyRdbDataManager = std::make_shared<AppDomainVerifyRdbDataManager>(rdbConfig);
+//    appDomainVerifyRdbDataManager->appDomainVerifyRdbConfig_.dbPath = "";
+//    std::unordered_map<std::string, std::string> keys;
+//    keys.emplace("key", "value");
+//    ASSERT_TRUE(appDomainVerifyRdbDataManager->QueryAllData(keys));
+//}
 }
