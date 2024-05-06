@@ -46,33 +46,44 @@ enum AppDomainVerifyDomainId {
     APP_DOMAIN_VERIFY_COMMON,
     APP_DOMAIN_VERIFY_BUTT,
 };
-
-static constexpr OHOS::HiviewDFX::HiLogLabel APP_DOMAIN_VERIFY_MODULE_LABEL[APP_DOMAIN_VERIFY_MODULE_BUTT + 1] = {
-    { LOG_CORE, APP_DOMAIN_VERIFY_EXTENSION_DOMAIN, "AppDomainVerifyExtension" },
-    { LOG_CORE, APP_DOMAIN_VERIFY_MGR_CLIENT_DOMAIN, "AppDomainVerifyMgrClient" },
-    { LOG_CORE, APP_DOMAIN_VERIFY_AGENT_CLIENT_DOMAIN, "AppDomainVerifyAgentClient" },
-    { LOG_CORE, APP_DOMAIN_VERIFY_MGR_SERVICE_DOMAIN, "AppDomainVerifyMgrService" },
-    { LOG_CORE, APP_DOMAIN_VERIFY_AGENT_SERVICE_DOMAIN, "AppDomainVerifyAgentService" },
-    { LOG_CORE, APP_DOMAIN_VERIFY_JS_NAPI, "AppDomainVerifyJSNAPI" },
-    { LOG_CORE, APP_DOMAIN_VERIFY_COMMON, "AppDomainVerifyCommon" },
-    { LOG_CORE, APP_DOMAIN_VERIFY_BUTT, "AppDomainVerifytest" },
+struct AppDomainVerifyModuleLabel {
+    uint32_t domain;
+    const char* tag;
+};
+static constexpr AppDomainVerifyModuleLabel APP_DOMAIN_VERIFY_MODULE_LABEL[APP_DOMAIN_VERIFY_MODULE_BUTT + 1] = {
+    { APP_DOMAIN_VERIFY_EXTENSION_DOMAIN, "AppDomainVerifyExtension" },
+    { APP_DOMAIN_VERIFY_MGR_CLIENT_DOMAIN, "AppDomainVerifyMgrClient" },
+    { APP_DOMAIN_VERIFY_AGENT_CLIENT_DOMAIN, "AppDomainVerifyAgentClient" },
+    { APP_DOMAIN_VERIFY_MGR_SERVICE_DOMAIN, "AppDomainVerifyMgrService" },
+    { APP_DOMAIN_VERIFY_AGENT_SERVICE_DOMAIN, "AppDomainVerifyAgentService" },
+    { APP_DOMAIN_VERIFY_JS_NAPI, "AppDomainVerifyJSNAPI" },
+    { APP_DOMAIN_VERIFY_COMMON, "AppDomainVerifyCommon" },
+    { APP_DOMAIN_VERIFY_BUTT, "AppDomainVerifytest" },
 };
 
-#define FORMATED(fmt, ...) "%{public}s# " fmt, __FUNCTION__, ##__VA_ARGS__
+#ifndef APP_DOMAIN_VERIFY_FUNC_FMT
+#define APP_DOMAIN_VERIFY_FUNC_FMT "[%{public}s(%{public}s:%{public}d)]"
+#endif
 
-// In order to improve performance, do not check the module range.
-// Besides, make sure module is less than APP_DOMAIN_VERIFY_MODULE_BUTT.
-#define APP_DOMAIN_VERIFY_HILOGF(module, ...) \
-    (void)OHOS::HiviewDFX::HiLog::Fatal(APP_DOMAIN_VERIFY_MODULE_LABEL[module], FORMATED(__VA_ARGS__))
-#define APP_DOMAIN_VERIFY_HILOGE(module, ...) \
-    (void)OHOS::HiviewDFX::HiLog::Error(APP_DOMAIN_VERIFY_MODULE_LABEL[module], FORMATED(__VA_ARGS__))
-#define APP_DOMAIN_VERIFY_HILOGW(module, ...) \
-    (void)OHOS::HiviewDFX::HiLog::Warn(APP_DOMAIN_VERIFY_MODULE_LABEL[module], FORMATED(__VA_ARGS__))
-#define APP_DOMAIN_VERIFY_HILOGI(module, ...) \
-    (void)OHOS::HiviewDFX::HiLog::Info(APP_DOMAIN_VERIFY_MODULE_LABEL[module], FORMATED(__VA_ARGS__))
-#define APP_DOMAIN_VERIFY_HILOGD(module, ...) \
-    (void)OHOS::HiviewDFX::HiLog::Debug(APP_DOMAIN_VERIFY_MODULE_LABEL[module], FORMATED(__VA_ARGS__))
-} // namespace AppDomainVerify
+#ifndef APP_DOMAIN_VERIFY_FILE_NAME
+#define APP_DOMAIN_VERIFY_FILE_NAME (__builtin_strrchr(__FILE__, '/') ? __builtin_strrchr(__FILE__, '/') + 1 : __FILE__)
+#endif
+
+#ifndef APP_DOMAIN_VERIFY_FUNC_INFO
+#define APP_DOMAIN_VERIFY_FUNC_INFO APP_DOMAIN_VERIFY_FILE_NAME, __FUNCTION__, __LINE__
+#endif
+
+#define APP_DOMAIN_VERIFY_PRINT_LOG(level, label, fmt, ...)                                                     \
+    ((void)HILOG_IMPL(LOG_CORE, level, APP_DOMAIN_VERIFY_MODULE_LABEL[label].domain,                            \
+        APP_DOMAIN_VERIFY_MODULE_LABEL[label].tag, APP_DOMAIN_VERIFY_FUNC_FMT fmt, APP_DOMAIN_VERIFY_FUNC_INFO, \
+        ##__VA_ARGS__))
+
+#define APP_DOMAIN_VERIFY_HILOGD(label, fmt, ...) APP_DOMAIN_VERIFY_PRINT_LOG(LOG_DEBUG, label, fmt, ##__VA_ARGS__)
+#define APP_DOMAIN_VERIFY_HILOGI(label, fmt, ...) APP_DOMAIN_VERIFY_PRINT_LOG(LOG_INFO, label, fmt, ##__VA_ARGS__)
+#define APP_DOMAIN_VERIFY_HILOGW(label, fmt, ...) APP_DOMAIN_VERIFY_PRINT_LOG(LOG_WARN, label, fmt, ##__VA_ARGS__)
+#define APP_DOMAIN_VERIFY_HILOGE(label, fmt, ...) APP_DOMAIN_VERIFY_PRINT_LOG(LOG_ERROR, label, fmt, ##__VA_ARGS__)
+#define APP_DOMAIN_VERIFY_HILOGF(label, fmt, ...) APP_DOMAIN_VERIFY_PRINT_LOG(LOG_FATAL, label, fmt, ##__VA_ARGS__)
+}  // namespace AppDomainVerify
 } // namespace OHOS
 
 #endif // APP_DOMAIN_VERIFY_HILOG_H
