@@ -107,6 +107,7 @@ HWTEST_F(AppDomainVerifyAgentModuleTest, AppDomainVerifyAgentModuleTest001, Test
 HWTEST_F(AppDomainVerifyAgentModuleTest, AppDomainVerifyAgentModuleTest002, TestSize.Level0)
 {
     MocHttpClientTask::sTaskRunOk = true;
+    MocHttpClientTask::sHttpOk = true;
     auto mocHttpClientTaskFactory = std::make_unique<MocHttpClientTaskFactory>();
     EXPECT_CALL(*mocHttpClientTaskFactory, CreateTask(_))
         .Times(::testing::AtLeast(1))
