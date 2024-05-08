@@ -20,6 +20,7 @@
 #define protected public
 #include "app_domain_verify_data_mgr.h"
 #include "app_domain_verify_mgr_service.h"
+#include "app_domain_verify_agent_client.h"
 #undef private
 #undef protected
 #include "mock_verify_agent.h"
@@ -31,10 +32,12 @@
 #include "app_domain_verify_mgr_interface_code.h"
 #include "system_ability_definition.h"
 #include "parcel_util.h"
+
 namespace OHOS::AppDomainVerify {
 using namespace testing;
 using namespace testing::ext;
 std::shared_ptr<AppDomainVerifyMgrService> appDomainVerifyMgrService = std::make_shared<AppDomainVerifyMgrService>();
+auto appDomainVerifyAgentStubMock_ = std::make_shared<AppDomainVerifyAgentRemoteStubMock>();
 class MgrServiceTest : public testing::Test {
 public:
     static void SetUpTestCase(void);
@@ -43,6 +46,25 @@ public:
     void TearDown();
 };
 
+int InvokeSingleVerifyOK(uint32_t code, MessageParcel &data, MessageParcel &reply, MessageOption &option)
+{
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MODULE_BUTT, "%s call end", __func__);
+    std::string bundleName = BUNDLE_NAME;
+    VerifyResultInfo verifyResultInfo;
+    verifyResultInfo.hostVerifyStatusMap.insert_or_assign("https://" + HOST, InnerVerifyStatus::STATE_SUCCESS);
+    appDomainVerifyMgrService->SaveDomainVerifyStatus(bundleName, verifyResultInfo);
+    return 0;
+}
+
+int InvokeSingleVerifyFail(uint32_t code, MessageParcel &data, MessageParcel &reply, MessageOption &option)
+{
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MODULE_BUTT, "%s call end", __func__);
+    std::string bundleName = BUNDLE_NAME;
+    VerifyResultInfo verifyResultInfo;
+    verifyResultInfo.hostVerifyStatusMap.insert_or_assign("https://" + HOST, InnerVerifyStatus::STATE_FAIL);
+    appDomainVerifyMgrService->SaveDomainVerifyStatus(bundleName, verifyResultInfo);
+    return UNKNOWN_ERROR;
+}
 void MgrServiceTest::SetUpTestCase(void)
 {
     printf("SetUpTestCase \n");
@@ -50,6 +72,13 @@ void MgrServiceTest::SetUpTestCase(void)
 
 void MgrServiceTest::TearDownTestCase(void)
 {
+    printf("TearDownTestCase  1\n");
+    AppDomainVerifyAgentClient::agentServiceProxy_.ForceSetRefPtr(nullptr);
+    printf("TearDownTestCase 2\n");
+    AppDomainVerifyAgentClient::DestroyInstance();
+    printf("TearDownTestCase 3\n");
+    appDomainVerifyMgrService->Stop();
+    appDomainVerifyAgentStubMock_.reset();
     printf("TearDownTestCase \n");
 }
 
@@ -64,37 +93,18 @@ void MgrServiceTest::TearDown(void)
 }
 
 /**
- * @tc.name: MgrServiceTest001
- * @tc.desc: ClearDomainVerifyStatus test
- * @tc.type: FUNC
-*/
-HWTEST_F(MgrServiceTest, MgrServiceTest001, TestSize.Level0)
-{
-    appDomainVerifyMgrService->OnStart();
-    ASSERT_TRUE(appDomainVerifyMgrService->ClearDomainVerifyStatus(APP_IDENTIFIER, BUNDLE_NAME));
-    appDomainVerifyMgrService->OnStop();
-}
-
-/**
- * @tc.name: MgrServiceTest002
- * @tc.desc: ClearDomainVerifyStatus test
- * @tc.type: FUNC
- */
-HWTEST_F(MgrServiceTest, MgrServiceTest002, TestSize.Level0)
-{
-    appDomainVerifyMgrService->OnStart();
-    ASSERT_TRUE(appDomainVerifyMgrService->ClearDomainVerifyStatus(APP_IDENTIFIER, BUNDLE_NAME));
-    appDomainVerifyMgrService->OnStop();
-}
-
-/**
  * @tc.name: MgrServiceVerifyDomainTest001
- * @tc.desc: Normal
+ * @tc.desc: verify domain ok
  * @tc.type: FUNC
  */
 HWTEST_F(MgrServiceTest, MgrServiceVerifyDomainTest001, TestSize.Level0)
 {
-    auto appDomainVerifyMgrStubMock = std::make_shared<AppDomainVerifyMgrStubMock>();
+    EXPECT_CALL(*appDomainVerifyAgentStubMock_, SendRequest(_, _, _, _))
+            .Times(1)
+            .WillOnce(::testing::Invoke(InvokeSingleVerifyOK));
+    AppDomainVerifyAgentClient::agentServiceProxy_ = sptr<AppDomainVerifyAgentServiceProxy>::MakeSptr(
+            appDomainVerifyAgentStubMock_.get());
+
     std::string appIdentifier = "appIdentifier";
     std::string bundleName = "bundleName";
     std::string fingerprint = "fingerprint";
@@ -116,17 +126,17 @@ HWTEST_F(MgrServiceTest, MgrServiceVerifyDomainTest001, TestSize.Level0)
     for (uint32_t i = 0; i < skillUris.size(); ++i) {
         WRITE_PARCEL_AND_RETURN_IF_FAIL(Parcelable, data, &skillUris[i]);
     }
-    (void)appDomainVerifyMgrService->OnRemoteRequest(AppDomainVerifyMgrInterfaceCode::VERIFY_DOMAIN, data, reply, option);
+    int32_t error = appDomainVerifyMgrService->OnRemoteRequest(AppDomainVerifyMgrInterfaceCode::VERIFY_DOMAIN, data, reply, option);
+    ASSERT_TRUE(error == ERR_OK);
 }
 
 /**
  * @tc.name: MgrServiceVerifyDomainTest002
- * @tc.desc: Normal
+ * @tc.desc: verify domain wrong with interface token
  * @tc.type: FUNC
  */
 HWTEST_F(MgrServiceTest, MgrServiceVerifyDomainTest002, TestSize.Level0)
 {
-    auto appDomainVerifyMgrStubMock = std::make_shared<AppDomainVerifyMgrStubMock>();
     std::string appIdentifier = "appIdentifier";
     std::string bundleName = "bundleName";
     std::string fingerprint = "fingerprint";
@@ -145,12 +155,13 @@ HWTEST_F(MgrServiceTest, MgrServiceVerifyDomainTest002, TestSize.Level0)
     uint32_t size = static_cast<uint32_t>(skillUris.size());
     WRITE_PARCEL_AND_RETURN_IF_FAIL(Uint32, data, size);
 
-    (void)appDomainVerifyMgrService->OnRemoteRequest(AppDomainVerifyMgrInterfaceCode::VERIFY_DOMAIN, data, reply, option);
+    int32_t error = appDomainVerifyMgrService->OnRemoteRequest(AppDomainVerifyMgrInterfaceCode::VERIFY_DOMAIN, data, reply, option);
+    ASSERT_TRUE(error != ERR_OK);
 }
 
 /**
  * @tc.name: MgrServiceVerifyDomainTest003
- * @tc.desc: Normal
+ * @tc.desc: OnRemoteRequest with wrong opconde
  * @tc.type: FUNC
  */
 HWTEST_F(MgrServiceTest, MgrServiceVerifyDomainTest003, TestSize.Level0)
@@ -174,11 +185,12 @@ HWTEST_F(MgrServiceTest, MgrServiceVerifyDomainTest003, TestSize.Level0)
     uint32_t size = static_cast<uint32_t>(skillUris.size());
     WRITE_PARCEL_AND_RETURN_IF_FAIL(Uint32, data, size);
 
-    (void)appDomainVerifyMgrService->OnRemoteRequest(100, data, reply, option);
+    int32_t error = appDomainVerifyMgrService->OnRemoteRequest(100, data, reply, option);
+    ASSERT_TRUE(error != ERR_OK);
 }
 /**
  * @tc.name: MgrServiceClearDomainTest001
- * @tc.desc: Normal
+ * @tc.desc: clear domain verify result ok
  * @tc.type: FUNC
  */
 HWTEST_F(MgrServiceTest, MgrServiceClearDomainTest001, TestSize.Level0)
@@ -193,14 +205,14 @@ HWTEST_F(MgrServiceTest, MgrServiceClearDomainTest001, TestSize.Level0)
     WRITE_PARCEL_AND_RETURN_IF_FAIL(InterfaceToken, data, AppDomainVerifyMgrServiceProxy::GetDescriptor());
     WRITE_PARCEL_AND_RETURN_IF_FAIL(String, data, appIdentifier);
     WRITE_PARCEL_AND_RETURN_IF_FAIL(String, data, bundleName);
-    (void)appDomainVerifyMgrService->OnRemoteRequest(AppDomainVerifyMgrInterfaceCode::CLEAR_DOMAIN_VERIFY_RESULT, data, reply,
+    int32_t error = appDomainVerifyMgrService->OnRemoteRequest(AppDomainVerifyMgrInterfaceCode::CLEAR_DOMAIN_VERIFY_RESULT, data, reply,
         option);
-
+    ASSERT_TRUE(error == ERR_OK);
 }
 
 /**
  * @tc.name: MgrServiceFilterDomainTest001
- * @tc.desc: Normal
+ * @tc.desc: filter abilities ok
  * @tc.type: FUNC
  */
 HWTEST_F(MgrServiceTest, MgrServiceFilterDomainTest001, TestSize.Level0)
@@ -222,13 +234,14 @@ HWTEST_F(MgrServiceTest, MgrServiceFilterDomainTest001, TestSize.Level0)
     for (uint32_t i = 0; i < originAbilityInfos.size(); ++i) {
         WRITE_PARCEL_AND_RETURN_IF_FAIL(Parcelable, data, &originAbilityInfos[i]);
     }
-    (void)appDomainVerifyMgrService->OnRemoteRequest(AppDomainVerifyMgrInterfaceCode::FILTER_ABILITIES, data, reply,
+    int32_t error = appDomainVerifyMgrService->OnRemoteRequest(AppDomainVerifyMgrInterfaceCode::FILTER_ABILITIES, data, reply,
         option);
+    ASSERT_TRUE(error == ERR_OK);
 }
 
 /**
  * @tc.name: MgrServiceFilterDomainTest002
- * @tc.desc: Normal
+ * @tc.desc: filter abilities with wrong originAbility array
  * @tc.type: FUNC
  */
 HWTEST_F(MgrServiceTest, MgrServiceFilterDomainTest002, TestSize.Level0)
@@ -250,13 +263,14 @@ HWTEST_F(MgrServiceTest, MgrServiceFilterDomainTest002, TestSize.Level0)
     WRITE_PARCEL_AND_RETURN_IF_FAIL(Parcelable, data, &want);
     uint32_t originAbilityInfoSize = static_cast<uint32_t>(originAbilityInfos.size());
     WRITE_PARCEL_AND_RETURN_IF_FAIL(Uint32, data, originAbilityInfoSize);
-    (void)appDomainVerifyMgrService->OnRemoteRequest(AppDomainVerifyMgrInterfaceCode::FILTER_ABILITIES, data, reply,
+    int32_t error = appDomainVerifyMgrService->OnRemoteRequest(AppDomainVerifyMgrInterfaceCode::FILTER_ABILITIES, data, reply,
         option);
+    ASSERT_TRUE(error != ERR_OK);
 }
 
 /**
  * @tc.name: MgrServiceFilterDomainTest003
- * @tc.desc: Normal
+ * @tc.desc: filter abilities with wrong originAbility size
  * @tc.type: FUNC
  */
 HWTEST_F(MgrServiceTest, MgrServiceFilterDomainTest003, TestSize.Level0)
@@ -280,17 +294,17 @@ HWTEST_F(MgrServiceTest, MgrServiceFilterDomainTest003, TestSize.Level0)
     for (uint32_t i = 0; i < originAbilityInfos.size(); ++i) {
         WRITE_PARCEL_AND_RETURN_IF_FAIL(Parcelable, data, &originAbilityInfos[i]);
     }
-    (void)appDomainVerifyMgrService->OnRemoteRequest(AppDomainVerifyMgrInterfaceCode::FILTER_ABILITIES, data, reply,
+    int32_t error = appDomainVerifyMgrService->OnRemoteRequest(AppDomainVerifyMgrInterfaceCode::FILTER_ABILITIES, data, reply,
         option);
+    ASSERT_TRUE(error == ERR_OK);
 }
 /**
  * @tc.name: MgrServiceQueryDomainTest001
- * @tc.desc: Normal
+ * @tc.desc: query verify status
  * @tc.type: FUNC
  */
 HWTEST_F(MgrServiceTest, MgrServiceQueryDomainTest001, TestSize.Level0)
 {
-    auto appDomainVerifyMgrStubMock = std::make_shared<AppDomainVerifyMgrStubMock>();
     std::string bundleName = "bundleName";
     MessageParcel data;
     MessageParcel reply;
@@ -298,34 +312,33 @@ HWTEST_F(MgrServiceTest, MgrServiceQueryDomainTest001, TestSize.Level0)
     WRITE_PARCEL_AND_RETURN_IF_FAIL(InterfaceToken, data, AppDomainVerifyMgrServiceProxy::GetDescriptor());
     WRITE_PARCEL_AND_RETURN_IF_FAIL(String, data, bundleName);
 
-    (void)appDomainVerifyMgrService->OnRemoteRequest(AppDomainVerifyMgrInterfaceCode::QUERY_VERIFY_STATUS, data, reply,
+    int32_t error = appDomainVerifyMgrService->OnRemoteRequest(AppDomainVerifyMgrInterfaceCode::QUERY_VERIFY_STATUS, data, reply,
         option);
+    ASSERT_TRUE(error == ERR_OK);
 }
 /**
  * @tc.name: MgrServiceQueryAllDomainTest001
- * @tc.desc: Normal
+ * @tc.desc: query verify status without bundle name
  * @tc.type: FUNC
  */
 HWTEST_F(MgrServiceTest, MgrServiceQueryAllDomainTest001, TestSize.Level0)
 {
-    auto appDomainVerifyMgrStubMock = std::make_shared<AppDomainVerifyMgrStubMock>();
     MessageParcel data;
     MessageParcel reply;
     MessageOption option;
     WRITE_PARCEL_AND_RETURN_IF_FAIL(InterfaceToken, data, AppDomainVerifyMgrServiceProxy::GetDescriptor());
 
-    (void)appDomainVerifyMgrService->OnRemoteRequest(AppDomainVerifyMgrInterfaceCode::QUERY_ALL_VERIFY_STATUS, data, reply,
+    int32_t  error = appDomainVerifyMgrService->OnRemoteRequest(AppDomainVerifyMgrInterfaceCode::QUERY_ALL_VERIFY_STATUS, data, reply,
         option);
-//    ASSERT_TRUE(error == ERR_OK);
+    ASSERT_TRUE(error == ERR_OK);
 }
 /**
  * @tc.name: MgrServiceSaveAllDomainTest001
- * @tc.desc: Normal
+ * @tc.desc: save all domain
  * @tc.type: FUNC
  */
 HWTEST_F(MgrServiceTest, MgrServiceSaveAllDomainTest001, TestSize.Level0)
 {
-    auto appDomainVerifyMgrStubMock = std::make_shared<AppDomainVerifyMgrStubMock>();
     VerifyResultInfo verifyResultInfo;
     std::string bundleName = "bundleName";
     MessageParcel data;
@@ -335,14 +348,14 @@ HWTEST_F(MgrServiceTest, MgrServiceSaveAllDomainTest001, TestSize.Level0)
     WRITE_PARCEL_AND_RETURN_IF_FAIL(String, data, bundleName);
     WRITE_PARCEL_AND_RETURN_IF_FAIL(Parcelable, data, &verifyResultInfo);
 
-    (void)appDomainVerifyMgrService->OnRemoteRequest(AppDomainVerifyMgrInterfaceCode::SAVE_VERIFY_STATUS, data, reply,
+    int32_t error = appDomainVerifyMgrService->OnRemoteRequest(AppDomainVerifyMgrInterfaceCode::SAVE_VERIFY_STATUS, data, reply,
         option);
-
+    ASSERT_TRUE(error == ERR_OK);
 }
 
 /**
  * @tc.name: MgrServiceTest022
- * @tc.desc:
+ * @tc.desc: dump null
  * @tc.type: FUNC
  */
 HWTEST_F(MgrServiceTest, MgrServiceTest022, TestSize.Level0)
@@ -350,11 +363,12 @@ HWTEST_F(MgrServiceTest, MgrServiceTest022, TestSize.Level0)
     appDomainVerifyMgrService->OnDump();
     int fd = 0;
     std::vector<std::u16string> args;
-    appDomainVerifyMgrService->Dump(fd, args);
+    int ret = appDomainVerifyMgrService->Dump(fd, args);
+    ASSERT_TRUE(ret == ERR_OK);
 }
 /**
  * @tc.name: MgrServiceTest023
- * @tc.desc:
+ * @tc.desc: dump normal
  * @tc.type: FUNC
  */
 HWTEST_F(MgrServiceTest, MgrServiceTest023, TestSize.Level0)
@@ -365,15 +379,13 @@ HWTEST_F(MgrServiceTest, MgrServiceTest023, TestSize.Level0)
     std::unordered_map<std::string, VerifyResultInfo> verifyMap;
     VerifyResultInfo verifyResultInfo;
     verifyMap.emplace("com.example", verifyResultInfo);
-    printf("MgrServiceTest023 1\n");
     appDomainVerifyMgrService->dataManager_->verifyMap_->swap(verifyMap);
-    printf("MgrServiceTest023 2\n");
-    appDomainVerifyMgrService->Dump(fd, args);
-    printf("MgrServiceTest023 3\n");
+    int ret = appDomainVerifyMgrService->Dump(fd, args);
+    ASSERT_TRUE(ret == ERR_OK);
 }
 /**
  * @tc.name: MgrServiceTest024
- * @tc.desc:
+ * @tc.desc: multi post DelayUnloadTask
  * @tc.type: FUNC
  */
 HWTEST_F(MgrServiceTest, MgrServiceTest024, TestSize.Level0)
@@ -381,5 +393,4 @@ HWTEST_F(MgrServiceTest, MgrServiceTest024, TestSize.Level0)
     appDomainVerifyMgrService->PostDelayUnloadTask();
     appDomainVerifyMgrService->PostDelayUnloadTask();
 }
-
 }
