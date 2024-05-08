@@ -121,6 +121,8 @@ HWTEST_F(AgentServiceTest, AgentServiceTest002, TestSize.Level0)
     int32_t error = appDomainVerifyAgentService->OnRemoteRequest(AgentInterfaceCode::SINGLE_VERIFY, data, reply,
         option);
     ASSERT_TRUE(error == 0);
+    appDomainVerifyAgentService->appDomainVerifyTaskMgr_->httpClientTaskFactory_ = nullptr;
+    appDomainVerifyAgentService->appDomainVerifyTaskMgr_ = nullptr;
 }
 
 /**
