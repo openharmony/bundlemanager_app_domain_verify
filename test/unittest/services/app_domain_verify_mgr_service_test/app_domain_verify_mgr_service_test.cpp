@@ -126,7 +126,8 @@ HWTEST_F(MgrServiceTest, MgrServiceVerifyDomainTest001, TestSize.Level0)
     for (uint32_t i = 0; i < skillUris.size(); ++i) {
         WRITE_PARCEL_AND_RETURN_IF_FAIL(Parcelable, data, &skillUris[i]);
     }
-    int32_t error = appDomainVerifyMgrService->OnRemoteRequest(AppDomainVerifyMgrInterfaceCode::VERIFY_DOMAIN, data, reply, option);
+    int32_t error = appDomainVerifyMgrService->OnRemoteRequest(
+        AppDomainVerifyMgrInterfaceCode::VERIFY_DOMAIN, data, reply, option);
     ASSERT_TRUE(error == ERR_OK);
 }
 
@@ -155,7 +156,8 @@ HWTEST_F(MgrServiceTest, MgrServiceVerifyDomainTest002, TestSize.Level0)
     uint32_t size = static_cast<uint32_t>(skillUris.size());
     WRITE_PARCEL_AND_RETURN_IF_FAIL(Uint32, data, size);
 
-    int32_t error = appDomainVerifyMgrService->OnRemoteRequest(AppDomainVerifyMgrInterfaceCode::VERIFY_DOMAIN, data, reply, option);
+    int32_t error = appDomainVerifyMgrService->OnRemoteRequest(
+        AppDomainVerifyMgrInterfaceCode::VERIFY_DOMAIN, data, reply, option);
     ASSERT_TRUE(error != ERR_OK);
 }
 
@@ -205,8 +207,8 @@ HWTEST_F(MgrServiceTest, MgrServiceClearDomainTest001, TestSize.Level0)
     WRITE_PARCEL_AND_RETURN_IF_FAIL(InterfaceToken, data, AppDomainVerifyMgrServiceProxy::GetDescriptor());
     WRITE_PARCEL_AND_RETURN_IF_FAIL(String, data, appIdentifier);
     WRITE_PARCEL_AND_RETURN_IF_FAIL(String, data, bundleName);
-    int32_t error = appDomainVerifyMgrService->OnRemoteRequest(AppDomainVerifyMgrInterfaceCode::CLEAR_DOMAIN_VERIFY_RESULT, data, reply,
-        option);
+    int32_t error = appDomainVerifyMgrService->OnRemoteRequest(
+        AppDomainVerifyMgrInterfaceCode::CLEAR_DOMAIN_VERIFY_RESULT, data, reply, option);
     ASSERT_TRUE(error == ERR_OK);
 }
 
@@ -234,8 +236,8 @@ HWTEST_F(MgrServiceTest, MgrServiceFilterDomainTest001, TestSize.Level0)
     for (uint32_t i = 0; i < originAbilityInfos.size(); ++i) {
         WRITE_PARCEL_AND_RETURN_IF_FAIL(Parcelable, data, &originAbilityInfos[i]);
     }
-    int32_t error = appDomainVerifyMgrService->OnRemoteRequest(AppDomainVerifyMgrInterfaceCode::FILTER_ABILITIES, data, reply,
-        option);
+    int32_t error = appDomainVerifyMgrService->OnRemoteRequest(
+        AppDomainVerifyMgrInterfaceCode::FILTER_ABILITIES, data, reply, option);
     ASSERT_TRUE(error == ERR_OK);
 }
 
@@ -263,8 +265,8 @@ HWTEST_F(MgrServiceTest, MgrServiceFilterDomainTest002, TestSize.Level0)
     WRITE_PARCEL_AND_RETURN_IF_FAIL(Parcelable, data, &want);
     uint32_t originAbilityInfoSize = static_cast<uint32_t>(originAbilityInfos.size());
     WRITE_PARCEL_AND_RETURN_IF_FAIL(Uint32, data, originAbilityInfoSize);
-    int32_t error = appDomainVerifyMgrService->OnRemoteRequest(AppDomainVerifyMgrInterfaceCode::FILTER_ABILITIES, data, reply,
-        option);
+    int32_t error = appDomainVerifyMgrService->OnRemoteRequest(
+        AppDomainVerifyMgrInterfaceCode::FILTER_ABILITIES, data, reply, option);
     ASSERT_TRUE(error != ERR_OK);
 }
 
@@ -294,8 +296,8 @@ HWTEST_F(MgrServiceTest, MgrServiceFilterDomainTest003, TestSize.Level0)
     for (uint32_t i = 0; i < originAbilityInfos.size(); ++i) {
         WRITE_PARCEL_AND_RETURN_IF_FAIL(Parcelable, data, &originAbilityInfos[i]);
     }
-    int32_t error = appDomainVerifyMgrService->OnRemoteRequest(AppDomainVerifyMgrInterfaceCode::FILTER_ABILITIES, data, reply,
-        option);
+    int32_t error = appDomainVerifyMgrService->OnRemoteRequest(
+        AppDomainVerifyMgrInterfaceCode::FILTER_ABILITIES, data, reply, option);
     ASSERT_TRUE(error == ERR_OK);
 }
 /**
@@ -312,8 +314,8 @@ HWTEST_F(MgrServiceTest, MgrServiceQueryDomainTest001, TestSize.Level0)
     WRITE_PARCEL_AND_RETURN_IF_FAIL(InterfaceToken, data, AppDomainVerifyMgrServiceProxy::GetDescriptor());
     WRITE_PARCEL_AND_RETURN_IF_FAIL(String, data, bundleName);
 
-    int32_t error = appDomainVerifyMgrService->OnRemoteRequest(AppDomainVerifyMgrInterfaceCode::QUERY_VERIFY_STATUS, data, reply,
-        option);
+    int32_t error = appDomainVerifyMgrService->OnRemoteRequest(
+        AppDomainVerifyMgrInterfaceCode::QUERY_VERIFY_STATUS, data, reply, option);
     ASSERT_TRUE(error == ERR_OK);
 }
 /**
@@ -328,8 +330,8 @@ HWTEST_F(MgrServiceTest, MgrServiceQueryAllDomainTest001, TestSize.Level0)
     MessageOption option;
     WRITE_PARCEL_AND_RETURN_IF_FAIL(InterfaceToken, data, AppDomainVerifyMgrServiceProxy::GetDescriptor());
 
-    int32_t  error = appDomainVerifyMgrService->OnRemoteRequest(AppDomainVerifyMgrInterfaceCode::QUERY_ALL_VERIFY_STATUS, data, reply,
-        option);
+    int32_t error = appDomainVerifyMgrService->OnRemoteRequest(
+        AppDomainVerifyMgrInterfaceCode::QUERY_ALL_VERIFY_STATUS, data, reply, option);
     ASSERT_TRUE(error == ERR_OK);
 }
 /**
@@ -348,8 +350,8 @@ HWTEST_F(MgrServiceTest, MgrServiceSaveAllDomainTest001, TestSize.Level0)
     WRITE_PARCEL_AND_RETURN_IF_FAIL(String, data, bundleName);
     WRITE_PARCEL_AND_RETURN_IF_FAIL(Parcelable, data, &verifyResultInfo);
 
-    int32_t error = appDomainVerifyMgrService->OnRemoteRequest(AppDomainVerifyMgrInterfaceCode::SAVE_VERIFY_STATUS, data, reply,
-        option);
+    int32_t error = appDomainVerifyMgrService->OnRemoteRequest(
+        AppDomainVerifyMgrInterfaceCode::SAVE_VERIFY_STATUS, data, reply, option);
     ASSERT_TRUE(error == ERR_OK);
 }
 
