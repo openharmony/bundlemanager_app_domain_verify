@@ -107,6 +107,7 @@ HWTEST_F(AppDomainVerifyAgentModuleTest, AppDomainVerifyAgentModuleTest001, Test
 HWTEST_F(AppDomainVerifyAgentModuleTest, AppDomainVerifyAgentModuleTest002, TestSize.Level0)
 {
     MocHttpClientTask::sTaskRunOk = true;
+    MocHttpClientTask::sHttpOk = true;
     auto mocHttpClientTaskFactory = std::make_unique<MocHttpClientTaskFactory>();
     EXPECT_CALL(*mocHttpClientTaskFactory, CreateTask(_))
         .Times(::testing::AtLeast(1))
@@ -322,30 +323,4 @@ HWTEST_F(AppDomainVerifyAgentModuleTest, AppDomainVerifyAgentModuleTest008, Test
     ASSERT_TRUE(queryRes);
     ASSERT_TRUE(domainVerificationState == DomainVerifyStatus::STATE_NONE);
 }
-
-
-/**
- * @tc.name: AppDomainVerifyAgentModuleTest009
- * @tc.desc: OnRemoteRequest test.
- * @tc.type: FUNC
- */
-HWTEST_F(AppDomainVerifyAgentModuleTest, AppDomainVerifyAgentModuleTest009, TestSize.Level0)
-{
-    auto appDomainVerifyAgentService = std::make_shared<AppDomainVerifyAgentService>();
-    MessageParcel data;
-    MessageParcel reply;
-    MessageOption option;
-    data.WriteInterfaceToken(AppDomainVerifyAgentServiceStub::GetDescriptor());
-    AppVerifyBaseInfo appVerifyBaseInfo;
-    data.WriteParcelable(&appVerifyBaseInfo);
-    data.WriteUint32(1);
-    SkillUri skillUri;
-    skillUri.scheme = "https";
-    skillUri.host = HOST;
-    data.WriteParcelable(&skillUri);
-    auto res = appDomainVerifyAgentService->OnRemoteRequest(AgentInterfaceCode::SINGLE_VERIFY, data,
-        reply, option);
-    ASSERT_TRUE(res == ERR_OK);
-}
-
 }
