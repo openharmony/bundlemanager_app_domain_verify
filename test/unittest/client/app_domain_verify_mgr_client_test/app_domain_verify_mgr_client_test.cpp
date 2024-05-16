@@ -37,14 +37,14 @@ public:
 };
 
 bool g_mgrInvokeOK = false;
-int MgrInvokeOK(uint32_t code, MessageParcel &data, MessageParcel &reply, MessageOption &option)
+int MgrInvokeOK(uint32_t code, MessageParcel& data, MessageParcel& reply, MessageOption& option)
 {
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MODULE_BUTT, "%s call end", __func__);
     g_mgrInvokeOK = true;
     return 0;
 }
 
-int MgrInvokeFail(uint32_t code, MessageParcel &data, MessageParcel &reply, MessageOption &option)
+int MgrInvokeFail(uint32_t code, MessageParcel& data, MessageParcel& reply, MessageOption& option)
 {
     g_mgrInvokeOK = false;
     return UNKNOWN_ERROR;
@@ -75,8 +75,8 @@ HWTEST_F(AppDomainVerifyMgrClientTest, AppDomainVerifyMgrClientTest001, TestSize
 {
     AppDomainVerifyMgrClient::GetInstance()->ClearDomainVerifyStatus(APP_IDENTIFIER, BUNDLE_NAME);
     DomainVerifyStatus domainVerificationState;
-    auto queryRes = AppDomainVerifyMgrClient::GetInstance()->QueryDomainVerifyStatus(BUNDLE_NAME,
-        domainVerificationState);
+    auto queryRes = AppDomainVerifyMgrClient::GetInstance()->QueryDomainVerifyStatus(
+        BUNDLE_NAME, domainVerificationState);
     ASSERT_TRUE(queryRes);
     ASSERT_TRUE(domainVerificationState == DomainVerifyStatus::STATE_NONE);
 }
@@ -95,8 +95,8 @@ HWTEST_F(AppDomainVerifyMgrClientTest, AppDomainVerifyMgrClientTest002, TestSize
     std::vector<OHOS::AppExecFwk::AbilityInfo> originAbilityInfos;
     originAbilityInfos.emplace_back(abilityInfo);
     std::vector<OHOS::AppExecFwk::AbilityInfo> filtedAbilityInfos;
-    auto filterRes = AppDomainVerifyMgrClient::GetInstance()->FilterAbilities(want, originAbilityInfos,
-        filtedAbilityInfos);
+    auto filterRes = AppDomainVerifyMgrClient::GetInstance()->FilterAbilities(
+        want, originAbilityInfos, filtedAbilityInfos);
     ASSERT_TRUE(filterRes);
     ASSERT_TRUE(filtedAbilityInfos.empty());
 }
@@ -127,7 +127,7 @@ HWTEST_F(AppDomainVerifyMgrClientTest, AppDomainVerifyMgrClientTest004, TestSize
 {
     std::shared_ptr<AppDomainVerifyMgrRemoteStubMock> mgrStubMock_ =
         std::make_shared<AppDomainVerifyMgrRemoteStubMock>();
-    EXPECT_CALL(*mgrStubMock_, SendRequest(_, _, _, _)).Times(1).WillOnce(::testing::Invoke(MgrInvokeOK));
+    EXPECT_CALL(*mgrStubMock_, SendRequest(_, _, _, _)).Times(2).WillOnce(::testing::Invoke(MgrInvokeOK));
     AppDomainVerifyMgrClient::appDomainVerifyMgrServiceProxy_ = sptr<AppDomainVerifyMgrServiceProxy>::MakeSptr(
         mgrStubMock_.get());
     std::vector<SkillUri> skillUris;
@@ -137,6 +137,7 @@ HWTEST_F(AppDomainVerifyMgrClientTest, AppDomainVerifyMgrClientTest004, TestSize
     skillUris.emplace_back(skillUri);
     AppDomainVerifyMgrClient::GetInstance()->VerifyDomain(APP_IDENTIFIER, BUNDLE_NAME, FINGERPRINT, skillUris);
     ASSERT_TRUE(g_mgrInvokeOK);
+    AppDomainVerifyMgrClient::GetInstance()->ClearDomainVerifyStatus(APP_IDENTIFIER, BUNDLE_NAME);
     AppDomainVerifyMgrClient::appDomainVerifyMgrServiceProxy_.ForceSetRefPtr(nullptr);
 }
 /**
@@ -148,7 +149,7 @@ HWTEST_F(AppDomainVerifyMgrClientTest, AppDomainVerifyMgrClientTest005, TestSize
 {
     std::shared_ptr<AppDomainVerifyMgrRemoteStubMock> mgrStubMock_ =
         std::make_shared<AppDomainVerifyMgrRemoteStubMock>();
-    EXPECT_CALL(*mgrStubMock_, SendRequest(_, _, _, _)).Times(1).WillOnce(::testing::Invoke(MgrInvokeOK));
+    EXPECT_CALL(*mgrStubMock_, SendRequest(_, _, _, _)).Times(2).WillOnce(::testing::Invoke(MgrInvokeOK));
     AppDomainVerifyMgrClient::appDomainVerifyMgrServiceProxy_ = sptr<AppDomainVerifyMgrServiceProxy>::MakeSptr(
         mgrStubMock_.get());
     std::string bundleName = BUNDLE_NAME;
@@ -156,6 +157,7 @@ HWTEST_F(AppDomainVerifyMgrClientTest, AppDomainVerifyMgrClientTest005, TestSize
     verifyResultInfo.hostVerifyStatusMap.insert_or_assign("https://" + HOST, InnerVerifyStatus::STATE_SUCCESS);
     AppDomainVerifyMgrClient::GetInstance()->SaveDomainVerifyStatus(BUNDLE_NAME, verifyResultInfo);
     ASSERT_TRUE(g_mgrInvokeOK);
+    AppDomainVerifyMgrClient::GetInstance()->ClearDomainVerifyStatus(APP_IDENTIFIER, BUNDLE_NAME);
     AppDomainVerifyMgrClient::appDomainVerifyMgrServiceProxy_.ForceSetRefPtr(nullptr);
 }
 /**

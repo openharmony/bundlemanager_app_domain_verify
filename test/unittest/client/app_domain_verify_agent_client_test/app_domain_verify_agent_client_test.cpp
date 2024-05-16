@@ -44,14 +44,14 @@ public:
 
 bool g_enterAgentInvokeOK = false;
 
-int AgentInvokeOK(uint32_t code, MessageParcel &data, MessageParcel &reply, MessageOption &option)
+int AgentInvokeOK(uint32_t code, MessageParcel& data, MessageParcel& reply, MessageOption& option)
 {
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MODULE_BUTT, "%s call end", __func__);
     g_enterAgentInvokeOK = true;
     return 0;
 }
 
-int AgentInvokeFail(uint32_t code, MessageParcel &data, MessageParcel &reply, MessageOption &option)
+int AgentInvokeFail(uint32_t code, MessageParcel& data, MessageParcel& reply, MessageOption& option)
 {
     g_enterAgentInvokeOK = false;
     return UNKNOWN_ERROR;
@@ -91,8 +91,8 @@ HWTEST_F(AppDomainVerifyAgentClientTest, AppDomainVerifyAgentClientTest001, Test
     skillUris.emplace_back(skillUri);
     AppDomainVerifyAgentClient::GetInstance()->SingleVerify(appVerifyBaseInfo, skillUris);
     DomainVerifyStatus domainVerificationState;
-    auto queryRes = AppDomainVerifyMgrClient::GetInstance()->QueryDomainVerifyStatus(BUNDLE_NAME,
-        domainVerificationState);
+    auto queryRes = AppDomainVerifyMgrClient::GetInstance()->QueryDomainVerifyStatus(
+        BUNDLE_NAME, domainVerificationState);
     ASSERT_TRUE(queryRes);
     ASSERT_TRUE(domainVerificationState == DomainVerifyStatus::STATE_NONE);
 }

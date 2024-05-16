@@ -15,8 +15,10 @@
 
 #include <gtest/gtest.h>
 #include "system_ability.h"
+#include "mock_system_ability.h"
 
 namespace OHOS {
+std::vector<int> g_accountIds;
 SystemAbility::SystemAbility(bool runOnCreate)
 {
     GTEST_LOG_(INFO) << "MOCK SystemAbility SystemAbility";
@@ -250,8 +252,11 @@ void SystemAbility::OnRemoveSystemAbility(int32_t systemAbilityId, const std::st
 
 sptr<IRemoteObject> SystemAbility::GetSystemAbility(int32_t systemAbilityId)
 {
-    GTEST_LOG_(INFO) << "MOCK SystemAbility GetSystemAbility";
+    GTEST_LOG_(INFO) << "MOCK SystemAbility GetSystemAbility 1";
     (void)systemAbilityId;
+    if (!g_mockAbility) {
+        return g_mockAbility;
+    }
     return nullptr;
 }
 

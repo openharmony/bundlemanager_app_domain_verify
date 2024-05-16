@@ -42,14 +42,7 @@ ohos_unittest("app_domain_verify_bms_test") {
   module_out_path = module_output_path
 
   sources = [
-    "${app_domain_verify_common_path}/src/app_verify_base_info.cpp",
     "${app_domain_verify_common_path}/src/bms/bundle_info_query.cpp",
-    "${app_domain_verify_common_path}/src/bundle_verify_status_info.cpp",
-    "${app_domain_verify_common_path}/src/httpsession/app_domain_verify_task_mgr.cpp",
-    "${app_domain_verify_common_path}/src/httpsession/verify_http_task.cpp",
-    "${app_domain_verify_common_path}/src/httpsession/verify_http_task_factory.cpp",
-    "${app_domain_verify_common_path}/src/skill_uri.cpp",
-    "${app_domain_verify_common_path}/src/utils/domain_url_util.cpp",
     "${app_domain_verify_test_path}/mock/src/mock_bundle_manager.cpp",
     "${app_domain_verify_test_path}/mock/src/mock_os_account_manager.cpp",
     "${app_domain_verify_test_path}/mock/src/mock_service_registry.cpp",
