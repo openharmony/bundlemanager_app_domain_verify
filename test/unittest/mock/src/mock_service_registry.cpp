@@ -19,9 +19,12 @@
 #include "string_ex.h"
 #include "system_ability_definition.h"
 #include "system_ability_manager_proxy.h"
+#include "mock_system_ability_registry.h"
 
 namespace OHOS {
-static sptr<AppExecFwk::BundleMgrService> g_bundleMgrService = nullptr;
+sptr<AppExecFwk::BundleMgrService> g_bundleMgrService = nullptr;
+sptr<AppExecFwk::BundleMgrService> g_mockBundleMgrService = nullptr;
+bool g_disableSystemAbilityManager = false;
 
 SystemAbilityManagerClient& SystemAbilityManagerClient::GetInstance()
 {
@@ -32,6 +35,9 @@ SystemAbilityManagerClient& SystemAbilityManagerClient::GetInstance()
 sptr<ISystemAbilityManager> SystemAbilityManagerClient::GetSystemAbilityManager()
 {
     std::lock_guard<std::mutex> lock(systemAbilityManagerLock_);
+    if (g_disableSystemAbilityManager) {
+        return nullptr;
+    }
     if (systemAbilityManager_ != nullptr) {
         return systemAbilityManager_;
     }
@@ -42,11 +48,18 @@ sptr<ISystemAbilityManager> SystemAbilityManagerClient::GetSystemAbilityManager(
 
 sptr<IRemoteObject> SystemAbilityManagerProxy::GetSystemAbility(int32_t systemAbilityId)
 {
+    GTEST_LOG_(INFO) << "MOCK SystemAbility GetSystemAbility " << systemAbilityId;
     sptr<IRemoteObject> remote = nullptr;
     switch (systemAbilityId) {
         case BUNDLE_MGR_SERVICE_SYS_ABILITY_ID:
             if (!g_bundleMgrService) {
-                g_bundleMgrService = new AppExecFwk::BundleMgrService();
+                if (g_mockBundleMgrService != nullptr) {
+                    GTEST_LOG_(INFO) << "MOCK SystemAbility mockBundleMgrService";
+                    g_bundleMgrService = g_mockBundleMgrService;
+                } else {
+                    GTEST_LOG_(INFO) << "MOCK SystemAbility";
+                    g_bundleMgrService = new AppExecFwk::BundleMgrService();
+                }
             }
             remote = g_bundleMgrService;
             break;
@@ -57,8 +70,7 @@ sptr<IRemoteObject> SystemAbilityManagerProxy::GetSystemAbility(int32_t systemAb
     return remote;
 }
 
-sptr<IRemoteObject> SystemAbilityManagerProxy::GetSystemAbility(int32_t systemAbilityId,
-    const std::string& deviceId)
+sptr<IRemoteObject> SystemAbilityManagerProxy::GetSystemAbility(int32_t systemAbilityId, const std::string& deviceId)
 {
     return GetSystemAbility(systemAbilityId);
 }
@@ -83,8 +95,8 @@ sptr<IRemoteObject> SystemAbilityManagerProxy::CheckSystemAbility(int32_t system
     return nullptr;
 }
 
-int32_t SystemAbilityManagerProxy::AddOnDemandSystemAbilityInfo(int32_t systemAbilityId,
-    const std::u16string& localAbilityManagerName)
+int32_t SystemAbilityManagerProxy::AddOnDemandSystemAbilityInfo(
+    int32_t systemAbilityId, const std::u16string& localAbilityManagerName)
 {
     return -1;
 }
@@ -106,14 +118,14 @@ std::vector<std::u16string> SystemAbilityManagerProxy::ListSystemAbilities(unsig
     return saNames;
 }
 
-int32_t SystemAbilityManagerProxy::SubscribeSystemAbility(int32_t systemAbilityId,
-    const sptr<ISystemAbilityStatusChange>& listener)
+int32_t SystemAbilityManagerProxy::SubscribeSystemAbility(
+    int32_t systemAbilityId, const sptr<ISystemAbilityStatusChange>& listener)
 {
     return -1;
 }
 
-int32_t SystemAbilityManagerProxy::UnSubscribeSystemAbility(int32_t systemAbilityId,
-    const sptr<ISystemAbilityStatusChange>& listener)
+int32_t SystemAbilityManagerProxy::UnSubscribeSystemAbility(
+    int32_t systemAbilityId, const sptr<ISystemAbilityStatusChange>& listener)
 {
     return -1;
 }
@@ -123,14 +135,14 @@ sptr<IRemoteObject> SystemAbilityManagerProxy::LoadSystemAbility(int32_t systemA
     return nullptr;
 }
 
-int32_t SystemAbilityManagerProxy::LoadSystemAbility(int32_t systemAbilityId,
-    const sptr<ISystemAbilityLoadCallback>& callback)
+int32_t SystemAbilityManagerProxy::LoadSystemAbility(
+    int32_t systemAbilityId, const sptr<ISystemAbilityLoadCallback>& callback)
 {
     return -1;
 }
 
-int32_t SystemAbilityManagerProxy::LoadSystemAbility(int32_t systemAbilityId, const std::string& deviceId,
-    const sptr<ISystemAbilityLoadCallback>& callback)
+int32_t SystemAbilityManagerProxy::LoadSystemAbility(
+    int32_t systemAbilityId, const std::string& deviceId, const sptr<ISystemAbilityLoadCallback>& callback)
 {
     return -1;
 }
@@ -145,8 +157,8 @@ int32_t SystemAbilityManagerProxy::CancelUnloadSystemAbility(int32_t systemAbili
     return -1;
 }
 
-int32_t SystemAbilityManagerProxy::AddSystemAbility(int32_t systemAbilityId, const sptr<IRemoteObject>& ability,
-    const SAExtraProp& extraProp)
+int32_t SystemAbilityManagerProxy::AddSystemAbility(
+    int32_t systemAbilityId, const sptr<IRemoteObject>& ability, const SAExtraProp& extraProp)
 {
     return -1;
 }
@@ -162,8 +174,7 @@ int32_t SystemAbilityManagerProxy::AddSystemProcess(
     return -1;
 }
 
-int32_t SystemAbilityManagerProxy::GetSystemProcessInfo(
-    int32_t systemAbilityId, SystemProcessInfo& systemProcessInfo)
+int32_t SystemAbilityManagerProxy::GetSystemProcessInfo(int32_t systemAbilityId, SystemProcessInfo& systemProcessInfo)
 {
     return -1;
 }
@@ -188,8 +199,8 @@ int32_t SystemAbilityManagerProxy::GetOnDemandReasonExtraData(int64_t extraDataI
     return -1;
 }
 
-int32_t SystemAbilityManagerProxy::GetOnDemandPolicy(int32_t systemAbilityId, OnDemandPolicyType type,
-    std::vector<SystemAbilityOnDemandEvent>& abilityOnDemandEvents)
+int32_t SystemAbilityManagerProxy::GetOnDemandPolicy(
+    int32_t systemAbilityId, OnDemandPolicyType type, std::vector<SystemAbilityOnDemandEvent>& abilityOnDemandEvents)
 {
     return -1;
 }
@@ -205,8 +216,8 @@ int32_t SystemAbilityManagerProxy::GetOnDemandSystemAbilityIds(std::vector<int32
     return -1;
 }
 
-int32_t SystemAbilityManagerProxy::SendStrategy(int32_t type, std::vector<int32_t>& systemAbilityIds,
-    int32_t level, std::string& action)
+int32_t SystemAbilityManagerProxy::SendStrategy(
+    int32_t type, std::vector<int32_t>& systemAbilityIds, int32_t level, std::string& action)
 {
     return -1;
 }

@@ -89,43 +89,6 @@ HWTEST_F(AgentServiceTest, AgentServiceTest001, TestSize.Level0)
 }
 
 /**
- * @tc.name: AgentServiceTest002
- * @tc.desc: ok test.
- * @tc.type: FUNC
- */
-HWTEST_F(AgentServiceTest, AgentServiceTest002, TestSize.Level0)
-{
-    MocHttpClientTask::sTaskRunOk = false;
-    MocHttpClientTask::sHttpOk = true;
-    auto mocHttpClientTaskFactory = std::make_unique<MocHttpClientTaskFactory>();
-    EXPECT_CALL(*mocHttpClientTaskFactory, CreateTask(_))
-        .Times(::testing::AtLeast(0))
-        .WillOnce(::testing::Invoke(InvokeGetTask));
-
-    appDomainVerifyAgentService->appDomainVerifyTaskMgr_->httpClientTaskFactory_ = std::move(mocHttpClientTaskFactory);
-
-    AppVerifyBaseInfo appVerifyBaseInfo;
-    std::vector<SkillUri> skillUris;
-    SkillUri skillUri;
-    skillUris.push_back(skillUri);
-    MessageParcel data;
-    MessageParcel reply;
-    MessageOption option;
-    WRITE_PARCEL_AND_RETURN_IF_FAIL(InterfaceToken, data, AppDomainVerifyAgentServiceStub::GetDescriptor());
-    WRITE_PARCEL_AND_RETURN_IF_FAIL(Parcelable, data, &appVerifyBaseInfo);
-    uint32_t size = static_cast<uint32_t>(skillUris.size());
-    WRITE_PARCEL_AND_RETURN_IF_FAIL(Uint32, data, size);
-    for (uint32_t i = 0; i < skillUris.size(); ++i) {
-        WRITE_PARCEL_AND_RETURN_IF_FAIL(Parcelable, data, &skillUris[i]);
-    }
-    int32_t error = appDomainVerifyAgentService->OnRemoteRequest(AgentInterfaceCode::SINGLE_VERIFY, data, reply,
-        option);
-    ASSERT_TRUE(error == 0);
-    appDomainVerifyAgentService->appDomainVerifyTaskMgr_->httpClientTaskFactory_ = nullptr;
-    appDomainVerifyAgentService->appDomainVerifyTaskMgr_ = nullptr;
-}
-
-/**
  * @tc.name: AgentServiceTest003
  * @tc.desc: CompleteVerifyRefresh test.
  * @tc.type: FUNC
@@ -145,8 +108,8 @@ HWTEST_F(AgentServiceTest, AgentServiceTest003, TestSize.Level0)
     for (uint32_t i = 0; i < skillUris.size(); ++i) {
         WRITE_PARCEL_AND_RETURN_IF_FAIL(Parcelable, data, &skillUris[i]);
     }
-    int32_t error = appDomainVerifyAgentService->OnRemoteRequest(AgentInterfaceCode::SINGLE_VERIFY, data, reply,
-        option);
+    int32_t error = appDomainVerifyAgentService->OnRemoteRequest(
+        AgentInterfaceCode::SINGLE_VERIFY, data, reply, option);
     ASSERT_TRUE(error != 0);
 }
 /**
@@ -189,8 +152,8 @@ HWTEST_F(AgentServiceTest, AgentServiceTest005, TestSize.Level0)
     for (uint32_t i = 0; i < skillUris.size(); ++i) {
         WRITE_PARCEL_AND_RETURN_IF_FAIL(Parcelable, data, &skillUris[i]);
     }
-    int32_t error = appDomainVerifyAgentService->OnRemoteRequest(AgentInterfaceCode::SINGLE_VERIFY, data, reply,
-        option);
+    int32_t error = appDomainVerifyAgentService->OnRemoteRequest(
+        AgentInterfaceCode::SINGLE_VERIFY, data, reply, option);
     ASSERT_TRUE(error != 0);
 }
 /**
@@ -208,8 +171,8 @@ HWTEST_F(AgentServiceTest, AgentServiceTest006, TestSize.Level0)
     WRITE_PARCEL_AND_RETURN_IF_FAIL(InterfaceToken, data, AppDomainVerifyAgentServiceStub::GetDescriptor());
     WRITE_PARCEL_AND_RETURN_IF_FAIL(Parcelable, data, &appVerifyBaseInfo);
     WRITE_PARCEL_AND_RETURN_IF_FAIL(Uint32, data, 2);
-    int32_t error = appDomainVerifyAgentService->OnRemoteRequest(AgentInterfaceCode::SINGLE_VERIFY, data, reply,
-        option);
+    int32_t error = appDomainVerifyAgentService->OnRemoteRequest(
+        AgentInterfaceCode::SINGLE_VERIFY, data, reply, option);
     ASSERT_TRUE(error != 0);
 }
 

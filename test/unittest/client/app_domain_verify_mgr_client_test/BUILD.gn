@@ -39,15 +39,13 @@ config("module_private_config") {
 
 module_output_path = "app_domain_verify/app_domain_verify"
 
-ohos_unittest("app_domain_verify_client_test") {
+ohos_unittest("app_domain_verify_mgr_client_test") {
   module_out_path = module_output_path
 
   sources = [
     "${app_domain_verify_client_path}/src/app_domain_verify_agent_client.cpp",
     "${app_domain_verify_client_path}/src/app_domain_verify_mgr_client.cpp",
-    "${app_domain_verify_service_path}/src/agent/zidl/app_domain_verify_agent_service_proxy.cpp",
     "${app_domain_verify_service_path}/src/manager/zidl/app_domain_verify_mgr_service_proxy.cpp",
-    "app_domain_verify_agent_client_test.cpp",
     "app_domain_verify_mgr_client_test.cpp",
   ]
   configs = [ ":module_private_config" ]
@@ -69,6 +67,7 @@ ohos_unittest("app_domain_verify_client_test") {
 
   defines = [ "API_EXPORT=__attribute__((visibility (\"default\")))" ]
   deps = [
+    "${app_domain_verify_client_path}:app_domain_verify_agent_client",
     "${app_domain_verify_common_path}:app_domain_verify_common",
     "${app_domain_verify_extension_path}:app_domain_verify_extension_framework",
     "//third_party/googletest:gmock_main",

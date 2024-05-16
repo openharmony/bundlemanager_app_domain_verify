@@ -18,11 +18,17 @@
 namespace OHOS {
 namespace AccountSA {
 const int32_t accountId = 100;
-
+std::vector<int> g_accountIds;
+bool g_enableMockIds = false;
+ErrCode g_queryRet = ERR_OK;
 ErrCode OsAccountManager::QueryActiveOsAccountIds(std::vector<int32_t>& accountIds)
 {
-    accountIds.push_back(accountId);
-    return ERR_OK;
+    if (g_enableMockIds) {
+        accountIds = g_accountIds;
+    } else {
+        accountIds.push_back(accountId);
+    }
+    return g_queryRet;
 }
 
 ErrCode OsAccountManager::SubscribeOsAccount(const std::shared_ptr<OsAccountSubscriber>& subscriberAccount)
@@ -35,7 +41,7 @@ OsAccountSubscriber::OsAccountSubscriber()
 {
 }
 
-OsAccountSubscriber::OsAccountSubscriber(const OsAccountSubscribeInfo &subscribeInfo) : subscribeInfo_(subscribeInfo)
+OsAccountSubscriber::OsAccountSubscriber(const OsAccountSubscribeInfo& subscribeInfo) : subscribeInfo_(subscribeInfo)
 {
 }
 
@@ -43,60 +49,62 @@ OsAccountSubscriber::~OsAccountSubscriber()
 {
 }
 
-void OsAccountSubscriber::GetSubscribeInfo(OsAccountSubscribeInfo &info) const
+void OsAccountSubscriber::GetSubscribeInfo(OsAccountSubscribeInfo& info) const
 {
     info = subscribeInfo_;
 }
 
-OsAccountSubscribeInfo::OsAccountSubscribeInfo()
-    : osAccountSubscribeType_(ACTIVATING), name_("")
-{}
+OsAccountSubscribeInfo::OsAccountSubscribeInfo() : osAccountSubscribeType_(ACTIVATING), name_("")
+{
+}
 
-OsAccountSubscribeInfo::OsAccountSubscribeInfo(const OS_ACCOUNT_SUBSCRIBE_TYPE &osAccountSubscribeType,
-    const std::string &name) : osAccountSubscribeType_(osAccountSubscribeType), name_(name)
+OsAccountSubscribeInfo::OsAccountSubscribeInfo(
+    const OS_ACCOUNT_SUBSCRIBE_TYPE& osAccountSubscribeType, const std::string& name)
+    : osAccountSubscribeType_(osAccountSubscribeType), name_(name)
 {
     (void)osAccountSubscribeType;
 }
 
 OsAccountSubscribeInfo::~OsAccountSubscribeInfo()
-{}
+{
+}
 
-void OsAccountSubscribeInfo::GetOsAccountSubscribeType(OS_ACCOUNT_SUBSCRIBE_TYPE &subscribetype) const
+void OsAccountSubscribeInfo::GetOsAccountSubscribeType(OS_ACCOUNT_SUBSCRIBE_TYPE& subscribetype) const
 {
     subscribetype = osAccountSubscribeType_;
 }
 
-void OsAccountSubscribeInfo::SetOsAccountSubscribeType(const OS_ACCOUNT_SUBSCRIBE_TYPE &subscribetype)
+void OsAccountSubscribeInfo::SetOsAccountSubscribeType(const OS_ACCOUNT_SUBSCRIBE_TYPE& subscribetype)
 {
     osAccountSubscribeType_ = subscribetype;
 }
 
-void OsAccountSubscribeInfo::GetName(std::string &subscribeName) const
+void OsAccountSubscribeInfo::GetName(std::string& subscribeName) const
 {
     subscribeName = name_;
 }
 
-void OsAccountSubscribeInfo::SetName(const std::string &subscribeName)
+void OsAccountSubscribeInfo::SetName(const std::string& subscribeName)
 {
     name_ = subscribeName;
 }
 
-bool OsAccountSubscribeInfo::Marshalling(Parcel &parcel) const
+bool OsAccountSubscribeInfo::Marshalling(Parcel& parcel) const
 {
     (void)parcel;
     return false;
 }
 
-OsAccountSubscribeInfo *OsAccountSubscribeInfo::Unmarshalling(Parcel &parcel)
+OsAccountSubscribeInfo* OsAccountSubscribeInfo::Unmarshalling(Parcel& parcel)
 {
     (void)parcel;
     return nullptr;
 }
 
-bool OsAccountSubscribeInfo::ReadFromParcel(Parcel &parcel)
+bool OsAccountSubscribeInfo::ReadFromParcel(Parcel& parcel)
 {
     (void)parcel;
     return false;
 }
-} // AccountSA
-} // OHOS
+}  // AccountSA
+}  // OHOS
