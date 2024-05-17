@@ -27,21 +27,29 @@ namespace AppExecFwk {
 
 class BundleMgrProxy : public IRemoteProxy<IBundleMgr> {
 public:
-    explicit BundleMgrProxy(const sptr<IRemoteObject> &impl)
-        : IRemoteProxy<IBundleMgr>(impl)
+    explicit BundleMgrProxy(const sptr<IRemoteObject>& impl) : IRemoteProxy<IBundleMgr>(impl)
     {
     }
     virtual ~BundleMgrProxy()
     {
     }
-    ErrCode GetBundleInfoV9(const std::string &bundleName, int32_t flags, BundleInfo &bundleInfo,
-        int32_t userId) override;
+    ErrCode GetBundleInfoV9(
+        const std::string& bundleName, int32_t flags, BundleInfo& bundleInfo, int32_t userId) override;
 };
 
 class BundleMgrStub : public IRemoteStub<IBundleMgr> {
 public:
-    virtual int OnRemoteRequest(uint32_t code, MessageParcel &data, MessageParcel &reply,
-        MessageOption &option) override;
+    virtual int OnRemoteRequest(
+        uint32_t code, MessageParcel& data, MessageParcel& reply, MessageOption& option) override;
+};
+
+class MocBundleMgrService : public BundleMgrStub {
+public:
+    MocBundleMgrService(){};
+    ~MocBundleMgrService(){};
+
+    MOCK_METHOD(ErrCode, GetBundleInfoV9,
+        (const std::string& bundleName, int32_t flags, BundleInfo& bundleInfo, int32_t userId), (override));
 };
 
 class BundleMgrService : public BundleMgrStub {
@@ -49,9 +57,11 @@ public:
     BundleMgrService(){};
     ~BundleMgrService(){};
 
-    ErrCode GetBundleInfoV9(const std::string &bundleName, int32_t flags, BundleInfo &bundleInfo,
-        int32_t userId) override;
+    ErrCode GetBundleInfoV9(
+        const std::string& bundleName, int32_t flags, BundleInfo& bundleInfo, int32_t userId) override;
+    std::shared_ptr<MocBundleMgrService> impl = nullptr;
 };
+
 }  // namespace AppExecFwk
 }  // namespace OHOS
 #endif  // MOCK_BUNDLE_MANAGER_H
