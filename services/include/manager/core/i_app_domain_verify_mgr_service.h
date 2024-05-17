@@ -23,21 +23,23 @@
 #include "ability_info.h"
 #include "domain_verify_status.h"
 #include "bundle_verify_status_info.h"
-
+#include "zidl/i_convert_callback.h"
 namespace OHOS {
 namespace AppDomainVerify {
 class IAppDomainVerifyMgrService : public IRemoteBroker {
 public:
-    virtual void VerifyDomain(const std::string &appIdentifier, const std::string &bundleName,
-        const std::string &fingerprint, const std::vector<SkillUri> &skillUris) = 0;
-    virtual bool ClearDomainVerifyStatus(const std::string &appIdentifier, const std::string &bundleName) = 0;
-    virtual bool FilterAbilities(const OHOS::AAFwk::Want &want,
-        const std::vector<OHOS::AppExecFwk::AbilityInfo> &originAbilityInfos,
-        std::vector<OHOS::AppExecFwk::AbilityInfo> &filtedAbilityInfos) = 0;
-    virtual bool QueryDomainVerifyStatus(const std::string &bundleName,
-        DomainVerifyStatus &domainVerificationState) = 0;
-    virtual bool QueryAllDomainVerifyStatus(BundleVerifyStatusInfo &bundleVerifyStatusInfo) = 0;
-    virtual bool SaveDomainVerifyStatus(const std::string &bundleName, const VerifyResultInfo &verifyResultInfo) = 0;
+    virtual void VerifyDomain(const std::string& appIdentifier, const std::string& bundleName,
+        const std::string& fingerprint, const std::vector<SkillUri>& skillUris) = 0;
+    virtual bool ClearDomainVerifyStatus(const std::string& appIdentifier, const std::string& bundleName) = 0;
+    virtual bool FilterAbilities(const OHOS::AAFwk::Want& want,
+        const std::vector<OHOS::AppExecFwk::AbilityInfo>& originAbilityInfos,
+        std::vector<OHOS::AppExecFwk::AbilityInfo>& filtedAbilityInfos) = 0;
+    virtual bool QueryDomainVerifyStatus(
+        const std::string& bundleName, DomainVerifyStatus& domainVerificationState) = 0;
+    virtual bool QueryAllDomainVerifyStatus(BundleVerifyStatusInfo& bundleVerifyStatusInfo) = 0;
+    virtual bool SaveDomainVerifyStatus(const std::string& bundleName, const VerifyResultInfo& verifyResultInfo) = 0;
+    virtual bool IsAtomicServiceUrl(std::string& url) = 0;
+    virtual void ConvertToExplicitWant(OHOS::AAFwk::Want& implicitWant, sptr<IConvertCallback>& callback) = 0;
     DECLARE_INTERFACE_DESCRIPTOR(u"ohos.appDomainVerify.IAppDomainVerifyMgrService");
 };
 }  // namespace AppDomainVerify

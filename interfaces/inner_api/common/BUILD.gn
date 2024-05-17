@@ -21,6 +21,7 @@ config("app_domain_verify_common_config") {
     "include/utils",
     "include/httpsession",
     "include/bms",
+    "include/zidl",
   ]
   cflags = [
     "-fdata-sections",
@@ -41,12 +42,15 @@ ohos_shared_library("app_domain_verify_common") {
     "src/httpsession/verify_http_task_factory.cpp",
     "src/skill_uri.cpp",
     "src/utils/domain_url_util.cpp",
+    "src/zidl/convert_callback_proxy.cpp",
+    "src/zidl/convert_callback_stub.cpp",
   ]
 
   public_configs = [ ":app_domain_verify_common_config" ]
   version_script = "common.versionscript"
 
   external_deps = [
+    "ability_base:want",
     "bundle_framework:appexecfwk_base",
     "bundle_framework:appexecfwk_core",
     "c_utils:utils",

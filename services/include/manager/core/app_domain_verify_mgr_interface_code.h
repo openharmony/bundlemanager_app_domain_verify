@@ -23,6 +23,8 @@ enum AppDomainVerifyMgrInterfaceCode {
     FILTER_ABILITIES = 3,
     QUERY_ALL_VERIFY_STATUS = 4,
     SAVE_VERIFY_STATUS = 5,
+    IS_ATOMIC_SERVICE_URL = 6,
+    CONVERT_TO_EXPLICIT_WANT = 7,
 };
 }
 }  // namespace OHOS

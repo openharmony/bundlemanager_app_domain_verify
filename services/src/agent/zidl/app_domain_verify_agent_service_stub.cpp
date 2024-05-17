@@ -23,20 +23,22 @@
 namespace OHOS {
 namespace AppDomainVerify {
 namespace {
-constexpr int32_t DELAY_TIME = 900000; // 15min = 15*60*1000
+constexpr int32_t DELAY_TIME = 900000;  // 15min = 15*60*1000
 const std::string TASK_ID = "unload";
 }
 AppDomainVerifyAgentServiceStub::AppDomainVerifyAgentServiceStub()
 {
     memberFuncMap_[static_cast<uint32_t>(AgentInterfaceCode::SINGLE_VERIFY)] =
         &AppDomainVerifyAgentServiceStub::OnSingleVerify;
+    memberFuncMap_[static_cast<uint32_t>(AgentInterfaceCode::CONVERT_TO_EXPLICIT_WANT)] =
+        &AppDomainVerifyAgentServiceStub::OnConvertToExplicitWant;
 }
 AppDomainVerifyAgentServiceStub::~AppDomainVerifyAgentServiceStub()
 {
     memberFuncMap_.clear();
 }
-int32_t AppDomainVerifyAgentServiceStub::OnRemoteRequest(uint32_t code, MessageParcel &data, MessageParcel &reply,
-    MessageOption &option)
+int32_t AppDomainVerifyAgentServiceStub::OnRemoteRequest(
+    uint32_t code, MessageParcel& data, MessageParcel& reply, MessageOption& option)
 {
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "onRemoteRequest##code = %{public}u", code);
     ExitIdleState();
@@ -60,7 +62,7 @@ int32_t AppDomainVerifyAgentServiceStub::OnRemoteRequest(uint32_t code, MessageP
     return ret;
 }
 
-int32_t AppDomainVerifyAgentServiceStub::OnSingleVerify(MessageParcel &data, MessageParcel &reply)
+int32_t AppDomainVerifyAgentServiceStub::OnSingleVerify(MessageParcel& data, MessageParcel& reply)
 {
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "%s called", __func__);
     std::unique_ptr<AppVerifyBaseInfo> info(data.ReadParcelable<AppVerifyBaseInfo>());
@@ -81,6 +83,26 @@ int32_t AppDomainVerifyAgentServiceStub::OnSingleVerify(MessageParcel &data, Mes
     }
     SingleVerify(appVerifyBaseInfo, skillUris);
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "%s call end", __func__);
+    return ERR_OK;
+}
+int32_t AppDomainVerifyAgentServiceStub::OnConvertToExplicitWant(MessageParcel& data, MessageParcel& reply)
+{
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s called", __func__);
+    OHOS::AAFwk::Want want;
+    std::unique_ptr<OHOS::AAFwk::Want> w(data.ReadParcelable<OHOS::AAFwk::Want>());
+    if (!w) {
+        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "read parcelable want failed.");
+        return ERR_INVALID_VALUE;
+    }
+    want = *w;
+    sptr<IRemoteObject> object = data.ReadRemoteObject();
+    if (object == nullptr) {
+        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "read failed");
+        return ERR_INVALID_VALUE;
+    }
+    sptr<IConvertCallback> cleanCacheCallback = iface_cast<IConvertCallback>(object);
+    ConvertToExplicitWant(want, cleanCacheCallback);
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s call end", __func__);
     return ERR_OK;
 }
 void AppDomainVerifyAgentServiceStub::PostDelayUnloadTask()

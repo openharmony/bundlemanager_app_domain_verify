@@ -21,6 +21,7 @@ config("app_domain_verify_mgr_client_config") {
     "${app_domain_verify_service_path}/include/manager/core",
     "${app_domain_verify_service_path}/include/manager/zidl",
     "${app_domain_verify_common_path}/include",
+    "${app_domain_verify_common_path}/include/zidl",
   ]
   cflags = [
     "-fdata-sections",
@@ -38,6 +39,7 @@ config("app_domain_verify_agent_client_config") {
     "${app_domain_verify_service_path}/include/agent/core",
     "${app_domain_verify_service_path}/include/agent/zidl",
     "${app_domain_verify_common_path}/include",
+    "${app_domain_verify_common_path}/include/zidl",
   ]
   cflags = [
     "-fdata-sections",

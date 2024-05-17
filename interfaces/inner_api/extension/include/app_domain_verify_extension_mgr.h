@@ -23,6 +23,8 @@
 #include "bundle_verify_status_info.h"
 #include "app_domain_verify_hisysevent.h"
 #include "app_domain_verify_agent_ext.h"
+#include "want.h"
+#include "zidl/i_convert_callback.h"
 
 namespace OHOS {
 namespace AppDomainVerify {
@@ -33,6 +35,7 @@ public:
     ErrorCode CompleteVerifyRefresh(const BundleVerifyStatusInfo& bundleVerifyStatusInfo,
         const std::vector<InnerVerifyStatus>& statuses, int delaySeconds, TaskType type);
     ErrorCode SingleVerify(const AppVerifyBaseInfo& appVerifyBaseInfo, const std::vector<SkillUri>& skillUris);
+    ErrorCode ConvertToExplicitWant(OHOS::AAFwk::Want& implicitWant, sptr<IConvertCallback>& callback);
 
 protected:
     virtual bool Init();

@@ -41,14 +41,13 @@ constexpr int32_t UNLOAD_IMMEDIATELY = 0;
 constexpr int32_t UNLOAD_DELAY_TIME = 120000;  // 2min
 const std::string BOOT_COMPLETED_EVENT = "usual.event.BOOT_COMPLETED";
 const std::string LOOP_EVENT = "loopevent";
-AppDomainVerifyAgentService::AppDomainVerifyAgentService()
-    : SystemAbility(APP_DOMAIN_VERIFY_AGENT_SA_ID, true)
+AppDomainVerifyAgentService::AppDomainVerifyAgentService() : SystemAbility(APP_DOMAIN_VERIFY_AGENT_SA_ID, true)
 {
     appDomainVerifyExtMgr_ = std::make_shared<AppDomainVerifyExtensionMgr>();
     appDomainVerifyTaskMgr_ = AppDomainVerifyTaskMgr::GetInstance();
 
-    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "new instance create %p.",
-        appDomainVerifyTaskMgr_.get());
+    APP_DOMAIN_VERIFY_HILOGD(
+        APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "new instance create %p.", appDomainVerifyTaskMgr_.get());
 }
 AppDomainVerifyAgentService::~AppDomainVerifyAgentService()
 {
@@ -59,8 +58,8 @@ AppDomainVerifyAgentService::~AppDomainVerifyAgentService()
     }
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "instance dead.");
 }
-void AppDomainVerifyAgentService::CompleteVerifyRefresh(const BundleVerifyStatusInfo &bundleVerifyStatusInfo,
-    const std::vector<InnerVerifyStatus> &statuses, int delaySeconds, TaskType type)
+void AppDomainVerifyAgentService::CompleteVerifyRefresh(const BundleVerifyStatusInfo& bundleVerifyStatusInfo,
+    const std::vector<InnerVerifyStatus>& statuses, int delaySeconds, TaskType type)
 {
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "%s called", __func__);
     if (ErrorCode::E_EXTENSIONS_LIB_NOT_FOUND !=
@@ -94,17 +93,31 @@ void AppDomainVerifyAgentService::CompleteVerifyRefresh(const BundleVerifyStatus
     }
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "%s call end", __func__);
 }
+void AppDomainVerifyAgentService::ConvertToExplicitWant(
+    OHOS::AAFwk::Want& implicitWant, sptr<IConvertCallback>& callback)
+{
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s called", __func__);
+    if (ErrorCode::E_EXTENSIONS_LIB_NOT_FOUND !=
+        appDomainVerifyExtMgr_->ConvertToExplicitWant(implicitWant, callback)) {
+        APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "extension call end");
+        return;
+    }
 
-void AppDomainVerifyAgentService::SingleVerify(const AppVerifyBaseInfo &appVerifyBaseInfo,
-    const std::vector<SkillUri> &skillUris)
+    if (callback) {
+        callback->OnConvert(0, implicitWant);
+    }
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s called", __func__);
+}
+void AppDomainVerifyAgentService::SingleVerify(
+    const AppVerifyBaseInfo& appVerifyBaseInfo, const std::vector<SkillUri>& skillUris)
 {
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "%s called", __func__);
     AddVerifyTask(appVerifyBaseInfo, skillUris, TaskType::IMMEDIATE_TASK);
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "%s call end", __func__);
 }
 
-void AppDomainVerifyAgentService::AddVerifyTask(const AppVerifyBaseInfo &appVerifyBaseInfo,
-    const std::vector<SkillUri> &skillUris, TaskType type)
+void AppDomainVerifyAgentService::AddVerifyTask(
+    const AppVerifyBaseInfo& appVerifyBaseInfo, const std::vector<SkillUri>& skillUris, TaskType type)
 {
     if (ErrorCode::E_EXTENSIONS_LIB_NOT_FOUND != appDomainVerifyExtMgr_->SingleVerify(appVerifyBaseInfo, skillUris)) {
         APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "extension call end");
@@ -121,8 +134,8 @@ void AppDomainVerifyAgentService::AddVerifyTask(const AppVerifyBaseInfo &appVeri
     }
 }
 
-void AppDomainVerifyAgentService::QueryAndCompleteRefresh(const std::vector<InnerVerifyStatus> &statuses,
-    int delaySeconds, TaskType type)
+void AppDomainVerifyAgentService::QueryAndCompleteRefresh(
+    const std::vector<InnerVerifyStatus>& statuses, int delaySeconds, TaskType type)
 {
     BundleVerifyStatusInfo bundleVerifyStatusInfo;
     if (AppDomainVerifyMgrClient::GetInstance()->QueryAllDomainVerifyStatus(bundleVerifyStatusInfo)) {
@@ -131,7 +144,7 @@ void AppDomainVerifyAgentService::QueryAndCompleteRefresh(const std::vector<Inne
 }
 
 // sa_main进程统一调用
-void AppDomainVerifyAgentService::OnStart(const SystemAbilityOnDemandReason &startReason)
+void AppDomainVerifyAgentService::OnStart(const SystemAbilityOnDemandReason& startReason)
 {
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "OnStart reason %{public}s, reasonId_:%{public}d",
         startReason.GetName().c_str(), startReason.GetId());
@@ -154,7 +167,7 @@ void AppDomainVerifyAgentService::OnStart(const SystemAbilityOnDemandReason &sta
         };
         continuationHandler_->submit(func);
     }
-    
+
     AppDomainVerifyAgentServiceStub::PostDelayUnloadTask();
     bool res = Publish(this);
     if (!res) {
@@ -167,10 +180,10 @@ void AppDomainVerifyAgentService::OnStop()
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "%s called", __func__);
 }
 
-int32_t AppDomainVerifyAgentService::OnIdle(const SystemAbilityOnDemandReason &idleReason)
+int32_t AppDomainVerifyAgentService::OnIdle(const SystemAbilityOnDemandReason& idleReason)
 {
-    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "OnIdle reason:%{public}s",
-        idleReason.GetName().c_str());
+    APP_DOMAIN_VERIFY_HILOGI(
+        APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "OnIdle reason:%{public}s", idleReason.GetName().c_str());
     if (IsIdle()) {
         APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "OnIdle unload immediately");
         return UNLOAD_IMMEDIATELY;

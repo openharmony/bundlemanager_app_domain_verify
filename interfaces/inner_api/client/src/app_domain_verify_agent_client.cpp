@@ -103,6 +103,15 @@ void AppDomainVerifyAgentClient::OnRemoteSaDied(const wptr<IRemoteObject> &objec
     agentServiceProxy_ = nullptr;
 }
 
+void AppDomainVerifyAgentClient::ConvertToExplicitWant(AAFwk::Want& implicitWant, sptr<IConvertCallback>& callback)
+{
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "%s called", __func__);
+    if (IsServiceAvailable()) {
+        agentServiceProxy_->ConvertToExplicitWant(implicitWant, callback);
+    }
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "%s call end", __func__);
+}
+
 AgentSaDeathRecipient::AgentSaDeathRecipient()
 {
 }
