@@ -21,6 +21,11 @@
 #include "bms/bundle_info_query.h"
 #undef private
 #undef protected
+#include "mock_bundle_manager.h"
+#include "mock_system_ability.h"
+#include "mock_system_ability_registry.h"
+#include "mock_os_accout_manager.h"
+
 namespace OHOS::AppDomainVerify {
 using namespace testing;
 using namespace testing::ext;
@@ -35,30 +40,141 @@ public:
 
 void BundleInfoQueryTest::SetUpTestCase(void)
 {
+    GTEST_LOG_(INFO) << "SetUpTestCase";
+    OHOS::AccountSA::g_enableMockIds = true;
+    g_mockBundleMgrService = new AppExecFwk::BundleMgrService();
 }
 
 void BundleInfoQueryTest::TearDownTestCase(void)
 {
+    GTEST_LOG_(INFO) << "TearDownTestCase";
 }
 
 void BundleInfoQueryTest::SetUp(void)
 {
+    GTEST_LOG_(INFO) << "SetUp";
 }
 
 void BundleInfoQueryTest::TearDown(void)
 {
+    GTEST_LOG_(INFO) << "TearDown";
+    g_mockBundleMgrService->impl = nullptr;
+    OHOS::AccountSA::g_accountIds.clear();
 }
 
 /**
- * @tc.name: AgentServiceTest001
+ * @tc.name: BundleInfoQueryTest001
  * @tc.desc: GetBundleInfo test.
  * @tc.type: FUNC
  */
 HWTEST_F(BundleInfoQueryTest, BundleInfoQueryTest001, TestSize.Level0)
 {
+    OHOS::AccountSA::g_accountIds.push_back(1);
     std::string bundleName = BUNDLE_NAME;
     std::string appIdentifier = APP_IDENTIFIER;
     std::string fingerprint = FINGERPRINT;
     ASSERT_TRUE(BundleInfoQuery::GetBundleInfo(bundleName, appIdentifier, fingerprint));
+}
+/**
+ * @tc.name: BundleInfoQueryTest002
+ * @tc.desc: GetBundleInfo no system ability.
+ * @tc.type: FUNC
+ */
+HWTEST_F(BundleInfoQueryTest, BundleInfoQueryTest002, TestSize.Level0)
+{
+    OHOS::g_disableSystemAbilityManager = true;
+    std::string bundleName = BUNDLE_NAME;
+    std::string appIdentifier = APP_IDENTIFIER;
+    std::string fingerprint = FINGERPRINT;
+    ASSERT_FALSE(BundleInfoQuery::GetBundleInfo(bundleName, appIdentifier, fingerprint));
+    OHOS::g_disableSystemAbilityManager = false;
+}
+/**
+ * @tc.name: BundleInfoQueryTest003
+ * @tc.desc: GetBundleInfo failed.
+ * @tc.type: FUNC
+ */
+HWTEST_F(BundleInfoQueryTest, BundleInfoQueryTest003, TestSize.Level0)
+{
+    auto mocBundleMgrService = std::make_shared<OHOS::AppExecFwk::MocBundleMgrService>();
+    EXPECT_CALL(*mocBundleMgrService, GetBundleInfoV9(_, _, _, _)).WillOnce(Return(ERR_NO_MEMORY));
+    g_mockBundleMgrService->impl = mocBundleMgrService;
+    OHOS::AccountSA::g_accountIds.push_back(1);
+    printf("BundleInfoQueryTest003 g_mockBundleMgrService:%p\n", g_mockBundleMgrService.GetRefPtr());
+    std::string bundleName = BUNDLE_NAME;
+    std::string appIdentifier = APP_IDENTIFIER;
+    std::string fingerprint = FINGERPRINT;
+    ASSERT_FALSE(BundleInfoQuery::GetBundleInfo(bundleName, appIdentifier, fingerprint));
+}
+/**
+ * @tc.name: BundleInfoQueryTest004
+ * @tc.desc: GetBundleInfo get accoutInfo empty.
+ * @tc.type: FUNC
+ */
+HWTEST_F(BundleInfoQueryTest, BundleInfoQueryTest004, TestSize.Level0)
+{
+    std::string bundleName = BUNDLE_NAME;
+    std::string appIdentifier = APP_IDENTIFIER;
+    std::string fingerprint = FINGERPRINT;
+    ASSERT_FALSE(BundleInfoQuery::GetBundleInfo(bundleName, appIdentifier, fingerprint));
+}
+/**
+ * @tc.name: BundleInfoQueryTest005
+ * @tc.desc: GetBundleInfo get accoutInfo -1.
+ * @tc.type: FUNC
+ */
+HWTEST_F(BundleInfoQueryTest, BundleInfoQueryTest005, TestSize.Level0)
+{
+    OHOS::AccountSA::g_accountIds.push_back(-1);
+    std::string bundleName = BUNDLE_NAME;
+    std::string appIdentifier = APP_IDENTIFIER;
+    std::string fingerprint = FINGERPRINT;
+    ASSERT_FALSE(BundleInfoQuery::GetBundleInfo(bundleName, appIdentifier, fingerprint));
+    OHOS::AccountSA::g_accountIds.clear();
+}
+/**
+ * @tc.name: BundleInfoQueryTest006
+ * @tc.desc: GetBundleInfo get accoutInfo all -1.
+ * @tc.type: FUNC
+ */
+HWTEST_F(BundleInfoQueryTest, BundleInfoQueryTest006, TestSize.Level0)
+{
+    OHOS::AccountSA::g_accountIds.push_back(-1);
+    OHOS::AccountSA::g_accountIds.push_back(-2);
+    std::string bundleName = BUNDLE_NAME;
+    std::string appIdentifier = APP_IDENTIFIER;
+    std::string fingerprint = FINGERPRINT;
+    ASSERT_FALSE(BundleInfoQuery::GetBundleInfo(bundleName, appIdentifier, fingerprint));
+}
+/**
+ * @tc.name: BundleInfoQueryTest007
+ * @tc.desc: GetBundleInfo get accoutInfo failed.
+ * @tc.type: FUNC
+ */
+HWTEST_F(BundleInfoQueryTest, BundleInfoQueryTest007, TestSize.Level0)
+{
+    OHOS::AccountSA::g_accountIds.push_back(-1);
+    OHOS::AccountSA::g_accountIds.push_back(-2);
+    OHOS::AccountSA::g_accountIds.push_back(0);
+    std::string bundleName = BUNDLE_NAME;
+    std::string appIdentifier = APP_IDENTIFIER;
+    std::string fingerprint = FINGERPRINT;
+    ASSERT_TRUE(BundleInfoQuery::GetBundleInfo(bundleName, appIdentifier, fingerprint));
+}
+/**
+ * @tc.name: BundleInfoQueryTest008
+ * @tc.desc: GetBundleInfo get accoutInfo failed.
+ * @tc.type: FUNC
+ */
+HWTEST_F(BundleInfoQueryTest, BundleInfoQueryTest008, TestSize.Level0)
+{
+    OHOS::AccountSA::g_queryRet = -1;
+    OHOS::AccountSA::g_accountIds.push_back(-1);
+    OHOS::AccountSA::g_accountIds.push_back(-2);
+    OHOS::AccountSA::g_accountIds.push_back(0);
+    std::string bundleName = BUNDLE_NAME;
+    std::string appIdentifier = APP_IDENTIFIER;
+    std::string fingerprint = FINGERPRINT;
+    ASSERT_FALSE(BundleInfoQuery::GetBundleInfo(bundleName, appIdentifier, fingerprint));
 }
 }

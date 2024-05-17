@@ -18,7 +18,8 @@ group("app_domain_verify_unit_test") {
   testonly = true
 
   deps = [
-    "client:app_domain_verify_client_test",
+    "client/app_domain_verify_agent_client_test:app_domain_verify_agent_client_test",
+    "client/app_domain_verify_mgr_client_test:app_domain_verify_mgr_client_test",
     "common/bean_parcel_test:app_domain_verify_bean_parcel_test",
     "common/bean_test:app_domain_verify_bean_test",
     "common/bms_test:app_domain_verify_bms_test",

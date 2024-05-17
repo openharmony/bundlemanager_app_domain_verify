@@ -24,16 +24,20 @@ using namespace OHOS::AAFwk;
 namespace OHOS {
 
 namespace AppExecFwk {
-int BundleMgrStub::OnRemoteRequest(uint32_t code, MessageParcel &data, MessageParcel &reply, MessageOption &option)
+int BundleMgrStub::OnRemoteRequest(uint32_t code, MessageParcel& data, MessageParcel& reply, MessageOption& option)
 {
     GTEST_LOG_(INFO) << "MOCK BundleMgrStub OnRemoteRequest";
     return 0;
 }
 
-ErrCode BundleMgrService::GetBundleInfoV9(const std::string &bundleName, int32_t flags, BundleInfo &bundleInfo,
-    int32_t userId)
+ErrCode BundleMgrService::GetBundleInfoV9(
+    const std::string& bundleName, int32_t flags, BundleInfo& bundleInfo, int32_t userId)
 {
     GTEST_LOG_(INFO) << "MOCK BundleMgrService GetBundleInfoV9";
+    if (impl != nullptr) {
+        GTEST_LOG_(INFO) << "MOCK BundleMgrService GetBundleInfoV9 use mock";
+        return impl->GetBundleInfoV9(bundleName, flags, bundleInfo, userId);
+    }
     bundleInfo.signatureInfo.fingerprint = AppDomainVerify::FINGERPRINT;
     return ERR_OK;
 }
