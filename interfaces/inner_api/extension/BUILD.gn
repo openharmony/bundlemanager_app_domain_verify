@@ -37,6 +37,7 @@ config("app_domain_verify_extension_public_config") {
   include_dirs = [
     "include",
     "${app_domain_verify_common_path}/include",
+    "${app_domain_verify_common_path}/include/zidl",
   ]
 }
 
@@ -51,6 +52,7 @@ ohos_shared_library("app_domain_verify_extension_framework") {
   deps = [ "${app_domain_verify_common_path}:app_domain_verify_common" ]
   version_script = "extension.versionscript"
   external_deps = [
+    "ability_base:want",
     "c_utils:utils",
     "hilog:libhilog",
     "ipc:ipc_single",

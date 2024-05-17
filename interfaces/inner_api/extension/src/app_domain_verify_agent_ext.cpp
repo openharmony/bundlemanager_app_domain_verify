@@ -27,5 +27,9 @@ ErrorCode AppDomainVerifyAgentExt::SingleVerify(
 {
     return ErrorCode::E_EXTENSIONS_LIB_NOT_FOUND;
 }
+ErrorCode AppDomainVerifyAgentExt::ConvertToExplicitWant(AAFwk::Want& implicitWant, sptr<IConvertCallback>& callback)
+{
+    return ErrorCode::E_EXTENSIONS_LIB_NOT_FOUND;
+}
 }
 }

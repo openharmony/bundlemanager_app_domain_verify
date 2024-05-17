@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Huawei Device Co., Ltd.
+ * Copyright (C) 2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -12,15 +12,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#ifndef APP_DOMAIN_VERIFY_AGENT_INTERFACE_CODE_H
-#define APP_DOMAIN_VERIFY_AGENT_INTERFACE_CODE_H
+#ifndef APP_DOMAIN_VERIFY_CONVERT_CALLBACK_INTERFACE_CODE_H
+#define APP_DOMAIN_VERIFY_CONVERT_CALLBACK_INTERFACE_CODE_H
+
 namespace OHOS {
 namespace AppDomainVerify {
-enum AgentInterfaceCode {
-    SINGLE_VERIFY = 0,
-    CONVERT_TO_EXPLICIT_WANT = 1,
+enum ConvertCallbackInterfaceCode {
+    ON_CONVERT_CALLBACK = 0,
 };
 }
 }  // namespace OHOS
 
-#endif
+#endif  // APP_DOMAIN_VERIFY_CONVERT_CALLBACK_INTERFACE_CODE_H

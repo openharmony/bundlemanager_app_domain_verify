@@ -24,12 +24,14 @@
 #include "inner_verify_status.h"
 #include "app_verify_base_info.h"
 #include "bundle_verify_status_info.h"
+#include "zidl/i_convert_callback.h"
 
 namespace OHOS {
 namespace AppDomainVerify {
 class IAppDomainVerifyAgentService : public IRemoteBroker {
 public:
-    virtual void SingleVerify(const AppVerifyBaseInfo &appVerifyBaseInfo, const std::vector<SkillUri> &skillUris) = 0;
+    virtual void SingleVerify(const AppVerifyBaseInfo& appVerifyBaseInfo, const std::vector<SkillUri>& skillUris) = 0;
+    virtual void ConvertToExplicitWant(OHOS::AAFwk::Want& implicitWant, sptr<IConvertCallback>& callback) = 0;
 
     DECLARE_INTERFACE_DESCRIPTOR(u"ohos.appDomainVerify.IAppDomainVerifyAgentService");
 };

@@ -19,7 +19,7 @@
 
 namespace OHOS {
 namespace AppDomainVerify {
-AppDomainVerifyMgrServiceProxy::AppDomainVerifyMgrServiceProxy(const sptr<IRemoteObject> &object)
+AppDomainVerifyMgrServiceProxy::AppDomainVerifyMgrServiceProxy(const sptr<IRemoteObject>& object)
     : IRemoteProxy<IAppDomainVerifyMgrService>(object)
 {
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "new instance created.");
@@ -28,8 +28,8 @@ AppDomainVerifyMgrServiceProxy::~AppDomainVerifyMgrServiceProxy()
 {
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "instance dead.");
 }
-void AppDomainVerifyMgrServiceProxy::VerifyDomain(const std::string &appIdentifier, const std::string &bundleName,
-    const std::string &fingerprint, const std::vector<SkillUri> &skillUris)
+void AppDomainVerifyMgrServiceProxy::VerifyDomain(const std::string& appIdentifier, const std::string& bundleName,
+    const std::string& fingerprint, const std::vector<SkillUri>& skillUris)
 {
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "%s called", __func__);
     MessageParcel data;
@@ -53,8 +53,8 @@ void AppDomainVerifyMgrServiceProxy::VerifyDomain(const std::string &appIdentifi
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "%s call end", __func__);
 }
 
-bool AppDomainVerifyMgrServiceProxy::ClearDomainVerifyStatus(const std::string &appIdentifier,
-    const std::string &bundleName)
+bool AppDomainVerifyMgrServiceProxy::ClearDomainVerifyStatus(
+    const std::string& appIdentifier, const std::string& bundleName)
 {
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "%s called", __func__);
     MessageParcel data;
@@ -63,20 +63,20 @@ bool AppDomainVerifyMgrServiceProxy::ClearDomainVerifyStatus(const std::string &
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(InterfaceToken, data, GetDescriptor());
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String, data, appIdentifier);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String, data, bundleName);
-    int32_t error = Remote()->SendRequest(AppDomainVerifyMgrInterfaceCode::CLEAR_DOMAIN_VERIFY_RESULT, data, reply,
-        option);
+    int32_t error = Remote()->SendRequest(
+        AppDomainVerifyMgrInterfaceCode::CLEAR_DOMAIN_VERIFY_RESULT, data, reply, option);
     if (error != ERR_NONE) {
-        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "ClearDomainVerifyStatus failed, error: %d",
-            error);
+        APP_DOMAIN_VERIFY_HILOGE(
+            APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "ClearDomainVerifyStatus failed, error: %d", error);
         return false;
     }
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "%s call end", __func__);
     return reply.ReadBool();
 }
 
-bool AppDomainVerifyMgrServiceProxy::FilterAbilities(const OHOS::AAFwk::Want &want,
-    const std::vector<OHOS::AppExecFwk::AbilityInfo> &originAbilityInfos,
-    std::vector<OHOS::AppExecFwk::AbilityInfo> &filtedAbilityInfos)
+bool AppDomainVerifyMgrServiceProxy::FilterAbilities(const OHOS::AAFwk::Want& want,
+    const std::vector<OHOS::AppExecFwk::AbilityInfo>& originAbilityInfos,
+    std::vector<OHOS::AppExecFwk::AbilityInfo>& filtedAbilityInfos)
 {
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "%s called", __func__);
     MessageParcel data;
@@ -110,8 +110,8 @@ bool AppDomainVerifyMgrServiceProxy::FilterAbilities(const OHOS::AAFwk::Want &wa
     return true;
 }
 
-bool AppDomainVerifyMgrServiceProxy::QueryDomainVerifyStatus(const std::string &bundleName,
-    DomainVerifyStatus &domainVerificationState)
+bool AppDomainVerifyMgrServiceProxy::QueryDomainVerifyStatus(
+    const std::string& bundleName, DomainVerifyStatus& domainVerificationState)
 {
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "%s called", __func__);
     MessageParcel data;
@@ -122,8 +122,8 @@ bool AppDomainVerifyMgrServiceProxy::QueryDomainVerifyStatus(const std::string &
 
     int32_t error = Remote()->SendRequest(AppDomainVerifyMgrInterfaceCode::QUERY_VERIFY_STATUS, data, reply, option);
     if (error != ERR_NONE) {
-        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "QueryDomainVerifyStatus failed, error: %d",
-            error);
+        APP_DOMAIN_VERIFY_HILOGE(
+            APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "QueryDomainVerifyStatus failed, error: %d", error);
         return false;
     }
     bool status = false;
@@ -134,18 +134,18 @@ bool AppDomainVerifyMgrServiceProxy::QueryDomainVerifyStatus(const std::string &
     return true;
 }
 
-bool AppDomainVerifyMgrServiceProxy::QueryAllDomainVerifyStatus(BundleVerifyStatusInfo &bundleVerifyStatusInfo)
+bool AppDomainVerifyMgrServiceProxy::QueryAllDomainVerifyStatus(BundleVerifyStatusInfo& bundleVerifyStatusInfo)
 {
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "%s called", __func__);
     MessageParcel data;
     MessageParcel reply;
     MessageOption option;
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(InterfaceToken, data, GetDescriptor());
-    int32_t error = Remote()->SendRequest(AppDomainVerifyMgrInterfaceCode::QUERY_ALL_VERIFY_STATUS, data, reply,
-        option);
+    int32_t error = Remote()->SendRequest(
+        AppDomainVerifyMgrInterfaceCode::QUERY_ALL_VERIFY_STATUS, data, reply, option);
     if (error != ERR_NONE) {
-        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "QueryAllDomainVerifyStatus failed, error: %d",
-            error);
+        APP_DOMAIN_VERIFY_HILOGE(
+            APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "QueryAllDomainVerifyStatus failed, error: %d", error);
         return false;
     }
     bool status = false;
@@ -160,8 +160,8 @@ bool AppDomainVerifyMgrServiceProxy::QueryAllDomainVerifyStatus(BundleVerifyStat
     return true;
 }
 
-bool AppDomainVerifyMgrServiceProxy::SaveDomainVerifyStatus(const std::string &bundleName,
-    const VerifyResultInfo &verifyResultInfo)
+bool AppDomainVerifyMgrServiceProxy::SaveDomainVerifyStatus(
+    const std::string& bundleName, const VerifyResultInfo& verifyResultInfo)
 {
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "%s called", __func__);
     MessageParcel data;
@@ -172,8 +172,8 @@ bool AppDomainVerifyMgrServiceProxy::SaveDomainVerifyStatus(const std::string &b
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Parcelable, data, &verifyResultInfo);
     int32_t error = Remote()->SendRequest(AppDomainVerifyMgrInterfaceCode::SAVE_VERIFY_STATUS, data, reply, option);
     if (error != ERR_NONE) {
-        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "QueryAllDomainVerifyStatus failed, error: %d",
-            error);
+        APP_DOMAIN_VERIFY_HILOGE(
+            APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "QueryAllDomainVerifyStatus failed, error: %d", error);
         return false;
     }
     bool status = false;
@@ -181,6 +181,45 @@ bool AppDomainVerifyMgrServiceProxy::SaveDomainVerifyStatus(const std::string &b
 
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "%s call end", __func__);
     return true;
+}
+bool AppDomainVerifyMgrServiceProxy::IsAtomicServiceUrl(std::string& url)
+{
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "%s called", __func__);
+    MessageParcel data;
+    MessageParcel reply;
+    MessageOption option;
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(InterfaceToken, data, GetDescriptor());
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String, data, url);
+    int32_t error = Remote()->SendRequest(AppDomainVerifyMgrInterfaceCode::IS_ATOMIC_SERVICE_URL, data, reply, option);
+    if (error != ERR_NONE) {
+        APP_DOMAIN_VERIFY_HILOGE(
+            APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "QueryAllDomainVerifyStatus failed, error: %d", error);
+        return false;
+    }
+    bool status = false;
+    READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, reply, status);
+
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "%s call end", __func__);
+    return true;
+}
+void AppDomainVerifyMgrServiceProxy::ConvertToExplicitWant(
+    OHOS::AAFwk::Want& implicitWant, sptr<IConvertCallback>& callback)
+{
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "%s called", __func__);
+    MessageParcel data;
+    MessageParcel reply;
+    MessageOption option;
+    WRITE_PARCEL_AND_RETURN_IF_FAIL(InterfaceToken, data, GetDescriptor());
+    WRITE_PARCEL_AND_RETURN_IF_FAIL(Parcelable, data, &implicitWant);
+    WRITE_PARCEL_AND_RETURN_IF_FAIL(RemoteObject, data, callback->AsObject());
+
+    int32_t error = Remote()->SendRequest(
+        AppDomainVerifyMgrInterfaceCode::CONVERT_TO_EXPLICIT_WANT, data, reply, option);
+    if (error != ERR_NONE) {
+        APP_DOMAIN_VERIFY_HILOGE(
+            APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "QueryAllDomainVerifyStatus failed, error: %d", error);
+    }
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "%s call end", __func__);
 }
 }  // namespace AppDomainVerify
 }  // namespace OHOS

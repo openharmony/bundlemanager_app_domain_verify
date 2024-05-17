@@ -22,6 +22,7 @@
     *VerifyHttpTaskFactory*;
     *BundleVerifyStatusInfo*;
     *BundleInfoQuery*;
+    *ConvertCallbackStub*;
   local:
     *;
 };

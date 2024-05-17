@@ -22,6 +22,8 @@
 #include "app_verify_base_info.h"
 #include "bundle_verify_status_info.h"
 #include "app_domain_verify_hisysevent.h"
+#include "want.h"
+#include "zidl/i_convert_callback.h"
 
 #define APP_DOMAIN_VERIFY_AGENT_EXT_NAME ("AppDomainVerifyAgentExt")
 
@@ -29,9 +31,10 @@ namespace OHOS {
 namespace AppDomainVerify {
 class AppDomainVerifyAgentExt : public AppDomainVerifyExtBase {
 public:
-    virtual ErrorCode CompleteVerifyRefresh(const BundleVerifyStatusInfo &bundleVerifyStatusInfo,
-        const std::vector<InnerVerifyStatus> &statuses, int delaySeconds, TaskType type);
-    virtual ErrorCode SingleVerify(const AppVerifyBaseInfo &appVerifyBaseInfo, const std::vector<SkillUri> &skillUris);
+    virtual ErrorCode CompleteVerifyRefresh(const BundleVerifyStatusInfo& bundleVerifyStatusInfo,
+        const std::vector<InnerVerifyStatus>& statuses, int delaySeconds, TaskType type);
+    virtual ErrorCode SingleVerify(const AppVerifyBaseInfo& appVerifyBaseInfo, const std::vector<SkillUri>& skillUris);
+    virtual ErrorCode ConvertToExplicitWant(OHOS::AAFwk::Want& implicitWant, sptr<IConvertCallback>& callback);
 };
 }
 }

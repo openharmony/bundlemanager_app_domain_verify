@@ -25,6 +25,7 @@ config("app_domain_verify_service_config") {
     "include/agent/core",
     "${app_domain_verify_common_path}/include",
     "${app_domain_verify_common_path}/include/utils",
+    "${app_domain_verify_common_path}/include/zidl",
   ]
   configs = [ "//build/config/compiler:exceptions" ]
   ldflags = [ "-Wl,--exclude-libs=ALL" ]
@@ -95,6 +96,7 @@ config("app_domain_verify_agent_service_config") {
     "${app_domain_verify_common_path}/include/bms",
     "${app_domain_verify_extension_path}/include",
     "${app_domain_verify_verifier_path}/include",
+    "${app_domain_verify_common_path}/include/zidl",
   ]
   configs = [ "//build/config/compiler:exceptions" ]
   ldflags = [ "-Wl,--exclude-libs=ALL" ]

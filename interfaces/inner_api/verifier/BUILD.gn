@@ -22,6 +22,7 @@ config("app_domain_verify_agent_verifier_config") {
     "${app_domain_verify_common_path}/include",
     "${app_domain_verify_common_path}/include/utils",
     "${app_domain_verify_common_path}/include/bms",
+    "${app_domain_verify_common_path}/include/zidl",
   ]
   configs = [ "//build/config/compiler:exceptions" ]
   ldflags = [ "-Wl,--exclude-libs=ALL" ]
