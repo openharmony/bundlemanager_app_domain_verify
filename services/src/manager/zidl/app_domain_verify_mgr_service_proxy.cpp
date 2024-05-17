@@ -95,10 +95,8 @@ bool AppDomainVerifyMgrServiceProxy::FilterAbilities(const OHOS::AAFwk::Want &wa
         APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "FilterAbilities failed, error: %d", error);
         return false;
     }
-    if (!reply.ReadBool()) {
-        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "FilterAbilities failed");
-        return false;
-    }
+    bool status = false;
+    READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, reply, status);
     int32_t infoSize = reply.ReadInt32();
     for (int32_t i = 0; i < infoSize; i++) {
         std::unique_ptr<OHOS::AppExecFwk::AbilityInfo> info(reply.ReadParcelable<OHOS::AppExecFwk::AbilityInfo>());
@@ -128,10 +126,8 @@ bool AppDomainVerifyMgrServiceProxy::QueryDomainVerifyStatus(const std::string &
             error);
         return false;
     }
-    if (!reply.ReadBool()) {
-        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "QueryDomainVerifyStatus failed");
-        return false;
-    }
+    bool status = false;
+    READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, reply, status);
 
     domainVerificationState = static_cast<DomainVerifyStatus>(reply.ReadInt32());
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "%s call end", __func__);
@@ -152,10 +148,8 @@ bool AppDomainVerifyMgrServiceProxy::QueryAllDomainVerifyStatus(BundleVerifyStat
             error);
         return false;
     }
-    if (!reply.ReadBool()) {
-        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "QueryAllDomainVerifyStatus failed");
-        return false;
-    }
+    bool status = false;
+    READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, reply, status);
     std::unique_ptr<BundleVerifyStatusInfo> info(reply.ReadParcelable<BundleVerifyStatusInfo>());
     if (info == nullptr) {
         APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "Read Parcelable BundleVerifyStatusInfo failed");
@@ -182,10 +176,8 @@ bool AppDomainVerifyMgrServiceProxy::SaveDomainVerifyStatus(const std::string &b
             error);
         return false;
     }
-    if (!reply.ReadBool()) {
-        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "SaveDomainVerifyStatus failed");
-        return false;
-    }
+    bool status = false;
+    READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, reply, status);
 
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "%s call end", __func__);
     return true;
