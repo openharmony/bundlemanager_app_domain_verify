@@ -32,10 +32,11 @@ class AppDomainVerifyAgentService : public SystemAbility, public AppDomainVerify
     DECLARE_SYSTEM_ABILITY(AppDomainVerifyAgentService);
 
 public:
-    AppDomainVerifyAgentService();
-    virtual ~AppDomainVerifyAgentService();
-    void SingleVerify(const AppVerifyBaseInfo& appVerifyBaseInfo, const std::vector<SkillUri>& skillUris) override;
-    void ConvertToExplicitWant(OHOS::AAFwk::Want& implicitWant, sptr<IConvertCallback>& callback) override;
+    API_EXPORT AppDomainVerifyAgentService();
+    API_EXPORT virtual ~AppDomainVerifyAgentService();
+    API_EXPORT void SingleVerify(const AppVerifyBaseInfo &appVerifyBaseInfo,
+        const std::vector<SkillUri> &skillUris) override;
+    API_EXPORT void ConvertToExplicitWant(OHOS::AAFwk::Want& implicitWant, sptr<IConvertCallback>& callback) override;
 
 protected:
     void OnStart(const SystemAbilityOnDemandReason& startReason) override;
