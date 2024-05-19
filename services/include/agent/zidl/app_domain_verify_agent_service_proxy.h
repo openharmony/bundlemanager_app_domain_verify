@@ -18,15 +18,17 @@
 
 #include "i_app_domain_verify_agent_service.h"
 #include "iremote_proxy.h"
+#include "zidl/i_convert_callback.h"
 
 namespace OHOS {
 namespace AppDomainVerify {
 class AppDomainVerifyAgentServiceProxy : public IRemoteProxy<IAppDomainVerifyAgentService> {
 public:
-    explicit AppDomainVerifyAgentServiceProxy(const sptr<IRemoteObject> &object);
+    explicit AppDomainVerifyAgentServiceProxy(const sptr<IRemoteObject>& object);
     virtual ~AppDomainVerifyAgentServiceProxy();
-    virtual void SingleVerify(const AppVerifyBaseInfo &appVerifyBaseInfo,
-        const std::vector<SkillUri> &skillUris) override;
+    virtual void SingleVerify(
+        const AppVerifyBaseInfo& appVerifyBaseInfo, const std::vector<SkillUri>& skillUris) override;
+    virtual void ConvertToExplicitWant(OHOS::AAFwk::Want& implicitWant, sptr<IConvertCallback>& callback) override;
 
 private:
     static inline BrokerDelegator<AppDomainVerifyAgentServiceProxy> delegator_;

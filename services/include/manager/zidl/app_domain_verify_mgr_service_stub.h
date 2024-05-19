@@ -28,19 +28,23 @@ class AppDomainVerifyMgrServiceStub : public IRemoteStub<IAppDomainVerifyMgrServ
 public:
     API_EXPORT AppDomainVerifyMgrServiceStub();
     API_EXPORT virtual ~AppDomainVerifyMgrServiceStub();
-    API_EXPORT int32_t OnRemoteRequest(uint32_t code, MessageParcel &data, MessageParcel &reply,
-        MessageOption &option) override;
+    API_EXPORT int32_t OnRemoteRequest(
+        uint32_t code, MessageParcel& data, MessageParcel& reply, MessageOption& option) override;
+
 protected:
     void PostDelayUnloadTask();
+
 private:
-    using AppDomainVerifyServiceFunc = int32_t (AppDomainVerifyMgrServiceStub::*)(MessageParcel &data,
-        MessageParcel &reply);
-    int32_t OnVerifyDomain(MessageParcel &data, MessageParcel &reply);
-    int32_t OnClearDomainVerifyStatus(MessageParcel &data, MessageParcel &reply);
-    int32_t OnFilterAbilities(MessageParcel &data, MessageParcel &reply);
-    int32_t OnQueryDomainVerifyStatus(MessageParcel &data, MessageParcel &reply);
-    int32_t OnQueryAllDomainVerifyStatus(MessageParcel &data, MessageParcel &reply);
-    int32_t OnSaveDomainVerifyStatus(MessageParcel &data, MessageParcel &reply);
+    using AppDomainVerifyServiceFunc = int32_t (AppDomainVerifyMgrServiceStub::*)(
+        MessageParcel& data, MessageParcel& reply);
+    int32_t OnVerifyDomain(MessageParcel& data, MessageParcel& reply);
+    int32_t OnClearDomainVerifyStatus(MessageParcel& data, MessageParcel& reply);
+    int32_t OnFilterAbilities(MessageParcel& data, MessageParcel& reply);
+    int32_t OnQueryDomainVerifyStatus(MessageParcel& data, MessageParcel& reply);
+    int32_t OnQueryAllDomainVerifyStatus(MessageParcel& data, MessageParcel& reply);
+    int32_t OnSaveDomainVerifyStatus(MessageParcel& data, MessageParcel& reply);
+    int32_t OnIsAtomicServiceUrl(MessageParcel& data, MessageParcel& reply);
+    int32_t OnConvertToExplicitWant(MessageParcel& data, MessageParcel& reply);
 
 private:
     std::map<uint32_t, AppDomainVerifyServiceFunc> memberFuncMap_;

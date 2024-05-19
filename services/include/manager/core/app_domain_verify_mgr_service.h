@@ -32,17 +32,19 @@ class AppDomainVerifyMgrService : public SystemAbility, public AppDomainVerifyMg
 public:
     API_EXPORT AppDomainVerifyMgrService();
     API_EXPORT virtual ~AppDomainVerifyMgrService();
-    API_EXPORT void VerifyDomain(const std::string &appIdentifier, const std::string &bundleName,
-        const std::string &fingerprint, const std::vector<SkillUri> &skillUris) override;
-    API_EXPORT bool ClearDomainVerifyStatus(const std::string &appIdentifier, const std::string &bundleName) override;
-    API_EXPORT bool FilterAbilities(const OHOS::AAFwk::Want &want,
-        const std::vector<OHOS::AppExecFwk::AbilityInfo> &originAbilityInfos,
-        std::vector<OHOS::AppExecFwk::AbilityInfo> &filtedAbilityInfos) override;
-    API_EXPORT bool QueryDomainVerifyStatus(const std::string &bundleName,
-        DomainVerifyStatus &domainVerificationState) override;
-    API_EXPORT bool QueryAllDomainVerifyStatus(BundleVerifyStatusInfo &bundleVerifyStatusInfo) override;
-    API_EXPORT bool SaveDomainVerifyStatus(const std::string &bundleName,
-        const VerifyResultInfo &verifyResultInfo) override;
+    API_EXPORT void VerifyDomain(const std::string& appIdentifier, const std::string& bundleName,
+        const std::string& fingerprint, const std::vector<SkillUri>& skillUris) override;
+    API_EXPORT bool ClearDomainVerifyStatus(const std::string& appIdentifier, const std::string& bundleName) override;
+    API_EXPORT bool FilterAbilities(const OHOS::AAFwk::Want& want,
+        const std::vector<OHOS::AppExecFwk::AbilityInfo>& originAbilityInfos,
+        std::vector<OHOS::AppExecFwk::AbilityInfo>& filtedAbilityInfos) override;
+    API_EXPORT bool QueryDomainVerifyStatus(
+        const std::string& bundleName, DomainVerifyStatus& domainVerificationState) override;
+    API_EXPORT bool QueryAllDomainVerifyStatus(BundleVerifyStatusInfo& bundleVerifyStatusInfo) override;
+    API_EXPORT bool SaveDomainVerifyStatus(
+        const std::string& bundleName, const VerifyResultInfo& verifyResultInfo) override;
+    API_EXPORT bool IsAtomicServiceUrl(std::string& url) override;
+    API_EXPORT void ConvertToExplicitWant(OHOS::AAFwk::Want& implicitWant, sptr<IConvertCallback>& callback) override;
 
 protected:
     void OnDump() override;
@@ -52,7 +54,7 @@ protected:
 
 private:
     void DumpAllVerifyInfos(std::string& dumpString);
-    bool IsWantImplicit(const OHOS::AAFwk::Want &want);
+    bool IsWantImplicit(const OHOS::AAFwk::Want& want);
 
 private:
     std::shared_ptr<AppDomainVerifyDataMgr> dataManager_ = nullptr;

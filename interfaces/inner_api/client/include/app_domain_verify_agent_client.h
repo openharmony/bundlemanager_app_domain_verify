@@ -18,6 +18,7 @@
 
 #include "singleton.h"
 #include "i_app_domain_verify_agent_service.h"
+#include "zidl/i_convert_callback.h"
 
 namespace OHOS {
 namespace AppDomainVerify {
@@ -34,6 +35,14 @@ public:
      * @param skillUris skillUris.
      */
     void SingleVerify(const AppVerifyBaseInfo &appVerifyBaseInfo, const std::vector<SkillUri> &skillUris);
+
+    /**
+     * ConvertToExplicitWant
+     * @descrition convert implicit want to explicit want.
+     * @param appVerifyBaseInfo appVerifyBaseInfo.
+     * @param skillUris skillUris.
+     */
+    void ConvertToExplicitWant(OHOS::AAFwk::Want& implicitWant, sptr<IConvertCallback>& callback);
 
     /**
      * OnRemoteSaDied

@@ -36,19 +36,20 @@ public:
     API_EXPORT virtual ~AppDomainVerifyAgentService();
     API_EXPORT void SingleVerify(const AppVerifyBaseInfo &appVerifyBaseInfo,
         const std::vector<SkillUri> &skillUris) override;
+    API_EXPORT void ConvertToExplicitWant(OHOS::AAFwk::Want& implicitWant, sptr<IConvertCallback>& callback) override;
 
 protected:
-    void OnStart(const SystemAbilityOnDemandReason &startReason) override;
+    void OnStart(const SystemAbilityOnDemandReason& startReason) override;
     void OnStop() override;
-    int32_t OnIdle(const SystemAbilityOnDemandReason &idleReason) override;
+    int32_t OnIdle(const SystemAbilityOnDemandReason& idleReason) override;
     void ExitIdleState() override;
 
 private:
-    void QueryAndCompleteRefresh(const std::vector<InnerVerifyStatus> &statuses, int delaySeconds, TaskType type);
-    void CompleteVerifyRefresh(const BundleVerifyStatusInfo &bundleVerifyStatusInfo,
-        const std::vector<InnerVerifyStatus> &statuses, int delaySeconds, TaskType type);
-    void AddVerifyTask(const AppVerifyBaseInfo &appVerifyBaseInfo, const std::vector<SkillUri> &skillUris,
-        TaskType type);
+    void QueryAndCompleteRefresh(const std::vector<InnerVerifyStatus>& statuses, int delaySeconds, TaskType type);
+    void CompleteVerifyRefresh(const BundleVerifyStatusInfo& bundleVerifyStatusInfo,
+        const std::vector<InnerVerifyStatus>& statuses, int delaySeconds, TaskType type);
+    void AddVerifyTask(
+        const AppVerifyBaseInfo& appVerifyBaseInfo, const std::vector<SkillUri>& skillUris, TaskType type);
     bool IsIdle();
 
 private:
