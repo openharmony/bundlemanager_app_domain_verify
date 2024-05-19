@@ -20,6 +20,7 @@
 #include "refbase.h"
 #include "system_ability_definition.h"
 #include "app_domain_verify_hisysevent.h"
+#include "zidl/convert_callback_stub.h"
 
 namespace OHOS {
 namespace AppDomainVerify {
@@ -44,8 +45,8 @@ AppDomainVerifyMgrClient::~AppDomainVerifyMgrClient()
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "instance dead.");
 }
 
-void AppDomainVerifyMgrClient::VerifyDomain(const std::string &appIdentifier, const std::string &bundleName,
-    const std::string &fingerprint, const std::vector<SkillUri> &skillUris)
+void AppDomainVerifyMgrClient::VerifyDomain(const std::string& appIdentifier, const std::string& bundleName,
+    const std::string& fingerprint, const std::vector<SkillUri>& skillUris)
 {
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "%s called", __func__);
     INSTALL_EVENT(appIdentifier, bundleName);
@@ -55,7 +56,7 @@ void AppDomainVerifyMgrClient::VerifyDomain(const std::string &appIdentifier, co
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "%s call end", __func__);
 }
 
-bool AppDomainVerifyMgrClient::ClearDomainVerifyStatus(const std::string &appIdentifier, const std::string &bundleName)
+bool AppDomainVerifyMgrClient::ClearDomainVerifyStatus(const std::string& appIdentifier, const std::string& bundleName)
 {
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "%s called", __func__);
     UNINSTALL_EVENT(appIdentifier, bundleName);
@@ -81,8 +82,8 @@ bool AppDomainVerifyMgrClient::FilterAbilities(const OHOS::AAFwk::Want &want,
     return filterSuccess;
 }
 
-bool AppDomainVerifyMgrClient::QueryDomainVerifyStatus(const std::string &bundleName,
-    DomainVerifyStatus &domainVerificationState)
+bool AppDomainVerifyMgrClient::QueryDomainVerifyStatus(
+    const std::string& bundleName, DomainVerifyStatus& domainVerificationState)
 {
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "%s called", __func__);
     bool querySuccess = false;
@@ -93,7 +94,7 @@ bool AppDomainVerifyMgrClient::QueryDomainVerifyStatus(const std::string &bundle
     return querySuccess;
 }
 
-bool AppDomainVerifyMgrClient::QueryAllDomainVerifyStatus(BundleVerifyStatusInfo &bundleVerifyStatusInfo)
+bool AppDomainVerifyMgrClient::QueryAllDomainVerifyStatus(BundleVerifyStatusInfo& bundleVerifyStatusInfo)
 {
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "%s called", __func__);
     bool querySuccess = false;
@@ -104,8 +105,8 @@ bool AppDomainVerifyMgrClient::QueryAllDomainVerifyStatus(BundleVerifyStatusInfo
     return querySuccess;
 }
 
-bool AppDomainVerifyMgrClient::SaveDomainVerifyStatus(const std::string &bundleName,
-    const VerifyResultInfo &verifyResultInfo)
+bool AppDomainVerifyMgrClient::SaveDomainVerifyStatus(
+    const std::string& bundleName, const VerifyResultInfo& verifyResultInfo)
 {
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "%s called", __func__);
     bool saveSuccess = false;
@@ -142,7 +143,6 @@ void AppDomainVerifyMgrClient::ConnectService()
     sptr<IRemoteObject> remoteObject = samgrProxy->CheckSystemAbility(APP_DOMAIN_VERIFY_MANAGER_SA_ID);
     if (remoteObject == nullptr) {
         APP_DOMAIN_VERIFY_HILOGW(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "try load.");
-        
         remoteObject = samgrProxy->LoadSystemAbility(APP_DOMAIN_VERIFY_MANAGER_SA_ID, LOADSA_TIMEOUT_MS);
     }
     if (remoteObject != nullptr) {
@@ -157,7 +157,7 @@ void AppDomainVerifyMgrClient::ConnectService()
     APP_DOMAIN_VERIFY_HILOGW(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "Getting AppDomainVerifyMgrServiceProxy failed.");
 }
 
-void AppDomainVerifyMgrClient::OnRemoteSaDied(const wptr<IRemoteObject> &remote)
+void AppDomainVerifyMgrClient::OnRemoteSaDied(const wptr<IRemoteObject>& remote)
 {
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "OnRemoteSaDied.");
     std::lock_guard<std::mutex> autoLock(proxyLock_);
@@ -169,6 +169,14 @@ void AppDomainVerifyMgrClient::OnRemoteSaDied(const wptr<IRemoteObject> &remote)
     }
     appDomainVerifyMgrServiceProxy_ = nullptr;
 }
+void AppDomainVerifyMgrClient::ConvertToExplicitWant(AAFwk::Want& implicitWant, sptr<IConvertCallback>& callback)
+{
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "%s called", __func__);
+    if (IsServiceAvailable()) {
+        appDomainVerifyMgrServiceProxy_->ConvertToExplicitWant(implicitWant, callback);
+    }
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "%s call end", __func__);
+}
 
 AppDomainVerifyMgrSaDeathRecipient::AppDomainVerifyMgrSaDeathRecipient()
 {
@@ -179,10 +187,10 @@ AppDomainVerifyMgrSaDeathRecipient::~AppDomainVerifyMgrSaDeathRecipient()
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "deathRecipient dead.");
 }
 
-void AppDomainVerifyMgrSaDeathRecipient::OnRemoteDied(const wptr<IRemoteObject> &object)
+void AppDomainVerifyMgrSaDeathRecipient::OnRemoteDied(const wptr<IRemoteObject>& object)
 {
-    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT,
-        "AppDomainVerifyMgrSaDeathRecipient on remote systemAbility died.");
+    APP_DOMAIN_VERIFY_HILOGD(
+        APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "AppDomainVerifyMgrSaDeathRecipient on remote systemAbility died.");
     AppDomainVerifyMgrClient::GetInstance()->OnRemoteSaDied(object);
 }
 }  // namespace AppDomainVerify

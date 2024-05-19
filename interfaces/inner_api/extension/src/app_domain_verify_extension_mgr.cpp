@@ -68,8 +68,8 @@ ErrorCode AppDomainVerifyExtensionMgr::CompleteVerifyRefresh(const BundleVerifyS
         std::string verifierExtName = APP_DOMAIN_VERIFY_AGENT_EXT_NAME;
         auto appDomainVerifierExt = GetAppDomainVerifyExt(verifierExtName);
         if (appDomainVerifierExt == nullptr) {
-            APP_DOMAIN_VERIFY_HILOGW(APP_DOMAIN_VERIFY_MODULE_EXTENSION, "get verifierExt: %{public}s failed.",
-                verifierExtName.c_str());
+            APP_DOMAIN_VERIFY_HILOGW(
+                APP_DOMAIN_VERIFY_MODULE_EXTENSION, "get verifierExt: %{public}s failed.", verifierExtName.c_str());
             return ErrorCode::E_EXTENSIONS_INTERNAL_ERROR;
         }
         return std::static_pointer_cast<AppDomainVerifyAgentExt>(appDomainVerifierExt)
@@ -78,8 +78,8 @@ ErrorCode AppDomainVerifyExtensionMgr::CompleteVerifyRefresh(const BundleVerifyS
     return ErrorCode::E_EXTENSIONS_LIB_NOT_FOUND;
 }
 
-ErrorCode AppDomainVerifyExtensionMgr::SingleVerify(const AppVerifyBaseInfo& appVerifyBaseInfo,
-    const std::vector<SkillUri>& skillUris)
+ErrorCode AppDomainVerifyExtensionMgr::SingleVerify(
+    const AppVerifyBaseInfo& appVerifyBaseInfo, const std::vector<SkillUri>& skillUris)
 {
     if (Init()) {
         std::string verifierExtName = APP_DOMAIN_VERIFY_AGENT_EXT_NAME;
@@ -88,8 +88,8 @@ ErrorCode AppDomainVerifyExtensionMgr::SingleVerify(const AppVerifyBaseInfo& app
             return std::static_pointer_cast<AppDomainVerifyAgentExt>(appDomainVerifierExt)
                 ->SingleVerify(appVerifyBaseInfo, skillUris);
         }
-        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MODULE_EXTENSION, "get verifierExt: %{public}s failed.",
-            verifierExtName.c_str());
+        APP_DOMAIN_VERIFY_HILOGE(
+            APP_DOMAIN_VERIFY_MODULE_EXTENSION, "get verifierExt: %{public}s failed.", verifierExtName.c_str());
         return ErrorCode::E_EXTENSIONS_INTERNAL_ERROR;
     }
     return ErrorCode::E_EXTENSIONS_LIB_NOT_FOUND;
@@ -101,6 +101,22 @@ std::shared_ptr<AppDomainVerifyAgentExt> AppDomainVerifyExtensionMgr::GetAppDoma
 void* AppDomainVerifyExtensionMgr::OpenLib()
 {
     return dlopen(EXTENSION_LIB_PATH.c_str(), RTLD_NOW | RTLD_GLOBAL);
+}
+ErrorCode AppDomainVerifyExtensionMgr::ConvertToExplicitWant(
+    AAFwk::Want& implicitWant, sptr<IConvertCallback>& callback)
+{
+    if (Init()) {
+        std::string verifierExtName = APP_DOMAIN_VERIFY_AGENT_EXT_NAME;
+        auto appDomainVerifierExt = GetAppDomainVerifyExt(verifierExtName);
+        if (appDomainVerifierExt != nullptr) {
+            return std::static_pointer_cast<AppDomainVerifyAgentExt>(appDomainVerifierExt)
+                ->ConvertToExplicitWant(implicitWant, callback);
+        }
+        APP_DOMAIN_VERIFY_HILOGE(
+            APP_DOMAIN_VERIFY_MODULE_EXTENSION, "get verifierExt: %{public}s failed.", verifierExtName.c_str());
+        return ErrorCode::E_EXTENSIONS_INTERNAL_ERROR;
+    }
+    return ErrorCode::E_EXTENSIONS_LIB_NOT_FOUND;
 }
 }
 }

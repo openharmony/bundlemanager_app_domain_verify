@@ -19,7 +19,7 @@
 
 namespace OHOS {
 namespace AppDomainVerify {
-AppDomainVerifyAgentServiceProxy::AppDomainVerifyAgentServiceProxy(const sptr<IRemoteObject> &object)
+AppDomainVerifyAgentServiceProxy::AppDomainVerifyAgentServiceProxy(const sptr<IRemoteObject>& object)
     : IRemoteProxy<IAppDomainVerifyAgentService>(object)
 {
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "new instance created.");
@@ -29,8 +29,8 @@ AppDomainVerifyAgentServiceProxy::~AppDomainVerifyAgentServiceProxy()
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "instance dead.");
 }
 
-void AppDomainVerifyAgentServiceProxy::SingleVerify(const AppVerifyBaseInfo &appVerifyBaseInfo,
-    const std::vector<SkillUri> &skillUris)
+void AppDomainVerifyAgentServiceProxy::SingleVerify(
+    const AppVerifyBaseInfo& appVerifyBaseInfo, const std::vector<SkillUri>& skillUris)
 {
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "%s called", __func__);
     MessageParcel data;
@@ -49,6 +49,24 @@ void AppDomainVerifyAgentServiceProxy::SingleVerify(const AppVerifyBaseInfo &app
         APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "SingleVerify failed, error: %d", error);
     }
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "%s call end", __func__);
+}
+void AppDomainVerifyAgentServiceProxy::ConvertToExplicitWant(
+    OHOS::AAFwk::Want& implicitWant, sptr<IConvertCallback>& callback)
+{
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "%s called", __func__);
+    MessageParcel data;
+    MessageParcel reply;
+    MessageOption option;
+    WRITE_PARCEL_AND_RETURN_IF_FAIL(InterfaceToken, data, GetDescriptor());
+    WRITE_PARCEL_AND_RETURN_IF_FAIL(Parcelable, data, &implicitWant);
+    WRITE_PARCEL_AND_RETURN_IF_FAIL(RemoteObject, data, callback->AsObject());
+
+    int32_t error = Remote()->SendRequest(AgentInterfaceCode::CONVERT_TO_EXPLICIT_WANT, data, reply, option);
+    if (error != ERR_NONE) {
+        APP_DOMAIN_VERIFY_HILOGE(
+            APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "QueryAllDomainVerifyStatus failed, error: %d", error);
+    }
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "%s call end", __func__);
 }
 }  // namespace AppDomainVerify
 }  // namespace OHOS

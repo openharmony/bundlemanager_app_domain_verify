@@ -55,6 +55,13 @@ public:
     {
         return true;
     }
+    virtual bool IsAtomicServiceUrl(std::string& url) override
+    {
+        return true;
+    }
+    virtual void ConvertToExplicitWant(OHOS::AAFwk::Want& implicitWant, sptr<IConvertCallback>& callback) override
+    {
+    }
     MOCK_METHOD4(SendRequest, int(uint32_t, MessageParcel&, MessageParcel&, MessageOption&));
     MOCK_METHOD(sptr<IRemoteObject>, AsObject, (), (override));
 };
@@ -93,6 +100,13 @@ public:
         const std::string& bundleName, const VerifyResultInfo& verifyResultInfo) override
     {
         return true;
+    }
+    virtual bool IsAtomicServiceUrl(std::string& url) override
+    {
+        return true;
+    }
+    virtual void ConvertToExplicitWant(OHOS::AAFwk::Want& implicitWant, sptr<IConvertCallback>& callback) override
+    {
     }
 };
 }  // namespace AppDomainVerify

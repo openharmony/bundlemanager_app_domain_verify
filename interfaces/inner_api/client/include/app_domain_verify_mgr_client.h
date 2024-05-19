@@ -92,6 +92,14 @@ public:
     bool SaveDomainVerifyStatus(const std::string &bundleName, const VerifyResultInfo &verifyResultInfo);
 
     /**
+     * ConvertToExplicitWant
+     * @descrition convert implicit want to explicit want.
+     * @param appVerifyBaseInfo appVerifyBaseInfo.
+     * @param skillUris skillUris.
+     */
+    void ConvertToExplicitWant(OHOS::AAFwk::Want& implicitWant, sptr<IConvertCallback>& callback);
+
+    /**
      * OnRemoteSaDied
      * @descrition
      * @param object systemAbility proxy object
