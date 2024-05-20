@@ -23,6 +23,7 @@
 #include "app_domain_verify_mgr_client.h"
 #undef private
 #undef protected
+#include "convert_callback_stub.h"
 
 namespace OHOS::AppDomainVerify {
 using namespace testing;
@@ -65,7 +66,13 @@ void AppDomainVerifyMgrClientTest::SetUp(void)
 void AppDomainVerifyMgrClientTest::TearDown(void)
 {
 }
+class CallBack : public ConvertCallbackStub {
+public:
+    void OnConvert(int resCode, AAFwk::Want& want) override
+    {
 
+    }
+};
 /**
  * @tc.name: AppDomainVerifyMgrClientTest001
  * @tc.desc: ClearDomainVerifyStatus ok test.
@@ -158,6 +165,43 @@ HWTEST_F(AppDomainVerifyMgrClientTest, AppDomainVerifyMgrClientTest005, TestSize
     AppDomainVerifyMgrClient::GetInstance()->SaveDomainVerifyStatus(BUNDLE_NAME, verifyResultInfo);
     ASSERT_TRUE(g_mgrInvokeOK);
     AppDomainVerifyMgrClient::GetInstance()->ClearDomainVerifyStatus(APP_IDENTIFIER, BUNDLE_NAME);
+    AppDomainVerifyMgrClient::appDomainVerifyMgrServiceProxy_.ForceSetRefPtr(nullptr);
+}
+/**
+ * @tc.name: AppDomainVerifyMgrClientTest006
+ * @tc.desc: VerifyDomain test.
+ * @tc.type: FUNC
+ */
+HWTEST_F(AppDomainVerifyMgrClientTest, AppDomainVerifyMgrClientTest006, TestSize.Level0)
+{
+    std::shared_ptr<AppDomainVerifyMgrRemoteStubMock> mgrStubMock_ =
+        std::make_shared<AppDomainVerifyMgrRemoteStubMock>();
+    EXPECT_CALL(*mgrStubMock_, SendRequest(_, _, _, _)).Times(1).WillOnce(::testing::Invoke(MgrInvokeOK));
+    AppDomainVerifyMgrClient::appDomainVerifyMgrServiceProxy_ = sptr<AppDomainVerifyMgrServiceProxy>::MakeSptr(
+        mgrStubMock_.get());
+
+    AppDomainVerifyMgrClient::GetInstance()->IsAtomicServiceUrl("https://www.openharmony.com");
+    ASSERT_TRUE(g_mgrInvokeOK);
+    AppDomainVerifyMgrClient::appDomainVerifyMgrServiceProxy_.ForceSetRefPtr(nullptr);
+}
+
+/**
+ * @tc.name: AppDomainVerifyMgrClientTest007
+ * @tc.desc: VerifyDomain test.
+ * @tc.type: FUNC
+ */
+HWTEST_F(AppDomainVerifyMgrClientTest, AppDomainVerifyMgrClientTest007, TestSize.Level0)
+{
+    std::shared_ptr<AppDomainVerifyMgrRemoteStubMock> mgrStubMock_ =
+        std::make_shared<AppDomainVerifyMgrRemoteStubMock>();
+    EXPECT_CALL(*mgrStubMock_, SendRequest(_, _, _, _)).Times(1).WillOnce(::testing::Invoke(MgrInvokeOK));
+    AppDomainVerifyMgrClient::appDomainVerifyMgrServiceProxy_ = sptr<AppDomainVerifyMgrServiceProxy>::MakeSptr(
+        mgrStubMock_.get());
+
+    OHOS::AAFwk::Want atomicWant;
+    sptr<IConvertCallback> cb = new CallBack;
+    AppDomainVerifyMgrClient::GetInstance()->ConvertToExplicitWant(atomicWant, cb);
+    ASSERT_TRUE(g_mgrInvokeOK);
     AppDomainVerifyMgrClient::appDomainVerifyMgrServiceProxy_.ForceSetRefPtr(nullptr);
 }
 /**

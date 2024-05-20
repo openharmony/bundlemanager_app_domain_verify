@@ -182,7 +182,7 @@ bool AppDomainVerifyMgrServiceProxy::SaveDomainVerifyStatus(
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "%s call end", __func__);
     return true;
 }
-bool AppDomainVerifyMgrServiceProxy::IsAtomicServiceUrl(std::string& url)
+bool AppDomainVerifyMgrServiceProxy::IsAtomicServiceUrl(const std::string& url)
 {
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "%s called", __func__);
     MessageParcel data;
