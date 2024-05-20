@@ -92,10 +92,18 @@ public:
     bool SaveDomainVerifyStatus(const std::string &bundleName, const VerifyResultInfo &verifyResultInfo);
 
     /**
+     * IsAtomicServiceUrl
+     * @descrition check input url is atomic service or not.
+     * @param url input url to check.
+     * @return bool is atomic service or not.
+     */
+    bool IsAtomicServiceUrl(const std::string& url);
+
+    /**
      * ConvertToExplicitWant
      * @descrition convert implicit want to explicit want.
-     * @param appVerifyBaseInfo appVerifyBaseInfo.
-     * @param skillUris skillUris.
+     * @param implicitWant implicit want to convert.
+     * @param callback callback when convert finish.
      */
     void ConvertToExplicitWant(OHOS::AAFwk::Want& implicitWant, sptr<IConvertCallback>& callback);
 
