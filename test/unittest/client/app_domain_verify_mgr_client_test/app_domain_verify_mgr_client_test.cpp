@@ -70,7 +70,6 @@ class CallBack : public ConvertCallbackStub {
 public:
     void OnConvert(int resCode, AAFwk::Want& want) override
     {
-
     }
 };
 /**
