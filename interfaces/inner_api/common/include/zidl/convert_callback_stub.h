@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-#ifndef APP_DOMAIN_VERIFY_I_CONVERT_CALLBACK_PROXY_H
-#define APP_DOMAIN_VERIFY_I_CONVERT_CALLBACK_PROXY_H
+#ifndef APP_DOMAIN_VERIFY_I_CONVERT_CALLBACK_STUB_H
+#define APP_DOMAIN_VERIFY_I_CONVERT_CALLBACK_STUB_H
 #include "iremote_stub.h"
 #include "nocopyable.h"
 #include "i_convert_callback.h"
@@ -33,4 +33,4 @@ private:
 };
 }  // namespace AppDomainVerify
 }  // namespace OHOS
-#endif  // APP_DOMAIN_VERIFY_I_CONVERT_CALLBACK_PROXY_H
+#endif  // APP_DOMAIN_VERIFY_I_CONVERT_CALLBACK_STUB_H

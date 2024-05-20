@@ -36,7 +36,7 @@ public:
     virtual bool QueryAllDomainVerifyStatus(BundleVerifyStatusInfo& bundleVerifyStatusInfo) override;
     virtual bool SaveDomainVerifyStatus(
         const std::string& bundleName, const VerifyResultInfo& verifyResultInfo) override;
-    virtual bool IsAtomicServiceUrl(std::string& url) override;
+    virtual bool IsAtomicServiceUrl(const std::string& url) override;
     virtual void ConvertToExplicitWant(OHOS::AAFwk::Want& implicitWant, sptr<IConvertCallback>& callback) override;
 
 private:

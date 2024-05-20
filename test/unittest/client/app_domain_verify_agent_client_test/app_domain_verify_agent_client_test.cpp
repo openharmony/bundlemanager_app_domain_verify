@@ -27,6 +27,7 @@
 #include "if_system_ability_manager.h"
 #include "iservice_registry.h"
 #include "system_ability_definition.h"
+#include "convert_callback_stub.h"
 namespace OHOS::AppDomainVerify {
 using ::testing::_;
 using ::testing::Invoke;
@@ -73,7 +74,13 @@ void AppDomainVerifyAgentClientTest::SetUp(void)
 void AppDomainVerifyAgentClientTest::TearDown(void)
 {
 }
+class CallBack : public ConvertCallbackStub {
+public:
+    void OnConvert(int resCode, AAFwk::Want& want) override
+    {
 
+    }
+};
 /**
  * @tc.name: AppDomainVerifyAgentClientTest001
  * @tc.desc: client SingleVerify ok test.
@@ -141,6 +148,25 @@ HWTEST_F(AppDomainVerifyAgentClientTest, AppDomainVerifyAgentClientTest003, Test
     skillUri.Marshalling(parcel);
     auto unmarshallingSkillUri = SkillUri::Unmarshalling(parcel);
     ASSERT_TRUE(unmarshallingSkillUri->host == "host");
+}
+/**
+ * @tc.name: AppDomainVerifyAgentClientTest004
+ * @tc.desc: VerifyDomain test.
+ * @tc.type: FUNC
+ */
+HWTEST_F(AppDomainVerifyAgentClientTest, AppDomainVerifyAgentClientTest004, TestSize.Level0)
+{
+    std::shared_ptr<AppDomainVerifyAgentRemoteStubMock> agentStubMock_ =
+        std::make_shared<AppDomainVerifyAgentRemoteStubMock>();
+    EXPECT_CALL(*agentStubMock_, SendRequest(_, _, _, _)).Times(1).WillOnce(::testing::Invoke(AgentInvokeOK));
+    AppDomainVerifyAgentClient::agentServiceProxy_ = sptr<AppDomainVerifyAgentServiceProxy>::MakeSptr(
+        agentStubMock_.get());
+
+    OHOS::AAFwk::Want atomicWant;
+    sptr<IConvertCallback> cb = new CallBack;
+    AppDomainVerifyAgentClient::GetInstance()->ConvertToExplicitWant(atomicWant, cb);
+    ASSERT_TRUE(g_enterAgentInvokeOK);
+    AppDomainVerifyAgentClient::agentServiceProxy_.ForceSetRefPtr(nullptr);
 }
 /**
  * @tc.name: AppDomainVerifyAgentSaDeathRecipientTest001

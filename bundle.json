@@ -94,7 +94,11 @@
               "parcel_util.h",
               "httpsession/i_verify_task.h",
               "httpsession/app_domain_verify_task_mgr.h",
-              "utils/domain_url_util.h"
+              "utils/domain_url_util.h",
+              "zidl/i_convert_callback.h",
+              "zidl/convert_callback_proxy.h",
+              "zidl/convert_callback_stub.h",
+              "zidl/convert_callback_interface_code.h"
             ],
             "header_base": "//foundation/bundlemanager/app_domain_verify/interfaces/inner_api/common/include"
           }

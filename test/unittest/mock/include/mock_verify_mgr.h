@@ -55,7 +55,7 @@ public:
     {
         return true;
     }
-    virtual bool IsAtomicServiceUrl(std::string& url) override
+    virtual bool IsAtomicServiceUrl(const std::string& url) override
     {
         return true;
     }
@@ -101,7 +101,7 @@ public:
     {
         return true;
     }
-    virtual bool IsAtomicServiceUrl(std::string& url) override
+    virtual bool IsAtomicServiceUrl(const std::string& url) override
     {
         return true;
     }
