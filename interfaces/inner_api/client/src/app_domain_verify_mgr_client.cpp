@@ -177,6 +177,15 @@ void AppDomainVerifyMgrClient::ConvertToExplicitWant(AAFwk::Want& implicitWant, 
     }
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "%s call end", __func__);
 }
+bool AppDomainVerifyMgrClient::IsAtomicServiceUrl(const std::string& url)
+{
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "%s called", __func__);
+    if (IsServiceAvailable()) {
+        return appDomainVerifyMgrServiceProxy_->IsAtomicServiceUrl(url);
+    }
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "%s call end", __func__);
+    return false;
+}
 
 AppDomainVerifyMgrSaDeathRecipient::AppDomainVerifyMgrSaDeathRecipient()
 {

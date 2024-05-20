@@ -23,7 +23,7 @@
 #include "ability_info.h"
 #include "domain_verify_status.h"
 #include "bundle_verify_status_info.h"
-#include "zidl/i_convert_callback.h"
+#include "i_convert_callback.h"
 namespace OHOS {
 namespace AppDomainVerify {
 class IAppDomainVerifyMgrService : public IRemoteBroker {
@@ -38,7 +38,7 @@ public:
         const std::string& bundleName, DomainVerifyStatus& domainVerificationState) = 0;
     virtual bool QueryAllDomainVerifyStatus(BundleVerifyStatusInfo& bundleVerifyStatusInfo) = 0;
     virtual bool SaveDomainVerifyStatus(const std::string& bundleName, const VerifyResultInfo& verifyResultInfo) = 0;
-    virtual bool IsAtomicServiceUrl(std::string& url) = 0;
+    virtual bool IsAtomicServiceUrl(const std::string& url) = 0;
     virtual void ConvertToExplicitWant(OHOS::AAFwk::Want& implicitWant, sptr<IConvertCallback>& callback) = 0;
     DECLARE_INTERFACE_DESCRIPTOR(u"ohos.appDomainVerify.IAppDomainVerifyMgrService");
 };

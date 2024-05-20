@@ -132,7 +132,7 @@ bool AppDomainVerifyMgrService::SaveDomainVerifyStatus(
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s call end", __func__);
     return res;
 }
-bool AppDomainVerifyMgrService::IsAtomicServiceUrl(std::string& url)
+bool AppDomainVerifyMgrService::IsAtomicServiceUrl(const std::string& url)
 {
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s called", __func__);
     return false;

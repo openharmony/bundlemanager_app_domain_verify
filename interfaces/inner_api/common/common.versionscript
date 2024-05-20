@@ -23,6 +23,7 @@
     *BundleVerifyStatusInfo*;
     *BundleInfoQuery*;
     *ConvertCallbackStub*;
+    *ConvertCallbackProxy*;
   local:
     *;
 };

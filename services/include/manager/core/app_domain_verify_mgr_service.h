@@ -43,7 +43,7 @@ public:
     API_EXPORT bool QueryAllDomainVerifyStatus(BundleVerifyStatusInfo& bundleVerifyStatusInfo) override;
     API_EXPORT bool SaveDomainVerifyStatus(
         const std::string& bundleName, const VerifyResultInfo& verifyResultInfo) override;
-    API_EXPORT bool IsAtomicServiceUrl(std::string& url) override;
+    API_EXPORT bool IsAtomicServiceUrl(const std::string& url) override;
     API_EXPORT void ConvertToExplicitWant(OHOS::AAFwk::Want& implicitWant, sptr<IConvertCallback>& callback) override;
 
 protected:
