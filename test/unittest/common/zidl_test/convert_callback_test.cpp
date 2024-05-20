@@ -15,12 +15,8 @@
 #include "gtest/gtest.h"
 #include <memory>
 #include "mock_constant.h"
-#define private public
-#define protected public
 #include "convert_callback_stub.h"
 #include "convert_callback_proxy.h"
-#undef private
-#undef protected
 #include "convert_callback_interface_code.h"
 #include "parcel_util.h"
 namespace OHOS::AppDomainVerify {
@@ -53,7 +49,6 @@ class CallBack : public ConvertCallbackStub {
 public:
     void OnConvert(int resCode, AAFwk::Want& want) override
     {
-
     }
 };
 /**
@@ -72,7 +67,8 @@ HWTEST_F(AppDomainVerifyConvertCallbackTest, AppDomainVerifyConvertCallbackStubT
     WRITE_PARCEL_AND_RETURN_IF_FAIL(Int32, data, resCode);
     WRITE_PARCEL_AND_RETURN_IF_FAIL(Parcelable, data, &want);
     sptr<CallBack> callback = new CallBack;
-    callback->OnRemoteRequest(static_cast<int32_t>(ConvertCallbackInterfaceCode::ON_CONVERT_CALLBACK), data, reply, option);
+    callback->OnRemoteRequest(
+        static_cast<int32_t>(ConvertCallbackInterfaceCode::ON_CONVERT_CALLBACK), data, reply, option);
 }
 /**
  * @tc.name: AppDomainVerifyConvertCallbackProxyTest001
