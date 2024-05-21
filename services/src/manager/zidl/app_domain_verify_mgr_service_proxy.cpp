@@ -97,6 +97,11 @@ bool AppDomainVerifyMgrServiceProxy::FilterAbilities(const OHOS::AAFwk::Want& wa
     }
     bool status = false;
     READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, reply, status);
+    if (!status) {
+        APP_DOMAIN_VERIFY_HILOGE(
+            APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "FilterAbilities status failed, error: %d", error);
+        return false;
+    }
     int32_t infoSize = reply.ReadInt32();
     for (int32_t i = 0; i < infoSize; i++) {
         std::unique_ptr<OHOS::AppExecFwk::AbilityInfo> info(reply.ReadParcelable<OHOS::AppExecFwk::AbilityInfo>());
@@ -128,7 +133,11 @@ bool AppDomainVerifyMgrServiceProxy::QueryDomainVerifyStatus(
     }
     bool status = false;
     READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, reply, status);
-
+    if (!status) {
+        APP_DOMAIN_VERIFY_HILOGE(
+            APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "QueryDomainVerifyStatus status failed, error: %d", error);
+        return false;
+    }
     domainVerificationState = static_cast<DomainVerifyStatus>(reply.ReadInt32());
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "%s call end", __func__);
     return true;
@@ -150,12 +159,18 @@ bool AppDomainVerifyMgrServiceProxy::QueryAllDomainVerifyStatus(BundleVerifyStat
     }
     bool status = false;
     READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, reply, status);
+    if (!status) {
+        APP_DOMAIN_VERIFY_HILOGE(
+            APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "QueryAllDomainVerifyStatus status failed, error: %d", error);
+        return false;
+    }
     std::unique_ptr<BundleVerifyStatusInfo> info(reply.ReadParcelable<BundleVerifyStatusInfo>());
     if (info == nullptr) {
         APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "Read Parcelable BundleVerifyStatusInfo failed");
         return false;
     }
     bundleVerifyStatusInfo.bundleVerifyStatusInfoMap_ = info->bundleVerifyStatusInfoMap_;
+
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "%s call end", __func__);
     return true;
 }
@@ -178,9 +193,8 @@ bool AppDomainVerifyMgrServiceProxy::SaveDomainVerifyStatus(
     }
     bool status = false;
     READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, reply, status);
-
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "%s call end", __func__);
-    return true;
+    return status;
 }
 bool AppDomainVerifyMgrServiceProxy::IsAtomicServiceUrl(const std::string& url)
 {
@@ -198,9 +212,8 @@ bool AppDomainVerifyMgrServiceProxy::IsAtomicServiceUrl(const std::string& url)
     }
     bool status = false;
     READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, reply, status);
-
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "%s call end", __func__);
-    return true;
+    return status;
 }
 void AppDomainVerifyMgrServiceProxy::ConvertToExplicitWant(
     OHOS::AAFwk::Want& implicitWant, sptr<IConvertCallback>& callback)
