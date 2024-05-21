@@ -31,6 +31,7 @@
 #include "mock_constant.h"
 #include "mock_verify_agent.h"
 #include "agent_interface_code.h"
+#include "mock_convert_callback.h"
 namespace OHOS::AppDomainVerify {
 using namespace testing;
 using namespace testing::ext;
@@ -171,11 +172,70 @@ HWTEST_F(AgentServiceTest, AgentServiceTest006, TestSize.Level0)
     WRITE_PARCEL_AND_RETURN_IF_FAIL(InterfaceToken, data, AppDomainVerifyAgentServiceStub::GetDescriptor());
     WRITE_PARCEL_AND_RETURN_IF_FAIL(Parcelable, data, &appVerifyBaseInfo);
     WRITE_PARCEL_AND_RETURN_IF_FAIL(Uint32, data, 2);
+
     int32_t error = appDomainVerifyAgentService->OnRemoteRequest(
         AgentInterfaceCode::SINGLE_VERIFY, data, reply, option);
     ASSERT_TRUE(error != 0);
 }
+/**
+ * @tc.name: AgentServiceConvertToExplicitWantTest001
+ * @tc.desc: convert to explicit want
+ * @tc.type: FUNC
+ */
+HWTEST_F(AgentServiceTest, AgentServiceConvertToExplicitWantTest001, TestSize.Level0)
+{
+    OHOS::AAFwk::Want implicitWant;
+    sptr<MocConvertCallback> callback = new MocConvertCallback;
+    MessageParcel data;
+    MessageParcel reply;
+    MessageOption option;
+    WRITE_PARCEL_AND_RETURN_IF_FAIL(InterfaceToken, data, IAppDomainVerifyAgentService::GetDescriptor());
+    WRITE_PARCEL_AND_RETURN_IF_FAIL(Parcelable, data, &implicitWant);
+    WRITE_PARCEL_AND_RETURN_IF_FAIL(RemoteObject, data, callback->AsObject());
 
+    int32_t error = appDomainVerifyAgentService->OnRemoteRequest(
+        AgentInterfaceCode::CONVERT_TO_EXPLICIT_WANT, data, reply, option);
+    ASSERT_TRUE(error == ERR_OK);
+}
+
+/**
+ * @tc.name: AgentServiceConvertToExplicitWantTest002
+ * @tc.desc: convert to explicit want with out want
+ * @tc.type: FUNC
+ */
+HWTEST_F(AgentServiceTest, AgentServiceConvertToExplicitWantTest002, TestSize.Level0)
+{
+    OHOS::AAFwk::Want implicitWant;
+    sptr<MocConvertCallback> callback = new MocConvertCallback;
+    MessageParcel data;
+    MessageParcel reply;
+    MessageOption option;
+    WRITE_PARCEL_AND_RETURN_IF_FAIL(InterfaceToken, data, IAppDomainVerifyAgentService::GetDescriptor());
+    WRITE_PARCEL_AND_RETURN_IF_FAIL(RemoteObject, data, callback->AsObject());
+
+    int32_t error = appDomainVerifyAgentService->OnRemoteRequest(
+        AgentInterfaceCode::CONVERT_TO_EXPLICIT_WANT, data, reply, option);
+    ASSERT_TRUE(error != ERR_OK);
+}
+/**
+ * @tc.name: AgentServiceConvertToExplicitWantTest003
+ * @tc.desc: convert to explicit want without cb
+ * @tc.type: FUNC
+ */
+HWTEST_F(AgentServiceTest, AgentServiceConvertToExplicitWantTest003, TestSize.Level0)
+{
+    OHOS::AAFwk::Want implicitWant;
+    sptr<MocConvertCallback> callback = new MocConvertCallback;
+    MessageParcel data;
+    MessageParcel reply;
+    MessageOption option;
+    WRITE_PARCEL_AND_RETURN_IF_FAIL(InterfaceToken, data, IAppDomainVerifyAgentService::GetDescriptor());
+    WRITE_PARCEL_AND_RETURN_IF_FAIL(Parcelable, data, &implicitWant);
+
+    int32_t error = appDomainVerifyAgentService->OnRemoteRequest(
+        AgentInterfaceCode::CONVERT_TO_EXPLICIT_WANT, data, reply, option);
+    ASSERT_TRUE(error != ERR_OK);
+}
 /**
  * @tc.name: AgentServiceTest020
  * @tc.desc:

@@ -73,7 +73,10 @@ std::shared_ptr<VerifyHttpTask> InvokeGetTask(const OHOS::NetStack::HttpClient::
 {
     return std::make_shared<MocHttpClientTask>(httpClientRequest);
 }
-
+static void Sleep(int milliseconds = 10)
+{
+    std::this_thread::sleep_for(std::chrono::milliseconds(milliseconds));
+}
 /**
  * @tc.name: AppDomainVerifyAgentModuleTest001
  * @tc.desc: SingleVerify bundleName fingerprint ok test.
@@ -92,6 +95,7 @@ HWTEST_F(AppDomainVerifyAgentModuleTest, AppDomainVerifyAgentModuleTest001, Test
     skillUri.host = HOST;
     skillUris.emplace_back(skillUri);
     appDomainVerifyAgentService->SingleVerify(appVerifyBaseInfo, skillUris);
+    Sleep();
     DomainVerifyStatus domainVerificationState;
     auto queryRes = AppDomainVerifyMgrClient::GetInstance()->QueryDomainVerifyStatus(BUNDLE_NAME,
         domainVerificationState);
@@ -124,6 +128,7 @@ HWTEST_F(AppDomainVerifyAgentModuleTest, AppDomainVerifyAgentModuleTest002, Test
     skillUri.host = HOST;
     skillUris.emplace_back(skillUri);
     appDomainVerifyAgentService->SingleVerify(appVerifyBaseInfo, skillUris);
+    Sleep();
     DomainVerifyStatus domainVerificationState;
     auto queryRes = AppDomainVerifyMgrClient::GetInstance()->QueryDomainVerifyStatus(BUNDLE_NAME,
         domainVerificationState);
@@ -156,6 +161,7 @@ HWTEST_F(AppDomainVerifyAgentModuleTest, AppDomainVerifyAgentModuleTest003, Test
     skillUri.host = HOST;
     skillUris.emplace_back(skillUri);
     appDomainVerifyAgentService->SingleVerify(appVerifyBaseInfo, skillUris);
+    Sleep();
     DomainVerifyStatus domainVerificationState;
     auto queryRes = AppDomainVerifyMgrClient::GetInstance()->QueryDomainVerifyStatus(BUNDLE_NAME,
         domainVerificationState);
@@ -187,6 +193,7 @@ HWTEST_F(AppDomainVerifyAgentModuleTest, AppDomainVerifyAgentModuleTest004, Test
     skillUri.host = HOST;
     skillUris.emplace_back(skillUri);
     appDomainVerifyAgentService->SingleVerify(appVerifyBaseInfo, skillUris);
+    Sleep();
     DomainVerifyStatus domainVerificationState;
     auto queryRes = AppDomainVerifyMgrClient::GetInstance()->QueryDomainVerifyStatus(BUNDLE_NAME,
         domainVerificationState);
@@ -219,6 +226,7 @@ HWTEST_F(AppDomainVerifyAgentModuleTest, AppDomainVerifyAgentModuleTest005, Test
     skillUri.host = HOST;
     skillUris.emplace_back(skillUri);
     appDomainVerifyAgentService->SingleVerify(appVerifyBaseInfo, skillUris);
+    Sleep();
     DomainVerifyStatus domainVerificationState;
     auto queryRes = AppDomainVerifyMgrClient::GetInstance()->QueryDomainVerifyStatus(BUNDLE_NAME,
         domainVerificationState);
@@ -251,6 +259,7 @@ HWTEST_F(AppDomainVerifyAgentModuleTest, AppDomainVerifyAgentModuleTest006, Test
     skillUri.host = HOST;
     skillUris.emplace_back(skillUri);
     appDomainVerifyAgentService->SingleVerify(appVerifyBaseInfo, skillUris);
+    Sleep();
     DomainVerifyStatus domainVerificationState;
     auto queryRes = AppDomainVerifyMgrClient::GetInstance()->QueryDomainVerifyStatus(BUNDLE_NAME,
         domainVerificationState);
@@ -283,6 +292,7 @@ HWTEST_F(AppDomainVerifyAgentModuleTest, AppDomainVerifyAgentModuleTest007, Test
     skillUri.host = HOST;
     skillUris.emplace_back(skillUri);
     appDomainVerifyAgentService->SingleVerify(appVerifyBaseInfo, skillUris);
+    Sleep();
     DomainVerifyStatus domainVerificationState;
     auto queryRes = AppDomainVerifyMgrClient::GetInstance()->QueryDomainVerifyStatus(BUNDLE_NAME,
         domainVerificationState);
@@ -316,6 +326,7 @@ HWTEST_F(AppDomainVerifyAgentModuleTest, AppDomainVerifyAgentModuleTest008, Test
     skillUri.host = HOST;
     skillUris.emplace_back(skillUri);
     appDomainVerifyAgentService->SingleVerify(appVerifyBaseInfo, skillUris);
+    Sleep();
 
     DomainVerifyStatus domainVerificationState;
     auto queryRes = AppDomainVerifyMgrClient::GetInstance()->QueryDomainVerifyStatus(BUNDLE_NAME,

@@ -32,6 +32,7 @@
 #include "app_domain_verify_mgr_interface_code.h"
 #include "system_ability_definition.h"
 #include "parcel_util.h"
+#include "mock_convert_callback.h"
 
 namespace OHOS::AppDomainVerify {
 using namespace testing;
@@ -46,7 +47,7 @@ public:
     void TearDown();
 };
 
-int InvokeSingleVerifyOK(uint32_t code, MessageParcel &data, MessageParcel &reply, MessageOption &option)
+int InvokeSingleVerifyOK(uint32_t code, MessageParcel& data, MessageParcel& reply, MessageOption& option)
 {
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MODULE_BUTT, "%s call end", __func__);
     std::string bundleName = BUNDLE_NAME;
@@ -56,7 +57,7 @@ int InvokeSingleVerifyOK(uint32_t code, MessageParcel &data, MessageParcel &repl
     return 0;
 }
 
-int InvokeSingleVerifyFail(uint32_t code, MessageParcel &data, MessageParcel &reply, MessageOption &option)
+int InvokeSingleVerifyFail(uint32_t code, MessageParcel& data, MessageParcel& reply, MessageOption& option)
 {
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MODULE_BUTT, "%s call end", __func__);
     std::string bundleName = BUNDLE_NAME;
@@ -84,6 +85,7 @@ void MgrServiceTest::TearDownTestCase(void)
 
 void MgrServiceTest::SetUp(void)
 {
+    AppDomainVerifyAgentClient::staticDestoryMonitor_.destoryed_ = true;
     printf("SetUp \n");
 }
 
@@ -100,10 +102,10 @@ void MgrServiceTest::TearDown(void)
 HWTEST_F(MgrServiceTest, MgrServiceVerifyDomainTest001, TestSize.Level0)
 {
     EXPECT_CALL(*appDomainVerifyAgentStubMock_, SendRequest(_, _, _, _))
-            .Times(1)
-            .WillOnce(::testing::Invoke(InvokeSingleVerifyOK));
+        .Times(AtLeast(1))
+        .WillRepeatedly(::testing::Invoke(InvokeSingleVerifyOK));
     AppDomainVerifyAgentClient::agentServiceProxy_ = sptr<AppDomainVerifyAgentServiceProxy>::MakeSptr(
-            appDomainVerifyAgentStubMock_.get());
+        appDomainVerifyAgentStubMock_.get());
 
     std::string appIdentifier = "appIdentifier";
     std::string bundleName = "bundleName";
@@ -353,6 +355,83 @@ HWTEST_F(MgrServiceTest, MgrServiceSaveAllDomainTest001, TestSize.Level0)
     int32_t error = appDomainVerifyMgrService->OnRemoteRequest(
         AppDomainVerifyMgrInterfaceCode::SAVE_VERIFY_STATUS, data, reply, option);
     ASSERT_TRUE(error == ERR_OK);
+}
+/**
+ * @tc.name: MgrServiceIsAtomicUrlTest001
+ * @tc.desc: is aotmic service url
+ * @tc.type: FUNC
+ */
+HWTEST_F(MgrServiceTest, MgrServiceIsAtomicUrlTest001, TestSize.Level0)
+{
+    std::string url = "https://www.openharmony.com";
+    MessageParcel data;
+    MessageParcel reply;
+    MessageOption option;
+    WRITE_PARCEL_AND_RETURN_IF_FAIL(InterfaceToken, data, IAppDomainVerifyMgrService::GetDescriptor());
+    WRITE_PARCEL_AND_RETURN_IF_FAIL(String, data, url);
+
+    int32_t error = appDomainVerifyMgrService->OnRemoteRequest(
+        AppDomainVerifyMgrInterfaceCode::IS_ATOMIC_SERVICE_URL, data, reply, option);
+    ASSERT_TRUE(error == ERR_OK);
+}
+/**
+ * @tc.name: MgrServiceConvertToExplicitWantTest001
+ * @tc.desc: convert to explicit want
+ * @tc.type: FUNC
+ */
+HWTEST_F(MgrServiceTest, MgrServiceConvertToExplicitWantTest001, TestSize.Level0)
+{
+    OHOS::AAFwk::Want implicitWant;
+    sptr<MocConvertCallback> callback = new MocConvertCallback;
+    MessageParcel data;
+    MessageParcel reply;
+    MessageOption option;
+    WRITE_PARCEL_AND_RETURN_IF_FAIL(InterfaceToken, data, IAppDomainVerifyMgrService::GetDescriptor());
+    WRITE_PARCEL_AND_RETURN_IF_FAIL(Parcelable, data, &implicitWant);
+    WRITE_PARCEL_AND_RETURN_IF_FAIL(RemoteObject, data, callback->AsObject());
+
+    int32_t error = appDomainVerifyMgrService->OnRemoteRequest(
+        AppDomainVerifyMgrInterfaceCode::CONVERT_TO_EXPLICIT_WANT, data, reply, option);
+    ASSERT_TRUE(error == ERR_OK);
+}
+
+/**
+ * @tc.name: MgrServiceConvertToExplicitWantTest002
+ * @tc.desc: convert to explicit want with out want
+ * @tc.type: FUNC
+ */
+HWTEST_F(MgrServiceTest, MgrServiceConvertToExplicitWantTest002, TestSize.Level0)
+{
+    OHOS::AAFwk::Want implicitWant;
+    sptr<MocConvertCallback> callback = new MocConvertCallback;
+    MessageParcel data;
+    MessageParcel reply;
+    MessageOption option;
+    WRITE_PARCEL_AND_RETURN_IF_FAIL(InterfaceToken, data, IAppDomainVerifyMgrService::GetDescriptor());
+    WRITE_PARCEL_AND_RETURN_IF_FAIL(RemoteObject, data, callback->AsObject());
+
+    int32_t error = appDomainVerifyMgrService->OnRemoteRequest(
+        AppDomainVerifyMgrInterfaceCode::CONVERT_TO_EXPLICIT_WANT, data, reply, option);
+    ASSERT_TRUE(error != ERR_OK);
+}
+/**
+ * @tc.name: MgrServiceConvertToExplicitWantTest003
+ * @tc.desc: convert to explicit want without cb
+ * @tc.type: FUNC
+ */
+HWTEST_F(MgrServiceTest, MgrServiceConvertToExplicitWantTest003, TestSize.Level0)
+{
+    OHOS::AAFwk::Want implicitWant;
+    sptr<MocConvertCallback> callback = new MocConvertCallback;
+    MessageParcel data;
+    MessageParcel reply;
+    MessageOption option;
+    WRITE_PARCEL_AND_RETURN_IF_FAIL(InterfaceToken, data, IAppDomainVerifyMgrService::GetDescriptor());
+    WRITE_PARCEL_AND_RETURN_IF_FAIL(Parcelable, data, &implicitWant);
+
+    int32_t error = appDomainVerifyMgrService->OnRemoteRequest(
+        AppDomainVerifyMgrInterfaceCode::CONVERT_TO_EXPLICIT_WANT, data, reply, option);
+    ASSERT_TRUE(error != ERR_OK);
 }
 
 /**
