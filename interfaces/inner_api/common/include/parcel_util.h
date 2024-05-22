@@ -49,4 +49,16 @@
             return false;                                                                                     \
         }                                                                                                     \
     } while (0)
+
+#define MAX_PARCEL_ARRAY_SIZE (99)
+namespace OHOS::AppDomainVerify {
+inline bool IsInvalidParcelArraySize(int size)
+{
+    if (size > MAX_PARCEL_ARRAY_SIZE) {
+        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MODULE_COMMON, "is invalid parcel array size %{public}d", size);
+        return true;
+    }
+    return false;
+}
+}
 #endif
