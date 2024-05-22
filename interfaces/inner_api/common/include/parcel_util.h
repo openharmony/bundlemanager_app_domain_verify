@@ -49,7 +49,6 @@
             return false;                                                                                     \
         }                                                                                                     \
     } while (0)
-#endif
 
 #define MAX_PARCEL_ARRAY_SIZE (99)
 namespace OHOS::AppDomainVerify {
@@ -62,3 +61,4 @@ inline bool IsInvalidParcelArraySize(int size)
     return false;
 }
 }
+#endif
