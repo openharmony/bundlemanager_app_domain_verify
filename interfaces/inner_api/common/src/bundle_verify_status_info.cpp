@@ -72,7 +72,8 @@ VerifyResultInfo VerifyResultInfo::JsonToVerifyResultInfo(const json &verifyResu
     verifyResultInfo.appIdentifier = verifyResultInfoJson["appIdentifier"].is_string() ?
         verifyResultInfoJson["appIdentifier"] :
         "";
-    if (verifyResultInfoJson["hostVerifyStatusMap"].is_object()) {
+    if (verifyResultInfoJson.contains("hostVerifyStatusMap") &&
+        verifyResultInfoJson["hostVerifyStatusMap"].is_object()) {
         for (auto jsonIt = verifyResultInfoJson["hostVerifyStatusMap"].begin();
              jsonIt != verifyResultInfoJson["hostVerifyStatusMap"].end(); ++jsonIt) {
             verifyResultInfo.hostVerifyStatusMap.insert(std::make_pair(jsonIt.key(), jsonIt.value()));

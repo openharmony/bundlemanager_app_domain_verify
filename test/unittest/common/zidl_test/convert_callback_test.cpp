@@ -64,11 +64,73 @@ HWTEST_F(AppDomainVerifyConvertCallbackTest, AppDomainVerifyConvertCallbackStubT
 
     int resCode = 0;
     OHOS::AAFwk::Want want;
+    WRITE_PARCEL_AND_RETURN_IF_FAIL(InterfaceToken, data, IConvertCallback::GetDescriptor());
     WRITE_PARCEL_AND_RETURN_IF_FAIL(Int32, data, resCode);
     WRITE_PARCEL_AND_RETURN_IF_FAIL(Parcelable, data, &want);
     sptr<CallBack> callback = new CallBack;
-    callback->OnRemoteRequest(
+    auto ret = callback->OnRemoteRequest(
         static_cast<int32_t>(ConvertCallbackInterfaceCode::ON_CONVERT_CALLBACK), data, reply, option);
+    ASSERT_TRUE(ret == 0);
+}
+/**
+ * @tc.name: AppDomainVerifyConvertCallbackStubTest002
+ * @tc.desc: AddTask test without description
+ * @tc.type: FUNC
+ */
+HWTEST_F(AppDomainVerifyConvertCallbackTest, AppDomainVerifyConvertCallbackStubTest002, TestSize.Level0)
+{
+    MessageParcel data;
+    MessageParcel reply;
+    MessageOption option(MessageOption::TF_SYNC);
+
+    int resCode = 0;
+    OHOS::AAFwk::Want want;
+    WRITE_PARCEL_AND_RETURN_IF_FAIL(Int32, data, resCode);
+    WRITE_PARCEL_AND_RETURN_IF_FAIL(Parcelable, data, &want);
+    sptr<CallBack> callback = new CallBack;
+    auto ret = callback->OnRemoteRequest(
+        static_cast<int32_t>(ConvertCallbackInterfaceCode::ON_CONVERT_CALLBACK), data, reply, option);
+    ASSERT_TRUE(ret != 0);
+}
+/**
+ * @tc.name: AppDomainVerifyConvertCallbackStubTest003
+ * @tc.desc: AddTask test with wrong code
+ * @tc.type: FUNC
+ */
+HWTEST_F(AppDomainVerifyConvertCallbackTest, AppDomainVerifyConvertCallbackStubTest003, TestSize.Level0)
+{
+    MessageParcel data;
+    MessageParcel reply;
+    MessageOption option(MessageOption::TF_SYNC);
+
+    int resCode = 0;
+    OHOS::AAFwk::Want want;
+    WRITE_PARCEL_AND_RETURN_IF_FAIL(InterfaceToken, data, IConvertCallback::GetDescriptor());
+    WRITE_PARCEL_AND_RETURN_IF_FAIL(Int32, data, resCode);
+    WRITE_PARCEL_AND_RETURN_IF_FAIL(Parcelable, data, &want);
+    sptr<CallBack> callback = new CallBack;
+    auto ret = callback->OnRemoteRequest(100, data, reply, option);
+    ASSERT_TRUE(ret != 0);
+}
+/**
+ * @tc.name: AppDomainVerifyConvertCallbackStubTest004
+ * @tc.desc: AddTask test with without want
+ * @tc.type: FUNC
+ */
+HWTEST_F(AppDomainVerifyConvertCallbackTest, AppDomainVerifyConvertCallbackStubTest004, TestSize.Level0)
+{
+    MessageParcel data;
+    MessageParcel reply;
+    MessageOption option(MessageOption::TF_SYNC);
+
+    int resCode = 0;
+    OHOS::AAFwk::Want want;
+    WRITE_PARCEL_AND_RETURN_IF_FAIL(InterfaceToken, data, IConvertCallback::GetDescriptor());
+    WRITE_PARCEL_AND_RETURN_IF_FAIL(Int32, data, resCode);
+    sptr<CallBack> callback = new CallBack;
+    auto ret = callback->OnRemoteRequest(
+        static_cast<int32_t>(ConvertCallbackInterfaceCode::ON_CONVERT_CALLBACK), data, reply, option);
+    ASSERT_TRUE(ret != 0);
 }
 /**
  * @tc.name: AppDomainVerifyConvertCallbackProxyTest001

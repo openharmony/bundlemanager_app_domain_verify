@@ -268,7 +268,7 @@ HWTEST_F(DomainVerifierTest, DomainVerifierTest007, TestSize.Level0)
     assetJsonObj.applinking.apps.clear();
     assetJsonObj.applinking.apps.emplace_back(appVerifyBaseInfoInApp);
     ASSERT_TRUE(
-        InnerVerifyStatus::STATE_SUCCESS == 
+        InnerVerifyStatus::STATE_SUCCESS ==
             DomainVerifier::VerifyHostWithAppIdentifier(assetJsonObj, appVerifyBaseInfo));
 }
 
