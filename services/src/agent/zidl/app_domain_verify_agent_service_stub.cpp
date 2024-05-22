@@ -19,6 +19,7 @@
 #include "errors.h"
 #include "iservice_registry.h"
 #include "system_ability_definition.h"
+#include "parcel_util.h"
 
 namespace OHOS {
 namespace AppDomainVerify {
@@ -72,6 +73,10 @@ int32_t AppDomainVerifyAgentServiceStub::OnSingleVerify(MessageParcel& data, Mes
     }
     AppVerifyBaseInfo appVerifyBaseInfo = *info;
     int32_t skillUrisSize = data.ReadInt32();
+    if (IsInvalidParcelArraySize(skillUrisSize)) {
+        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "read parcelable size invalid.");
+        return false;
+    }
     std::vector<SkillUri> skillUris;
     for (int32_t i = 0; i < skillUrisSize; i++) {
         std::unique_ptr<SkillUri> skillUri(data.ReadParcelable<SkillUri>());
