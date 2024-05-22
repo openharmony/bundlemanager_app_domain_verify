@@ -52,6 +52,35 @@ void MgrDataMgrTest::TearDown(void)
 {
 }
 
+bool InvokeQueryAllDataWrongData(std::unordered_map<std::string, std::string>& dataMap)
+{
+    dataMap.emplace("a", "b");
+    return true;
+}
+
+bool InvokeQueryAllData(std::unordered_map<std::string, std::string>& dataMap)
+{
+    VerifyResultInfo verifyResultInfo;
+    verifyResultInfo.appIdentifier = APP_IDENTIFIER;
+    verifyResultInfo.hostVerifyStatusMap.insert_or_assign("https://" + HOST, InnerVerifyStatus::STATE_SUCCESS);
+    verifyResultInfo.hostVerifyStatusMap.insert_or_assign("https://", InnerVerifyStatus::STATE_FAIL);
+    auto jsonObj = VerifyResultInfo::VerifyResultInfoToJson(verifyResultInfo);
+    dataMap.emplace("a", jsonObj.dump());
+    return true;
+}
+
+bool InvokeQueryAllDataBatchData(std::unordered_map<std::string, std::string>& dataMap)
+{
+    VerifyResultInfo verifyResultInfo;
+    verifyResultInfo.appIdentifier = APP_IDENTIFIER;
+    verifyResultInfo.hostVerifyStatusMap.insert_or_assign("https://" + HOST, InnerVerifyStatus::STATE_SUCCESS);
+    verifyResultInfo.hostVerifyStatusMap.insert_or_assign("https://", InnerVerifyStatus::STATE_FAIL);
+    auto jsonObj = VerifyResultInfo::VerifyResultInfoToJson(verifyResultInfo);
+    dataMap.emplace("a", jsonObj.dump());
+    dataMap.emplace("b", jsonObj.dump());
+    return true;
+}
+
 /**
  * @tc.name: MgrDataMgrTest001
  * @tc.desc: DataMgr test
@@ -207,34 +236,6 @@ HWTEST_F(MgrDataMgrTest, MgrDataMgrLoadAllFromRdbTest002, TestSize.Level0)
     ASSERT_TRUE(appDomainVerifyDataMgr->LoadAllFromRdb());
 }
 
-bool InvokeQueryAllDataWrongData(std::unordered_map<std::string, std::string>& dataMap)
-{
-    dataMap.emplace("a", "b");
-    return true;
-}
-
-bool InvokeQueryAllData(std::unordered_map<std::string, std::string>& dataMap)
-{
-    VerifyResultInfo verifyResultInfo;
-    verifyResultInfo.appIdentifier = APP_IDENTIFIER;
-    verifyResultInfo.hostVerifyStatusMap.insert_or_assign("https://" + HOST, InnerVerifyStatus::STATE_SUCCESS);
-    verifyResultInfo.hostVerifyStatusMap.insert_or_assign("https://", InnerVerifyStatus::STATE_FAIL);
-    auto jsonObj = VerifyResultInfo::VerifyResultInfoToJson(verifyResultInfo);
-    dataMap.emplace("a", jsonObj.dump());
-    return true;
-}
-
-bool InvokeQueryAllDataBatchData(std::unordered_map<std::string, std::string>& dataMap)
-{
-    VerifyResultInfo verifyResultInfo;
-    verifyResultInfo.appIdentifier = APP_IDENTIFIER;
-    verifyResultInfo.hostVerifyStatusMap.insert_or_assign("https://" + HOST, InnerVerifyStatus::STATE_SUCCESS);
-    verifyResultInfo.hostVerifyStatusMap.insert_or_assign("https://", InnerVerifyStatus::STATE_FAIL);
-    auto jsonObj = VerifyResultInfo::VerifyResultInfoToJson(verifyResultInfo);
-    dataMap.emplace("a", jsonObj.dump());
-    dataMap.emplace("b", jsonObj.dump());
-    return true;
-}
 /**
  * @tc.name: MgrDataMgrLoadAllFromRdbTest003
  * @tc.desc: DataMgr query invoke wrong data
