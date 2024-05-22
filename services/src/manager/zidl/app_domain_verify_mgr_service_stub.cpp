@@ -80,6 +80,10 @@ int32_t AppDomainVerifyMgrServiceStub::OnVerifyDomain(MessageParcel& data, Messa
     std::string bundleName = data.ReadString();
     std::string fingerprint = data.ReadString();
     int32_t size = data.ReadInt32();
+    if (IsInvalidParcelArraySize(size)) {
+        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "read parcelable size invalid.");
+        return false;
+    }
     std::vector<SkillUri> skillUris;
     for (int32_t i = 0; i < size; i++) {
         std::unique_ptr<SkillUri> info(data.ReadParcelable<SkillUri>());
@@ -119,6 +123,10 @@ int32_t AppDomainVerifyMgrServiceStub::OnFilterAbilities(MessageParcel& data, Me
     want = *w;
     std::vector<OHOS::AppExecFwk::AbilityInfo> originAbilityInfos;
     int32_t size = data.ReadInt32();
+    if (IsInvalidParcelArraySize(size)) {
+        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "read parcelable size invalid.");
+        return false;
+    }
     for (int32_t i = 0; i < size; i++) {
         std::unique_ptr<OHOS::AppExecFwk::AbilityInfo> info(data.ReadParcelable<OHOS::AppExecFwk::AbilityInfo>());
         if (!info) {

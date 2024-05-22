@@ -26,6 +26,10 @@ bool JsonUtil::Parse(const std::string &assetJsonsStr, AssetJsonObj &assetJsonOb
     if (!assetJsonsStr.empty()) {
         json jsonObj;
         try {
+            if (!json::accept(assetJsonsStr)) {
+                APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "assetJsonsStr can not be accept.");
+                return false;
+            }
             jsonObj = json::parse(assetJsonsStr);
         } catch (json::parse_error &e) {
             APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "assetJsonsStr can not be parsed.");
