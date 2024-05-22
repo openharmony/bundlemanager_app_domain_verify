@@ -130,7 +130,8 @@ bool AppDomainVerifyDataMgr::LoadAllFromRdb()
         json verifyResultInfoJson;
         try {
             if (!json::accept(it->second)) {
-                APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "hostVerifyStatusJson can not be accept.");
+                APP_DOMAIN_VERIFY_HILOGE(
+                    APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "hostVerifyStatusJson can not be accept.");
                 return false;
             }
             verifyResultInfoJson = json::parse(it->second);
