@@ -77,7 +77,6 @@ bool AppDomainVerifyMgrClient::FilterAbilities(const OHOS::AAFwk::Want &want,
     if (IsServiceAvailable()) {
         filterSuccess = appDomainVerifyMgrServiceProxy_->FilterAbilities(want, originAbilityInfos, filtedAbilityInfos);
     }
-
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "%s call end", __func__);
     return filterSuccess;
 }
