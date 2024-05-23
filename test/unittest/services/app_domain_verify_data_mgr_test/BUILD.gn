@@ -40,8 +40,7 @@ ohos_unittest("app_domain_verify_data_mgr_test") {
 
   sources = [
     "${app_domain_verify_service_path}/src/manager/core/app_domain_verify_data_mgr.cpp",
-    "${app_domain_verify_service_path}/src/manager/rdb/app_domain_verify_rdb_data_manager.cpp",
-    "${app_domain_verify_service_path}/src/manager/rdb/app_domain_verify_rdb_open_callback.cpp",
+    "${app_domain_verify_test_path}/mock/src/mock_rdb_data_manager.cpp",
     "app_domain_verify_data_mgr_test.cpp",
   ]
   configs = [ ":module_private_config" ]
