@@ -40,8 +40,6 @@
         "eventhandler"
       ],
       "third_party": [
-        "json",
-        "curl",
         "openssl"
       ]
     },
