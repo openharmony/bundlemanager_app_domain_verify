@@ -175,6 +175,10 @@ int32_t AppDomainVerifyMgrServiceStub::OnSaveDomainVerifyStatus(MessageParcel& d
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s called", __func__);
     std::string bundleName = data.ReadString();
     std::unique_ptr<VerifyResultInfo> verifyResultInfo(data.ReadParcelable<VerifyResultInfo>());
+    if (verifyResultInfo == nullptr) {
+        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "verifyResultInfo null");
+        return ERR_INVALID_VALUE;
+    }
     bool status = SaveDomainVerifyStatus(bundleName, *verifyResultInfo);
     WRITE_PARCEL_AND_RETURN_INT_IF_FAIL(Bool, reply, status);
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s call end", __func__);
