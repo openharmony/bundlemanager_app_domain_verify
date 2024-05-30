@@ -23,6 +23,7 @@
 #include "app_domain_verify_hilog.h"
 #include "app_domain_verify_agent_ext.h"
 #include "mock_constant.h"
+#include "mock_convert_callback.h"
 namespace OHOS::AppDomainVerify {
 using namespace testing;
 using namespace testing::ext;
@@ -71,8 +72,8 @@ HWTEST_F(AppDomainVerifyAgentExtTest, AppDomainVerifyAgentExtTest001, TestSize.L
     appVerifyBaseInfo.bundleName = BUNDLE_NAME;
     appVerifyBaseInfo.fingerprint = FINGERPRINT;
     std::vector<SkillUri> skillUris;
-    ASSERT_TRUE(appDomainVerifyAgentExt.SingleVerify(appVerifyBaseInfo, skillUris) ==
-        ErrorCode::E_EXTENSIONS_LIB_NOT_FOUND);
+    ASSERT_TRUE(
+        appDomainVerifyAgentExt.SingleVerify(appVerifyBaseInfo, skillUris) == ErrorCode::E_EXTENSIONS_LIB_NOT_FOUND);
 }
 /**
  * @tc.name: AppDomainVerifyAgentExtTest002
@@ -86,7 +87,20 @@ HWTEST_F(AppDomainVerifyAgentExtTest, AppDomainVerifyAgentExtTest002, TestSize.L
     const std::vector<InnerVerifyStatus> statuses;
     int delaySeconds = 0;
     TaskType type = IMMEDIATE_TASK;
-    ASSERT_TRUE(appDomainVerifyAgentExt.CompleteVerifyRefresh(bundleVerifyStatusInfo, statuses, delaySeconds,
-                    type) == ErrorCode::E_EXTENSIONS_LIB_NOT_FOUND);
+    ASSERT_TRUE(appDomainVerifyAgentExt.CompleteVerifyRefresh(bundleVerifyStatusInfo, statuses, delaySeconds, type) ==
+        ErrorCode::E_EXTENSIONS_LIB_NOT_FOUND);
+}
+/**
+ * @tc.name: AppDomainVerifyAgentExtTest003
+ * @tc.desc: ExtensionMgr test.
+ * @tc.type: FUNC
+ */
+HWTEST_F(AppDomainVerifyAgentExtTest, AppDomainVerifyAgentExtTest003, TestSize.Level0)
+{
+    AppDomainVerifyAgentExt appDomainVerifyAgentExt;
+    OHOS::AAFwk::Want atomicWant;
+    sptr<IConvertCallback> cb = new MocConvertCallback;
+
+    ASSERT_TRUE(appDomainVerifyAgentExt.ConvertToExplicitWant(atomicWant, cb) == ErrorCode::E_EXTENSIONS_LIB_NOT_FOUND);
 }
 }
