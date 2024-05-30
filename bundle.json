@@ -37,11 +37,10 @@
         "ffrt",
         "json",
         "curl",
+        "preferences",
         "eventhandler"
       ],
       "third_party": [
-        "json",
-        "curl",
         "openssl"
       ]
     },
@@ -92,7 +91,7 @@
               "inner_verify_status.h",
               "skill_uri.h",
               "parcel_util.h",
-              "httpsession/i_verify_task.h",
+              "httpsession/i_http_task.h",
               "httpsession/app_domain_verify_task_mgr.h",
               "utils/domain_url_util.h",
               "zidl/i_convert_callback.h",
@@ -107,7 +106,9 @@
           "name": "//foundation/bundlemanager/app_domain_verify/interfaces/inner_api/verifier:app_domain_verify_agent_verifier",
           "header": {
             "header_files": [
+              "i_verify_task.h",
               "verify_task.h",
+              "verify_http_task.h",
               "domain_verifier.h",
               "domain_json_util.h",
               "constant/agent_constants.h",

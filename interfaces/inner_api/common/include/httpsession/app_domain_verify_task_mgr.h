@@ -23,12 +23,14 @@
 #include "singleton.h"
 #include "inner_verify_status.h"
 #include "app_verify_base_info.h"
-#include "verify_http_task_factory.h"
-#include "i_verify_task.h"
+#include "i_http_task.h"
+#include "ffrt.h"
+#include "safe_map.h"
+
 
 namespace OHOS {
 namespace AppDomainVerify {
-
+using namespace OHOS::NetStack::HttpClient;
 class AppDomainVerifyTaskMgr {
 public:
     AppDomainVerifyTaskMgr();
@@ -36,24 +38,16 @@ public:
     static std::shared_ptr<AppDomainVerifyTaskMgr> GetInstance();
     static void DestroyInstance();
     DISALLOW_COPY_AND_MOVE(AppDomainVerifyTaskMgr);
-
-    bool AddTask(const std::shared_ptr<IVerifyTask> &task);
+    bool AddTask(const std::shared_ptr<IHttpTask>& task);
     bool IsIdle();
 
 private:
-    void Run();
-    void HttpSessionTaskStart(const std::shared_ptr<IVerifyTask> &verifyTask,
-        std::queue<std::vector<std::string>> urisQueue);
-
-private:
-    std::deque<std::shared_ptr<IVerifyTask>> taskQueue_;
-    std::shared_mutex queueMutex_;
-    std::atomic<bool> taskRunning_ = false;
-    std::unique_ptr<VerifyHttpTaskFactory> httpClientTaskFactory_;
     static std::shared_ptr<AppDomainVerifyTaskMgr> instance_;
     static std::mutex mutex_;
-    void StartHttpTask(const std::shared_ptr<IVerifyTask>& verifyTask, std::queue<std::vector<std::string>>& urisQueue,
-        const NetStack::HttpClient::HttpClientRequest& httpClientRequest, const std::string& uri);
+    bool Init();
+    void RunTask(const std::shared_ptr<IHttpTask>& task, uint32_t seq);
+    std::shared_ptr<ffrt::queue> ffrtTaskQueue_;
+    SafeMap<uint32_t, std::shared_ptr<ffrt::task_handle>> taskHandleMap_;
 };
 }
 }

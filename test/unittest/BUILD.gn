@@ -23,6 +23,7 @@ group("app_domain_verify_unit_test") {
     "common/bean_parcel_test:app_domain_verify_bean_parcel_test",
     "common/bean_test:app_domain_verify_bean_test",
     "common/bms_test:app_domain_verify_bms_test",
+    "common/config_test:app_domain_verify_config_test",
     "common/httpsession_test:app_domain_verify_httpsession_test",
     "common/zidl_test:app_domain_verify_zidl_test",
     "extension/app_domain_verify_agent_ext_test:app_domain_verify_agent_ext_test",

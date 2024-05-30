@@ -12,25 +12,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include "mock_rdb.h"
-
-#include <utility>
-#include "rdb_helper.h"
-namespace OHOS::AppDomainVerify {
-namespace MOC {
-static std::shared_ptr<OHOS::NativeRdb::RdbStore> g_mockRdbStore = nullptr;
-}
-void MockGetRdbStore(std::shared_ptr<OHOS::NativeRdb::RdbStore> mockRdbStore)
+#include "preferences.h"
+#include "preferences_helper.h"
+#include "mock_preferences.h"
+namespace OHOS {
+namespace NativePreferences {
+std::shared_ptr<Preferences> mockPreference = nullptr;
+void MockPreferences(std::shared_ptr<Preferences> pre, int errCode)
 {
-    MOC::g_mockRdbStore = mockRdbStore;
+    mockPreference = pre;
 }
-}
-
-namespace OHOS::NativeRdb {
-using namespace OHOS::AppDomainVerify;
-std::shared_ptr<RdbStore> RdbHelper::GetRdbStore(
-    const RdbStoreConfig& config, int version, RdbOpenCallback& openCallback, int& errCode)
+int mockRet = 0;
+void MockPreferencesRet(int ret)
 {
-    return MOC::g_mockRdbStore;
+    mockRet = ret;
+}
+std::shared_ptr<Preferences> PreferencesHelper::GetPreferences(const Options& options, int& errCode)
+{
+    return mockPreference;
+}
+int PreferencesHelper::RemovePreferencesFromCache(const std::string& path)
+{
+    return mockRet;
+}
 }
 }
