@@ -26,8 +26,8 @@ void WhiteListUpdater::UpdateWhiteList(std::unordered_set<std::string>& whiteLis
         Load();
     }
     std::unordered_set<std::string> filtedWhiteList;
-    std::for_each(whiteList.begin(), whiteList.end(), [&filtedWhiteList](const std::string& element){
-        if(UrlUtil::IsValidUrl(element)){
+    std::for_each(whiteList.begin(), whiteList.end(), [&filtedWhiteList](const std::string& element) {
+        if (UrlUtil::IsValidUrl(element)) {
             filtedWhiteList.insert(element);
         }
     });

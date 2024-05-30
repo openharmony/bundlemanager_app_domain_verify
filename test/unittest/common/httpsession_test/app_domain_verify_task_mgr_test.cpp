@@ -53,8 +53,10 @@ void AppDomainVerifyTaskMgrTest::TearDown(void)
 {
 }
 
-void Sleep(){
-    std::this_thread::sleep_for(std::chrono::milliseconds(10));
+#define SLEEP_TIME (10)
+void Sleep()
+{
+    std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_TIME));
 }
 /**
  * @tc.name: AppDomainVerifyTaskMgrTest001

@@ -23,6 +23,7 @@
 #include "http_client_response.h"
 
 namespace OHOS::NetStack::HttpClient {
+#define DATA_BLOCK (10 * 1024)
 class HttpClientTask : public std::enable_shared_from_this<HttpClientTask> {
 public:
     explicit HttpClientTask(const HttpClientRequest& request)
@@ -46,14 +47,14 @@ public:
         if (receive_) {
             if (onDataReceive_) {
                 uint8_t* fake;
-                onDataReceive_(request_, fake, 10 * 1024);
-                onDataReceive_(request_, fake, 10 * 1024);
-                onDataReceive_(request_, fake, 10 * 1024);
+                onDataReceive_(request_, fake, DATA_BLOCK);
+                onDataReceive_(request_, fake, DATA_BLOCK);
+                onDataReceive_(request_, fake, DATA_BLOCK);
             }
         }
-        if(cancel_){
-            if(onCanceled_){
-                onCanceled_(request_,response_);
+        if (cancel_) {
+            if (onCanceled_) {
+                onCanceled_(request_, response_);
             }
         }
         return true;
@@ -96,7 +97,7 @@ public:
     {
         response_ = response;
     };
-    static void  MockStatus(bool success = true, bool failed = false, bool receive = false, bool cancel = false)
+    static void MockStatus(bool success = true, bool failed = false, bool receive = false, bool cancel = false)
     {
         success_ = success;
         failed_ = failed;
@@ -104,7 +105,8 @@ public:
         cancel_ = cancel;
     }
 
-    static void MockResponse(HttpClientResponse& response){
+    static void MockResponse(HttpClientResponse& response)
+    {
         response_ = response;
     }
 
