@@ -26,19 +26,11 @@
 #include "app_domain_verify_agent_service_proxy.h"
 #undef private
 #undef protected
-#include "mock_http_client_task.h"
-#include "mock_http_client_task_factory.h"
-#include "mock_constant.h"
-#include "mock_verify_agent.h"
 #include "agent_interface_code.h"
 #include "mock_convert_callback.h"
 namespace OHOS::AppDomainVerify {
 using namespace testing;
 using namespace testing::ext;
-bool MocHttpClientTask::sTaskRunOk;
-bool MocHttpClientTask::sHttpOk;
-bool MocHttpClientTask::sIsDataRecv = false;
-bool MocHttpClientTask::sIsCancel = false;
 const std::string BOOT_COMPLETED_EVENT = "usual.event.BOOT_COMPLETED";
 const std::string LOOP_EVENT = "loopevent";
 std::shared_ptr<AppDomainVerifyAgentService> appDomainVerifyAgentService =
@@ -65,10 +57,6 @@ void AgentServiceTest::SetUp(void)
 
 void AgentServiceTest::TearDown(void)
 {
-}
-std::shared_ptr<VerifyHttpTask> InvokeGetTask(const OHOS::NetStack::HttpClient::HttpClientRequest& httpClientRequest)
-{
-    return std::make_shared<MocHttpClientTask>(httpClientRequest);
 }
 /**
  * @tc.name: AgentServiceTest001

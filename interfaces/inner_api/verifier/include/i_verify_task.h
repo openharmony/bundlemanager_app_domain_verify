@@ -22,7 +22,7 @@
 
 namespace OHOS {
 namespace AppDomainVerify {
-class IVerifyTask {
+class IVerifyTask: public std::enable_shared_from_this<IVerifyTask>{
 public:
     IVerifyTask() = default;
     virtual ~IVerifyTask() = default;

@@ -89,7 +89,7 @@ void AppDomainVerifyAgentService::CompleteVerifyRefresh(const BundleVerifyStatus
             // todo delete this bundleName or not
             continue;
         }
-        AddVerifyTask(appVerifyBaseInfo, skillUris, type);
+        ExecuteVerifyTask(appVerifyBaseInfo, skillUris, type);
     }
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "%s call end", __func__);
 }
@@ -112,11 +112,11 @@ void AppDomainVerifyAgentService::SingleVerify(
     const AppVerifyBaseInfo& appVerifyBaseInfo, const std::vector<SkillUri>& skillUris)
 {
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "%s called", __func__);
-    AddVerifyTask(appVerifyBaseInfo, skillUris, TaskType::IMMEDIATE_TASK);
+    ExecuteVerifyTask(appVerifyBaseInfo, skillUris, TaskType::IMMEDIATE_TASK);
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "%s call end", __func__);
 }
 
-void AppDomainVerifyAgentService::AddVerifyTask(
+void AppDomainVerifyAgentService::ExecuteVerifyTask(
     const AppVerifyBaseInfo& appVerifyBaseInfo, const std::vector<SkillUri>& skillUris, TaskType type)
 {
     if (ErrorCode::E_EXTENSIONS_LIB_NOT_FOUND != appDomainVerifyExtMgr_->SingleVerify(appVerifyBaseInfo, skillUris)) {
@@ -129,9 +129,7 @@ void AppDomainVerifyAgentService::AddVerifyTask(
         APP_DOMAIN_VERIFY_HILOGW(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "no valid skillUris");
         return;
     }
-    if (appDomainVerifyTaskMgr_ != nullptr) {
-        appDomainVerifyTaskMgr_->AddTask(task);
-    }
+    task->Execute();
 }
 
 void AppDomainVerifyAgentService::QueryAndCompleteRefresh(
