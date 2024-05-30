@@ -56,7 +56,6 @@ public:
     }
     double GetDouble(const std::string& key, const double& defValue = {}) override
     {
-
         return 0;
     }
     int64_t GetLong(const std::string& key, const int64_t& defValue = {}) override

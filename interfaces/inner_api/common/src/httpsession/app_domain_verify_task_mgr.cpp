@@ -26,7 +26,7 @@ std::shared_ptr<AppDomainVerifyTaskMgr> AppDomainVerifyTaskMgr::instance_ = null
 std::mutex AppDomainVerifyTaskMgr::mutex_;
 
 using namespace OHOS::NetStack::HttpClient;
-
+constexpr int MAX_CONCURRENCY = 10;
 std::shared_ptr<AppDomainVerifyTaskMgr> AppDomainVerifyTaskMgr::GetInstance()
 {
     if (instance_ == nullptr) {
@@ -62,7 +62,7 @@ bool AppDomainVerifyTaskMgr::Init()
 {
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MODULE_COMMON, "Init.");
     ffrt::queue_attr queueAttr{};
-    queueAttr.max_concurrency(10);
+    queueAttr.max_concurrency(MAX_CONCURRENCY);
     queueAttr.qos(ffrt_qos_default);
     ffrtTaskQueue_ = std::make_shared<ffrt::queue>("ffrt-queue", queueAttr);
     return false;

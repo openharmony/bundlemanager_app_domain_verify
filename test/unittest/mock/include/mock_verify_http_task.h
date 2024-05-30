@@ -34,10 +34,6 @@ public:
             const uint8_t* data, size_t length),
         (override));
 };
-
-class MocHttpClientTask:public HttpClientTask{
-
-};
 }
 }
 #endif  // APP_DOMAIN_VERIFY_MOCK_VERIFY_HTTP_TASK_H
