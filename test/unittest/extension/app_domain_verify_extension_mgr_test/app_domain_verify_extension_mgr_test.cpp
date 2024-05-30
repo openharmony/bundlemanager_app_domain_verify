@@ -133,8 +133,8 @@ HWTEST_F(AppDomainVerifyExtensionMgrTest, AppDomainVerifyCompleteVerifyTest001, 
     const std::vector<InnerVerifyStatus> statuses;
     int delaySeconds = 0;
     TaskType type = IMMEDIATE_TASK;
-    ASSERT_TRUE(appDomainVerifyExtensionMgr.CompleteVerifyRefresh(bundleVerifyStatusInfo, statuses, delaySeconds,
-                    type) == ErrorCode::E_EXTENSIONS_LIB_NOT_FOUND);
+    ASSERT_TRUE(appDomainVerifyExtensionMgr.CompleteVerifyRefresh(
+                    bundleVerifyStatusInfo, statuses, delaySeconds, type) == ErrorCode::E_EXTENSIONS_LIB_NOT_FOUND);
 }
 
 /**
@@ -154,10 +154,9 @@ HWTEST_F(AppDomainVerifyExtensionMgrTest, AppDomainVerifyCompleteVerifyTest002, 
     const std::vector<InnerVerifyStatus> statuses;
     int delaySeconds = 0;
     TaskType type = IMMEDIATE_TASK;
-    ASSERT_TRUE(appDomainVerifyExtensionMgr.CompleteVerifyRefresh(bundleVerifyStatusInfo, statuses, delaySeconds,
-                    type) == ErrorCode::E_EXTENSIONS_INTERNAL_ERROR);
+    ASSERT_TRUE(appDomainVerifyExtensionMgr.CompleteVerifyRefresh(
+                    bundleVerifyStatusInfo, statuses, delaySeconds, type) == ErrorCode::E_EXTENSIONS_INTERNAL_ERROR);
 }
-
 
 /**
  * @tc.name: AppDomainVerifyCompleteVerifyTest003
@@ -175,7 +174,8 @@ HWTEST_F(AppDomainVerifyExtensionMgrTest, AppDomainVerifyCompleteVerifyTest003, 
 
     OHOS::AAFwk::Want atomicWant;
     sptr<IConvertCallback> cb = new MocConvertCallback;
-    ASSERT_TRUE(appDomainVerifyExtensionMgr.ConvertToExplicitWant(atomicWant, cb) == ErrorCode::E_EXTENSIONS_LIB_NOT_FOUND);
+    ASSERT_TRUE(
+        appDomainVerifyExtensionMgr.ConvertToExplicitWant(atomicWant, cb) == ErrorCode::E_EXTENSIONS_LIB_NOT_FOUND);
 }
 
 /**
@@ -190,7 +190,8 @@ HWTEST_F(AppDomainVerifyExtensionMgrTest, AppDomainVerifyConvertTest001, TestSiz
 
     OHOS::AAFwk::Want atomicWant;
     sptr<IConvertCallback> cb = new MocConvertCallback;
-    ASSERT_TRUE(appDomainVerifyExtensionMgr.ConvertToExplicitWant(atomicWant, cb) == ErrorCode::E_EXTENSIONS_LIB_NOT_FOUND);
+    ASSERT_TRUE(
+        appDomainVerifyExtensionMgr.ConvertToExplicitWant(atomicWant, cb) == ErrorCode::E_EXTENSIONS_LIB_NOT_FOUND);
 }
 
 /**
@@ -208,9 +209,9 @@ HWTEST_F(AppDomainVerifyExtensionMgrTest, AppDomainVerifyConvertTest002, TestSiz
 
     OHOS::AAFwk::Want atomicWant;
     sptr<IConvertCallback> cb = new MocConvertCallback;
-    ASSERT_TRUE(appDomainVerifyExtensionMgr.ConvertToExplicitWant(atomicWant, cb) == ErrorCode::E_EXTENSIONS_INTERNAL_ERROR);
+    ASSERT_TRUE(
+        appDomainVerifyExtensionMgr.ConvertToExplicitWant(atomicWant, cb) == ErrorCode::E_EXTENSIONS_INTERNAL_ERROR);
 }
-
 
 /**
  * @tc.name: AppDomainVerifyConvertTest003
@@ -230,10 +231,9 @@ HWTEST_F(AppDomainVerifyExtensionMgrTest, AppDomainVerifyConvertTest003, TestSiz
     const std::vector<InnerVerifyStatus> statuses;
     int delaySeconds = 0;
     TaskType type = IMMEDIATE_TASK;
-    ASSERT_TRUE(appDomainVerifyExtensionMgr.CompleteVerifyRefresh(bundleVerifyStatusInfo, statuses, delaySeconds,
-                    type) == ErrorCode::E_EXTENSIONS_LIB_NOT_FOUND);
+    ASSERT_TRUE(appDomainVerifyExtensionMgr.CompleteVerifyRefresh(
+                    bundleVerifyStatusInfo, statuses, delaySeconds, type) == ErrorCode::E_EXTENSIONS_LIB_NOT_FOUND);
 }
-
 
 /**
  * @tc.name: AppDomainVerifyExtensionMgrTest001
