@@ -17,17 +17,16 @@
 #include <deque>
 #include <memory>
 #include <string>
+
 #include "app_domain_verify_hilog.h"
 
 namespace OHOS {
 namespace AppDomainVerify {
 std::shared_ptr<AppDomainVerifyTaskMgr> AppDomainVerifyTaskMgr::instance_ = nullptr;
 std::mutex AppDomainVerifyTaskMgr::mutex_;
-const size_t MAX_RESPONSE_LEN = 20 * 1024;
 
 using namespace OHOS::NetStack::HttpClient;
-const int URI_IN_TASK_ONCE_REQUEST_SIZE = 1;
-
+constexpr int MAX_CONCURRENCY = 10;
 std::shared_ptr<AppDomainVerifyTaskMgr> AppDomainVerifyTaskMgr::GetInstance()
 {
     if (instance_ == nullptr) {
@@ -51,7 +50,7 @@ void AppDomainVerifyTaskMgr::DestroyInstance()
 AppDomainVerifyTaskMgr::AppDomainVerifyTaskMgr()
 {
     APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "AppDomainVerifyTaskMgr new!");
-    httpClientTaskFactory_ = std::make_unique<VerifyHttpTaskFactory>();
+    Init();
 }
 
 AppDomainVerifyTaskMgr::~AppDomainVerifyTaskMgr()
@@ -59,128 +58,74 @@ AppDomainVerifyTaskMgr::~AppDomainVerifyTaskMgr()
     APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "AppDomainVerifyTaskMgr destory!");
 }
 
-bool AppDomainVerifyTaskMgr::AddTask(const std::shared_ptr<IVerifyTask>& task)
+bool AppDomainVerifyTaskMgr::Init()
 {
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MODULE_COMMON, "Init.");
+    ffrt::queue_attr queueAttr{};
+    queueAttr.max_concurrency(MAX_CONCURRENCY);
+    queueAttr.qos(ffrt_qos_default);
+    ffrtTaskQueue_ = std::make_shared<ffrt::queue>("ffrt-queue", queueAttr);
+    return false;
+}
+bool AppDomainVerifyTaskMgr::AddTask(const std::shared_ptr<IHttpTask>& task)
+{
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MODULE_COMMON, "AddTask.");
+    if (ffrtTaskQueue_ == nullptr) {
+        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MODULE_COMMON, "AddTask queue null.");
+        return false;
+    }
     if (task == nullptr) {
-        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "input task is null!");
+        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MODULE_COMMON, "AddTask task null.");
         return false;
     }
-    if (task->GetType() > TaskType::SCHEDULE_REFRESH_TASK) {
-        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "input task type error: %d", task->GetType());
+    auto seq = task->GetTaskId();
+    auto handle = ffrt::submit_h([task, seq, this]() { RunTask(task, seq); });
+    if (handle != nullptr) {
+        auto taskWrap = std::make_shared<ffrt::task_handle>(std::move(handle));
+        taskHandleMap_.EnsureInsert(seq, taskWrap);
+    } else {
         return false;
     }
-    {
-        std::unique_lock<std::shared_mutex> lock(queueMutex_);
-        taskQueue_.push_back(task);
-    }
-    Run();
+
     return true;
 }
-
-void AppDomainVerifyTaskMgr::Run()
-{
-    if (taskRunning_) {
-        return;
-    }
-    taskRunning_ = true;
-    std::shared_ptr<IVerifyTask> verifyTask = nullptr;
-    {
-        std::unique_lock<std::shared_mutex> lock(queueMutex_);
-        if (taskQueue_.empty()) {
-            taskRunning_ = false;
-            return;
-        }
-        verifyTask = taskQueue_.front();
-        taskQueue_.pop_front();
-    }
-
-    if (verifyTask != nullptr) {
-        std::queue<std::vector<std::string>> urisQueue;
-        std::vector<std::string> uris;
-        auto uriVerifyMap = verifyTask->GetUriVerifyMap();
-        for (auto it = uriVerifyMap.begin(); it != uriVerifyMap.end(); ++it) {
-            uris.emplace_back(it->first);
-            if (uris.size() == URI_IN_TASK_ONCE_REQUEST_SIZE || std::next(it) == uriVerifyMap.end()) {
-                urisQueue.push(uris);
-                uris.clear();
-            }
-        }
-        HttpSessionTaskStart(verifyTask, urisQueue);
-    } else {
-        taskRunning_ = false;
-        Run();
-    }
-}
-
-void AppDomainVerifyTaskMgr::HttpSessionTaskStart(
-    const std::shared_ptr<IVerifyTask>& verifyTask, std::queue<std::vector<std::string>> urisQueue)
-{
-    if (verifyTask == nullptr) {
-        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "HttpSessionTaskStart nullptr!");
-        return;
-    }
-    if (urisQueue.empty()) {
-        verifyTask->OnSaveVerifyResult();
-        taskRunning_ = false;
-        Run();
-        return;
-    }
-    HttpClientRequest httpClientRequest;
-    std::vector<std::string> urisOnceRequest;
-    urisOnceRequest.insert(urisOnceRequest.end(), urisQueue.front().begin(), urisQueue.front().end());
-    urisQueue.pop();
-    for (auto it = urisOnceRequest.begin(); it != urisOnceRequest.end(); ++it) {
-        auto uri = *it;
-        if (!verifyTask->OnPreRequest(httpClientRequest, uri)) {
-            APP_DOMAIN_VERIFY_HILOGE(
-                APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "OnPreRequest failed %{public}s, continue.", uri.c_str());
-            continue;
-        }
-        StartHttpTask(verifyTask, urisQueue, httpClientRequest, uri);
-    }
-}
-
-void AppDomainVerifyTaskMgr::StartHttpTask(const std::shared_ptr<IVerifyTask>& verifyTask,
-    std::queue<std::vector<std::string>>& urisQueue, const HttpClientRequest& httpClientRequest, const std::string& uri)
-{
-    auto httpTask = this->httpClientTaskFactory_->CreateTask(httpClientRequest);
-    // All callbacks will execute on the same sub-thread.
-    httpTask->OnSuccess([=](const HttpClientRequest& request, const HttpClientResponse& response) {
-        APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "Task OnSuccess, retcode : %{public}d.",
-            response.GetResponseCode());
-        verifyTask->OnPostVerify(uri, response);
-        this->HttpSessionTaskStart(verifyTask, urisQueue);
-    });
-    httpTask->OnFail(
-        [=](const HttpClientRequest& request, const HttpClientResponse& response, const HttpClientError& error) {
-            APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "OnFail,cause: %{public}d, %{public}s.",
-                error.GetErrorCode(), error.GetErrorMessage().c_str());
-            verifyTask->OnPostVerify(uri, response);
-            this->HttpSessionTaskStart(verifyTask, urisQueue);
-        });
-
-    httpTask->OnDataReceive([httpTask](const HttpClientRequest& request, const uint8_t* data, size_t length) {
-        APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "OnDataReceive size:%{public}zu.", length);
-        if (httpTask->GetLen() + length > MAX_RESPONSE_LEN) {
-            APP_DOMAIN_VERIFY_HILOGW(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "recieve data exceeds, will cancel.");
-            httpTask->Cancel();
-        } else {
-            httpTask->SetLen(httpTask->GetLen() + length);
-        }
-    });
-    httpTask->OnCancel([=](const HttpClientRequest& request, const HttpClientResponse& response) {
-        APP_DOMAIN_VERIFY_HILOGE(
-            APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "OnCancel,cause: %{public}d.", response.GetResponseCode());
-        verifyTask->OnPostVerify(uri, response);
-        this->HttpSessionTaskStart(verifyTask, urisQueue);
-    });
-    httpTask->Start();
-}
-
 bool AppDomainVerifyTaskMgr::IsIdle()
 {
-    std::unique_lock<std::shared_mutex> lock(queueMutex_);
-    return taskQueue_.empty() && !taskRunning_;
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MODULE_COMMON, "IsIdle.");
+    return taskHandleMap_.Size() == 0;
+}
+
+void AppDomainVerifyTaskMgr::RunTask(const std::shared_ptr<IHttpTask>& task, uint32_t seq)
+{
+    auto httpclientTask = task->CreateHttpClientTask();
+    if (httpclientTask == nullptr) {
+        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MODULE_COMMON, "can not get http task.");
+        taskHandleMap_.Erase(seq);
+        return;
+    }
+    httpclientTask->OnSuccess([=](const HttpClientRequest& request, const HttpClientResponse& response) {
+        task->OnSuccess(request, response);
+        APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MODULE_COMMON, "OnSuccess.");
+        taskHandleMap_.Erase(seq);
+    });
+    httpclientTask->OnFail(
+        [=](const HttpClientRequest& request, const HttpClientResponse& response, const HttpClientError& error) {
+            task->OnFail(request, response, error);
+            APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MODULE_COMMON, "OnFail.%{public}d.", taskHandleMap_.Size());
+            taskHandleMap_.Erase(seq);
+        });
+
+    httpclientTask->OnCancel([=](const HttpClientRequest& request, const HttpClientResponse& response) {
+        task->OnCancel(request, response);
+        APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MODULE_COMMON, "OnCancel.");
+        taskHandleMap_.Erase(seq);
+    });
+    httpclientTask->OnDataReceive([=](const HttpClientRequest& request, const uint8_t* data, size_t length) {
+        task->OnDataReceive(httpclientTask, request, data, length);
+        APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "OnDataReceive.");
+        taskHandleMap_.Erase(seq);
+    });
+    httpclientTask->Start();
 }
 }
 }

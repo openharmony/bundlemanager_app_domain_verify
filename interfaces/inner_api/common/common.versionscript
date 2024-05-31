@@ -18,12 +18,13 @@
     *VerifyResultInfo*;
     *UrlUtil*;
     *AppDomainVerifyTaskMgr*;
-    *VerifyHttpTask*;
-    *VerifyHttpTaskFactory*;
+    *IHttpTask*;
     *BundleVerifyStatusInfo*;
     *BundleInfoQuery*;
     *ConvertCallbackStub*;
     *ConvertCallbackProxy*;
+    *WhiteListChecker*;
+    *WhiteListUpdater*;
   local:
     *;
 };

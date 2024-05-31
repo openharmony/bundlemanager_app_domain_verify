@@ -16,6 +16,7 @@
     *DomainVerifier*;
     *VerifyTask*;
     *JsonUtil*;
+    *VerifyHttpTask*;
   local:
     *;
 };

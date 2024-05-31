@@ -64,7 +64,7 @@ void AppDomainVerifyAgentServiceProxy::ConvertToExplicitWant(
     int32_t error = Remote()->SendRequest(AgentInterfaceCode::CONVERT_TO_EXPLICIT_WANT, data, reply, option);
     if (error != ERR_NONE) {
         APP_DOMAIN_VERIFY_HILOGE(
-            APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "QueryAllDomainVerifyStatus failed, error: %d", error);
+            APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "ConvertToExplicitWant failed, error: %d", error);
     }
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "%s call end", __func__);
 }
