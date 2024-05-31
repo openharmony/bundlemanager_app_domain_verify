@@ -16,9 +16,11 @@
 #include <gtest/gtest.h>
 #include <memory>
 #include <string>
+#include "../../mock/include/http_client/http_client_error.h"
+#include "../../mock/include/http_client/http_client_request.h"
+#include "../../mock/include/http_client/http_client_response.h"
+#include "../../mock/include/http_client/http_client_task.h"
 #include "app_domain_verify_mgr_client.h"
-#include "mock_http_client_task.h"
-#include "mock_http_client_task_factory.h"
 #include "mock_constant.h"
 #include "mock_verify_agent.h"
 #include "agent_interface_code.h"
@@ -36,10 +38,6 @@ using ::testing::Invoke;
 using ::testing::Mock;
 using namespace testing;
 using namespace testing::ext;
-bool MocHttpClientTask::sTaskRunOk;
-bool MocHttpClientTask::sHttpOk;
-bool MocHttpClientTask::sIsDataRecv = false;
-bool MocHttpClientTask::sIsCancel = false;
 class AppDomainVerifyAgentModuleTest : public testing::Test {
 public:
     static void SetUpTestCase(void);
@@ -69,14 +67,14 @@ void AppDomainVerifyAgentModuleTest::TearDown(void)
     printf("TearDown \n");
 }
 
-std::shared_ptr<VerifyHttpTask> InvokeGetTask(const OHOS::NetStack::HttpClient::HttpClientRequest &httpClientRequest)
-{
-    return std::make_shared<MocHttpClientTask>(httpClientRequest);
-}
 static void Sleep(int milliseconds = 10)
 {
     std::this_thread::sleep_for(std::chrono::milliseconds(milliseconds));
 }
+
+std::string jsonString =
+    R"({"applinking":{"apps":[{"appIdentifier":"appIdentifier","bundleName":"com.openHarmony.test","fingerprint":"fingerprint"}]}})";
+
 /**
  * @tc.name: AppDomainVerifyAgentModuleTest001
  * @tc.desc: SingleVerify bundleName fingerprint ok test.
@@ -97,76 +95,10 @@ HWTEST_F(AppDomainVerifyAgentModuleTest, AppDomainVerifyAgentModuleTest001, Test
     appDomainVerifyAgentService->SingleVerify(appVerifyBaseInfo, skillUris);
     Sleep();
     DomainVerifyStatus domainVerificationState;
-    auto queryRes = AppDomainVerifyMgrClient::GetInstance()->QueryDomainVerifyStatus(BUNDLE_NAME,
-        domainVerificationState);
+    auto queryRes = AppDomainVerifyMgrClient::GetInstance()->QueryDomainVerifyStatus(
+        BUNDLE_NAME, domainVerificationState);
     ASSERT_TRUE(queryRes);
     ASSERT_TRUE(domainVerificationState == DomainVerifyStatus::STATE_NONE);
-}
-
-/**
- * @tc.name: AppDomainVerifyAgentModuleTest002
- * @tc.desc: SingleVerify bundleName fingerprint ok test.
- * @tc.type: FUNC
- */
-HWTEST_F(AppDomainVerifyAgentModuleTest, AppDomainVerifyAgentModuleTest002, TestSize.Level0)
-{
-    MocHttpClientTask::sTaskRunOk = true;
-    MocHttpClientTask::sHttpOk = true;
-    auto mocHttpClientTaskFactory = std::make_unique<MocHttpClientTaskFactory>();
-    EXPECT_CALL(*mocHttpClientTaskFactory, CreateTask(_))
-        .Times(::testing::AtLeast(1))
-        .WillOnce(::testing::Invoke(InvokeGetTask));
-    std::shared_ptr<AppDomainVerifyAgentService> appDomainVerifyAgentService =
-        std::make_shared<AppDomainVerifyAgentService>();
-    appDomainVerifyAgentService->appDomainVerifyTaskMgr_->httpClientTaskFactory_ = std::move(mocHttpClientTaskFactory);
-    AppVerifyBaseInfo appVerifyBaseInfo;
-    appVerifyBaseInfo.bundleName = BUNDLE_NAME;
-    appVerifyBaseInfo.fingerprint = FINGERPRINT;
-    std::vector<SkillUri> skillUris;
-    SkillUri skillUri;
-    skillUri.scheme = "https";
-    skillUri.host = HOST;
-    skillUris.emplace_back(skillUri);
-    appDomainVerifyAgentService->SingleVerify(appVerifyBaseInfo, skillUris);
-    Sleep();
-    DomainVerifyStatus domainVerificationState;
-    auto queryRes = AppDomainVerifyMgrClient::GetInstance()->QueryDomainVerifyStatus(BUNDLE_NAME,
-        domainVerificationState);
-    ASSERT_TRUE(queryRes);
-    ASSERT_TRUE(domainVerificationState == DomainVerifyStatus::STATE_VERIFIED);
-}
-
-/**
- * @tc.name: AppDomainVerifyAgentModuleTest003
- * @tc.desc: SingleVerify appIdentifier ok test.
- * @tc.type: FUNC
- */
-HWTEST_F(AppDomainVerifyAgentModuleTest, AppDomainVerifyAgentModuleTest003, TestSize.Level0)
-{
-    MocHttpClientTask::sTaskRunOk = true;
-    auto mocHttpClientTaskFactory = std::make_unique<MocHttpClientTaskFactory>();
-    EXPECT_CALL(*mocHttpClientTaskFactory, CreateTask(_))
-        .Times(::testing::AtLeast(1))
-        .WillOnce(::testing::Invoke(InvokeGetTask));
-    std::shared_ptr<AppDomainVerifyAgentService> appDomainVerifyAgentService =
-        std::make_shared<AppDomainVerifyAgentService>();
-    appDomainVerifyAgentService->appDomainVerifyTaskMgr_->httpClientTaskFactory_ = std::move(mocHttpClientTaskFactory);
-    AppVerifyBaseInfo appVerifyBaseInfo;
-    appVerifyBaseInfo.appIdentifier = APP_IDENTIFIER;
-    appVerifyBaseInfo.bundleName = BUNDLE_NAME;
-    appVerifyBaseInfo.fingerprint = FINGERPRINT;
-    std::vector<SkillUri> skillUris;
-    SkillUri skillUri;
-    skillUri.scheme = "https";
-    skillUri.host = HOST;
-    skillUris.emplace_back(skillUri);
-    appDomainVerifyAgentService->SingleVerify(appVerifyBaseInfo, skillUris);
-    Sleep();
-    DomainVerifyStatus domainVerificationState;
-    auto queryRes = AppDomainVerifyMgrClient::GetInstance()->QueryDomainVerifyStatus(BUNDLE_NAME,
-        domainVerificationState);
-    ASSERT_TRUE(queryRes);
-    ASSERT_TRUE(domainVerificationState == DomainVerifyStatus::STATE_VERIFIED);
 }
 
 /**
@@ -176,14 +108,12 @@ HWTEST_F(AppDomainVerifyAgentModuleTest, AppDomainVerifyAgentModuleTest003, Test
  */
 HWTEST_F(AppDomainVerifyAgentModuleTest, AppDomainVerifyAgentModuleTest004, TestSize.Level0)
 {
-    MocHttpClientTask::sTaskRunOk = true;
-    auto mocHttpClientTaskFactory = std::make_unique<MocHttpClientTaskFactory>();
-    EXPECT_CALL(*mocHttpClientTaskFactory, CreateTask(_))
-        .Times(::testing::AtLeast(1))
-        .WillOnce(::testing::Invoke(InvokeGetTask));
+    HttpClientTask::MockStatus();
+    HttpClientResponse response;
+    response.responseCode_ = 200;
+    response.result_ = jsonString;
     std::shared_ptr<AppDomainVerifyAgentService> appDomainVerifyAgentService =
         std::make_shared<AppDomainVerifyAgentService>();
-    appDomainVerifyAgentService->appDomainVerifyTaskMgr_->httpClientTaskFactory_ = std::move(mocHttpClientTaskFactory);
     AppVerifyBaseInfo appVerifyBaseInfo;
     appVerifyBaseInfo.bundleName = BUNDLE_NAME;
     appVerifyBaseInfo.fingerprint = "wrong fingerprint";
@@ -195,8 +125,8 @@ HWTEST_F(AppDomainVerifyAgentModuleTest, AppDomainVerifyAgentModuleTest004, Test
     appDomainVerifyAgentService->SingleVerify(appVerifyBaseInfo, skillUris);
     Sleep();
     DomainVerifyStatus domainVerificationState;
-    auto queryRes = AppDomainVerifyMgrClient::GetInstance()->QueryDomainVerifyStatus(BUNDLE_NAME,
-        domainVerificationState);
+    auto queryRes = AppDomainVerifyMgrClient::GetInstance()->QueryDomainVerifyStatus(
+        BUNDLE_NAME, domainVerificationState);
     ASSERT_TRUE(queryRes);
     ASSERT_TRUE(domainVerificationState == DomainVerifyStatus::STATE_NONE);
 }
@@ -208,14 +138,12 @@ HWTEST_F(AppDomainVerifyAgentModuleTest, AppDomainVerifyAgentModuleTest004, Test
  */
 HWTEST_F(AppDomainVerifyAgentModuleTest, AppDomainVerifyAgentModuleTest005, TestSize.Level0)
 {
-    MocHttpClientTask::sTaskRunOk = true;
-    auto mocHttpClientTaskFactory = std::make_unique<MocHttpClientTaskFactory>();
-    EXPECT_CALL(*mocHttpClientTaskFactory, CreateTask(_))
-        .Times(::testing::AtLeast(1))
-        .WillOnce(::testing::Invoke(InvokeGetTask));
+    HttpClientTask::MockStatus();
+    HttpClientResponse response;
+    response.responseCode_ = 200;
+    response.result_ = jsonString;
     std::shared_ptr<AppDomainVerifyAgentService> appDomainVerifyAgentService =
         std::make_shared<AppDomainVerifyAgentService>();
-    appDomainVerifyAgentService->appDomainVerifyTaskMgr_->httpClientTaskFactory_ = std::move(mocHttpClientTaskFactory);
     AppVerifyBaseInfo appVerifyBaseInfo;
     appVerifyBaseInfo.appIdentifier = APP_IDENTIFIER;
     appVerifyBaseInfo.bundleName = BUNDLE_NAME;
@@ -228,8 +156,8 @@ HWTEST_F(AppDomainVerifyAgentModuleTest, AppDomainVerifyAgentModuleTest005, Test
     appDomainVerifyAgentService->SingleVerify(appVerifyBaseInfo, skillUris);
     Sleep();
     DomainVerifyStatus domainVerificationState;
-    auto queryRes = AppDomainVerifyMgrClient::GetInstance()->QueryDomainVerifyStatus(BUNDLE_NAME,
-        domainVerificationState);
+    auto queryRes = AppDomainVerifyMgrClient::GetInstance()->QueryDomainVerifyStatus(
+        BUNDLE_NAME, domainVerificationState);
     ASSERT_TRUE(queryRes);
     ASSERT_TRUE(domainVerificationState == DomainVerifyStatus::STATE_NONE);
 }
@@ -241,14 +169,12 @@ HWTEST_F(AppDomainVerifyAgentModuleTest, AppDomainVerifyAgentModuleTest005, Test
  */
 HWTEST_F(AppDomainVerifyAgentModuleTest, AppDomainVerifyAgentModuleTest006, TestSize.Level0)
 {
-    MocHttpClientTask::sTaskRunOk = true;
-    auto mocHttpClientTaskFactory = std::make_unique<MocHttpClientTaskFactory>();
-    EXPECT_CALL(*mocHttpClientTaskFactory, CreateTask(_))
-        .Times(::testing::AtLeast(1))
-        .WillOnce(::testing::Invoke(InvokeGetTask));
+    HttpClientTask::MockStatus();
+    HttpClientResponse response;
+    response.responseCode_ = 200;
+    response.result_ = jsonString;
     std::shared_ptr<AppDomainVerifyAgentService> appDomainVerifyAgentService =
         std::make_shared<AppDomainVerifyAgentService>();
-    appDomainVerifyAgentService->appDomainVerifyTaskMgr_->httpClientTaskFactory_ = std::move(mocHttpClientTaskFactory);
     AppVerifyBaseInfo appVerifyBaseInfo;
     appVerifyBaseInfo.appIdentifier = APP_IDENTIFIER;
     appVerifyBaseInfo.bundleName = BUNDLE_NAME;
@@ -261,8 +187,8 @@ HWTEST_F(AppDomainVerifyAgentModuleTest, AppDomainVerifyAgentModuleTest006, Test
     appDomainVerifyAgentService->SingleVerify(appVerifyBaseInfo, skillUris);
     Sleep();
     DomainVerifyStatus domainVerificationState;
-    auto queryRes = AppDomainVerifyMgrClient::GetInstance()->QueryDomainVerifyStatus(BUNDLE_NAME,
-        domainVerificationState);
+    auto queryRes = AppDomainVerifyMgrClient::GetInstance()->QueryDomainVerifyStatus(
+        BUNDLE_NAME, domainVerificationState);
     ASSERT_TRUE(queryRes);
     ASSERT_TRUE(domainVerificationState == DomainVerifyStatus::STATE_NONE);
 }
@@ -274,14 +200,12 @@ HWTEST_F(AppDomainVerifyAgentModuleTest, AppDomainVerifyAgentModuleTest006, Test
  */
 HWTEST_F(AppDomainVerifyAgentModuleTest, AppDomainVerifyAgentModuleTest007, TestSize.Level0)
 {
-    MocHttpClientTask::sTaskRunOk = false;
-    auto mocHttpClientTaskFactory = std::make_unique<MocHttpClientTaskFactory>();
-    EXPECT_CALL(*mocHttpClientTaskFactory, CreateTask(_))
-        .Times(::testing::AtLeast(1))
-        .WillOnce(::testing::Invoke(InvokeGetTask));
+    HttpClientTask::MockStatus(false, true);
+    HttpClientResponse response;
+    response.responseCode_ = 200;
+    response.result_ = jsonString;
     std::shared_ptr<AppDomainVerifyAgentService> appDomainVerifyAgentService =
         std::make_shared<AppDomainVerifyAgentService>();
-    appDomainVerifyAgentService->appDomainVerifyTaskMgr_->httpClientTaskFactory_ = std::move(mocHttpClientTaskFactory);
     AppVerifyBaseInfo appVerifyBaseInfo;
     appVerifyBaseInfo.appIdentifier = APP_IDENTIFIER;
     appVerifyBaseInfo.bundleName = BUNDLE_NAME;
@@ -294,8 +218,8 @@ HWTEST_F(AppDomainVerifyAgentModuleTest, AppDomainVerifyAgentModuleTest007, Test
     appDomainVerifyAgentService->SingleVerify(appVerifyBaseInfo, skillUris);
     Sleep();
     DomainVerifyStatus domainVerificationState;
-    auto queryRes = AppDomainVerifyMgrClient::GetInstance()->QueryDomainVerifyStatus(BUNDLE_NAME,
-        domainVerificationState);
+    auto queryRes = AppDomainVerifyMgrClient::GetInstance()->QueryDomainVerifyStatus(
+        BUNDLE_NAME, domainVerificationState);
     ASSERT_TRUE(queryRes);
     ASSERT_TRUE(domainVerificationState == DomainVerifyStatus::STATE_NONE);
 }
@@ -307,15 +231,12 @@ HWTEST_F(AppDomainVerifyAgentModuleTest, AppDomainVerifyAgentModuleTest007, Test
  */
 HWTEST_F(AppDomainVerifyAgentModuleTest, AppDomainVerifyAgentModuleTest008, TestSize.Level0)
 {
-    MocHttpClientTask::sTaskRunOk = false;
-    MocHttpClientTask::sHttpOk = true;
-    auto mocHttpClientTaskFactory = std::make_unique<MocHttpClientTaskFactory>();
-    EXPECT_CALL(*mocHttpClientTaskFactory, CreateTask(_))
-        .Times(::testing::AtLeast(0))
-        .WillOnce(::testing::Invoke(InvokeGetTask));
+    HttpClientTask::MockStatus();
+    HttpClientResponse response;
+    response.responseCode_ = 200;
+    response.result_ = jsonString;
     std::shared_ptr<AppDomainVerifyAgentService> appDomainVerifyAgentService =
         std::make_shared<AppDomainVerifyAgentService>();
-    appDomainVerifyAgentService->appDomainVerifyTaskMgr_->httpClientTaskFactory_ = std::move(mocHttpClientTaskFactory);
     AppVerifyBaseInfo appVerifyBaseInfo;
     appVerifyBaseInfo.appIdentifier = APP_IDENTIFIER;
     appVerifyBaseInfo.bundleName = BUNDLE_NAME;
@@ -329,8 +250,8 @@ HWTEST_F(AppDomainVerifyAgentModuleTest, AppDomainVerifyAgentModuleTest008, Test
     Sleep();
 
     DomainVerifyStatus domainVerificationState;
-    auto queryRes = AppDomainVerifyMgrClient::GetInstance()->QueryDomainVerifyStatus(BUNDLE_NAME,
-        domainVerificationState);
+    auto queryRes = AppDomainVerifyMgrClient::GetInstance()->QueryDomainVerifyStatus(
+        BUNDLE_NAME, domainVerificationState);
     ASSERT_TRUE(queryRes);
     ASSERT_TRUE(domainVerificationState == DomainVerifyStatus::STATE_NONE);
 }

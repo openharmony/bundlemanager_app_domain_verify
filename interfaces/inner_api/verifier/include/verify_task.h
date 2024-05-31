@@ -15,6 +15,7 @@
 
 #ifndef APP_DOMAIN_VERIFY_VERIFY_TASK_H
 #define APP_DOMAIN_VERIFY_VERIFY_TASK_H
+#include <unordered_set>
 #include "i_verify_task.h"
 #include "http_client_response.h"
 #include "app_verify_base_info.h"
@@ -22,6 +23,7 @@
 #include "app_domain_verify_hisysevent.h"
 #include "skill_uri.h"
 #include "app_domain_verify_mgr_client.h"
+#include "i_http_task.h"
 
 namespace OHOS {
 namespace AppDomainVerify {
@@ -36,6 +38,7 @@ public:
     VerifyTask(OHOS::AppDomainVerify::TaskType type, const AppVerifyBaseInfo &appVerifyBaseInfo,
         const std::vector<SkillUri> &skillUris);
     void InitUriVerifyMap(const std::vector<SkillUri> &skillUris);
+    void Execute();
 
 protected:
     OHOS::AppDomainVerify::TaskType& GetTaskType();
@@ -46,6 +49,7 @@ private:
     OHOS::AppDomainVerify::TaskType type_;
     AppVerifyBaseInfo appVerifyBaseInfo_;
     std::unordered_map<std::string, InnerVerifyStatus> uriVerifyMap_;
+    std::unordered_set<std::string> unVerifiedSet_;
 };
 }
 }

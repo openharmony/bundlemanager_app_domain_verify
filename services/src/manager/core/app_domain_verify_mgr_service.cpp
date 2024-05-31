@@ -13,22 +13,14 @@
  * limitations under the License.
  */
 
-#include <iostream>
 #include <memory>
-
-#include <sstream>
 #include <string>
 #include <vector>
-
 #include "app_domain_verify_mgr_service.h"
-#include "iremote_broker.h"
 #include "system_ability_definition.h"
-#include "manager_constants.h"
 #include "domain_url_util.h"
-#include "bundle_verify_status_info.h"
-#include "app_verify_base_info.h"
-#include "iservice_registry.h"
 #include "app_domain_verify_agent_client.h"
+#include "white_list_config_mgr.h"
 
 namespace OHOS {
 namespace AppDomainVerify {
@@ -135,7 +127,11 @@ bool AppDomainVerifyMgrService::SaveDomainVerifyStatus(
 bool AppDomainVerifyMgrService::IsAtomicServiceUrl(const std::string& url)
 {
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s called", __func__);
-    return false;
+    if (!InitWhiteListChecker()) {
+        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "InitWhiteListChecker failed.");
+        return false;
+    }
+    return checker_->IsInWhiteList(url);
 }
 void AppDomainVerifyMgrService::ConvertToExplicitWant(OHOS::AAFwk::Want& implicitWant, sptr<IConvertCallback>& callback)
 {
@@ -199,6 +195,20 @@ void AppDomainVerifyMgrService::DumpAllVerifyInfos(std::string& dumpString)
             dumpString.append("\n");
         }
     }
+}
+bool AppDomainVerifyMgrService::InitWhiteListChecker()
+{
+    if (checker_ != nullptr) {
+        return true;
+    }
+    std::lock_guard<std::mutex> lock(initCheckerMutex);
+    if (checker_ == nullptr) {
+        checker_ = std::make_shared<WhiteListChecker>();
+    }
+    if (checker_ == nullptr) {
+        return false;
+    }
+    return true;
 }
 }  // namespace AppDomainVerify
 }  // namespace OHOS

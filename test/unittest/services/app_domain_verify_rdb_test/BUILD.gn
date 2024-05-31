@@ -41,7 +41,6 @@ ohos_unittest("app_domain_verify_rdb_test") {
   sources = [
     "${app_domain_verify_service_path}/src/manager/rdb/app_domain_verify_rdb_data_manager.cpp",
     "${app_domain_verify_service_path}/src/manager/rdb/app_domain_verify_rdb_open_callback.cpp",
-    "${app_domain_verify_test_path}/mock/src/mock_rdb.cpp",
     "app_domain_verify_rdb_data_manager_test.cpp",
     "app_domain_verify_rdb_open_callback_test.cpp",
   ]
@@ -53,6 +52,7 @@ ohos_unittest("app_domain_verify_rdb_test") {
     "bundle_framework:appexecfwk_core",
     "c_utils:utils",
     "eventhandler:libeventhandler",
+    "ffrt:libffrt",
     "hilog:libhilog",
     "hisysevent:libhisysevent",
     "image_framework:image_native",
@@ -66,7 +66,11 @@ ohos_unittest("app_domain_verify_rdb_test") {
 
   defines = [ "API_EXPORT=__attribute__((visibility (\"default\")))" ]
   deps = [
+    "${app_domain_verify_client_path}:app_domain_verify_agent_client",
+    "${app_domain_verify_client_path}:app_domain_verify_mgr_client",
     "${app_domain_verify_common_path}:app_domain_verify_common",
+    "${app_domain_verify_extension_path}:app_domain_verify_extension_framework",
+    "${app_domain_verify_verifier_path}:app_domain_verify_agent_verifier",
     "//third_party/googletest:gmock_main",
     "//third_party/googletest:gtest_main",
   ]

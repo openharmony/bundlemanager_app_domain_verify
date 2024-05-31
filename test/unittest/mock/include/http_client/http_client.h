@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -12,18 +12,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#ifndef FFRT_API_FFRT_H
-#define FFRT_API_FFRT_H
-#include <functional>
-namespace ffrt {
 
-class queue {
-public:
-    explicit queue(std::string name){};
-    inline void submit(const std::function<void()>& func)
-    {
-    }
-};
+#ifndef COMMUNICATIONNETSTACK_HTTP_CLIENT_H
+#define COMMUNICATIONNETSTACK_HTTP_CLIENT_H
 
-}
-#endif  // FFRT_API_FFRT_H
+#endif  // COMMUNICATIONNETSTACK_HTTP_CLIENT_H

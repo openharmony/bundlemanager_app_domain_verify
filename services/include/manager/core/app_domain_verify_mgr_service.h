@@ -23,6 +23,7 @@
 #include "i_app_domain_verify_mgr_service.h"
 #include "i_app_domain_verify_agent_service.h"
 #include "app_domain_verify_data_mgr.h"
+#include "white_list_checker.h"
 
 namespace OHOS {
 namespace AppDomainVerify {
@@ -58,6 +59,9 @@ private:
 
 private:
     std::shared_ptr<AppDomainVerifyDataMgr> dataManager_ = nullptr;
+    bool InitWhiteListChecker();
+    std::shared_ptr<WhiteListChecker> checker_;
+    std::mutex initCheckerMutex;
 };
 }  // namespace AppDomainVerify
 }  // namespace OHOS

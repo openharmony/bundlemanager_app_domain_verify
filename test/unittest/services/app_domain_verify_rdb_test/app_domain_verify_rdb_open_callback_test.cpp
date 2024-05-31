@@ -14,7 +14,6 @@
  */
 #include "gtest/gtest.h"
 #include <memory>
-#include "../../mock/include/ffrt.h"
 #include "mock_constant.h"
 #include "rdb_helper.h"
 #define private public

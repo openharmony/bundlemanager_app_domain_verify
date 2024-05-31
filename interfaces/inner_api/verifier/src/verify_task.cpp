@@ -13,12 +13,15 @@
  * limitations under the License.
  */
 
+#include <algorithm>
 #include "verify_task.h"
 #include "domain_verifier.h"
 #include "app_domain_verify_hilog.h"
 #include "bundle_verify_status_info.h"
 #include "agent_constants.h"
 #include "domain_url_util.h"
+#include "app_domain_verify_task_mgr.h"
+#include "verify_http_task.h"
 
 namespace OHOS {
 namespace AppDomainVerify {
@@ -31,6 +34,10 @@ void VerifyTask::OnPostVerify(const std::string& uri, const OHOS::NetStack::Http
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "%s called", __func__);
     auto status = DomainVerifier::VerifyHost(response.GetResponseCode(), response.GetResult(), appVerifyBaseInfo_);
     uriVerifyMap_.insert_or_assign(uri, status);
+    unVerifiedSet_.erase(uri);
+    if (unVerifiedSet_.empty()) {
+        OnSaveVerifyResult();
+    }
     VERIFY_RESULT_EVENT(appVerifyBaseInfo_.appIdentifier, appVerifyBaseInfo_.bundleName, type_, status);
 }
 void VerifyTask::OnSaveVerifyResult()
@@ -75,14 +82,15 @@ void VerifyTask::InitUriVerifyMap(const std::vector<SkillUri>& skillUris)
             host = it->host.substr(FUZZY_HOST_START.size());
         }
         // validUris remove duplicates
-        uriVerifyMap_.insert(make_pair(it->scheme + "://" + host, InnerVerifyStatus::UNKNOWN));
+        auto uri = it->scheme + "://" + host;
+        uriVerifyMap_.insert(make_pair(uri, InnerVerifyStatus::UNKNOWN));
+        unVerifiedSet_.insert(uri);
     }
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "%s call end", __func__);
 }
 VerifyTask::VerifyTask(OHOS::AppDomainVerify::TaskType type, const AppVerifyBaseInfo& appVerifyBaseInfo,
     const std::vector<SkillUri>& skillUris)
-    : type_(type),
-      appVerifyBaseInfo_(appVerifyBaseInfo)
+    : type_(type), appVerifyBaseInfo_(appVerifyBaseInfo)
 {
     InitUriVerifyMap(skillUris);
 }
@@ -101,6 +109,15 @@ std::unordered_map<std::string, InnerVerifyStatus>& VerifyTask::GetInnerUriVerif
 bool VerifyTask::SaveDomainVerifyStatus(const std::string& bundleName, const VerifyResultInfo& verifyResultInfo)
 {
     return AppDomainVerifyMgrClient::GetInstance()->SaveDomainVerifyStatus(bundleName, verifyResultInfo);
+}
+
+void VerifyTask::Execute()
+{
+    std::for_each(
+        uriVerifyMap_.begin(), uriVerifyMap_.end(), [this](const std::pair<std::string, InnerVerifyStatus>& element) {
+            auto verifyHttpTask = std::make_shared<VerifyHttpTask>(element.first, shared_from_this());
+            AppDomainVerifyTaskMgr::GetInstance()->AddTask(verifyHttpTask);
+        });
 }
 }
 }

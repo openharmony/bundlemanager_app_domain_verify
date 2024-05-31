@@ -188,7 +188,7 @@ bool AppDomainVerifyMgrServiceProxy::SaveDomainVerifyStatus(
     int32_t error = Remote()->SendRequest(AppDomainVerifyMgrInterfaceCode::SAVE_VERIFY_STATUS, data, reply, option);
     if (error != ERR_NONE) {
         APP_DOMAIN_VERIFY_HILOGE(
-            APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "QueryAllDomainVerifyStatus failed, error: %d", error);
+            APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "SaveDomainVerifyStatus failed, error: %d", error);
         return false;
     }
     bool status = false;
@@ -207,7 +207,7 @@ bool AppDomainVerifyMgrServiceProxy::IsAtomicServiceUrl(const std::string& url)
     int32_t error = Remote()->SendRequest(AppDomainVerifyMgrInterfaceCode::IS_ATOMIC_SERVICE_URL, data, reply, option);
     if (error != ERR_NONE) {
         APP_DOMAIN_VERIFY_HILOGE(
-            APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "QueryAllDomainVerifyStatus failed, error: %d", error);
+            APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "IsAtomicServiceUrl failed, error: %d", error);
         return false;
     }
     bool status = false;
@@ -230,7 +230,7 @@ void AppDomainVerifyMgrServiceProxy::ConvertToExplicitWant(
         AppDomainVerifyMgrInterfaceCode::CONVERT_TO_EXPLICIT_WANT, data, reply, option);
     if (error != ERR_NONE) {
         APP_DOMAIN_VERIFY_HILOGE(
-            APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "QueryAllDomainVerifyStatus failed, error: %d", error);
+            APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "ConvertToExplicitWant failed, error: %d", error);
     }
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "%s call end", __func__);
 }

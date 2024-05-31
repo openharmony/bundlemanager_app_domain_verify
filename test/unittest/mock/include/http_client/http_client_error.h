@@ -12,25 +12,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include "mock_rdb.h"
 
-#include <utility>
-#include "rdb_helper.h"
-namespace OHOS::AppDomainVerify {
-namespace MOC {
-static std::shared_ptr<OHOS::NativeRdb::RdbStore> g_mockRdbStore = nullptr;
-}
-void MockGetRdbStore(std::shared_ptr<OHOS::NativeRdb::RdbStore> mockRdbStore)
-{
-    MOC::g_mockRdbStore = mockRdbStore;
-}
+#ifndef COMMUNICATIONNETSTACK_HTTP_CLIENT_ERROR_H
+#define COMMUNICATIONNETSTACK_HTTP_CLIENT_ERROR_H
+#include <string>
+
+namespace OHOS::NetStack::HttpClient {
+class HttpClientError {
+public:
+    HttpClientError() : errorCode_(0)
+    {
+    }
+
+    int GetErrorCode() const
+    {
+        return errorCode_;
+    };
+
+    const std::string& GetErrorMessage() const
+    {
+        return errorMsg_;
+    };
+
+    int errorCode_;
+    std::string errorMsg_;
+};
 }
 
-namespace OHOS::NativeRdb {
-using namespace OHOS::AppDomainVerify;
-std::shared_ptr<RdbStore> RdbHelper::GetRdbStore(
-    const RdbStoreConfig& config, int version, RdbOpenCallback& openCallback, int& errCode)
-{
-    return MOC::g_mockRdbStore;
-}
-}
+;
+#endif  // COMMUNICATIONNETSTACK_HTTP_CLIENT_ERROR_H

@@ -39,6 +39,7 @@ ohos_shared_library("app_domain_verify_agent_verifier") {
   sources = [
     "src/domain_json_util.cpp",
     "src/domain_verifier.cpp",
+    "src/verify_http_task.cpp",
     "src/verify_task.cpp",
   ]
   public_configs = [ ":app_domain_verify_agent_verifier_config" ]

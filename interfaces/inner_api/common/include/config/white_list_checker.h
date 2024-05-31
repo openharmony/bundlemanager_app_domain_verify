@@ -12,19 +12,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-#ifndef MOC_HTTP_CLIENT_TASK_FACTORY_H
-#define MOC_HTTP_CLIENT_TASK_FACTORY_H
-#include <gmock/gmock.h>
-#include "verify_http_task_factory.h"
-
+#ifndef APP_DOMAIN_VERIFY_WHITE_LIST_CHECKER_H
+#define APP_DOMAIN_VERIFY_WHITE_LIST_CHECKER_H
+#include <string>
+#include "white_list_config_mgr.h"
 namespace OHOS::AppDomainVerify {
-class MocHttpClientTaskFactory : public VerifyHttpTaskFactory {
+
+class WhiteListChecker : public WhiteListConfigMgr {
 public:
-    MocHttpClientTaskFactory() = default;
-    virtual ~MocHttpClientTaskFactory() = default;
-    MOCK_METHOD(std::shared_ptr<VerifyHttpTask>, CreateTask,
-        (const OHOS::NetStack::HttpClient::HttpClientRequest &httpClientRequest), (override));
+    WhiteListChecker();
+    ~WhiteListChecker() override = default;
+    bool IsInWhiteList(const std::string& url);
+
+private:
+    std::shared_ptr<NativePreferences::PreferencesObserver> observer_;
 };
 }
-#endif
+#endif  // APP_DOMAIN_VERIFY_WHITE_LIST_CHECKER_H
