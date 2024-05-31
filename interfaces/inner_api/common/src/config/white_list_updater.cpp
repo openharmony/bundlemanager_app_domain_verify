@@ -19,7 +19,7 @@
 #include "domain_url_util.h"
 namespace OHOS::AppDomainVerify {
 
-void WhiteListUpdater::UpdateWhiteList(std::unordered_set<std::string>& whiteList)
+void WhiteListUpdater::UpdateWhiteList(const std::unordered_set<std::string>& whiteList)
 {
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s called", __func__);
     if (!init) {

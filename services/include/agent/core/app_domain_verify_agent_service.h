@@ -25,6 +25,7 @@
 #include "i_app_domain_verify_mgr_service.h"
 #include "app_domain_verify_task_mgr.h"
 #include "app_domain_verify_hisysevent.h"
+#include "white_list_updater.h"
 
 namespace OHOS {
 namespace AppDomainVerify {
@@ -34,8 +35,8 @@ class AppDomainVerifyAgentService : public SystemAbility, public AppDomainVerify
 public:
     API_EXPORT AppDomainVerifyAgentService();
     API_EXPORT virtual ~AppDomainVerifyAgentService();
-    API_EXPORT void SingleVerify(const AppVerifyBaseInfo &appVerifyBaseInfo,
-        const std::vector<SkillUri> &skillUris) override;
+    API_EXPORT void SingleVerify(
+        const AppVerifyBaseInfo& appVerifyBaseInfo, const std::vector<SkillUri>& skillUris) override;
     API_EXPORT void ConvertToExplicitWant(OHOS::AAFwk::Want& implicitWant, sptr<IConvertCallback>& callback) override;
 
 protected:
@@ -51,11 +52,14 @@ private:
     void ExecuteVerifyTask(
         const AppVerifyBaseInfo& appVerifyBaseInfo, const std::vector<SkillUri>& skillUris, TaskType type);
     bool IsIdle();
+    void OnWhiteListUpdate(const std::unordered_set<std::string>& whiteList);
+    void UpdateWhiteList();
 
 private:
     std::shared_ptr<ffrt::queue> continuationHandler_;
     std::shared_ptr<AppDomainVerifyExtensionMgr> appDomainVerifyExtMgr_;
     std::shared_ptr<AppDomainVerifyTaskMgr> appDomainVerifyTaskMgr_;
+    std::shared_ptr<WhiteListUpdater> updater_;
 };
 
 }  // namespace AppDomainVerify
