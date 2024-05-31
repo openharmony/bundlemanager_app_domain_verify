@@ -15,6 +15,7 @@
 #ifndef APP_DOMAIN_VERIFY_AGENT_EXT_H
 #define APP_DOMAIN_VERIFY_AGENT_EXT_H
 #include <string>
+#include <unordered_set>
 #include "skill_uri.h"
 #include "app_domain_verify_error.h"
 #include "app_domain_verify_ext_base.h"
@@ -29,12 +30,14 @@
 
 namespace OHOS {
 namespace AppDomainVerify {
+using OnWhiteListUpdate = std::function<void(std::unordered_set<std::string>)>;
 class AppDomainVerifyAgentExt : public AppDomainVerifyExtBase {
 public:
     virtual ErrorCode CompleteVerifyRefresh(const BundleVerifyStatusInfo& bundleVerifyStatusInfo,
         const std::vector<InnerVerifyStatus>& statuses, int delaySeconds, TaskType type);
     virtual ErrorCode SingleVerify(const AppVerifyBaseInfo& appVerifyBaseInfo, const std::vector<SkillUri>& skillUris);
     virtual ErrorCode ConvertToExplicitWant(OHOS::AAFwk::Want& implicitWant, sptr<IConvertCallback>& callback);
+    virtual ErrorCode UpdateWhiteList(OnWhiteListUpdate&& onWhiteListUpdate);
 };
 }
 }

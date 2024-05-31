@@ -16,6 +16,7 @@
 #ifndef APP_DOMAIN_VERIFY_EXTENSION_MGR_H
 #define APP_DOMAIN_VERIFY_EXTENSION_MGR_H
 #include <mutex>
+#include <unordered_set>
 #include "app_domain_verify_error.h"
 #include "skill_uri.h"
 #include "app_verify_base_info.h"
@@ -28,6 +29,7 @@
 
 namespace OHOS {
 namespace AppDomainVerify {
+using OnWhiteListUpdate = std::function<void(std::unordered_set<std::string>)>;
 class AppDomainVerifyExtensionMgr {
 public:
     AppDomainVerifyExtensionMgr();
@@ -36,6 +38,7 @@ public:
         const std::vector<InnerVerifyStatus>& statuses, int delaySeconds, TaskType type);
     ErrorCode SingleVerify(const AppVerifyBaseInfo& appVerifyBaseInfo, const std::vector<SkillUri>& skillUris);
     ErrorCode ConvertToExplicitWant(OHOS::AAFwk::Want& implicitWant, sptr<IConvertCallback>& callback);
+    ErrorCode UpdateWhiteList(OnWhiteListUpdate&& onWhiteListUpdate);
 
 protected:
     virtual bool Init();

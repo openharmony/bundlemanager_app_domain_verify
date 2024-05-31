@@ -25,6 +25,7 @@
     *ConvertCallbackProxy*;
     *WhiteListChecker*;
     *WhiteListUpdater*;
+    *WhiteListConfigMgr*;
   local:
     *;
 };
