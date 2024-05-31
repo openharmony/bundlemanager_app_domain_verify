@@ -21,7 +21,7 @@ class WhiteListUpdater : public WhiteListConfigMgr {
 public:
     WhiteListUpdater() = default;
     ~WhiteListUpdater() override = default;
-    void UpdateWhiteList(std::unordered_set<std::string>& whiteList);
+    void UpdateWhiteList(const std::unordered_set<std::string>& whiteList);
 
 private:
     std::mutex whiteListLock;

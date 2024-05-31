@@ -83,8 +83,8 @@ void AppDomainVerifyAgentService::CompleteVerifyRefresh(const BundleVerifyStatus
         }
         AppVerifyBaseInfo appVerifyBaseInfo;
         appVerifyBaseInfo.bundleName = it->first;
-        if (!BundleInfoQuery::GetBundleInfo(appVerifyBaseInfo.bundleName, appVerifyBaseInfo.appIdentifier,
-            appVerifyBaseInfo.fingerprint)) {
+        if (!BundleInfoQuery::GetBundleInfo(
+                appVerifyBaseInfo.bundleName, appVerifyBaseInfo.appIdentifier, appVerifyBaseInfo.fingerprint)) {
             APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "GetBundleInfo failed.");
             // todo delete this bundleName or not
             continue;
@@ -163,6 +163,8 @@ void AppDomainVerifyAgentService::OnStart(const SystemAbilityOnDemandReason& sta
                     InnerVerifyStatus::FAILURE_TIMEOUT },
                 0, type);
         };
+        auto updateWhiteListFunc = [this]() { UpdateWhiteList(); };
+        continuationHandler_->submit(updateWhiteListFunc);
         continuationHandler_->submit(func);
     }
 
@@ -202,6 +204,27 @@ bool AppDomainVerifyAgentService::IsIdle()
         return true;
     } else {
         return appDomainVerifyTaskMgr_->IsIdle();
+    }
+}
+void AppDomainVerifyAgentService::OnWhiteListUpdate(const std::unordered_set<std::string>& whiteList)
+{
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "%s called", __func__);
+    if (updater_ == nullptr) {
+        updater_ = std::make_shared<WhiteListUpdater>();
+    }
+    if (updater_) {
+        updater_->UpdateWhiteList(whiteList);
+    } else {
+        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "can not update");
+    }
+}
+void AppDomainVerifyAgentService::UpdateWhiteList()
+{
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "%s called", __func__);
+    auto onUpdate = [this](auto&& set) { OnWhiteListUpdate(std::forward<decltype(set)>(set)); };
+    if (ErrorCode::E_EXTENSIONS_LIB_NOT_FOUND != appDomainVerifyExtMgr_->UpdateWhiteList(std::move(onUpdate))) {
+        APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "extension call end");
+        return;
     }
 }
 }  // namespace AppDomainVerify
