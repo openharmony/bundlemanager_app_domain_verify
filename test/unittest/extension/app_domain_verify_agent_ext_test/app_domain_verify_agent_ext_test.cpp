@@ -89,4 +89,15 @@ HWTEST_F(AppDomainVerifyAgentExtTest, AppDomainVerifyAgentExtTest002, TestSize.L
     ASSERT_TRUE(appDomainVerifyAgentExt.CompleteVerifyRefresh(bundleVerifyStatusInfo, statuses, delaySeconds,
                     type) == ErrorCode::E_EXTENSIONS_LIB_NOT_FOUND);
 }
+/**
+ * @tc.name: AppDomainVerifyAgentExtTest003
+ * @tc.desc: ExtensionMgr test.
+ * @tc.type: FUNC
+ */
+HWTEST_F(AppDomainVerifyAgentExtTest, AppDomainVerifyAgentExtTest003, TestSize.Level0)
+{
+    AppDomainVerifyAgentExt appDomainVerifyAgentExt;
+    OnWhiteListUpdate func;
+    ASSERT_TRUE(appDomainVerifyAgentExt.UpdateWhiteList(std::move(func)) == ErrorCode::E_EXTENSIONS_LIB_NOT_FOUND);
+}
 }
