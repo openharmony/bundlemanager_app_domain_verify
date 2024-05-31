@@ -91,8 +91,8 @@ HWTEST_F(AppDomainVerifyExtensionMgrTest, AppDomainVerifyExtensionMgrTest002, Te
     const std::vector<InnerVerifyStatus> statuses;
     int delaySeconds = 0;
     TaskType type = IMMEDIATE_TASK;
-    ASSERT_TRUE(appDomainVerifyExtensionMgr.CompleteVerifyRefresh(bundleVerifyStatusInfo, statuses, delaySeconds,
-                    type) == ErrorCode::E_EXTENSIONS_LIB_NOT_FOUND);
+    ASSERT_TRUE(appDomainVerifyExtensionMgr.CompleteVerifyRefresh(
+                    bundleVerifyStatusInfo, statuses, delaySeconds, type) == ErrorCode::E_EXTENSIONS_LIB_NOT_FOUND);
 }
 /**
  * @tc.name: AppDomainVerifyExtensionMgrTest003
@@ -129,8 +129,8 @@ HWTEST_F(AppDomainVerifyExtensionMgrTest, AppDomainVerifyExtensionMgrTest004, Te
     const std::vector<InnerVerifyStatus> statuses;
     int delaySeconds = 0;
     TaskType type = IMMEDIATE_TASK;
-    ASSERT_TRUE(appDomainVerifyExtensionMgr.CompleteVerifyRefresh(bundleVerifyStatusInfo, statuses, delaySeconds,
-                    type) == ErrorCode::E_EXTENSIONS_INTERNAL_ERROR);
+    ASSERT_TRUE(appDomainVerifyExtensionMgr.CompleteVerifyRefresh(
+                    bundleVerifyStatusInfo, statuses, delaySeconds, type) == ErrorCode::E_EXTENSIONS_INTERNAL_ERROR);
 }
 /**
  * @tc.name: AppDomainVerifyExtensionMgrTest005
@@ -215,8 +215,8 @@ HWTEST_F(AppDomainVerifyExtensionMgrTest, AppDomainVerifyExtensionMgrTest009, Te
     const std::vector<InnerVerifyStatus> statuses;
     int delaySeconds = 0;
     TaskType type = IMMEDIATE_TASK;
-    ASSERT_TRUE(appDomainVerifyExtensionMgr.CompleteVerifyRefresh(bundleVerifyStatusInfo, statuses, delaySeconds,
-                    type) == ErrorCode::E_EXTENSIONS_LIB_NOT_FOUND);
+    ASSERT_TRUE(appDomainVerifyExtensionMgr.CompleteVerifyRefresh(
+                    bundleVerifyStatusInfo, statuses, delaySeconds, type) == ErrorCode::E_EXTENSIONS_LIB_NOT_FOUND);
 }
 
 /**
@@ -231,7 +231,7 @@ HWTEST_F(AppDomainVerifyExtensionMgrTest, AppDomainVerifyExtensionMgrTest010, Te
 }
 
 /**
- * @tc.name: AppDomainVerifyExtensionMgrTest006
+ * @tc.name: AppDomainVerifyExtensionMgrTest011
  * @tc.desc: ExtensionMgr test.
  * @tc.type: FUNC
  */
@@ -243,6 +243,21 @@ HWTEST_F(AppDomainVerifyExtensionMgrTest, AppDomainVerifyExtensionMgrTest011, Te
     MockAppDomainVerifyExtensionMgr1 appDomainVerifyExtensionMgr;
     ASSERT_TRUE(appDomainVerifyExtensionMgr.Init() == true);
     APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MODULE_EXTENSION, "AppDomainVerifyExtensionMgrTest011 end");
+}
+/**
+ * @tc.name: AppDomainVerifyExtensionMgrTest012
+ * @tc.desc: ExtensionMgr test.
+ * @tc.type: FUNC
+ */
+HWTEST_F(AppDomainVerifyExtensionMgrTest, AppDomainVerifyExtensionMgrTest012, TestSize.Level0)
+{
+    OnWhiteListUpdate func;
+    MockAppDomainVerifyExtensionMgr appDomainVerifyExtensionMgr;
+    EXPECT_CALL(appDomainVerifyExtensionMgr, Init()).Times(1).WillOnce(Return(false));
+
+    const AppVerifyBaseInfo appVerifyBaseInfo;
+    std::vector<SkillUri> skillUris;
+    ASSERT_TRUE(appDomainVerifyExtensionMgr.UpdateWhiteList(std::move(func)) == ErrorCode::E_EXTENSIONS_LIB_NOT_FOUND);
 }
 /**
  * @tc.name: AppDomainVerifyExtensionRegisterTest001
