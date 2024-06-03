@@ -33,32 +33,17 @@ enum AppDomainVerifySubModule {
     APP_DOMAIN_VERIFY_MODULE_BUTT,
 };
 
-// 0xD001C00: subsystem:APP_DOMAIN_VERIFY module:APP_DOMAIN_VERIFYManager, 8 bits reserved.
-static constexpr unsigned int BASE_APP_DOMAIN_VERIFY_DOMAIN_ID = 0xD001C00;
+static constexpr unsigned int APP_DOMAIN_VERIFY_DOMAIN_ID = 0xD0011FD;
 
-enum AppDomainVerifyDomainId {
-    APP_DOMAIN_VERIFY_EXTENSION_DOMAIN = BASE_APP_DOMAIN_VERIFY_DOMAIN_ID + APP_DOMAIN_VERIFY_MODULE_EXTENSION,
-    APP_DOMAIN_VERIFY_MGR_CLIENT_DOMAIN,
-    APP_DOMAIN_VERIFY_AGENT_CLIENT_DOMAIN,
-    APP_DOMAIN_VERIFY_MGR_SERVICE_DOMAIN,
-    APP_DOMAIN_VERIFY_AGENT_SERVICE_DOMAIN,
-    APP_DOMAIN_VERIFY_JS_NAPI,
-    APP_DOMAIN_VERIFY_COMMON,
-    APP_DOMAIN_VERIFY_BUTT,
-};
-struct AppDomainVerifyModuleLabel {
-    uint32_t domain;
-    const char* tag;
-};
-static constexpr AppDomainVerifyModuleLabel APP_DOMAIN_VERIFY_MODULE_LABEL[APP_DOMAIN_VERIFY_MODULE_BUTT + 1] = {
-    { APP_DOMAIN_VERIFY_EXTENSION_DOMAIN, "AppDomainVerifyExtension" },
-    { APP_DOMAIN_VERIFY_MGR_CLIENT_DOMAIN, "AppDomainVerifyMgrClient" },
-    { APP_DOMAIN_VERIFY_AGENT_CLIENT_DOMAIN, "AppDomainVerifyAgentClient" },
-    { APP_DOMAIN_VERIFY_MGR_SERVICE_DOMAIN, "AppDomainVerifyMgrService" },
-    { APP_DOMAIN_VERIFY_AGENT_SERVICE_DOMAIN, "AppDomainVerifyAgentService" },
-    { APP_DOMAIN_VERIFY_JS_NAPI, "AppDomainVerifyJSNAPI" },
-    { APP_DOMAIN_VERIFY_COMMON, "AppDomainVerifyCommon" },
-    { APP_DOMAIN_VERIFY_BUTT, "AppDomainVerifytest" },
+static constexpr const char* APP_DOMAIN_VERIFY_MODULE_LABEL[APP_DOMAIN_VERIFY_MODULE_BUTT + 1] = {
+    "AppDomainVerifyExtension",
+    "AppDomainVerifyMgrClient",
+    "AppDomainVerifyAgentClient",
+    "AppDomainVerifyMgrService",
+    "AppDomainVerifyAgentService",
+    "AppDomainVerifyJSNAPI",
+    "AppDomainVerifyCommon",
+    "AppDomainVerifyButt",
 };
 
 #ifndef APP_DOMAIN_VERIFY_FUNC_FMT
@@ -73,10 +58,9 @@ static constexpr AppDomainVerifyModuleLabel APP_DOMAIN_VERIFY_MODULE_LABEL[APP_D
 #define APP_DOMAIN_VERIFY_FUNC_INFO APP_DOMAIN_VERIFY_FILE_NAME, __FUNCTION__, __LINE__
 #endif
 
-#define APP_DOMAIN_VERIFY_PRINT_LOG(level, label, fmt, ...)                                                     \
-    ((void)HILOG_IMPL(LOG_CORE, level, APP_DOMAIN_VERIFY_MODULE_LABEL[label].domain,                            \
-        APP_DOMAIN_VERIFY_MODULE_LABEL[label].tag, APP_DOMAIN_VERIFY_FUNC_FMT fmt, APP_DOMAIN_VERIFY_FUNC_INFO, \
-        ##__VA_ARGS__))
+#define APP_DOMAIN_VERIFY_PRINT_LOG(level, label, fmt, ...)                                                \
+    ((void)HILOG_IMPL(LOG_CORE, level, APP_DOMAIN_VERIFY_DOMAIN_ID, APP_DOMAIN_VERIFY_MODULE_LABEL[label], \
+        APP_DOMAIN_VERIFY_FUNC_FMT fmt, APP_DOMAIN_VERIFY_FUNC_INFO, ##__VA_ARGS__))
 
 #define APP_DOMAIN_VERIFY_HILOGD(label, fmt, ...) APP_DOMAIN_VERIFY_PRINT_LOG(LOG_DEBUG, label, fmt, ##__VA_ARGS__)
 #define APP_DOMAIN_VERIFY_HILOGI(label, fmt, ...) APP_DOMAIN_VERIFY_PRINT_LOG(LOG_INFO, label, fmt, ##__VA_ARGS__)
@@ -84,6 +68,6 @@ static constexpr AppDomainVerifyModuleLabel APP_DOMAIN_VERIFY_MODULE_LABEL[APP_D
 #define APP_DOMAIN_VERIFY_HILOGE(label, fmt, ...) APP_DOMAIN_VERIFY_PRINT_LOG(LOG_ERROR, label, fmt, ##__VA_ARGS__)
 #define APP_DOMAIN_VERIFY_HILOGF(label, fmt, ...) APP_DOMAIN_VERIFY_PRINT_LOG(LOG_FATAL, label, fmt, ##__VA_ARGS__)
 }  // namespace AppDomainVerify
-} // namespace OHOS
+}  // namespace OHOS
 
-#endif // APP_DOMAIN_VERIFY_HILOG_H
+#endif  // APP_DOMAIN_VERIFY_HILOG_H
