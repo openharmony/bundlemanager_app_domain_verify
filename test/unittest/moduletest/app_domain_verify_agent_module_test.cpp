@@ -16,10 +16,10 @@
 #include <gtest/gtest.h>
 #include <memory>
 #include <string>
-#include "../../mock/include/http_client/http_client_error.h"
-#include "../../mock/include/http_client/http_client_request.h"
-#include "../../mock/include/http_client/http_client_response.h"
-#include "../../mock/include/http_client/http_client_task.h"
+#include "mock_http_client/http_client_error.h"
+#include "mock_http_client/http_client_request.h"
+#include "mock_http_client/http_client_response.h"
+#include "mock_http_client/http_client_task.h"
 #include "app_domain_verify_mgr_client.h"
 #include "mock_constant.h"
 #include "mock_verify_agent.h"

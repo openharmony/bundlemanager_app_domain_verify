@@ -17,7 +17,7 @@
 #define COMMUNICATIONNETSTACK_HTTP_CLIENT_TASK_H
 #include <memory>
 #include <functional>
-#include <gmock/gmock.h>
+#include "gmock/gmock.h"
 #include "http_client_error.h"
 #include "http_client_request.h"
 #include "http_client_response.h"
