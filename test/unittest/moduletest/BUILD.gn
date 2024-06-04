@@ -31,7 +31,7 @@ config("module_private_config") {
     "${app_domain_verify_common_path}/include/utils",
     "${app_domain_verify_extension_path}/include",
     "${app_domain_verify_test_path}/mock/include",
-    "${app_domain_verify_test_path}/mock/include/http_client",
+    "${app_domain_verify_test_path}/mock/include/mock_http_client",
   ]
 }
 

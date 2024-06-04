@@ -51,11 +51,11 @@ void AppDomainVerifyBeanTest::TearDown(void)
 {
 }
 /**
- * @tc.name: AppDomainVerifyBeanTest001
+ * @tc.name: AppDomainVerifySkillUriTest001
  * @tc.desc: SkillUri test.
  * @tc.type: FUNC
  */
-HWTEST_F(AppDomainVerifyBeanTest, AppDomainVerifyBeanTest001, TestSize.Level0)
+HWTEST_F(AppDomainVerifyBeanTest, AppDomainVerifySkillUriTest001, TestSize.Level0)
 {
     SkillUri skillUri;
     skillUri.scheme = "scheme";
@@ -85,11 +85,11 @@ HWTEST_F(AppDomainVerifyBeanTest, AppDomainVerifyBeanTest001, TestSize.Level0)
     ASSERT_TRUE(unmarshalling == nullptr);
 }
 /**
- * @tc.name: AppDomainVerifyBeanTest002
+ * @tc.name: AppDomainVerifyAppVerifyBaseInfoTest001
  * @tc.desc: AppVerifyBaseInfo test.
  * @tc.type: FUNC
  */
-HWTEST_F(AppDomainVerifyBeanTest, AppDomainVerifyBeanTest002, TestSize.Level0)
+HWTEST_F(AppDomainVerifyBeanTest, AppDomainVerifyAppVerifyBaseInfoTest001, TestSize.Level0)
 {
     AppVerifyBaseInfo appVerifyBaseInfo;
     appVerifyBaseInfo.appIdentifier = "appIdentifier";
@@ -114,11 +114,11 @@ HWTEST_F(AppDomainVerifyBeanTest, AppDomainVerifyBeanTest002, TestSize.Level0)
     ASSERT_TRUE(unmarshalling == nullptr);
 }
 /**
- * @tc.name: AppDomainVerifyBeanTest003
+ * @tc.name: AppDomainVerifyBundleVerifyStatusInfoTest001
  * @tc.desc: BundleVerifyStatusInfo test.
  * @tc.type: FUNC
  */
-HWTEST_F(AppDomainVerifyBeanTest, AppDomainVerifyBeanTest003, TestSize.Level0)
+HWTEST_F(AppDomainVerifyBeanTest, AppDomainVerifyBundleVerifyStatusInfoTest001, TestSize.Level0)
 {
     BundleVerifyStatusInfo bundleVerifyStatusInfo;
     VerifyResultInfo verifyResultInfo;
@@ -157,11 +157,32 @@ HWTEST_F(AppDomainVerifyBeanTest, AppDomainVerifyBeanTest003, TestSize.Level0)
     ASSERT_TRUE(unmarshalling == nullptr);
 }
 /**
- * @tc.name: AppDomainVerifyBeanTest004
+ * @tc.name: AppDomainVerifyBundleVerifyStatusInfoTest002
+ * @tc.desc: BundleVerifyStatusInfo test.
+ * @tc.type: FUNC
+ */
+HWTEST_F(AppDomainVerifyBeanTest, AppDomainVerifyBundleVerifyStatusInfoTest002, TestSize.Level0)
+{
+    Parcel parcel1;
+    auto unmarshalling = BundleVerifyStatusInfo::Unmarshalling(parcel1);
+    ASSERT_TRUE(unmarshalling == nullptr);
+    parcel1.WriteUint32(1);
+    unmarshalling = BundleVerifyStatusInfo::Unmarshalling(parcel1);
+    ASSERT_TRUE(unmarshalling == nullptr);
+    parcel1.WriteString(BUNDLE_NAME);
+    unmarshalling = BundleVerifyStatusInfo::Unmarshalling(parcel1);
+    ASSERT_TRUE(unmarshalling == nullptr);
+    parcel1.WriteString(APP_IDENTIFIER);
+    unmarshalling = BundleVerifyStatusInfo::Unmarshalling(parcel1);
+    ASSERT_TRUE(unmarshalling == nullptr);
+    parcel1.WriteUint32(100);
+}
+/**
+ * @tc.name: AppDomainVerifyVerifyResultInfoTest001
  * @tc.desc: VerifyResultInfo test.
  * @tc.type: FUNC
  */
-HWTEST_F(AppDomainVerifyBeanTest, AppDomainVerifyBeanTest004, TestSize.Level0)
+HWTEST_F(AppDomainVerifyBeanTest, AppDomainVerifyVerifyResultInfoTest001, TestSize.Level0)
 {
     VerifyResultInfo verifyResultInfo;
     verifyResultInfo.appIdentifier = APP_IDENTIFIER;
@@ -185,13 +206,29 @@ HWTEST_F(AppDomainVerifyBeanTest, AppDomainVerifyBeanTest004, TestSize.Level0)
     unmarshalling = VerifyResultInfo::Unmarshalling(parcel1);
     ASSERT_TRUE(unmarshalling == nullptr);
 }
-
 /**
- * @tc.name: AppDomainVerifyBeanTest005
+ * @tc.name: AppDomainVerifyVerifyResultInfoTest002
+ * @tc.desc: VerifyResultInfo test.
+ * @tc.type: FUNC
+ */
+HWTEST_F(AppDomainVerifyBeanTest, AppDomainVerifyVerifyResultInfoTest002, TestSize.Level0)
+{
+    Parcel parcel1;
+    auto unmarshalling = VerifyResultInfo::Unmarshalling(parcel1);
+    ASSERT_TRUE(unmarshalling == nullptr);
+    parcel1.WriteString(APP_IDENTIFIER);
+    unmarshalling = VerifyResultInfo::Unmarshalling(parcel1);
+    ASSERT_TRUE(unmarshalling == nullptr);
+    parcel1.WriteUint32(100);
+    unmarshalling = VerifyResultInfo::Unmarshalling(parcel1);
+    ASSERT_TRUE(unmarshalling == nullptr);
+}
+/**
+ * @tc.name: AppDomainVerifyUrlUtilTest001
  * @tc.desc: UrlUtil test.
  * @tc.type: FUNC
  */
-HWTEST_F(AppDomainVerifyBeanTest, AppDomainVerifyBeanTest005, TestSize.Level0)
+HWTEST_F(AppDomainVerifyBeanTest, AppDomainVerifyUrlUtilTest001, TestSize.Level0)
 {
     ASSERT_TRUE(UrlUtil::IsValidAppDomainVerifyHost("https://" + HOST));
     ASSERT_TRUE(UrlUtil::IsValidUrl("https://" + HOST));

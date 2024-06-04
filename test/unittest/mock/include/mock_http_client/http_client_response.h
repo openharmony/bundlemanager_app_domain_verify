@@ -16,7 +16,7 @@
 #ifndef COMMUNICATIONNETSTACK_HTTP_CLIENT_RESPONSE_H
 #define COMMUNICATIONNETSTACK_HTTP_CLIENT_RESPONSE_H
 #include <string>
-#include <gmock/gmock.h>
+#include "gmock/gmock.h"
 namespace OHOS {
 namespace NetStack {
 namespace HttpClient {
