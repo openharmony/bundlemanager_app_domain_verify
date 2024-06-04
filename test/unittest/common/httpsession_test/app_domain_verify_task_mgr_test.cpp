@@ -15,10 +15,10 @@
 #include "gtest/gtest.h"
 #include <memory>
 #include <thread>
-#include "../../mock/include/http_client/http_client_error.h"
-#include "../../mock/include/http_client/http_client_request.h"
-#include "../../mock/include/http_client/http_client_response.h"
-#include "../../mock/include/http_client/http_client_task.h"
+#include "mock_http_client/http_client_error.h"
+#include "mock_http_client/http_client_request.h"
+#include "mock_http_client/http_client_response.h"
+#include "mock_http_client/http_client_task.h"
 #define private public
 #define protected public
 #include "app_domain_verify_task_mgr.h"

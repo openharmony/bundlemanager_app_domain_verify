@@ -14,6 +14,7 @@
  */
 #include "gtest/gtest.h"
 #include <memory>
+#include "mock_ffrt/ffrt.h"
 #include "mock_constant.h"
 #include "rdb_helper.h"
 #define private public
@@ -52,7 +53,7 @@ void RdbOpenCallbackTest::TearDown(void)
  * @tc.name: RdbOpenCallbackTest001
  * @tc.desc: Callback test
  * @tc.type: FUNC
-*/
+ */
 HWTEST_F(RdbOpenCallbackTest, RdbOpenCallbackTest001, TestSize.Level0)
 {
     AppDomainVerifyRdbConfig rdbConfig;
@@ -62,8 +63,8 @@ HWTEST_F(RdbOpenCallbackTest, RdbOpenCallbackTest001, TestSize.Level0)
     rdbStoreConfig.SetSecurityLevel(NativeRdb::SecurityLevel::S1);
     int32_t errCode = NativeRdb::E_OK;
     AppDomainVerifyRdbOpenCallback appDomainVerifyRdbOpenCallback(rdbConfig);
-    auto rdbStored = NativeRdb::RdbHelper::GetRdbStore(rdbStoreConfig, rdbConfig.version,
-        appDomainVerifyRdbOpenCallback, errCode);
+    auto rdbStored = NativeRdb::RdbHelper::GetRdbStore(
+        rdbStoreConfig, rdbConfig.version, appDomainVerifyRdbOpenCallback, errCode);
     ASSERT_TRUE(appDomainVerifyRdbOpenCallback.OnCreate(*rdbStored) == NativeRdb::E_OK);
     ASSERT_TRUE(appDomainVerifyRdbOpenCallback.OnUpgrade(*rdbStored, 1, 2) == NativeRdb::E_OK);
     ASSERT_TRUE(appDomainVerifyRdbOpenCallback.OnDowngrade(*rdbStored, 2, 1) == NativeRdb::E_OK);
