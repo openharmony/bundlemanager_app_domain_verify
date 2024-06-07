@@ -48,6 +48,7 @@ ohos_unittest("app_domain_verify_agent_verifier_test") {
   sources = [
     "${app_domain_verify_verifier_path}/src/domain_json_util.cpp",
     "${app_domain_verify_verifier_path}/src/domain_verifier.cpp",
+    "${app_domain_verify_verifier_path}/src/verify_http_task.cpp",
     "${app_domain_verify_verifier_path}/src/verify_task.cpp",
     "domain_json_util_test.cpp",
     "domain_verifier_test.cpp",
