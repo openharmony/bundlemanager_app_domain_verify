@@ -20,6 +20,7 @@
 #undef private
 #undef protected
 #include "moc_verify_task.h"
+#include "verify_http_task.h"
 namespace OHOS::AppDomainVerify {
 using namespace testing;
 using namespace testing::ext;
@@ -216,5 +217,33 @@ HWTEST_F(DomainVerifierTaskTest, DomainVerifierTaskSaveResultTest002, TestSize.L
     EXPECT_CALL(task, SaveDomainVerifyStatus(_, _)).Times(1).WillOnce(Return(false));
 
     task.OnSaveVerifyResult();
+}
+/**
+ * @tc.name: DomainVerifierHttpTaskTest001
+ * @tc.desc:
+ * @tc.type: FUNC
+ */
+HWTEST_F(DomainVerifierTaskTest, DomainVerifierHttpTaskTest001, TestSize.Level0)
+{
+    AppVerifyBaseInfo appVerifyBaseInfo;
+    appVerifyBaseInfo.bundleName = "";
+    appVerifyBaseInfo.fingerprint = "";
+    appVerifyBaseInfo.appIdentifier = "";
+    SkillUri uri1;
+    uri1.scheme = "https";
+    uri1.host = "e";
+    const std::vector<SkillUri> skillUris;
+    std::shared_ptr<MocVerifyTask> task = std::make_shared<MocVerifyTask>(
+        TaskType::IMMEDIATE_TASK, appVerifyBaseInfo, skillUris);
+    std::shared_ptr<VerifyHttpTask> verifyHttpTask = std::make_shared<VerifyHttpTask>("", task);
+    OHOS::NetStack::HttpClient::HttpClientRequest request;
+    OHOS::NetStack::HttpClient::HttpClientResponse response;
+    OHOS::NetStack::HttpClient::HttpClientError error;
+    uint8_t* data;
+    verifyHttpTask->OnSuccess(request, response);
+    verifyHttpTask->OnFail(request, response, error);
+    verifyHttpTask->OnCancel(request, response);
+    verifyHttpTask->OnDataReceive(nullptr, request, data, 0);
+    ASSERT_TRUE(verifyHttpTask->CreateHttpClientTask() != nullptr);
 }
 }

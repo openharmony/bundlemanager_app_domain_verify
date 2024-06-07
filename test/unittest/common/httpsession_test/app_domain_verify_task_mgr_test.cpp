@@ -171,4 +171,29 @@ HWTEST_F(AppDomainVerifyTaskMgrTest, AppDomainVerifyTaskMgrTest006, TestSize.Lev
     Sleep();
     ASSERT_TRUE(appDomainVerifyTaskMgr->IsIdle());
 }
+class BaseHttpTask : public IHttpTask {
+public:
+    std::shared_ptr<OHOS::NetStack::HttpClient::HttpClientTask> CreateHttpClientTask() override
+    {
+        return nullptr;
+    }
+};
+/**
+ * @tc.name: AppDomainVerifyTaskMgrTest007
+ * @tc.desc: on date cancle
+ * @tc.type: FUNC
+ */
+HWTEST_F(AppDomainVerifyTaskMgrTest, AppDomainVerifyTaskMgrTest007, TestSize.Level0)
+{
+    std::shared_ptr<BaseHttpTask> baseHttpTask = std::make_shared<BaseHttpTask>();
+    HttpClientRequest request;
+    HttpClientResponse response;
+    HttpClientError error;
+    uint8_t* data;
+    baseHttpTask->OnSuccess(request, response);
+    baseHttpTask->OnFail(request, response, error);
+    baseHttpTask->OnCancel(request, response);
+    baseHttpTask->OnDataReceive(nullptr, request, data, 0);
+    ASSERT_TRUE(baseHttpTask->CreateHttpClientTask() == nullptr);
+}
 }
