@@ -28,8 +28,10 @@ config("module_private_config") {
     "${app_domain_verify_service_path}/include/manager/constant",
     "${app_domain_verify_service_path}/include/manager/zidl",
     "${app_domain_verify_common_path}/include",
-    "${app_domain_verify_common_path}/include/utils",
-    "${app_domain_verify_extension_path}/include",
+    "${app_domain_verify_frameworks_common_path}/include",
+    "${app_domain_verify_frameworks_common_path}/include",
+    "${app_domain_verify_frameworks_common_path}/include/utils",
+    "${app_domain_verify_frameworks_extension_path}/include",
     "${app_domain_verify_test_path}/mock/include",
   ]
 }
@@ -68,8 +70,10 @@ ohos_unittest("app_domain_verify_data_mgr_test") {
     "${app_domain_verify_client_path}:app_domain_verify_agent_client",
     "${app_domain_verify_client_path}:app_domain_verify_mgr_client",
     "${app_domain_verify_common_path}:app_domain_verify_common",
-    "${app_domain_verify_extension_path}:app_domain_verify_extension_framework",
-    "${app_domain_verify_verifier_path}:app_domain_verify_agent_verifier",
+    "${app_domain_verify_frameworks_common_path}:app_domain_verify_frameworks_common",
+    "${app_domain_verify_frameworks_common_path}:app_domain_verify_frameworks_common",
+    "${app_domain_verify_frameworks_extension_path}:app_domain_verify_extension_framework",
+    "${app_domain_verify_frameworks_verifier_path}:app_domain_verify_agent_verifier",
     "//third_party/googletest:gmock_main",
     "//third_party/googletest:gtest_main",
   ]

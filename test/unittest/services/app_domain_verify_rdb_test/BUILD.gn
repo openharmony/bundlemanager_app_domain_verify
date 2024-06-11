@@ -28,8 +28,9 @@ config("module_private_config") {
     "${app_domain_verify_service_path}/include/manager/constant",
     "${app_domain_verify_service_path}/include/manager/zidl",
     "${app_domain_verify_common_path}/include",
-    "${app_domain_verify_common_path}/include/utils",
-    "${app_domain_verify_extension_path}/include",
+    "${app_domain_verify_frameworks_common_path}/include",
+    "${app_domain_verify_frameworks_common_path}/include/utils",
+    "${app_domain_verify_frameworks_extension_path}/include",
     "${app_domain_verify_test_path}/mock/include",
     "${app_domain_verify_test_path}/mock/include/mock_ffrt",
   ]
@@ -68,6 +69,7 @@ ohos_unittest("app_domain_verify_rdb_test") {
   defines = [ "API_EXPORT=__attribute__((visibility (\"default\")))" ]
   deps = [
     "${app_domain_verify_common_path}:app_domain_verify_common",
+    "${app_domain_verify_frameworks_common_path}:app_domain_verify_frameworks_common",
     "//third_party/googletest:gmock_main",
     "//third_party/googletest:gtest_main",
   ]
