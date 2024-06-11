@@ -22,6 +22,7 @@ config("app_domain_verify_mgr_client_config") {
     "${app_domain_verify_service_path}/include/manager/zidl",
     "${app_domain_verify_common_path}/include",
     "${app_domain_verify_common_path}/include/zidl",
+    "${app_domain_verify_frameworks_common_path}/include",
   ]
   cflags = [
     "-fdata-sections",

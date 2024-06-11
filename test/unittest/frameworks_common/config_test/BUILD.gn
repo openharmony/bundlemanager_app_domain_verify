@@ -21,10 +21,13 @@ config("module_private_config") {
     "${app_domain_verify_client_path}/include",
     "${app_domain_verify_service_path}/include",
     "${app_domain_verify_common_path}/include",
-    "${app_domain_verify_common_path}/include/utils",
-    "${app_domain_verify_common_path}/include/httpsession",
-    "${app_domain_verify_verifier_path}/include",
-    "${app_domain_verify_extension_path}/include",
+    "${app_domain_verify_frameworks_common_path}/include",
+    "${app_domain_verify_frameworks_common_path}/include/utils",
+    "${app_domain_verify_frameworks_common_path}/include/httpsession",
+    "${app_domain_verify_common_path}/include/zidl",
+    "${app_domain_verify_frameworks_common_path}/include/config",
+    "${app_domain_verify_frameworks_verifier_path}/include",
+    "${app_domain_verify_frameworks_extension_path}/include",
     "${app_domain_verify_service_path}/include/agent/core",
     "${app_domain_verify_service_path}/include/agent/zidl",
     "${app_domain_verify_service_path}/include/agent/bms",
@@ -32,23 +35,22 @@ config("module_private_config") {
     "${app_domain_verify_service_path}/include/manager/core",
     "${app_domain_verify_service_path}/include/manager/constant",
     "${app_domain_verify_service_path}/include/manager/zidl",
+    "${app_domain_verify_service_path}/include/manager/config",
     "${app_domain_verify_test_path}/mock/include",
   ]
 }
 
 module_output_path = "app_domain_verify/app_domain_verify"
 
-ohos_unittest("app_domain_verify_bms_test") {
+ohos_unittest("app_domain_verify_config_test") {
   module_out_path = module_output_path
 
   sources = [
-    "${app_domain_verify_common_path}/src/bms/bundle_info_query.cpp",
-    "${app_domain_verify_test_path}/mock/src/mock_bundle_manager.cpp",
-    "${app_domain_verify_test_path}/mock/src/mock_os_account_manager.cpp",
-    "${app_domain_verify_test_path}/mock/src/mock_service_registry.cpp",
-    "${app_domain_verify_test_path}/mock/src/mock_system_ability.cpp",
-    "${app_domain_verify_test_path}/mock/src/mock_system_ability_ondemand_reason.cpp",
-    "bundle_info_query_test.cpp",
+    "${app_domain_verify_frameworks_common_path}/src/config/white_list_checker.cpp",
+    "${app_domain_verify_frameworks_common_path}/src/config/white_list_config_mgr.cpp",
+    "${app_domain_verify_frameworks_common_path}/src/config/white_list_updater.cpp",
+    "${app_domain_verify_test_path}/mock/src/mock_preferences_helper.cpp",
+    "config_test.cpp",
   ]
   configs = [ ":module_private_config" ]
   external_deps = [
@@ -66,12 +68,14 @@ ohos_unittest("app_domain_verify_bms_test") {
     "ipc:ipc_core",
     "netstack:http_client",
     "os_account:os_account_innerkits",
+    "preferences:native_preferences",
     "relational_store:native_rdb",
     "samgr:samgr_proxy",
   ]
 
   defines = [ "API_EXPORT=__attribute__((visibility (\"default\")))" ]
   deps = [
+    "${app_domain_verify_frameworks_common_path}:app_domain_verify_frameworks_common",
     "//third_party/googletest:gmock_main",
     "//third_party/googletest:gtest_main",
   ]

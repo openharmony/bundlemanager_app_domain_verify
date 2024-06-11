@@ -14,15 +14,16 @@
 import("//build/ohos.gni")
 import("//foundation/bundlemanager/app_domain_verify/app_domain_verify.gni")
 
-config("app_domain_verify_extension_config") {
-  defines = []
-  if (target_cpu == "arm64") {
-    defines += [ "APP_USE_ARM64" ]
-  } else if (target_cpu == "arm") {
-    defines += [ "APP_USE_ARM" ]
-  } else if (target_cpu == "x86_64") {
-    defines += [ "APP_USE_X86_64" ]
-  }
+config("app_domain_verify_frameworks_common_config") {
+  visibility = [ ":*" ]
+  include_dirs = [
+    "include",
+    "include/utils",
+    "include/httpsession",
+    "include/bms",
+    "include/zidl",
+    "include/config",
+  ]
   cflags = [
     "-fdata-sections",
     "-ffunction-sections",
@@ -32,30 +33,34 @@ config("app_domain_verify_extension_config") {
   cflags_cc = [ "-Os" ]
 }
 
-config("app_domain_verify_extension_public_config") {
-  visibility = [ ":*" ]
-  include_dirs = [
-    "include",
-    "${app_domain_verify_common_path}/include",
-    "${app_domain_verify_common_path}/include/zidl",
-  ]
-}
-
-ohos_shared_library("app_domain_verify_extension_framework") {
+ohos_shared_library("app_domain_verify_frameworks_common") {
   sources = [
-    "${app_domain_verify_extension_path}/src/app_domain_verify_agent_ext.cpp",
-    "${app_domain_verify_extension_path}/src/app_domain_verify_extension_mgr.cpp",
-    "${app_domain_verify_extension_path}/src/app_domain_verify_extension_register.cpp",
+    "src/bms/bundle_info_query.cpp",
+    "src/config/white_list_checker.cpp",
+    "src/config/white_list_config_mgr.cpp",
+    "src/config/white_list_updater.cpp",
+    "src/httpsession/app_domain_verify_task_mgr.cpp",
+    "src/httpsession/i_http_task.cpp",
+    "src/utils/domain_url_util.cpp",
   ]
-  configs = [ ":app_domain_verify_extension_config" ]
-  public_configs = [ ":app_domain_verify_extension_public_config" ]
+
+  public_configs = [ ":app_domain_verify_frameworks_common_config" ]
+  version_script = "common.versionscript"
   deps = [ "${app_domain_verify_common_path}:app_domain_verify_common" ]
-  version_script = "extension.versionscript"
   external_deps = [
     "ability_base:want",
+    "ability_base:zuri",
+    "bundle_framework:appexecfwk_base",
+    "bundle_framework:appexecfwk_core",
     "c_utils:utils",
+    "ffrt:libffrt",
     "hilog:libhilog",
-    "ipc:ipc_single",
+    "ipc:ipc_core",
+    "json:nlohmann_json_static",
+    "netstack:http_client",
+    "os_account:os_account_innerkits",
+    "preferences:native_preferences",
+    "safwk:system_ability_fwk",
     "samgr:samgr_proxy",
   ]
 
