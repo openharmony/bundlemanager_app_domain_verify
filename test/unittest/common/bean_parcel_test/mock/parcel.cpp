@@ -14,7 +14,6 @@
  */
 
 #include "parcel.h"
-#include "../include/parcel.h"
 
 namespace OHOS {
 namespace {

@@ -20,9 +20,10 @@ config("app_domain_verify_agent_verifier_config") {
     "include",
     "include/constant",
     "${app_domain_verify_common_path}/include",
-    "${app_domain_verify_common_path}/include/utils",
-    "${app_domain_verify_common_path}/include/bms",
-    "${app_domain_verify_common_path}/include/zidl",
+    "${app_domain_verify_frameworks_common_path}/include",
+    "${app_domain_verify_frameworks_common_path}/include/httpsession",
+    "${app_domain_verify_frameworks_common_path}/include/utils",
+    "${app_domain_verify_frameworks_common_path}/include/bms",
   ]
   configs = [ "//build/config/compiler:exceptions" ]
   ldflags = [ "-Wl,--exclude-libs=ALL" ]
@@ -47,6 +48,7 @@ ohos_shared_library("app_domain_verify_agent_verifier") {
   deps = [
     "${app_domain_verify_client_path}:app_domain_verify_mgr_client",
     "${app_domain_verify_common_path}:app_domain_verify_common",
+    "${app_domain_verify_frameworks_common_path}:app_domain_verify_frameworks_common",
   ]
   version_script = "verifier.versionscript"
 

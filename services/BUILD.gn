@@ -24,9 +24,10 @@ config("app_domain_verify_service_config") {
     "include/manager/zidl",
     "include/agent/core",
     "${app_domain_verify_common_path}/include",
-    "${app_domain_verify_common_path}/include/utils",
     "${app_domain_verify_common_path}/include/zidl",
-    "${app_domain_verify_common_path}/include/config",
+    "${app_domain_verify_frameworks_common_path}/include",
+    "${app_domain_verify_frameworks_common_path}/include/utils",
+    "${app_domain_verify_frameworks_common_path}/include/config",
   ]
   configs = [ "//build/config/compiler:exceptions" ]
   ldflags = [ "-Wl,--exclude-libs=ALL" ]
@@ -45,6 +46,9 @@ config("app_domain_verify_service_config") {
 
 ohos_shared_library("app_domain_verify_mgr_service") {
   sources = [
+    "${app_domain_verify_frameworks_common_path}/src/config/white_list_checker.cpp",
+    "${app_domain_verify_frameworks_common_path}/src/config/white_list_config_mgr.cpp",
+    "${app_domain_verify_frameworks_common_path}/src/utils/domain_url_util.cpp",
     "src/manager/core/app_domain_verify_data_mgr.cpp",
     "src/manager/core/app_domain_verify_mgr_service.cpp",
     "src/manager/rdb/app_domain_verify_rdb_data_manager.cpp",
@@ -61,6 +65,7 @@ ohos_shared_library("app_domain_verify_mgr_service") {
   external_deps = [
     "ability_base:base",
     "ability_base:want",
+    "ability_base:zuri",
     "ability_runtime:ability_manager",
     "bundle_framework:appexecfwk_base",
     "bundle_framework:appexecfwk_core",
@@ -71,6 +76,7 @@ ohos_shared_library("app_domain_verify_mgr_service") {
     "hisysevent:libhisysevent",
     "ipc:ipc_core",
     "json:nlohmann_json_static",
+    "preferences:native_preferences",
     "relational_store:native_rdb",
     "safwk:system_ability_fwk",
     "samgr:samgr_proxy",
@@ -93,12 +99,13 @@ config("app_domain_verify_agent_service_config") {
     "include/manager/core",
     "include/manager/zidl",
     "${app_domain_verify_common_path}/include",
-    "${app_domain_verify_common_path}/include/utils",
-    "${app_domain_verify_common_path}/include/bms",
-    "${app_domain_verify_extension_path}/include",
-    "${app_domain_verify_verifier_path}/include",
     "${app_domain_verify_common_path}/include/zidl",
-    "${app_domain_verify_common_path}/include/config",
+    "${app_domain_verify_frameworks_common_path}/include",
+    "${app_domain_verify_frameworks_common_path}/include/utils",
+    "${app_domain_verify_frameworks_common_path}/include/bms",
+    "${app_domain_verify_frameworks_common_path}/include/config",
+    "${app_domain_verify_frameworks_extension_path}/include",
+    "${app_domain_verify_frameworks_verifier_path}/include",
   ]
   configs = [ "//build/config/compiler:exceptions" ]
   ldflags = [ "-Wl,--exclude-libs=ALL" ]
@@ -126,8 +133,9 @@ ohos_shared_library("app_domain_verify_agent_service") {
   deps = [
     "${app_domain_verify_client_path}:app_domain_verify_mgr_client",
     "${app_domain_verify_common_path}:app_domain_verify_common",
-    "${app_domain_verify_extension_path}:app_domain_verify_extension_framework",
-    "${app_domain_verify_verifier_path}:app_domain_verify_agent_verifier",
+    "${app_domain_verify_frameworks_common_path}:app_domain_verify_frameworks_common",
+    "${app_domain_verify_frameworks_extension_path}:app_domain_verify_extension_framework",
+    "${app_domain_verify_frameworks_verifier_path}:app_domain_verify_agent_verifier",
   ]
 
   external_deps = [

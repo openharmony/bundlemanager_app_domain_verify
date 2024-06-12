@@ -68,7 +68,7 @@
           }
         },
         {
-          "name": "//foundation/bundlemanager/app_domain_verify/interfaces/inner_api/extension:app_domain_verify_extension_framework",
+          "name": "//foundation/bundlemanager/app_domain_verify/frameworks/extension:app_domain_verify_extension_framework",
           "header": {
             "header_files": [
               "app_domain_verify_ext_base.h",
@@ -76,24 +76,18 @@
               "app_domain_verify_extension_register.h",
               "app_domain_verify_agent_ext.h"
             ],
-            "header_base": "//foundation/bundlemanager/app_domain_verify/interfaces/inner_api/extension/include"
+            "header_base": "//foundation/bundlemanager/app_domain_verify/frameworks/extension/include"
           }
         },
         {
           "name": "//foundation/bundlemanager/app_domain_verify/interfaces/inner_api/common:app_domain_verify_common",
           "header": {
             "header_files": [
-              "app_domain_verify_error.h",
-              "app_domain_verify_hilog.h",
               "app_verify_base_info.h",
               "bundle_verify_status_info.h",
               "domain_verify_status.h",
               "inner_verify_status.h",
               "skill_uri.h",
-              "parcel_util.h",
-              "httpsession/i_http_task.h",
-              "httpsession/app_domain_verify_task_mgr.h",
-              "utils/domain_url_util.h",
               "zidl/i_convert_callback.h",
               "zidl/convert_callback_proxy.h",
               "zidl/convert_callback_stub.h",
@@ -103,7 +97,21 @@
           }
         },
         {
-          "name": "//foundation/bundlemanager/app_domain_verify/interfaces/inner_api/verifier:app_domain_verify_agent_verifier",
+          "name": "//foundation/bundlemanager/app_domain_verify/frameworks/common:app_domain_verify_frameworks_common",
+          "header": {
+            "header_files": [
+              "app_domain_verify_error.h",
+              "app_domain_verify_hilog.h",
+              "parcel_util.h",
+              "httpsession/i_http_task.h",
+              "httpsession/app_domain_verify_task_mgr.h",
+              "utils/domain_url_util.h"
+            ],
+            "header_base": "//foundation/bundlemanager/app_domain_verify/frameworks/common/include"
+          }
+        },
+        {
+          "name": "//foundation/bundlemanager/app_domain_verify/frameworks/verifier:app_domain_verify_agent_verifier",
           "header": {
             "header_files": [
               "i_verify_task.h",
@@ -114,7 +122,7 @@
               "constant/agent_constants.h",
               "asset_json_obj.h"
             ],
-            "header_base": "//foundation/bundlemanager/app_domain_verify/interfaces/inner_api/verifier/include"
+            "header_base": "//foundation/bundlemanager/app_domain_verify/frameworks/verifier/include"
           }
         }
       ],

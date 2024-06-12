@@ -49,13 +49,13 @@ void AppDomainVerifyTaskMgr::DestroyInstance()
 
 AppDomainVerifyTaskMgr::AppDomainVerifyTaskMgr()
 {
-    APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "AppDomainVerifyTaskMgr new!");
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "AppDomainVerifyTaskMgr new!");
     Init();
 }
 
 AppDomainVerifyTaskMgr::~AppDomainVerifyTaskMgr()
 {
-    APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "AppDomainVerifyTaskMgr destory!");
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "AppDomainVerifyTaskMgr destory!");
 }
 
 bool AppDomainVerifyTaskMgr::Init()
