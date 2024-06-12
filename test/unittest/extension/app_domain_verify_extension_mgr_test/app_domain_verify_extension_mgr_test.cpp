@@ -159,7 +159,7 @@ HWTEST_F(AppDomainVerifyExtensionMgrTest, AppDomainVerifyExtensionMgrTest006, Te
 }
 
 /**
- * @tc.name: AppDomainVerifyExtensionMgrTest006
+ * @tc.name: AppDomainVerifyExtensionMgrTest007
  * @tc.desc: ExtensionMgr test.
  * @tc.type: FUNC
  */

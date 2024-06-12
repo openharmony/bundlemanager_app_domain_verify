@@ -14,13 +14,15 @@
 import("//build/ohos.gni")
 import("//foundation/bundlemanager/app_domain_verify/app_domain_verify.gni")
 
-config("app_domain_verify_common_config") {
-  visibility = [ ":*" ]
-  include_dirs = [
-    "include",
-    "include/zidl",
-    "${app_domain_verify_frameworks_common_path}/include",
-  ]
+config("app_domain_verify_extension_config") {
+  defines = []
+  if (target_cpu == "arm64") {
+    defines += [ "APP_USE_ARM64" ]
+  } else if (target_cpu == "arm") {
+    defines += [ "APP_USE_ARM" ]
+  } else if (target_cpu == "x86_64") {
+    defines += [ "APP_USE_X86_64" ]
+  }
   cflags = [
     "-fdata-sections",
     "-ffunction-sections",
@@ -30,25 +32,30 @@ config("app_domain_verify_common_config") {
   cflags_cc = [ "-Os" ]
 }
 
-ohos_shared_library("app_domain_verify_common") {
-  sources = [
-    "src/app_verify_base_info.cpp",
-    "src/bundle_verify_status_info.cpp",
-    "src/skill_uri.cpp",
-    "src/zidl/convert_callback_proxy.cpp",
-    "src/zidl/convert_callback_stub.cpp",
+config("app_domain_verify_extension_public_config") {
+  visibility = [ ":*" ]
+  include_dirs = [
+    "include",
+    "${app_domain_verify_common_path}/include",
+    "${app_domain_verify_common_path}/include/zidl",
   ]
+}
 
-  public_configs = [ ":app_domain_verify_common_config" ]
-  version_script = "common.versionscript"
-
+ohos_shared_library("app_domain_verify_extension_framework") {
+  sources = [
+    "src/app_domain_verify_agent_ext.cpp",
+    "src/app_domain_verify_extension_mgr.cpp",
+    "src/app_domain_verify_extension_register.cpp",
+  ]
+  configs = [ ":app_domain_verify_extension_config" ]
+  public_configs = [ ":app_domain_verify_extension_public_config" ]
+  deps = [ "${app_domain_verify_common_path}:app_domain_verify_common" ]
+  version_script = "extension.versionscript"
   external_deps = [
     "ability_base:want",
     "c_utils:utils",
     "hilog:libhilog",
-    "ipc:ipc_core",
-    "json:nlohmann_json_static",
-    "safwk:system_ability_fwk",
+    "ipc:ipc_single",
     "samgr:samgr_proxy",
   ]
 

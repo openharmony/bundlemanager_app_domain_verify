@@ -21,10 +21,11 @@ config("module_private_config") {
     "${app_domain_verify_client_path}/include",
     "${app_domain_verify_service_path}/include",
     "${app_domain_verify_common_path}/include",
-    "${app_domain_verify_common_path}/include/utils",
-    "${app_domain_verify_common_path}/include/httpsession",
-    "${app_domain_verify_verifier_path}/include",
-    "${app_domain_verify_extension_path}/include",
+    "${app_domain_verify_frameworks_common_path}/include",
+    "${app_domain_verify_frameworks_common_path}/include/utils",
+    "${app_domain_verify_frameworks_common_path}/include/httpsession",
+    "${app_domain_verify_frameworks_verifier_path}/include",
+    "${app_domain_verify_frameworks_extension_path}/include",
     "${app_domain_verify_service_path}/include/agent/core",
     "${app_domain_verify_service_path}/include/agent/zidl",
     "${app_domain_verify_service_path}/include/agent/bms",
@@ -43,8 +44,8 @@ ohos_unittest("app_domain_verify_httpsession_test") {
   module_out_path = module_output_path
 
   sources = [
-    "${app_domain_verify_common_path}/src/httpsession/app_domain_verify_task_mgr.cpp",
-    "${app_domain_verify_common_path}/src/httpsession/i_http_task.cpp",
+    "${app_domain_verify_frameworks_common_path}/src/httpsession/app_domain_verify_task_mgr.cpp",
+    "${app_domain_verify_frameworks_common_path}/src/httpsession/i_http_task.cpp",
     "app_domain_verify_task_mgr_test.cpp",
   ]
   configs = [ ":module_private_config" ]

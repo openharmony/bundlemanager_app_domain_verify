@@ -21,8 +21,9 @@ config("module_private_config") {
     "${app_domain_verify_client_path}/include",
     "${app_domain_verify_service_path}/include",
     "${app_domain_verify_common_path}/include",
-    "${app_domain_verify_common_path}/include/utils",
-    "${app_domain_verify_extension_path}/include",
+    "${app_domain_verify_frameworks_common_path}/include",
+    "${app_domain_verify_frameworks_common_path}/include/utils",
+    "${app_domain_verify_frameworks_extension_path}/include",
     "${app_domain_verify_service_path}/include/agent/core",
     "${app_domain_verify_service_path}/include/agent/zidl",
     "${app_domain_verify_service_path}/include/agent/bms",
@@ -70,7 +71,8 @@ ohos_unittest("app_domain_verify_mgr_client_test") {
   deps = [
     "${app_domain_verify_client_path}:app_domain_verify_agent_client",
     "${app_domain_verify_common_path}:app_domain_verify_common",
-    "${app_domain_verify_extension_path}:app_domain_verify_extension_framework",
+    "${app_domain_verify_frameworks_common_path}:app_domain_verify_frameworks_common",
+    "${app_domain_verify_frameworks_extension_path}:app_domain_verify_extension_framework",
     "//third_party/googletest:gmock_main",
     "//third_party/googletest:gtest_main",
   ]
