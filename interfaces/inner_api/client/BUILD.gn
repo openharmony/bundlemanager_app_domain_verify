@@ -62,6 +62,7 @@ ohos_shared_library("app_domain_verify_mgr_client") {
 
   external_deps = [
     "ability_base:want",
+    "ability_base:zuri",
     "bundle_framework:appexecfwk_base",
     "c_utils:utils",
     "hilog:libhilog",
