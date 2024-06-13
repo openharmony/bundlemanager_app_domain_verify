@@ -24,15 +24,11 @@ bool WhiteListChecker::IsInWhiteList(const std::string& url)
     if (!init) {
         Load();
     }
-    bool ret = false;
+    bool ret;
     if (whiteListSet_.empty()) {
         ret = (url == defaultWhiteUrl_);
     } else {
         ret = (whiteListSet_.count(url) != 0) || (url == defaultWhiteUrl_);
-    }
-    // for debug
-    for (auto l : whiteListSet_) {
-        APP_DOMAIN_VERIFY_HILOGW(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "whiteListSet %{public}s.", l.c_str());
     }
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "is count %{public}d url %{public}s",
         whiteListSet_.count(url) != 0, url.c_str());
