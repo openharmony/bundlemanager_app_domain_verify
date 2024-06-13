@@ -38,12 +38,6 @@ typedef enum EnumTaskType {
     UNKNOWN_TASK
 } TaskType;
 
-enum VerifyWay {
-    SINGLE,
-    BOOT_RETRY,
-    SCHEDULE_RETRY
-};
-
 #define INSTALL_EVENT(appIdentifier, bundleName)                                                      \
     do {                                                                                              \
         HiSysEventWrite(APP_DOMAIN_VERIFY, EventType::APP_INSTALL_EVENT,                              \
