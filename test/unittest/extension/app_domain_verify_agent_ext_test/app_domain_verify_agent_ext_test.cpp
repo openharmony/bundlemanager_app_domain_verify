@@ -23,6 +23,7 @@
 #include "app_domain_verify_hilog.h"
 #include "app_domain_verify_agent_ext.h"
 #include "mock_constant.h"
+#include "mock_convert_callback.h"
 namespace OHOS::AppDomainVerify {
 using namespace testing;
 using namespace testing::ext;
@@ -99,5 +100,18 @@ HWTEST_F(AppDomainVerifyAgentExtTest, AppDomainVerifyAgentExtTest003, TestSize.L
     AppDomainVerifyAgentExt appDomainVerifyAgentExt;
     OnWhiteListUpdate func;
     ASSERT_TRUE(appDomainVerifyAgentExt.UpdateWhiteList(std::move(func)) == ErrorCode::E_EXTENSIONS_LIB_NOT_FOUND);
+}
+/**
+ * @tc.name: AppDomainVerifyAgentExtTest004
+ * @tc.desc: ExtensionMgr test.
+ * @tc.type: FUNC
+ */
+HWTEST_F(AppDomainVerifyAgentExtTest, AppDomainVerifyAgentExtTest004, TestSize.Level0)
+{
+    AppDomainVerifyAgentExt appDomainVerifyAgentExt;
+    OHOS::AAFwk::Want atomicWant;
+    sptr<IConvertCallback> cb = new MocConvertCallback;
+
+    ASSERT_TRUE(appDomainVerifyAgentExt.ConvertToExplicitWant(atomicWant, cb) == ErrorCode::E_EXTENSIONS_LIB_NOT_FOUND);
 }
 }
