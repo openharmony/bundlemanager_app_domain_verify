@@ -63,6 +63,7 @@ HWTEST_F(DomainVerifierTaskTest, DomainVerifierTaskTest001, TestSize.Level0)
     const std::vector<SkillUri> skillUris;
     VerifyResultInfo verifyResultInfo;
     VerifyTask task(TaskType::IMMEDIATE_TASK, appVerifyBaseInfo, skillUris);
+    task.Execute();
     ASSERT_TRUE(task.GetType() == TaskType::IMMEDIATE_TASK);
     ASSERT_TRUE(task.GetTaskType() == TaskType::IMMEDIATE_TASK);
     ASSERT_TRUE(task.GetAppVerifyBaseInfo().bundleName == "");
@@ -215,7 +216,6 @@ HWTEST_F(DomainVerifierTaskTest, DomainVerifierTaskSaveResultTest002, TestSize.L
     std::string url = "";
 
     EXPECT_CALL(task, SaveDomainVerifyStatus(_, _)).Times(1).WillOnce(Return(false));
-
     task.OnSaveVerifyResult();
 }
 /**

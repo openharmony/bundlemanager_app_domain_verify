@@ -177,6 +177,20 @@ public:
     {
         return nullptr;
     }
+    void OnSuccess(const HttpClientRequest& request, const HttpClientResponse& response) override
+    {
+    }
+    void OnCancel(const HttpClientRequest& request, const HttpClientResponse& response) override
+    {
+    }
+    void OnFail(
+        const HttpClientRequest& request, const HttpClientResponse& response, const HttpClientError& error) override
+    {
+    }
+    void OnDataReceive(std::shared_ptr<OHOS::NetStack::HttpClient::HttpClientTask> task,
+        const HttpClientRequest& request, const uint8_t* data, size_t length) override
+    {
+    }
 };
 /**
  * @tc.name: AppDomainVerifyTaskMgrTest007
@@ -195,5 +209,18 @@ HWTEST_F(AppDomainVerifyTaskMgrTest, AppDomainVerifyTaskMgrTest007, TestSize.Lev
     baseHttpTask->OnCancel(request, response);
     baseHttpTask->OnDataReceive(nullptr, request, data, 0);
     ASSERT_TRUE(baseHttpTask->CreateHttpClientTask() == nullptr);
+}
+/**
+ * @tc.name: AppDomainVerifyTaskMgrTest008
+ * @tc.desc: on date cancle
+ * @tc.type: FUNC
+ */
+HWTEST_F(AppDomainVerifyTaskMgrTest, AppDomainVerifyTaskMgrTest008, TestSize.Level0)
+{
+    AppDomainVerifyTaskMgr::GetInstance();
+    ASSERT_FALSE(AppDomainVerifyTaskMgr::GetInstance()->AddTask(nullptr));
+    ASSERT_FALSE(AppDomainVerifyTaskMgr::GetInstance()->AddTask(nullptr));
+    ASSERT_TRUE(AppDomainVerifyTaskMgr::GetInstance()->IsIdle());
+    AppDomainVerifyTaskMgr::DestroyInstance();
 }
 }
