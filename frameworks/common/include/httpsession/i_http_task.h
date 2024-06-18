@@ -26,16 +26,17 @@ public:
     IHttpTask();
     virtual ~IHttpTask() = default;
     virtual std::shared_ptr<OHOS::NetStack::HttpClient::HttpClientTask> CreateHttpClientTask() = 0;
-    virtual void OnSuccess(const HttpClientRequest& request, const HttpClientResponse& response);
+    virtual void OnSuccess(const HttpClientRequest& request, const HttpClientResponse& response) = 0;
 
-    virtual void OnCancel(const HttpClientRequest& request, const HttpClientResponse& response);
+    virtual void OnCancel(const HttpClientRequest& request, const HttpClientResponse& response) = 0;
 
     virtual void OnFail(
-        const HttpClientRequest& request, const HttpClientResponse& response, const HttpClientError& error);
+        const HttpClientRequest& request, const HttpClientResponse& response, const HttpClientError& error) = 0;
 
     virtual void OnDataReceive(std::shared_ptr<OHOS::NetStack::HttpClient::HttpClientTask> task,
-        const HttpClientRequest& request, const uint8_t* data, size_t length);
+        const HttpClientRequest& request, const uint8_t* data, size_t length) = 0;
     uint32_t GetTaskId();
+
 private:
     uint32_t taskId_;
 };
