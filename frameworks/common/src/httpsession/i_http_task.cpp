@@ -13,22 +13,9 @@
  * limitations under the License.
  */
 #include "i_http_task.h"
+#include "app_domain_verify_hilog.h"
 namespace OHOS::AppDomainVerify {
 static std::atomic<uint32_t> idGen_;
-void IHttpTask::OnSuccess(const HttpClientRequest& request, const HttpClientResponse& response)
-{
-}
-void IHttpTask::OnCancel(const HttpClientRequest& request, const HttpClientResponse& response)
-{
-}
-void IHttpTask::OnFail(
-    const HttpClientRequest& request, const HttpClientResponse& response, const HttpClientError& error)
-{
-}
-void IHttpTask::OnDataReceive(std::shared_ptr<OHOS::NetStack::HttpClient::HttpClientTask> task,
-    const HttpClientRequest& request, const uint8_t* data, size_t length)
-{
-}
 IHttpTask::IHttpTask()
 {
     taskId_ = idGen_++;
