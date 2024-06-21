@@ -46,13 +46,13 @@ public:
 void AgentServiceTest::SetUpTestCase(void)
 {
 }
-
+#define SLEEP_TIME (10)
 void AgentServiceTest::TearDownTestCase(void)
 {
     GTEST_LOG_(INFO) << "TearDownTestCase";
-    while(!AppDomainVerifyTaskMgr::GetInstance()->IsIdle()){
+    while (!AppDomainVerifyTaskMgr::GetInstance()->IsIdle()) {
         GTEST_LOG_(INFO) << "wait task finish";
-        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_TIME));
     }
     GTEST_LOG_(INFO) << "TearDownTestCase out";
 }

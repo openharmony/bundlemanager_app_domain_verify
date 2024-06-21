@@ -149,7 +149,6 @@ void AppDomainVerifyTaskMgr::RunTask(const std::shared_ptr<IHttpTask>& task, uin
     });
     httpclientTask->OnCancel([tmp, seq, this](const HttpClientRequest& request, const HttpClientResponse& response) {
         AutoSeqReleaser releaser(&taskHandleMap_, seq);
-
         auto task = tmp.lock();
         if (task == nullptr) {
             APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MODULE_COMMON, "OnCancel can not find task.");
