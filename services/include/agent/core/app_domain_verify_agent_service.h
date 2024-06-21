@@ -44,6 +44,8 @@ protected:
     void OnStop() override;
     int32_t OnIdle(const SystemAbilityOnDemandReason& idleReason) override;
     void ExitIdleState() override;
+    void OnDump() override;
+    int Dump(int fd, const std::vector<std::u16string>& args) override;
 
 private:
     void QueryAndCompleteRefresh(const std::vector<InnerVerifyStatus>& statuses, int delaySeconds, TaskType type);
