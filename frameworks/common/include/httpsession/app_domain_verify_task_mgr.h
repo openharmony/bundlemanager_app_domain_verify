@@ -47,7 +47,7 @@ private:
     bool Init();
     void RunTask(const std::shared_ptr<IHttpTask>& task, uint32_t seq);
     std::shared_ptr<ffrt::queue> ffrtTaskQueue_;
-    SafeMap<uint32_t, std::shared_ptr<ffrt::task_handle>> taskHandleMap_;
+    SafeMap<uint32_t, std::shared_ptr<IHttpTask>> taskHandleMap_;
 };
 }
 }
