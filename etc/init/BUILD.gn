@@ -15,13 +15,6 @@ import("//build/ohos.gni")
 
 ################################################################################
 
-ohos_prebuilt_etc("app_domain_verify_mgr.cfg") {
-  source = "app_domain_verify_mgr.cfg"
-  relative_install_dir = "init"
-  part_name = "app_domain_verify"
-  subsystem_name = "bundlemanager"
-}
-
 ohos_prebuilt_etc("app_domain_verify_agent.cfg") {
   source = "app_domain_verify_agent.cfg"
   relative_install_dir = "init"

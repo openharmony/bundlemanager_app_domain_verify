@@ -1,10 +1,10 @@
 {
-  "process": "app_domain_verify_mgr_service",
+  "process": "foundation",
   "systemability": [
     {
       "name": 6200,
       "libpath": "libapp_domain_verify_mgr_service.z.so",
-      "run-on-create": false,
+      "run-on-create": true,
       "distributed": false,
       "dump_level": 1
     }
