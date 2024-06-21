@@ -49,6 +49,12 @@ void AgentServiceTest::SetUpTestCase(void)
 
 void AgentServiceTest::TearDownTestCase(void)
 {
+    GTEST_LOG_(INFO) << "TearDownTestCase";
+    while(!AppDomainVerifyTaskMgr::GetInstance()->IsIdle()){
+        GTEST_LOG_(INFO) << "wait task finish";
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    }
+    GTEST_LOG_(INFO) << "TearDownTestCase out";
 }
 
 void AgentServiceTest::SetUp(void)
