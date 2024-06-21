@@ -13,24 +13,16 @@
  * limitations under the License.
  */
 
-#include <iostream>
 #include <memory>
-#include <sstream>
 #include <string>
 #include <vector>
-#include <set>
 #include <thread>
 
 #include "app_domain_verify_agent_service.h"
-#include "iremote_broker.h"
 #include "system_ability_definition.h"
 #include "domain_url_util.h"
-#include "app_domain_verify_hilog.h"
 #include "bms/bundle_info_query.h"
-#include "app_domain_verify_task_mgr.h"
-#include "iservice_registry.h"
 #include "app_domain_verify_mgr_client.h"
-#include "app_domain_verify_hisysevent.h"
 #include "verify_task.h"
 
 namespace OHOS {
@@ -226,6 +218,21 @@ void AppDomainVerifyAgentService::UpdateWhiteList()
         APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "extension call end");
         return;
     }
+}
+void AppDomainVerifyAgentService::OnDump()
+{
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "OnDump");
+}
+
+int AppDomainVerifyAgentService::Dump(int fd, const std::vector<std::u16string>& args)
+{
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "Dump");
+    std::string dumpString{};
+    dumpString.append("Running state: ");
+    IsIdle() ? dumpString.append("idle.") : dumpString.append("running.");
+    dumpString.append("\n");
+    (void)write(fd, dumpString.c_str(), dumpString.size());
+    return 0;
 }
 }  // namespace AppDomainVerify
 }  // namespace OHOS
