@@ -25,8 +25,7 @@
 #include "app_verify_base_info.h"
 #include "i_http_task.h"
 #include "ffrt.h"
-#include "safe_map.h"
-
+#include "ffrt_safe_map.h"
 
 namespace OHOS {
 namespace AppDomainVerify {
@@ -43,11 +42,15 @@ public:
 
 private:
     static std::shared_ptr<AppDomainVerifyTaskMgr> instance_;
-    static std::mutex mutex_;
     bool Init();
-    void RunTask(const std::shared_ptr<IHttpTask>& task, uint32_t seq);
-    std::shared_ptr<ffrt::queue> ffrtTaskQueue_;
-    SafeMap<uint32_t, std::shared_ptr<IHttpTask>> taskHandleMap_;
+    std::function<void()> GetTaskWrapper(const std::shared_ptr<IHttpTask>& httpTask);
+    int poolSize_ = 4;
+    static ffrt::mutex instanceMutex_;
+    ffrt::mutex mutex_;
+    ffrt::condition_variable cond_;
+    bool stop_ = false;
+    std::vector<std::function<void()>> tasks_;
+    SafeMap<uint32_t, std::shared_ptr<IHttpTask>> taskMap_;
 };
 }
 }

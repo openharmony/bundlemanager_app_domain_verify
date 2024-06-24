@@ -17,16 +17,15 @@
 #include <deque>
 #include <memory>
 #include <string>
-
+#include <future>
 #include "app_domain_verify_hilog.h"
 
 namespace OHOS {
 namespace AppDomainVerify {
 std::shared_ptr<AppDomainVerifyTaskMgr> AppDomainVerifyTaskMgr::instance_ = nullptr;
-std::mutex AppDomainVerifyTaskMgr::mutex_;
+ffrt::mutex AppDomainVerifyTaskMgr::instanceMutex_;
 
 using namespace OHOS::NetStack::HttpClient;
-constexpr int MAX_CONCURRENCY = 10;
 
 class AutoSeqReleaser {
 public:
@@ -50,7 +49,7 @@ private:
 std::shared_ptr<AppDomainVerifyTaskMgr> AppDomainVerifyTaskMgr::GetInstance()
 {
     if (instance_ == nullptr) {
-        std::lock_guard<std::mutex> lock(mutex_);
+        std::lock_guard<ffrt::mutex> lock(instanceMutex_);
         if (instance_ == nullptr) {
             instance_ = std::make_shared<AppDomainVerifyTaskMgr>();
         }
@@ -60,11 +59,12 @@ std::shared_ptr<AppDomainVerifyTaskMgr> AppDomainVerifyTaskMgr::GetInstance()
 
 void AppDomainVerifyTaskMgr::DestroyInstance()
 {
-    std::lock_guard<std::mutex> lock(mutex_);
+    std::lock_guard<ffrt::mutex> lock(instanceMutex_);
     if (instance_ != nullptr) {
         instance_.reset();
         instance_ = nullptr;
     }
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "AppDomainVerifyTaskMgr DestroyInstance!");
 }
 
 AppDomainVerifyTaskMgr::AppDomainVerifyTaskMgr()
@@ -75,99 +75,104 @@ AppDomainVerifyTaskMgr::AppDomainVerifyTaskMgr()
 
 AppDomainVerifyTaskMgr::~AppDomainVerifyTaskMgr()
 {
-    ffrtTaskQueue_.reset();
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "AppDomainVerifyTaskMgr destory!");
+    {
+        std::unique_lock<ffrt::mutex> lock(mutex_);
+        this->stop_ = true;
+        cond_.notify_all();
+    }
+    // wait all workers done;
+    ffrt::wait();
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "AppDomainVerifyTaskMgr destory end!");
 }
 
 bool AppDomainVerifyTaskMgr::Init()
 {
-    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MODULE_COMMON, "Init.");
-    ffrt::queue_attr queueAttr{};
-    queueAttr.max_concurrency(MAX_CONCURRENCY);
-    queueAttr.qos(ffrt_qos_default);
-    ffrtTaskQueue_ = std::make_shared<ffrt::queue>("ffrt-queue", queueAttr);
-    return false;
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MODULE_COMMON, "Init workers.");
+    for (int i = 0; i < poolSize_; i++) {
+        ffrt::submit_h([this]() {
+            APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "worker run.");
+            std::unique_lock lock(mutex_);
+            while (!this->stop_) {
+                if (!tasks_.empty()) {
+                    auto task = std::move(tasks_.back());
+                    tasks_.pop_back();
+                    lock.unlock();
+                    task();
+                    lock.lock();
+                } else {
+                    while (tasks_.empty() && !this->stop_) {
+                        cond_.wait(lock);
+                    }
+                }
+            }
+            APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "worker done.");
+        });
+    }
+    return true;
+}
+std::function<void()> AppDomainVerifyTaskMgr::GetTaskWrapper(const std::shared_ptr<IHttpTask>& httpTask)
+{
+    return [taskMap = &taskMap_, httpTask]() {
+        APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "task in");
+        auto seq = httpTask->GetTaskId();
+        auto clientTask = httpTask->CreateHttpClientTask();
+        if (clientTask == nullptr) {
+            AutoSeqReleaser releaser(taskMap, seq);
+            APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "clientTask null");
+            return;
+        }
+        std::promise<void> promise;
+        std::future future = promise.get_future();
+        clientTask->OnSuccess(
+            [&taskMap, &httpTask, &promise, seq](const HttpClientRequest& request, const HttpClientResponse& response) {
+                APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "OnSuccess");
+                httpTask->OnSuccess(request, response);
+                AutoSeqReleaser releaser(taskMap, seq);
+                promise.set_value();
+            });
+        clientTask->OnFail([&taskMap, httpTask, &promise, seq](const HttpClientRequest& request,
+                               const HttpClientResponse& response, const HttpClientError& error) {
+            APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "OnFail");
+            httpTask->OnFail(request, response, error);
+            AutoSeqReleaser releaser(taskMap, seq);
+            promise.set_value();
+        });
+        clientTask->OnCancel(
+            [&taskMap, &httpTask, &promise, seq](const HttpClientRequest& request, const HttpClientResponse& response) {
+                APP_DOMAIN_VERIFY_HILOGW(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "OnCancel");
+                httpTask->OnCancel(request, response);
+                AutoSeqReleaser releaser(taskMap, seq);
+                promise.set_value();
+            });
+        clientTask->OnDataReceive(
+            [&clientTask, &httpTask](const HttpClientRequest& request, const uint8_t* data, size_t length) {
+                APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "OnDataReceive");
+                httpTask->OnDataReceive(clientTask, request, data, length);
+            });
+        clientTask->Start();
+        future.wait();
+        APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "task out");
+    };
 }
 bool AppDomainVerifyTaskMgr::AddTask(const std::shared_ptr<IHttpTask>& task)
 {
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MODULE_COMMON, "AddTask.");
-    if (ffrtTaskQueue_ == nullptr) {
-        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MODULE_COMMON, "AddTask queue null.");
-        return false;
-    }
     if (task == nullptr) {
         APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MODULE_COMMON, "AddTask task null.");
         return false;
     }
-    auto seq = task->GetTaskId();
-    // hold task's shared_ptr
-    taskHandleMap_.EnsureInsert(seq, task);
-    auto handle = ffrtTaskQueue_->submit_h([task, seq, this]() { RunTask(task, seq); });
-    if (handle == nullptr) {
-        AutoSeqReleaser releaser(&taskHandleMap_, seq);
-        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MODULE_COMMON, "submit task to ffrt failed.");
-        return false;
-    }
-
+    std::function<void()> taskWrapper = GetTaskWrapper(task);
+    std::unique_lock<ffrt::mutex> lock;
+    taskMap_.EnsureInsert(task->GetTaskId(), task);
+    tasks_.push_back(std::move(taskWrapper));
+    cond_.notify_one();
     return true;
 }
 bool AppDomainVerifyTaskMgr::IsIdle()
 {
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MODULE_COMMON, "IsIdle.");
-    return taskHandleMap_.Size() == 0;
-}
-
-void AppDomainVerifyTaskMgr::RunTask(const std::shared_ptr<IHttpTask>& task, uint32_t seq)
-{
-    auto httpclientTask = task->CreateHttpClientTask();
-    if (httpclientTask == nullptr) {
-        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MODULE_COMMON, "can not get http task.");
-        AutoSeqReleaser releaser(&taskHandleMap_, seq);
-        return;
-    }
-    std::weak_ptr<IHttpTask> tmp = task;
-    httpclientTask->OnSuccess([tmp, seq, this](const HttpClientRequest& request, const HttpClientResponse& response) {
-        AutoSeqReleaser releaser(&taskHandleMap_, seq);
-        auto task = tmp.lock();
-        if (task == nullptr) {
-            APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MODULE_COMMON, "OnSuccess can not find task.");
-            return;
-        }
-        task->OnSuccess(request, response);
-        APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MODULE_COMMON, "OnSuccess.");
-    });
-    httpclientTask->OnFail([tmp, seq, this](const HttpClientRequest& request, const HttpClientResponse& response,
-                               const HttpClientError& error) {
-        AutoSeqReleaser releaser(&taskHandleMap_, seq);
-        auto task = tmp.lock();
-        if (task == nullptr) {
-            APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MODULE_COMMON, "OnFail can not find task.");
-            return;
-        }
-        task->OnFail(request, response, error);
-        APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MODULE_COMMON, "OnFail.");
-    });
-    httpclientTask->OnCancel([tmp, seq, this](const HttpClientRequest& request, const HttpClientResponse& response) {
-        AutoSeqReleaser releaser(&taskHandleMap_, seq);
-        auto task = tmp.lock();
-        if (task == nullptr) {
-            APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MODULE_COMMON, "OnCancel can not find task.");
-            return;
-        }
-        task->OnCancel(request, response);
-        APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MODULE_COMMON, "OnCancel.");
-    });
-    httpclientTask->OnDataReceive(
-        [httpclientTask, tmp](const HttpClientRequest& request, const uint8_t* data, size_t length) {
-            auto task = tmp.lock();
-            if (task == nullptr) {
-                APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MODULE_COMMON, "OnDataReceive can not find task.");
-                return;
-            }
-            task->OnDataReceive(httpclientTask, request, data, length);
-            APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "OnDataReceive.");
-        });
-    httpclientTask->Start();
+    return taskMap_.IsEmpty();
 }
 }
 }
