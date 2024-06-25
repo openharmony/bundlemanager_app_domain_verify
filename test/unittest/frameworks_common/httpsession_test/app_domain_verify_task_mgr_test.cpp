@@ -245,12 +245,38 @@ HWTEST_F(AppDomainVerifyTaskMgrTest, AppDomainVerifyTaskMgrTest007, TestSize.Lev
  */
 HWTEST_F(AppDomainVerifyTaskMgrTest, AppDomainVerifyTaskMgrTest008, TestSize.Level0)
 {
-    GTEST_LOG_(INFO) << "AppDomainVerifyTaskMgrTest008";
     AppDomainVerifyTaskMgr::GetInstance();
     ASSERT_FALSE(AppDomainVerifyTaskMgr::GetInstance()->AddTask(nullptr));
     ASSERT_FALSE(AppDomainVerifyTaskMgr::GetInstance()->AddTask(nullptr));
     ASSERT_TRUE(AppDomainVerifyTaskMgr::GetInstance()->IsIdle());
     AppDomainVerifyTaskMgr::DestroyInstance();
-    GTEST_LOG_(INFO) << "AppDomainVerifyTaskMgrTest008 end";
+}
+/**
+ * @tc.name: AppDomainVerifySafeMapTest001
+ * @tc.desc: test GetInstance/DestroyInstance
+ * @tc.type: FUNC
+ */
+HWTEST_F(AppDomainVerifyTaskMgrTest, AppDomainVerifySafeMapTest001, TestSize.Level0)
+{
+    SafeMap<int, std::string> safeMap;
+    safeMap.EnsureInsert(1, "test");
+    ASSERT_TRUE(safeMap.Size() == 1);
+    ASSERT_FALSE(safeMap.IsEmpty());
+
+    safeMap.Insert(2, "test");
+    ASSERT_TRUE(safeMap.Size() == 2);
+
+    std::string val;
+    ASSERT_TRUE(safeMap.Find(1, val) == true);
+
+    safeMap.Erase(2);
+    ASSERT_TRUE(safeMap.Size() == 1);
+
+    auto anotherSafeMap = safeMap;
+    ASSERT_TRUE(anotherSafeMap.Size() == 1);
+
+    SafeMap<int, std::string> map(safeMap);
+    ASSERT_TRUE(map.Size() == 1);
+    safeMap.Clear();
 }
 }
