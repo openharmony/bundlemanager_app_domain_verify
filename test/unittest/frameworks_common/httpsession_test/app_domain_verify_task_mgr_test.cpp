@@ -56,11 +56,11 @@ void AppDomainVerifyTaskMgrTest::TearDown(void)
 #define SLEEP_TIME (10)
 void Sleep()
 {
-    std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_TIME));
+    ffrt::this_task::sleep_for(std::chrono::milliseconds(SLEEP_TIME));
 }
 /**
  * @tc.name: AppDomainVerifyTaskMgrTest001
- * @tc.desc: AddTask test
+ * @tc.desc: AddTask null test, return idle true
  * @tc.type: FUNC
  */
 HWTEST_F(AppDomainVerifyTaskMgrTest, AppDomainVerifyTaskMgrTest001, TestSize.Level0)
@@ -73,7 +73,7 @@ HWTEST_F(AppDomainVerifyTaskMgrTest, AppDomainVerifyTaskMgrTest001, TestSize.Lev
 
 /**
  * @tc.name: AppDomainVerifyTaskMgrTest002
- * @tc.desc: null http task
+ * @tc.desc: add task with null http task
  * @tc.type: FUNC
  */
 HWTEST_F(AppDomainVerifyTaskMgrTest, AppDomainVerifyTaskMgrTest002, TestSize.Level0)
@@ -81,14 +81,20 @@ HWTEST_F(AppDomainVerifyTaskMgrTest, AppDomainVerifyTaskMgrTest002, TestSize.Lev
     auto appDomainVerifyTaskMgr = std::make_shared<AppDomainVerifyTaskMgr>();
     std::shared_ptr<MocVerifyHttpTask> task = std::make_shared<MocVerifyHttpTask>();
     EXPECT_CALL(*task, CreateHttpClientTask()).Times(1).WillOnce(Return(nullptr));
+    EXPECT_CALL(*task, OnSuccess(_, _)).Times(0);
+    EXPECT_CALL(*task, OnCancel(_, _)).Times(0);
+    EXPECT_CALL(*task, OnFail(_, _, _)).Times(0);
+    EXPECT_CALL(*task, OnDataReceive(_, _, _, _)).Times(0);
     appDomainVerifyTaskMgr->AddTask(task);
-    Sleep();
+    while (!appDomainVerifyTaskMgr->IsIdle()) {
+        Sleep();
+    }
     ASSERT_TRUE(appDomainVerifyTaskMgr->IsIdle());
 }
 
 /**
  * @tc.name: AppDomainVerifyTaskMgrTest003
- * @tc.desc: on success
+ * @tc.desc: test on success called
  * @tc.type: FUNC
  */
 HWTEST_F(AppDomainVerifyTaskMgrTest, AppDomainVerifyTaskMgrTest003, TestSize.Level0)
@@ -97,20 +103,25 @@ HWTEST_F(AppDomainVerifyTaskMgrTest, AppDomainVerifyTaskMgrTest003, TestSize.Lev
     HttpClientResponse response;
     response.result_ = "";
     std::shared_ptr<HttpClientTask> clientTask = std::make_shared<HttpClientTask>(request);
-    clientTask->MockStatus(false, true, false);
+    clientTask->MockStatus(true, false, false);
     clientTask->SetResponse(response);
     auto appDomainVerifyTaskMgr = std::make_shared<AppDomainVerifyTaskMgr>();
     std::shared_ptr<MocVerifyHttpTask> task = std::make_shared<MocVerifyHttpTask>();
     EXPECT_CALL(*task, CreateHttpClientTask()).Times(1).WillOnce(Return(clientTask));
-
+    EXPECT_CALL(*task, OnSuccess(_, _)).Times(1);
+    EXPECT_CALL(*task, OnCancel(_, _)).Times(0);
+    EXPECT_CALL(*task, OnFail(_, _, _)).Times(0);
+    EXPECT_CALL(*task, OnDataReceive(_, _, _, _)).Times(0);
     appDomainVerifyTaskMgr->AddTask(task);
-    Sleep();
+    while (!appDomainVerifyTaskMgr->IsIdle()) {
+        Sleep();
+    }
     ASSERT_TRUE(appDomainVerifyTaskMgr->IsIdle());
 }
 
 /**
  * @tc.name: AppDomainVerifyTaskMgrTest004
- * @tc.desc: on fail
+ * @tc.desc: test on fail called
  * @tc.type: FUNC
  */
 HWTEST_F(AppDomainVerifyTaskMgrTest, AppDomainVerifyTaskMgrTest004, TestSize.Level0)
@@ -124,14 +135,20 @@ HWTEST_F(AppDomainVerifyTaskMgrTest, AppDomainVerifyTaskMgrTest004, TestSize.Lev
     auto appDomainVerifyTaskMgr = std::make_shared<AppDomainVerifyTaskMgr>();
     std::shared_ptr<MocVerifyHttpTask> task = std::make_shared<MocVerifyHttpTask>();
     EXPECT_CALL(*task, CreateHttpClientTask()).Times(1).WillOnce(Return(clientTask));
-
+    EXPECT_CALL(*task, OnSuccess(_, _)).Times(0);
+    EXPECT_CALL(*task, OnCancel(_, _)).Times(0);
+    EXPECT_CALL(*task, OnFail(_, _, _)).Times(1);
+    EXPECT_CALL(*task, OnDataReceive(_, _, _, _)).Times(0);
     appDomainVerifyTaskMgr->AddTask(task);
-    Sleep();
+    while (!appDomainVerifyTaskMgr->IsIdle()) {
+        Sleep();
+    }
     ASSERT_TRUE(appDomainVerifyTaskMgr->IsIdle());
 }
+
 /**
  * @tc.name: AppDomainVerifyTaskMgrTest005
- * @tc.desc: on date reciveve
+ * @tc.desc: on date receive
  * @tc.type: FUNC
  */
 HWTEST_F(AppDomainVerifyTaskMgrTest, AppDomainVerifyTaskMgrTest005, TestSize.Level0)
@@ -140,19 +157,25 @@ HWTEST_F(AppDomainVerifyTaskMgrTest, AppDomainVerifyTaskMgrTest005, TestSize.Lev
     HttpClientResponse response;
     response.result_ = "";
     std::shared_ptr<HttpClientTask> clientTask = std::make_shared<HttpClientTask>(request);
-    clientTask->MockStatus(false, true, true);
+    clientTask->MockStatus(true, false, true);
     clientTask->SetResponse(response);
     auto appDomainVerifyTaskMgr = std::make_shared<AppDomainVerifyTaskMgr>();
     std::shared_ptr<MocVerifyHttpTask> task = std::make_shared<MocVerifyHttpTask>();
     EXPECT_CALL(*task, CreateHttpClientTask()).Times(1).WillOnce(Return(clientTask));
+    EXPECT_CALL(*task, OnSuccess(_, _)).Times(1);
+    EXPECT_CALL(*task, OnCancel(_, _)).Times(0);
+    EXPECT_CALL(*task, OnFail(_, _, _)).Times(0);
+    EXPECT_CALL(*task, OnDataReceive(_, _, _, _)).Times(3);
 
     appDomainVerifyTaskMgr->AddTask(task);
-    Sleep();
+    while (!appDomainVerifyTaskMgr->IsIdle()) {
+        Sleep();
+    }
     ASSERT_TRUE(appDomainVerifyTaskMgr->IsIdle());
 }
 /**
  * @tc.name: AppDomainVerifyTaskMgrTest006
- * @tc.desc: on date cancle
+ * @tc.desc: on cancel
  * @tc.type: FUNC
  */
 HWTEST_F(AppDomainVerifyTaskMgrTest, AppDomainVerifyTaskMgrTest006, TestSize.Level0)
@@ -166,9 +189,14 @@ HWTEST_F(AppDomainVerifyTaskMgrTest, AppDomainVerifyTaskMgrTest006, TestSize.Lev
     auto appDomainVerifyTaskMgr = std::make_shared<AppDomainVerifyTaskMgr>();
     std::shared_ptr<MocVerifyHttpTask> task = std::make_shared<MocVerifyHttpTask>();
     EXPECT_CALL(*task, CreateHttpClientTask()).Times(1).WillOnce(Return(clientTask));
-
+    EXPECT_CALL(*task, OnSuccess(_, _)).Times(0);
+    EXPECT_CALL(*task, OnCancel(_, _)).Times(1);
+    EXPECT_CALL(*task, OnFail(_, _, _)).Times(0);
+    EXPECT_CALL(*task, OnDataReceive(_, _, _, _)).Times(0);
     appDomainVerifyTaskMgr->AddTask(task);
-    Sleep();
+    while (!appDomainVerifyTaskMgr->IsIdle()) {
+        Sleep();
+    }
     ASSERT_TRUE(appDomainVerifyTaskMgr->IsIdle());
 }
 class BaseHttpTask : public IHttpTask {
@@ -194,7 +222,7 @@ public:
 };
 /**
  * @tc.name: AppDomainVerifyTaskMgrTest007
- * @tc.desc: on date cancle
+ * @tc.desc: test HttpTask
  * @tc.type: FUNC
  */
 HWTEST_F(AppDomainVerifyTaskMgrTest, AppDomainVerifyTaskMgrTest007, TestSize.Level0)
@@ -212,7 +240,7 @@ HWTEST_F(AppDomainVerifyTaskMgrTest, AppDomainVerifyTaskMgrTest007, TestSize.Lev
 }
 /**
  * @tc.name: AppDomainVerifyTaskMgrTest008
- * @tc.desc: on date cancle
+ * @tc.desc: test GetInstance/DestroyInstance
  * @tc.type: FUNC
  */
 HWTEST_F(AppDomainVerifyTaskMgrTest, AppDomainVerifyTaskMgrTest008, TestSize.Level0)
@@ -222,5 +250,33 @@ HWTEST_F(AppDomainVerifyTaskMgrTest, AppDomainVerifyTaskMgrTest008, TestSize.Lev
     ASSERT_FALSE(AppDomainVerifyTaskMgr::GetInstance()->AddTask(nullptr));
     ASSERT_TRUE(AppDomainVerifyTaskMgr::GetInstance()->IsIdle());
     AppDomainVerifyTaskMgr::DestroyInstance();
+}
+/**
+ * @tc.name: AppDomainVerifySafeMapTest001
+ * @tc.desc: test GetInstance/DestroyInstance
+ * @tc.type: FUNC
+ */
+HWTEST_F(AppDomainVerifyTaskMgrTest, AppDomainVerifySafeMapTest001, TestSize.Level0)
+{
+    SafeMap<int, std::string> safeMap;
+    safeMap.EnsureInsert(1, "test");
+    ASSERT_TRUE(safeMap.Size() == 1);
+    ASSERT_FALSE(safeMap.IsEmpty());
+
+    safeMap.Insert(2, "test");
+    ASSERT_TRUE(safeMap.Size() == 2);
+
+    std::string val;
+    ASSERT_TRUE(safeMap.Find(1, val) == true);
+
+    safeMap.Erase(2);
+    ASSERT_TRUE(safeMap.Size() == 1);
+
+    auto anotherSafeMap = safeMap;
+    ASSERT_TRUE(anotherSafeMap.Size() == 1);
+
+    SafeMap<int, std::string> map(safeMap);
+    ASSERT_TRUE(map.Size() == 1);
+    safeMap.Clear();
 }
 }
