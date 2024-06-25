@@ -92,7 +92,7 @@ bool AppDomainVerifyTaskMgr::Init()
     for (int i = 0; i < poolSize_; i++) {
         ffrt::submit_h([this]() {
             APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "worker run.");
-            std::unique_lock lock(mutex_);
+            std::unique_lock<ffrt::mutex> lock(mutex_);
             while (!this->stop_) {
                 if (!tasks_.empty()) {
                     auto task = std::move(tasks_.back());
@@ -163,7 +163,7 @@ bool AppDomainVerifyTaskMgr::AddTask(const std::shared_ptr<IHttpTask>& task)
         return false;
     }
     std::function<void()> taskWrapper = GetTaskWrapper(task);
-    std::unique_lock<ffrt::mutex> lock;
+    std::unique_lock<ffrt::mutex> lock(mutex_);
     taskMap_.EnsureInsert(task->GetTaskId(), task);
     tasks_.push_back(std::move(taskWrapper));
     cond_.notify_one();
