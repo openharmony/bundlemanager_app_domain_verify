@@ -55,6 +55,7 @@ ohos_shared_library("app_domain_verify_extension_framework") {
     "ability_base:want",
     "c_utils:utils",
     "hilog:libhilog",
+    "hisysevent:libhisysevent",
     "ipc:ipc_single",
     "samgr:samgr_proxy",
   ]

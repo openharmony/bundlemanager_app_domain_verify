@@ -151,6 +151,7 @@ ohos_shared_library("app_domain_verify_agent_service") {
     "ipc:ipc_core",
     "json:nlohmann_json_static",
     "netstack:http_client",
+    "preferences:native_preferences",
     "safwk:system_ability_fwk",
     "samgr:samgr_proxy",
   ]
