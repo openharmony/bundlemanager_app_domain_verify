@@ -21,6 +21,7 @@
 #include "system_ability_definition.h"
 #include "app_domain_verify_hisysevent.h"
 #include "zidl/convert_callback_stub.h"
+#include "regex.h"
 
 namespace OHOS {
 namespace AppDomainVerify {
@@ -29,6 +30,9 @@ sptr<IAppDomainVerifyMgrService> AppDomainVerifyMgrClient::appDomainVerifyMgrSer
 AppDomainVerifyMgrClient::StaticDestoryMonitor AppDomainVerifyMgrClient::staticDestoryMonitor_;
 constexpr int32_t LOADSA_TIMEOUT_MS = 10000;
 static const std::string SCHEME_HTTPS("https");
+static const char* PATTEN = "^[a-zA-Z0-9_-]+$";
+constexpr int REG_ERR_BUF = 1024;
+constexpr int NM = 10;
 AppDomainVerifyMgrClient::AppDomainVerifyMgrClient()
 {
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "new instance created.");
@@ -178,21 +182,69 @@ void AppDomainVerifyMgrClient::ConvertToExplicitWant(AAFwk::Want& implicitWant, 
     }
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "%s call end", __func__);
 }
+
+bool AppDomainVerifyMgrClient::IsValidPath(const std::string& path)
+{
+    const char* bematch = path.c_str();
+    char errbuf[REG_ERR_BUF];
+    regex_t reg;
+    int errNum = 0;
+    int nm = NM;
+    regmatch_t pmatch[nm];
+    if (regcomp(&reg, PATTEN, REG_EXTENDED) < 0) {
+        regerror(errNum, &reg, errbuf, sizeof(errbuf));
+        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "regexec error:%{public}s", errbuf);
+        return false;
+    }
+    errNum = regexec(&reg, bematch, nm, pmatch, 0);
+    if (errNum == REG_NOMATCH) {
+        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "regexec no match");
+        return false;
+    } else if (errNum) {
+        regerror(errNum, &reg, errbuf, sizeof(errbuf));
+        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "regexec error:%{public}s", errbuf);
+        return false;
+    }
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "is valid path");
+    return true;
+}
+bool AppDomainVerifyMgrClient::IsValidUrl(OHOS::Uri& uri)
+{
+    if (uri.GetScheme() != SCHEME_HTTPS) {
+        APP_DOMAIN_VERIFY_HILOGE(
+            APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "scheme:%{public}s is not https", uri.GetScheme().c_str());
+        return false;
+    }
+    if (uri.GetHost().empty()) {
+        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "host is empty");
+        return false;
+    }
+    std::vector<std::string> segments;
+    uri.GetPathSegments(segments);
+    if (segments.size() != 1) {
+        APP_DOMAIN_VERIFY_HILOGE(
+            APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "short path:%{public}s is more than one", uri.GetPath().c_str());
+        return false;
+    }
+    if (!IsValidPath(segments[0])) {
+        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT,
+            "short path:%{public}s must only contains number,alphabet or dash line!", segments[0].c_str());
+        return false;
+    }
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT,
+        "is valid Url");
+    return true;
+}
 bool AppDomainVerifyMgrClient::IsAtomicServiceUrl(const std::string& url)
 {
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "%s called", __func__);
+    Uri uri(url);
+    if (!IsValidUrl(uri)) {
+        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "url %{public}s is invalid!", url.c_str());
+        return false;
+    }
     bool ret{ false };
     if (IsServiceAvailable()) {
-        Uri uri(url);
-        if (uri.GetScheme() != SCHEME_HTTPS) {
-            APP_DOMAIN_VERIFY_HILOGE(
-                APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "%{public}s is not start with https", url.c_str());
-            return false;
-        }
-        if (uri.GetHost().empty()) {
-            APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "%{public}s host empty", url.c_str());
-            return false;
-        }
         ret = appDomainVerifyMgrServiceProxy_->IsAtomicServiceUrl(uri.GetScheme() + "://" + uri.GetHost());
     }
     APP_DOMAIN_VERIFY_HILOGI(
