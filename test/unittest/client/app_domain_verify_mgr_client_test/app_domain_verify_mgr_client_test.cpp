@@ -41,6 +41,7 @@ bool g_mgrInvokeOK = false;
 int MgrInvokeOK(uint32_t code, MessageParcel& data, MessageParcel& reply, MessageOption& option)
 {
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MODULE_BUTT, "%s call end", __func__);
+    reply.WriteBool(true);
     g_mgrInvokeOK = true;
     return 0;
 }
@@ -175,11 +176,26 @@ HWTEST_F(AppDomainVerifyMgrClientTest, AppDomainVerifyMgrClientTest006, TestSize
 {
     std::shared_ptr<AppDomainVerifyMgrRemoteStubMock> mgrStubMock_ =
         std::make_shared<AppDomainVerifyMgrRemoteStubMock>();
-    EXPECT_CALL(*mgrStubMock_, SendRequest(_, _, _, _)).Times(1).WillOnce(::testing::Invoke(MgrInvokeOK));
+    EXPECT_CALL(*mgrStubMock_, SendRequest(_, _, _, _)).WillRepeatedly(::testing::Invoke(MgrInvokeOK));
     AppDomainVerifyMgrClient::appDomainVerifyMgrServiceProxy_ = sptr<AppDomainVerifyMgrServiceProxy>::MakeSptr(
         mgrStubMock_.get());
 
-    AppDomainVerifyMgrClient::GetInstance()->IsAtomicServiceUrl("https://www.openharmony.com");
+    ASSERT_TRUE(AppDomainVerifyMgrClient::GetInstance()->IsAtomicServiceUrl("https://www.openharmony.com/t1_-est"));
+
+    ASSERT_FALSE(AppDomainVerifyMgrClient::GetInstance()->IsAtomicServiceUrl("https://www.openharmony.com"));
+
+    ASSERT_FALSE(AppDomainVerifyMgrClient::GetInstance()->IsAtomicServiceUrl("https://www.openharmony.com/"));
+
+    ASSERT_TRUE(AppDomainVerifyMgrClient::GetInstance()->IsAtomicServiceUrl("https://www.openharmony.com/t1_-est/"));
+
+    ASSERT_FALSE(AppDomainVerifyMgrClient::GetInstance()->IsAtomicServiceUrl("www.openharmony.com/feitj"));
+
+    ASSERT_FALSE(AppDomainVerifyMgrClient::GetInstance()->IsAtomicServiceUrl("test://www.openharmony.com/test"));
+
+    ASSERT_FALSE(AppDomainVerifyMgrClient::GetInstance()->IsAtomicServiceUrl("https://www.openharmony.com/test*"));
+
+    ASSERT_FALSE(AppDomainVerifyMgrClient::GetInstance()->IsAtomicServiceUrl("https://www.openharmony.com/test/test"));
+
     ASSERT_TRUE(g_mgrInvokeOK);
     AppDomainVerifyMgrClient::appDomainVerifyMgrServiceProxy_.ForceSetRefPtr(nullptr);
 }
