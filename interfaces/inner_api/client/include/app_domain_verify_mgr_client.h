@@ -118,6 +118,8 @@ public:
 private:
     bool IsServiceAvailable();
     void ConnectService();
+    bool IsValidUrl(OHOS::Uri& uri);
+    bool IsValidPath(const std::string& url);
 
 private:
     class StaticDestoryMonitor {
