@@ -30,7 +30,7 @@ sptr<IAppDomainVerifyMgrService> AppDomainVerifyMgrClient::appDomainVerifyMgrSer
 AppDomainVerifyMgrClient::StaticDestoryMonitor AppDomainVerifyMgrClient::staticDestoryMonitor_;
 constexpr int32_t LOADSA_TIMEOUT_MS = 10000;
 static const std::string SCHEME_HTTPS("https");
-static const char* PATTEN = "^[a-zA-Z0-9_-]+$";
+static const char* PATTEN = "^[a-zA-Z0-9_-]{1,99}$";
 constexpr int REG_ERR_BUF = 1024;
 constexpr int NM = 10;
 AppDomainVerifyMgrClient::AppDomainVerifyMgrClient()
