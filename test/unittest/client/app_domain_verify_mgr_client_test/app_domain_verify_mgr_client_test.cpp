@@ -172,6 +172,7 @@ HWTEST_F(AppDomainVerifyMgrClientTest, AppDomainVerifyMgrClientTest005, TestSize
  * @tc.desc: VerifyDomain test.
  * @tc.type: FUNC
  */
+#define MAX_PATH_LEN (99)
 HWTEST_F(AppDomainVerifyMgrClientTest, AppDomainVerifyMgrClientTest006, TestSize.Level0)
 {
     std::shared_ptr<AppDomainVerifyMgrRemoteStubMock> mgrStubMock_ =
@@ -195,6 +196,12 @@ HWTEST_F(AppDomainVerifyMgrClientTest, AppDomainVerifyMgrClientTest006, TestSize
     ASSERT_FALSE(AppDomainVerifyMgrClient::GetInstance()->IsAtomicServiceUrl("https://www.openharmony.com/test*"));
 
     ASSERT_FALSE(AppDomainVerifyMgrClient::GetInstance()->IsAtomicServiceUrl("https://www.openharmony.com/test/test"));
+
+    std::string longPath(MAX_PATH_LEN+1, 'a');
+    ASSERT_FALSE(AppDomainVerifyMgrClient::GetInstance()->IsAtomicServiceUrl("https://www.openharmony.com/"+longPath));
+
+    std::string longPath1(MAX_PATH_LEN, 'a');
+    ASSERT_TRUE(AppDomainVerifyMgrClient::GetInstance()->IsAtomicServiceUrl("https://www.openharmony.com/"+longPath1));
 
     ASSERT_TRUE(g_mgrInvokeOK);
     AppDomainVerifyMgrClient::appDomainVerifyMgrServiceProxy_.ForceSetRefPtr(nullptr);
