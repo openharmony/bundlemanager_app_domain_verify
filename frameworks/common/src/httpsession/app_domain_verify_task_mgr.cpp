@@ -119,6 +119,11 @@ std::function<void()> AppDomainVerifyTaskMgr::GetTaskWrapper(const std::shared_p
         auto clientTask = httpTask->CreateHttpClientTask();
         if (clientTask == nullptr) {
             AutoSeqReleaser releaser(taskMap, seq);
+            HttpClientRequest request;
+            HttpClientResponse response;
+            response.SetResult("creat http client task failed");
+            HttpClientError error;
+            httpTask->OnFail(request, response, error);
             APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "clientTask null");
             return;
         }

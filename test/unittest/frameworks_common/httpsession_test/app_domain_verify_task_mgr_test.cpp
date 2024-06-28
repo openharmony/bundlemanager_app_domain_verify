@@ -83,7 +83,7 @@ HWTEST_F(AppDomainVerifyTaskMgrTest, AppDomainVerifyTaskMgrTest002, TestSize.Lev
     EXPECT_CALL(*task, CreateHttpClientTask()).Times(1).WillOnce(Return(nullptr));
     EXPECT_CALL(*task, OnSuccess(_, _)).Times(0);
     EXPECT_CALL(*task, OnCancel(_, _)).Times(0);
-    EXPECT_CALL(*task, OnFail(_, _, _)).Times(0);
+    EXPECT_CALL(*task, OnFail(_, _, _)).Times(1);
     EXPECT_CALL(*task, OnDataReceive(_, _, _, _)).Times(0);
     appDomainVerifyTaskMgr->AddTask(task);
     while (!appDomainVerifyTaskMgr->IsIdle()) {
