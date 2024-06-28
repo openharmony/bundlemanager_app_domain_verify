@@ -34,6 +34,11 @@ public:
         GTEST_LOG_(INFO) << "MOCK GetResult";
         return result_;
     }
+    void SetResult(const std::string& res)
+    {
+        GTEST_LOG_(INFO) << "MOCK SetResult";
+        result_ = res;
+    }
     int responseCode_ = 0;
     std::string result_;
 };
