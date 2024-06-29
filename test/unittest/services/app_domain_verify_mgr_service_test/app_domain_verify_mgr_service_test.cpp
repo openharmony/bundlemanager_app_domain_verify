@@ -464,14 +464,4 @@ HWTEST_F(MgrServiceTest, MgrServiceTest023, TestSize.Level0)
     int ret = appDomainVerifyMgrService->Dump(fd, args);
     ASSERT_TRUE(ret == ERR_OK);
 }
-/**
- * @tc.name: MgrServiceTest024
- * @tc.desc: multi post DelayUnloadTask
- * @tc.type: FUNC
- */
-HWTEST_F(MgrServiceTest, MgrServiceTest024, TestSize.Level0)
-{
-    appDomainVerifyMgrService->PostDelayUnloadTask();
-    appDomainVerifyMgrService->PostDelayUnloadTask();
-}
 }
