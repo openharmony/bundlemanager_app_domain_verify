@@ -155,7 +155,6 @@ bool AppDomainVerifyMgrService::IsWantImplicit(const OHOS::AAFwk::Want& want)
 void AppDomainVerifyMgrService::OnStart()
 {
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "OnStart");
-    AppDomainVerifyMgrServiceStub::PostDelayUnloadTask();
     bool res = Publish(this);
     if (!res) {
         APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "Publish failed");

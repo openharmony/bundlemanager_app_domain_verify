@@ -31,9 +31,6 @@ public:
     API_EXPORT int32_t OnRemoteRequest(
         uint32_t code, MessageParcel& data, MessageParcel& reply, MessageOption& option) override;
 
-protected:
-    void PostDelayUnloadTask();
-
 private:
     using AppDomainVerifyServiceFunc = int32_t (AppDomainVerifyMgrServiceStub::*)(
         MessageParcel& data, MessageParcel& reply);
@@ -48,8 +45,6 @@ private:
 
 private:
     std::map<uint32_t, AppDomainVerifyServiceFunc> memberFuncMap_;
-    std::shared_ptr<AppExecFwk::EventHandler> unloadHandler_;
-    std::shared_ptr<AppExecFwk::EventRunner> runner_;
 };
 }  // namespace AppDomainVerify
 }  // namespace OHOS
