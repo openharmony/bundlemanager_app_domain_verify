@@ -13,11 +13,9 @@
  * limitations under the License.
  */
 
-#include <memory>
 #include "if_system_ability_manager.h"
 #include "iservice_registry.h"
 #include "app_domain_verify_mgr_client.h"
-#include "refbase.h"
 #include "system_ability_definition.h"
 #include "app_domain_verify_hisysevent.h"
 #include "zidl/convert_callback_stub.h"
@@ -176,13 +174,20 @@ void AppDomainVerifyMgrClient::OnRemoteSaDied(const wptr<IRemoteObject>& remote)
 }
 void AppDomainVerifyMgrClient::ConvertToExplicitWant(AAFwk::Want& implicitWant, sptr<IConvertCallback>& callback)
 {
+#ifdef _CUT_LINK_CONVERT_
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "%s not support, will return false.!", __func__);
+    if (callback) {
+        callback->OnConvert(-1, implicitWant);
+    }
+#else
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "%s called", __func__);
     if (IsServiceAvailable()) {
         appDomainVerifyMgrServiceProxy_->ConvertToExplicitWant(implicitWant, callback);
     }
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "%s call end", __func__);
+#endif
 }
-
+#ifndef _CUT_LINK_CONVERT_
 bool AppDomainVerifyMgrClient::IsValidPath(const std::string& path)
 {
     const char* bematch = path.c_str();
@@ -231,12 +236,16 @@ bool AppDomainVerifyMgrClient::IsValidUrl(OHOS::Uri& uri)
             "short path:%{public}s must only contains number,alphabet or dash line!", segments[0].c_str());
         return false;
     }
-    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT,
-        "is valid Url");
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "is valid Url");
     return true;
 }
+#endif
 bool AppDomainVerifyMgrClient::IsAtomicServiceUrl(const std::string& url)
 {
+#ifdef _CUT_LINK_CONVERT_
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "%s not support, will return false.!", __func__);
+    return false;
+#else
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "%s called", __func__);
     Uri uri(url);
     if (!IsValidUrl(uri)) {
@@ -250,6 +259,7 @@ bool AppDomainVerifyMgrClient::IsAtomicServiceUrl(const std::string& url)
     APP_DOMAIN_VERIFY_HILOGI(
         APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "%s call end, IsAtomicServiceUrl:%{public}d", __func__, ret);
     return ret;
+#endif
 }
 
 AppDomainVerifyMgrSaDeathRecipient::AppDomainVerifyMgrSaDeathRecipient()
