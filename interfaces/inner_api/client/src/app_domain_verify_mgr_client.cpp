@@ -26,10 +26,12 @@ namespace AppDomainVerify {
 std::mutex AppDomainVerifyMgrClient::proxyLock_;
 sptr<IAppDomainVerifyMgrService> AppDomainVerifyMgrClient::appDomainVerifyMgrServiceProxy_;
 AppDomainVerifyMgrClient::StaticDestoryMonitor AppDomainVerifyMgrClient::staticDestoryMonitor_;
+#ifndef _CUT_LINK_CONVERT_
 static const std::string SCHEME_HTTPS("https");
 static const char* PATTEN = "^[a-zA-Z0-9_-]{1,99}$";
 constexpr int REG_ERR_BUF = 1024;
 constexpr int NM = 10;
+#endif
 AppDomainVerifyMgrClient::AppDomainVerifyMgrClient()
 {
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "new instance created.");
