@@ -11,7 +11,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 declare_args() {
-  cut_link_convert = false
+  app_domain_verify_cut_link_convert = false
 }
 
 ability_runtime_napi_path =
