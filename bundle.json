@@ -14,6 +14,9 @@
     "subsystem": "bundlemanager",
     "syscap": [],
     "features": ["app_domain_verify_cut_link_convert"],
+    "hisysevent_config": [
+      "//foundation/bundlemanager/app_domain_verify/hisysevent.yaml"
+    ],
     "adapted_system_type": [
       "standard"
     ],

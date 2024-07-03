@@ -19,17 +19,17 @@
 
 namespace OHOS {
 namespace AppDomainVerify {
-static constexpr char APP_DOMAIN_VERIFY[] = "APP_DOMAIN_VERIFY";
+static constexpr char APP_DOMAIN_VERIFY[] = "APPDOMAINVERIFY";
 namespace EventType {
-const std::string APP_INSTALL_EVENT = "pkg_install";
-const std::string APP_DELETE_EVENT = "pkg_uninstall";
-const std::string APP_VERIFY_EVENT = "pkg_verify_result";
+const std::string APP_INSTALL_EVENT = "PKG_INSTALL";
+const std::string APP_DELETE_EVENT = "PKG_UNINSTALL";
+const std::string APP_VERIFY_EVENT = "PKG_VERIFY_RESULT";
 }
 namespace EventParamKey {
-const std::string APP_ID = "app_id";
-const std::string BUNDLE_NAME = "bundle_name";
-const std::string VERIFY_STATUS = "verify_status";
-const std::string VERIFY_WAY = "verify_way";
+const std::string APP_ID = "APP_ID";
+const std::string BUNDLE_NAME = "BUNDLE_NAME";
+const std::string VERIFY_STATUS = "VERIFY_STATUS";
+const std::string VERIFY_WAY = "VERIFY_WAY";
 }
 typedef enum EnumTaskType {
     IMMEDIATE_TASK,
