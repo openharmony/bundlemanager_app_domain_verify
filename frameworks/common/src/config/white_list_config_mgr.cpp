@@ -17,7 +17,9 @@
 #include "app_domain_verify_hilog.h"
 
 namespace OHOS::AppDomainVerify {
-const static std::string WHITE_LIST_PRE_PATH = "/data/service/el1/public/app_domain_verify_mgr_service/whitelist_pref";
+const static std::string DYNAMIC_WHITE_LIST_PRE_PATH =
+    "/data/service/el1/public/app_domain_verify_mgr_service/whitelist_pref";
+const static std::string DEFAULT_WHITE_LIST_PRE_PATH = "/system/etc/app_domain_verify/whitelist_pref";
 const static std::string DEFAULT_URL_KEY = "defaultUrl";
 const static std::string WHITE_LIST_KEY = "whiteList";
 const static std::string SPLITOR = ",";
@@ -32,12 +34,22 @@ WhiteListConfigMgr::~WhiteListConfigMgr()
         preferences_->UnRegisterDataObserver(observer_);
     }
 }
-
-void WhiteListConfigMgr::Load()
+void WhiteListConfigMgr::LoadDefault()
 {
-    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MODULE_COMMON, "%s called", __func__);
-    std::lock_guard<std::mutex> lock(initLock);
-    preferences_ = GetPreference();
+    preferences_ = GetPreference(DEFAULT_WHITE_LIST_PRE_PATH);
+    if (preferences_ == nullptr) {
+        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MODULE_COMMON, "WhiteListConfigMgr::Load failed.");
+        return;
+    }
+
+    defaultWhiteUrl_ = preferences_->GetString(DEFAULT_URL_KEY, "");
+    if (defaultWhiteUrl_.empty()) {
+        APP_DOMAIN_VERIFY_HILOGW(APP_DOMAIN_VERIFY_MODULE_COMMON, "WhiteListConfigMgr::Load defaultWhiteUrl empty.");
+    }
+}
+void WhiteListConfigMgr::LoadDynamic()
+{
+    preferences_ = GetPreference(DYNAMIC_WHITE_LIST_PRE_PATH);
     if (preferences_ == nullptr) {
         APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MODULE_COMMON, "WhiteListConfigMgr::Load failed.");
         return;
@@ -47,12 +59,16 @@ void WhiteListConfigMgr::Load()
         preferences_->RegisterObserver(observer_, NativePreferences::RegisterMode::MULTI_PRECESS_CHANGE);
     }
 
-    defaultWhiteUrl_ = preferences_->GetString(DEFAULT_URL_KEY, "");
-    if (defaultWhiteUrl_.empty()) {
-        APP_DOMAIN_VERIFY_HILOGW(APP_DOMAIN_VERIFY_MODULE_COMMON, "WhiteListConfigMgr::Load defaultWhiteUrl empty.");
-    }
     auto whiteListStr = preferences_->GetString(WHITE_LIST_KEY, "");
     Split(whiteListStr);
+}
+void WhiteListConfigMgr::Load()
+{
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MODULE_COMMON, "%s called", __func__);
+    std::lock_guard<std::mutex> lock(initLock);
+    LoadDefault();
+    LoadDynamic();
+
     init = true;
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MODULE_COMMON, "%s called end", __func__);
 }
@@ -78,10 +94,10 @@ void WhiteListConfigMgr::Split(std::string src)
         APP_DOMAIN_VERIFY_HILOGW(APP_DOMAIN_VERIFY_MODULE_COMMON, "WhiteListConfigMgr::Split whiteListSet empty.");
     }
 }
-std::shared_ptr<NativePreferences::Preferences> WhiteListConfigMgr::GetPreference()
+std::shared_ptr<NativePreferences::Preferences> WhiteListConfigMgr::GetPreference(const std::string& path)
 {
     int status;
-    NativePreferences::Options options(WHITE_LIST_PRE_PATH);
+    NativePreferences::Options options(path);
     std::shared_ptr<NativePreferences::Preferences> preferences = NativePreferences::PreferencesHelper::GetPreferences(
         options, status);
     if (status != 0) {
@@ -113,7 +129,7 @@ bool WhiteListConfigMgr::OnUpdate()
     if (preferences_ == nullptr) {
         return false;
     }
-    NativePreferences::PreferencesHelper::RemovePreferencesFromCache(WHITE_LIST_PRE_PATH);
+    NativePreferences::PreferencesHelper::RemovePreferencesFromCache(DYNAMIC_WHITE_LIST_PRE_PATH);
     Reload();
     if (preferences_ == nullptr) {
         APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MODULE_COMMON, "OnUpdate relaod preferences failed");
