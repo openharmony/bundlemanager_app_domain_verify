@@ -39,11 +39,13 @@ public:
 
 protected:
     void Load();
+    void LoadDefault();
+    void LoadDynamic();
     void Reload();
     bool Save();
     bool OnUpdate();
     void Split(std::string urlList);
-    std::shared_ptr<NativePreferences::Preferences> GetPreference();
+    std::shared_ptr<NativePreferences::Preferences> GetPreference(const std::string& path);
     std::string defaultWhiteUrl_;
     std::unordered_set<std::string> whiteListSet_;
     std::shared_ptr<NativePreferences::Preferences> preferences_;
