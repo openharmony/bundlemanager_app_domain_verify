@@ -214,7 +214,7 @@ void AppDomainVerifyMgrService::UpdateWhiteListUrls(const std::vector<std::strin
         APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "InitConfigMgr failed.");
         return;
     }
-    std::unordered_set<std::string> whiteList(urls.begin(),urls.end());
+    std::unordered_set<std::string> whiteList(urls.begin(), urls.end());
     whiteListConfigMgr_->UpdateWhiteList(whiteList);
 }
 }  // namespace AppDomainVerify
