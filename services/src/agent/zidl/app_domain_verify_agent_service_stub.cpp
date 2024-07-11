@@ -46,7 +46,7 @@ int32_t AppDomainVerifyAgentServiceStub::OnRemoteRequest(
         APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "end##descriptor checked fail");
         return IPCObjectStub::OnRemoteRequest(code, data, reply, option);
     }
-    switch(code) {
+    switch (code) {
         case static_cast<uint32_t>(static_cast<uint32_t>(AgentInterfaceCode::SINGLE_VERIFY)):
             return OnSingleVerify(data, reply);
         case static_cast<uint32_t>(AgentInterfaceCode::CONVERT_TO_EXPLICIT_WANT):

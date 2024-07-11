@@ -43,7 +43,7 @@ int32_t AppDomainVerifyMgrServiceStub::OnRemoteRequest(
         APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "end##descriptor checked fail");
         return IPCObjectStub::OnRemoteRequest(code, data, reply, option);
     }
-    switch(code) {
+    switch (code) {
         case static_cast<uint32_t>(static_cast<uint32_t>(AppDomainVerifyMgrInterfaceCode::QUERY_VERIFY_STATUS)):
             return OnQueryDomainVerifyStatus(data, reply);
         case static_cast<uint32_t>(AppDomainVerifyMgrInterfaceCode::VERIFY_DOMAIN):
@@ -195,7 +195,7 @@ int32_t AppDomainVerifyMgrServiceStub::OnUpdateWhiteListUrls(MessageParcel& data
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s called", __func__);
     uint32_t size = data.ReadUint32();
     std::vector<std::string> urls;
-    for(uint32_t i =0; i < size; i++){
+    for (uint32_t i = 0; i < size; i++) {
         auto url = data.ReadString();
         urls.emplace_back(url);
     }
