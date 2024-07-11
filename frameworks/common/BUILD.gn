@@ -36,9 +36,7 @@ config("app_domain_verify_frameworks_common_config") {
 ohos_shared_library("app_domain_verify_frameworks_common") {
   sources = [
     "src/bms/bundle_info_query.cpp",
-    "src/config/white_list_checker.cpp",
     "src/config/white_list_config_mgr.cpp",
-    "src/config/white_list_updater.cpp",
     "src/httpsession/app_domain_verify_task_mgr.cpp",
     "src/httpsession/i_http_task.cpp",
     "src/utils/domain_url_util.cpp",

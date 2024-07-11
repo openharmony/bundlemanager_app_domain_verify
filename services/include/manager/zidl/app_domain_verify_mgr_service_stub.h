@@ -32,8 +32,6 @@ public:
         uint32_t code, MessageParcel& data, MessageParcel& reply, MessageOption& option) override;
 
 private:
-    using AppDomainVerifyServiceFunc = int32_t (AppDomainVerifyMgrServiceStub::*)(
-        MessageParcel& data, MessageParcel& reply);
     int32_t OnVerifyDomain(MessageParcel& data, MessageParcel& reply);
     int32_t OnClearDomainVerifyStatus(MessageParcel& data, MessageParcel& reply);
     int32_t OnFilterAbilities(MessageParcel& data, MessageParcel& reply);
@@ -42,9 +40,7 @@ private:
     int32_t OnSaveDomainVerifyStatus(MessageParcel& data, MessageParcel& reply);
     int32_t OnIsAtomicServiceUrl(MessageParcel& data, MessageParcel& reply);
     int32_t OnConvertToExplicitWant(MessageParcel& data, MessageParcel& reply);
-
-private:
-    std::map<uint32_t, AppDomainVerifyServiceFunc> memberFuncMap_;
+    int32_t OnUpdateWhiteListUrls(MessageParcel& data, MessageParcel& reply);
 };
 }  // namespace AppDomainVerify
 }  // namespace OHOS

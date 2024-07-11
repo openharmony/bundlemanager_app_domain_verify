@@ -100,6 +100,12 @@ public:
     bool IsAtomicServiceUrl(const std::string& url);
 
     /**
+     * UpdateWhiteListUrl
+     * @descrition update whitelist urls.
+     * @param urls input whitelist urls.
+     */
+    void UpdateWhiteListUrls(const std::vector<std::string>& urls);
+    /**
      * ConvertToExplicitWant
      * @descrition convert implicit want to explicit want.
      * @param implicitWant implicit want to convert.

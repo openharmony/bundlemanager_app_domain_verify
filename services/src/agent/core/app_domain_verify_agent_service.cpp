@@ -198,23 +198,11 @@ bool AppDomainVerifyAgentService::IsIdle()
         return appDomainVerifyTaskMgr_->IsIdle();
     }
 }
-void AppDomainVerifyAgentService::OnWhiteListUpdate(const std::unordered_set<std::string>& whiteList)
-{
-    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "%s called", __func__);
-    if (updater_ == nullptr) {
-        updater_ = std::make_shared<WhiteListUpdater>();
-    }
-    if (updater_) {
-        updater_->UpdateWhiteList(whiteList);
-    } else {
-        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "can not update");
-    }
-}
+
 void AppDomainVerifyAgentService::UpdateWhiteList()
 {
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "%s called", __func__);
-    auto onUpdate = [this](auto&& set) { OnWhiteListUpdate(std::forward<decltype(set)>(set)); };
-    if (ErrorCode::E_EXTENSIONS_LIB_NOT_FOUND != appDomainVerifyExtMgr_->UpdateWhiteList(std::move(onUpdate))) {
+    if (ErrorCode::E_EXTENSIONS_LIB_NOT_FOUND != appDomainVerifyExtMgr_->UpdateWhiteList()) {
         APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "extension call end");
         return;
     }

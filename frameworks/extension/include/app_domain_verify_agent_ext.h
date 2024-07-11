@@ -37,7 +37,7 @@ public:
         const std::vector<InnerVerifyStatus>& statuses, int delaySeconds, TaskType type);
     virtual ErrorCode SingleVerify(const AppVerifyBaseInfo& appVerifyBaseInfo, const std::vector<SkillUri>& skillUris);
     virtual ErrorCode ConvertToExplicitWant(OHOS::AAFwk::Want& implicitWant, sptr<IConvertCallback>& callback);
-    virtual ErrorCode UpdateWhiteList(OnWhiteListUpdate&& onWhiteListUpdate);
+    virtual ErrorCode UpdateWhiteList();
 };
 }
 }

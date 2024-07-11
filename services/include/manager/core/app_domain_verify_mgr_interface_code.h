@@ -25,6 +25,7 @@ enum AppDomainVerifyMgrInterfaceCode {
     SAVE_VERIFY_STATUS = 5,
     IS_ATOMIC_SERVICE_URL = 6,
     CONVERT_TO_EXPLICIT_WANT = 7,
+    UPDATE_WHITE_LIST_URLS = 8,
 };
 }
 }  // namespace OHOS

@@ -215,6 +215,25 @@ bool AppDomainVerifyMgrServiceProxy::IsAtomicServiceUrl(const std::string& url)
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "%s call end", __func__);
     return status;
 }
+void AppDomainVerifyMgrServiceProxy::UpdateWhiteListUrls(const std::vector<std::string>& urls)
+{
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "%s called", __func__);
+    MessageParcel data;
+    MessageParcel reply;
+    MessageOption option;
+    WRITE_PARCEL_AND_RETURN_IF_FAIL(InterfaceToken, data, GetDescriptor());
+    WRITE_PARCEL_AND_RETURN_IF_FAIL(Uint32, data, urls.size());
+    for (const auto& url : urls) {
+        WRITE_PARCEL_AND_RETURN_IF_FAIL(String, data, url);
+    }
+    int32_t error = Remote()->SendRequest(AppDomainVerifyMgrInterfaceCode::UPDATE_WHITE_LIST_URLS, data, reply, option);
+    if (error != ERR_NONE) {
+        APP_DOMAIN_VERIFY_HILOGE(
+            APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "IsAtomicServiceUrl failed, error: %d", error);
+        return ;
+    }
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "%s call end", __func__);
+}
 void AppDomainVerifyMgrServiceProxy::ConvertToExplicitWant(
     OHOS::AAFwk::Want& implicitWant, sptr<IConvertCallback>& callback)
 {
