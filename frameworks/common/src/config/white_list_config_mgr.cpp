@@ -13,6 +13,8 @@
  * limitations under the License.
  */
 #include <sstream>
+#include <algorithm>
+#include "domain_url_util.h"
 #include "white_list_config_mgr.h"
 #include "app_domain_verify_hilog.h"
 
@@ -23,16 +25,12 @@ const static std::string DEFAULT_WHITE_LIST_PRE_PATH = "/system/etc/app_domain_v
 const static std::string DEFAULT_URL_KEY = "defaultUrl";
 const static std::string WHITE_LIST_KEY = "whiteList";
 const static std::string SPLITOR = ",";
-WhiteListConfigMgr::WhiteListConfigMgr(bool needObserve)
+WhiteListConfigMgr::WhiteListConfigMgr()
 {
-    needObserve_ = needObserve;
     Load();
 }
 WhiteListConfigMgr::~WhiteListConfigMgr()
 {
-    if (preferences_ && needObserve_) {
-        preferences_->UnRegisterDataObserver(observer_);
-    }
 }
 void WhiteListConfigMgr::LoadDefault()
 {
@@ -54,10 +52,6 @@ void WhiteListConfigMgr::LoadDynamic()
         APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MODULE_COMMON, "WhiteListConfigMgr::Load failed.");
         return;
     }
-    observer_ = std::make_shared<PreferencesObserverUpdater>(this);
-    if (needObserve_) {
-        preferences_->RegisterObserver(observer_, NativePreferences::RegisterMode::MULTI_PRECESS_CHANGE);
-    }
 
     auto whiteListStr = preferences_->GetString(WHITE_LIST_KEY, "");
     Split(whiteListStr);
@@ -68,7 +62,6 @@ void WhiteListConfigMgr::Load()
     std::lock_guard<std::mutex> lock(initLock);
     LoadDefault();
     LoadDynamic();
-
     init = true;
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MODULE_COMMON, "%s called end", __func__);
 }
@@ -123,43 +116,41 @@ bool WhiteListConfigMgr::Save()
         strSteam.str().c_str(), ret);
     return true;
 }
-bool WhiteListConfigMgr::OnUpdate()
+
+bool WhiteListConfigMgr::IsInWhiteList(const std::string& url)
 {
-    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MODULE_COMMON, "%s called", __func__);
-    if (preferences_ == nullptr) {
-        return false;
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s called", __func__);
+    if (!init) {
+        Load();
     }
-    NativePreferences::PreferencesHelper::RemovePreferencesFromCache(DYNAMIC_WHITE_LIST_PRE_PATH);
-    Reload();
-    if (preferences_ == nullptr) {
-        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MODULE_COMMON, "OnUpdate relaod preferences failed");
-        return false;
+    std::lock_guard<std::mutex> lock(whiteListLock_);
+    bool ret;
+    if (whiteListSet_.empty()) {
+        ret = (url == defaultWhiteUrl_);
+    } else {
+        ret = (whiteListSet_.count(url) != 0) || (url == defaultWhiteUrl_);
     }
-    auto whiteListStr = preferences_->GetString(WHITE_LIST_KEY, "");
-    Split(whiteListStr);
-    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MODULE_COMMON, "%s called end", __func__);
-    return true;
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "is count %{public}d url %{public}s",
+        whiteListSet_.count(url) != 0, url.c_str());
+    return ret;
 }
-void WhiteListConfigMgr::Reload()
+void WhiteListConfigMgr::UpdateWhiteList(const std::unordered_set<std::string>& whiteList)
 {
-    init = false;
-    Load();
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s called", __func__);
+    if (!init) {
+        Load();
+    }
+    std::unordered_set<std::string> filtedWhiteList;
+    std::for_each(whiteList.begin(), whiteList.end(), [&filtedWhiteList](const std::string& element) {
+        if (UrlUtil::IsValidUrl(element)) {
+            filtedWhiteList.insert(element);
+        }
+    });
+    std::lock_guard<std::mutex> lock(whiteListLock_);
+    whiteListSet_ = filtedWhiteList;
+    if (!whiteListSet_.empty()) {
+        Save();
+    }
 }
 
-void PreferencesObserverUpdater::OnChange(const std::string& key)
-{
-    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MODULE_COMMON, "OnChange key:%{public}s.", key.c_str());
-    if (mgr_) {
-        mgr_->OnUpdate();
-    }
-    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MODULE_COMMON, "%s called end", __func__);
-}
-PreferencesObserverUpdater::PreferencesObserverUpdater(WhiteListConfigMgr* mgr)
-{
-    mgr_ = mgr;
-}
-PreferencesObserverUpdater::~PreferencesObserverUpdater()
-{
-    mgr_ = nullptr;
-}
 }

@@ -31,7 +31,7 @@ ErrorCode AppDomainVerifyAgentExt::ConvertToExplicitWant(AAFwk::Want& implicitWa
 {
     return ErrorCode::E_EXTENSIONS_LIB_NOT_FOUND;
 }
-ErrorCode AppDomainVerifyAgentExt::UpdateWhiteList(OnWhiteListUpdate&& onWhiteListUpdate)
+ErrorCode AppDomainVerifyAgentExt::UpdateWhiteList()
 {
     return ErrorCode::E_EXTENSIONS_LIB_NOT_FOUND;
 }

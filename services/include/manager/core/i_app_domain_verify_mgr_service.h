@@ -39,6 +39,7 @@ public:
     virtual bool QueryAllDomainVerifyStatus(BundleVerifyStatusInfo& bundleVerifyStatusInfo) = 0;
     virtual bool SaveDomainVerifyStatus(const std::string& bundleName, const VerifyResultInfo& verifyResultInfo) = 0;
     virtual bool IsAtomicServiceUrl(const std::string& url) = 0;
+    virtual void UpdateWhiteListUrls(const std::vector<std::string>& urls) = 0;
     virtual void ConvertToExplicitWant(OHOS::AAFwk::Want& implicitWant, sptr<IConvertCallback>& callback) = 0;
     DECLARE_INTERFACE_DESCRIPTOR(u"ohos.appDomainVerify.IAppDomainVerifyMgrService");
 };

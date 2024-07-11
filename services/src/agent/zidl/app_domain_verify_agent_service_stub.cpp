@@ -29,14 +29,9 @@ const std::string TASK_ID = "unload";
 }
 AppDomainVerifyAgentServiceStub::AppDomainVerifyAgentServiceStub()
 {
-    memberFuncMap_[static_cast<uint32_t>(AgentInterfaceCode::SINGLE_VERIFY)] =
-        &AppDomainVerifyAgentServiceStub::OnSingleVerify;
-    memberFuncMap_[static_cast<uint32_t>(AgentInterfaceCode::CONVERT_TO_EXPLICIT_WANT)] =
-        &AppDomainVerifyAgentServiceStub::OnConvertToExplicitWant;
 }
 AppDomainVerifyAgentServiceStub::~AppDomainVerifyAgentServiceStub()
 {
-    memberFuncMap_.clear();
 }
 int32_t AppDomainVerifyAgentServiceStub::OnRemoteRequest(
     uint32_t code, MessageParcel& data, MessageParcel& reply, MessageOption& option)
@@ -51,16 +46,16 @@ int32_t AppDomainVerifyAgentServiceStub::OnRemoteRequest(
         APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "end##descriptor checked fail");
         return IPCObjectStub::OnRemoteRequest(code, data, reply, option);
     }
-    auto itFunc = memberFuncMap_.find(code);
-    if (itFunc != memberFuncMap_.end()) {
-        auto memberFunc = itFunc->second;
-        if (memberFunc != nullptr) {
-            return (this->*memberFunc)(data, reply);
-        }
+    switch(code) {
+        case static_cast<uint32_t>(static_cast<uint32_t>(AgentInterfaceCode::SINGLE_VERIFY)):
+            return OnSingleVerify(data, reply);
+        case static_cast<uint32_t>(AgentInterfaceCode::CONVERT_TO_EXPLICIT_WANT):
+            return OnConvertToExplicitWant(data, reply);
+        default:
+            APP_DOMAIN_VERIFY_HILOGW(
+                APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "receive unknown code, code = %{public}d", code);
+            return IPCObjectStub::OnRemoteRequest(code, data, reply, option);
     }
-    int ret = IPCObjectStub::OnRemoteRequest(code, data, reply, option);
-    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "end##ret = %{public}d", ret);
-    return ret;
 }
 
 int32_t AppDomainVerifyAgentServiceStub::OnSingleVerify(MessageParcel& data, MessageParcel& reply)

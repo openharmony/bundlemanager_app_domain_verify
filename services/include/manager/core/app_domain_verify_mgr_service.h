@@ -23,7 +23,7 @@
 #include "i_app_domain_verify_mgr_service.h"
 #include "i_app_domain_verify_agent_service.h"
 #include "app_domain_verify_data_mgr.h"
-#include "white_list_checker.h"
+#include "white_list_config_mgr.h"
 
 namespace OHOS {
 namespace AppDomainVerify {
@@ -46,7 +46,7 @@ public:
         const std::string& bundleName, const VerifyResultInfo& verifyResultInfo) override;
     API_EXPORT bool IsAtomicServiceUrl(const std::string& url) override;
     API_EXPORT void ConvertToExplicitWant(OHOS::AAFwk::Want& implicitWant, sptr<IConvertCallback>& callback) override;
-
+    API_EXPORT void UpdateWhiteListUrls(const std::vector<std::string>& urls) override;
 protected:
     void OnDump() override;
     int Dump(int fd, const std::vector<std::u16string>& args) override;
@@ -59,9 +59,9 @@ private:
 
 private:
     std::shared_ptr<AppDomainVerifyDataMgr> dataManager_ = nullptr;
-    bool InitWhiteListChecker();
-    std::shared_ptr<WhiteListChecker> checker_;
-    std::mutex initCheckerMutex;
+    bool InitConfigMgr();
+    std::shared_ptr<WhiteListConfigMgr> whiteListConfigMgr_;
+    std::mutex initConfigMutex;
 };
 }  // namespace AppDomainVerify
 }  // namespace OHOS

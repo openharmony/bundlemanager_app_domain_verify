@@ -241,13 +241,12 @@ HWTEST_F(AppDomainVerifyExtensionMgrTest, AppDomainVerifyConvertTest003, TestSiz
  */
 HWTEST_F(AppDomainVerifyExtensionMgrTest, AppDomainVerifyUpdateWhiteListTest001, TestSize.Level0)
 {
-    OnWhiteListUpdate func;
     MockAppDomainVerifyExtensionMgr appDomainVerifyExtensionMgr;
     EXPECT_CALL(appDomainVerifyExtensionMgr, Init()).Times(1).WillOnce(Return(false));
 
     OHOS::AAFwk::Want atomicWant;
     sptr<IConvertCallback> cb = new MocConvertCallback;
-    ASSERT_TRUE(appDomainVerifyExtensionMgr.UpdateWhiteList(std::move(func)) == ErrorCode::E_EXTENSIONS_LIB_NOT_FOUND);
+    ASSERT_TRUE(appDomainVerifyExtensionMgr.UpdateWhiteList() == ErrorCode::E_EXTENSIONS_LIB_NOT_FOUND);
 }
 
 /**
@@ -257,16 +256,13 @@ HWTEST_F(AppDomainVerifyExtensionMgrTest, AppDomainVerifyUpdateWhiteListTest001,
  */
 HWTEST_F(AppDomainVerifyExtensionMgrTest, AppDomainVerifyUpdateWhiteListTest002, TestSize.Level0)
 {
-    OnWhiteListUpdate func;
     MockAppDomainVerifyExtensionMgr appDomainVerifyExtensionMgr;
     EXPECT_CALL(appDomainVerifyExtensionMgr, Init()).Times(1).WillOnce(Return(true));
     EXPECT_CALL(appDomainVerifyExtensionMgr, GetAppDomainVerifyExt(APP_DOMAIN_VERIFY_AGENT_EXT_NAME))
         .Times(1)
         .WillOnce(Return(nullptr));
 
-    OHOS::AAFwk::Want atomicWant;
-    sptr<IConvertCallback> cb = new MocConvertCallback;
-    ASSERT_TRUE(appDomainVerifyExtensionMgr.UpdateWhiteList(std::move(func)) == ErrorCode::E_EXTENSIONS_INTERNAL_ERROR);
+    ASSERT_TRUE(appDomainVerifyExtensionMgr.UpdateWhiteList() == ErrorCode::E_EXTENSIONS_INTERNAL_ERROR);
 }
 
 /**
@@ -276,7 +272,6 @@ HWTEST_F(AppDomainVerifyExtensionMgrTest, AppDomainVerifyUpdateWhiteListTest002,
  */
 HWTEST_F(AppDomainVerifyExtensionMgrTest, AppDomainVerifyUpdateWhiteListTest003, TestSize.Level0)
 {
-    OnWhiteListUpdate func;
     std::shared_ptr<AppDomainVerifyAgentExt> appDomainVerifyAgentExt = std::make_shared<AppDomainVerifyAgentExtImpl>();
     MockAppDomainVerifyExtensionMgr appDomainVerifyExtensionMgr;
     EXPECT_CALL(appDomainVerifyExtensionMgr, Init()).Times(1).WillOnce(Return(true));
@@ -284,7 +279,7 @@ HWTEST_F(AppDomainVerifyExtensionMgrTest, AppDomainVerifyUpdateWhiteListTest003,
         .Times(1)
         .WillOnce(Return(appDomainVerifyAgentExt));
 
-    ASSERT_TRUE(appDomainVerifyExtensionMgr.UpdateWhiteList(std::move(func)) == ErrorCode::E_EXTENSIONS_LIB_NOT_FOUND);
+    ASSERT_TRUE(appDomainVerifyExtensionMgr.UpdateWhiteList() == ErrorCode::E_EXTENSIONS_LIB_NOT_FOUND);
 }
 /**
  * @tc.name: AppDomainVerifyExtensionMgrTest001

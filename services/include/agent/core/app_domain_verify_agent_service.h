@@ -25,7 +25,6 @@
 #include "i_app_domain_verify_mgr_service.h"
 #include "app_domain_verify_task_mgr.h"
 #include "app_domain_verify_hisysevent.h"
-#include "white_list_updater.h"
 
 namespace OHOS {
 namespace AppDomainVerify {
@@ -54,14 +53,12 @@ private:
     void ExecuteVerifyTask(
         const AppVerifyBaseInfo& appVerifyBaseInfo, const std::vector<SkillUri>& skillUris, TaskType type);
     bool IsIdle();
-    void OnWhiteListUpdate(const std::unordered_set<std::string>& whiteList);
     void UpdateWhiteList();
 
 private:
     std::shared_ptr<ffrt::queue> continuationHandler_;
     std::shared_ptr<AppDomainVerifyExtensionMgr> appDomainVerifyExtMgr_;
     std::shared_ptr<AppDomainVerifyTaskMgr> appDomainVerifyTaskMgr_;
-    std::shared_ptr<WhiteListUpdater> updater_;
 };
 
 }  // namespace AppDomainVerify
