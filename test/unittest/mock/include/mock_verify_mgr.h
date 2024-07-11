@@ -62,6 +62,9 @@ public:
     virtual void ConvertToExplicitWant(OHOS::AAFwk::Want& implicitWant, sptr<IConvertCallback>& callback) override
     {
     }
+    virtual void UpdateWhiteListUrls(const std::vector<std::string>& urls) override
+    {
+    }
     MOCK_METHOD4(SendRequest, int(uint32_t, MessageParcel&, MessageParcel&, MessageOption&));
     MOCK_METHOD(sptr<IRemoteObject>, AsObject, (), (override));
 };
@@ -106,6 +109,9 @@ public:
         return true;
     }
     virtual void ConvertToExplicitWant(OHOS::AAFwk::Want& implicitWant, sptr<IConvertCallback>& callback) override
+    {
+    }
+    virtual void UpdateWhiteListUrls(const std::vector<std::string>& urls) override
     {
     }
 };

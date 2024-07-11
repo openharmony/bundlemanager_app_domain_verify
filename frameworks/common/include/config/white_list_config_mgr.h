@@ -22,38 +22,25 @@
 #include "preferences.h"
 #include "preferences_helper.h"
 namespace OHOS::AppDomainVerify {
-class WhiteListConfigMgr;
-class PreferencesObserverUpdater : public NativePreferences::PreferencesObserver {
-public:
-    explicit PreferencesObserverUpdater(WhiteListConfigMgr* mgr);
-    ~PreferencesObserverUpdater() override;
-    void OnChange(const std::string& key) override;
-
-private:
-    WhiteListConfigMgr* mgr_;
-};
 class WhiteListConfigMgr {
 public:
-    explicit WhiteListConfigMgr(bool needObserve = false);
+    explicit WhiteListConfigMgr();
     virtual ~WhiteListConfigMgr();
-
+    bool IsInWhiteList(const std::string& url);
+    void UpdateWhiteList(const std::unordered_set<std::string>& whiteList);
 protected:
     void Load();
     void LoadDefault();
     void LoadDynamic();
-    void Reload();
     bool Save();
-    bool OnUpdate();
     void Split(std::string urlList);
     std::shared_ptr<NativePreferences::Preferences> GetPreference(const std::string& path);
     std::string defaultWhiteUrl_;
     std::unordered_set<std::string> whiteListSet_;
     std::shared_ptr<NativePreferences::Preferences> preferences_;
     std::mutex initLock;
-    std::atomic<bool> init = false;
-    std::shared_ptr<PreferencesObserverUpdater> observer_;
-    bool needObserve_;
-    friend class PreferencesObserverUpdater;
+    std::atomic<bool> init{ false };
+    std::mutex whiteListLock_;
 };
 
 }

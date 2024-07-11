@@ -118,14 +118,14 @@ ErrorCode AppDomainVerifyExtensionMgr::ConvertToExplicitWant(
     }
     return ErrorCode::E_EXTENSIONS_LIB_NOT_FOUND;
 }
-ErrorCode AppDomainVerifyExtensionMgr::UpdateWhiteList(OnWhiteListUpdate&& onWhiteListUpdate)
+ErrorCode AppDomainVerifyExtensionMgr::UpdateWhiteList()
 {
     if (Init()) {
         std::string verifierExtName = APP_DOMAIN_VERIFY_AGENT_EXT_NAME;
         auto appDomainVerifierExt = GetAppDomainVerifyExt(verifierExtName);
         if (appDomainVerifierExt != nullptr) {
             return std::static_pointer_cast<AppDomainVerifyAgentExt>(appDomainVerifierExt)
-                ->UpdateWhiteList(std::move(onWhiteListUpdate));
+                ->UpdateWhiteList();
         }
         APP_DOMAIN_VERIFY_HILOGE(
             APP_DOMAIN_VERIFY_MODULE_EXTENSION, "get verifierExt: %{public}s failed.", verifierExtName.c_str());

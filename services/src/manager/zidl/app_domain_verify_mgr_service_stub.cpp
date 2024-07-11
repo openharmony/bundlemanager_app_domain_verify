@@ -29,26 +29,9 @@ const std::string TASK_ID = "unload";
 }
 AppDomainVerifyMgrServiceStub::AppDomainVerifyMgrServiceStub()
 {
-    memberFuncMap_[static_cast<uint32_t>(AppDomainVerifyMgrInterfaceCode::QUERY_VERIFY_STATUS)] =
-        &AppDomainVerifyMgrServiceStub::OnQueryDomainVerifyStatus;
-    memberFuncMap_[static_cast<uint32_t>(AppDomainVerifyMgrInterfaceCode::VERIFY_DOMAIN)] =
-        &AppDomainVerifyMgrServiceStub::OnVerifyDomain;
-    memberFuncMap_[static_cast<uint32_t>(AppDomainVerifyMgrInterfaceCode::CLEAR_DOMAIN_VERIFY_RESULT)] =
-        &AppDomainVerifyMgrServiceStub::OnClearDomainVerifyStatus;
-    memberFuncMap_[static_cast<uint32_t>(AppDomainVerifyMgrInterfaceCode::FILTER_ABILITIES)] =
-        &AppDomainVerifyMgrServiceStub::OnFilterAbilities;
-    memberFuncMap_[static_cast<uint32_t>(AppDomainVerifyMgrInterfaceCode::QUERY_ALL_VERIFY_STATUS)] =
-        &AppDomainVerifyMgrServiceStub::OnQueryAllDomainVerifyStatus;
-    memberFuncMap_[static_cast<uint32_t>(AppDomainVerifyMgrInterfaceCode::SAVE_VERIFY_STATUS)] =
-        &AppDomainVerifyMgrServiceStub::OnSaveDomainVerifyStatus;
-    memberFuncMap_[static_cast<uint32_t>(AppDomainVerifyMgrInterfaceCode::IS_ATOMIC_SERVICE_URL)] =
-        &AppDomainVerifyMgrServiceStub::OnIsAtomicServiceUrl;
-    memberFuncMap_[static_cast<uint32_t>(AppDomainVerifyMgrInterfaceCode::CONVERT_TO_EXPLICIT_WANT)] =
-        &AppDomainVerifyMgrServiceStub::OnConvertToExplicitWant;
 }
 AppDomainVerifyMgrServiceStub::~AppDomainVerifyMgrServiceStub()
 {
-    memberFuncMap_.clear();
 }
 int32_t AppDomainVerifyMgrServiceStub::OnRemoteRequest(
     uint32_t code, MessageParcel& data, MessageParcel& reply, MessageOption& option)
@@ -60,16 +43,30 @@ int32_t AppDomainVerifyMgrServiceStub::OnRemoteRequest(
         APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "end##descriptor checked fail");
         return IPCObjectStub::OnRemoteRequest(code, data, reply, option);
     }
-    auto itFunc = memberFuncMap_.find(code);
-    if (itFunc != memberFuncMap_.end()) {
-        auto memberFunc = itFunc->second;
-        if (memberFunc != nullptr) {
-            return (this->*memberFunc)(data, reply);
-        }
+    switch (code) {
+        case static_cast<uint32_t>(static_cast<uint32_t>(AppDomainVerifyMgrInterfaceCode::QUERY_VERIFY_STATUS)):
+            return OnQueryDomainVerifyStatus(data, reply);
+        case static_cast<uint32_t>(AppDomainVerifyMgrInterfaceCode::VERIFY_DOMAIN):
+            return OnVerifyDomain(data, reply);
+        case static_cast<uint32_t>(AppDomainVerifyMgrInterfaceCode::CLEAR_DOMAIN_VERIFY_RESULT):
+            return OnClearDomainVerifyStatus(data, reply);
+        case static_cast<uint32_t>(AppDomainVerifyMgrInterfaceCode::FILTER_ABILITIES):
+            return OnFilterAbilities(data, reply);
+        case static_cast<uint32_t>(AppDomainVerifyMgrInterfaceCode::QUERY_ALL_VERIFY_STATUS):
+            return OnQueryAllDomainVerifyStatus(data, reply);
+        case static_cast<uint32_t>(AppDomainVerifyMgrInterfaceCode::SAVE_VERIFY_STATUS):
+            return OnSaveDomainVerifyStatus(data, reply);
+        case static_cast<uint32_t>(AppDomainVerifyMgrInterfaceCode::IS_ATOMIC_SERVICE_URL):
+            return OnIsAtomicServiceUrl(data, reply);
+        case static_cast<uint32_t>(AppDomainVerifyMgrInterfaceCode::CONVERT_TO_EXPLICIT_WANT):
+            return OnConvertToExplicitWant(data, reply);
+        case static_cast<uint32_t>(AppDomainVerifyMgrInterfaceCode::UPDATE_WHITE_LIST_URLS):
+            return OnUpdateWhiteListUrls(data, reply);
+        default:
+            APP_DOMAIN_VERIFY_HILOGW(
+                APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "receive unknown code, code = %{public}d", code);
+            return IPCObjectStub::OnRemoteRequest(code, data, reply, option);
     }
-    int ret = IPCObjectStub::OnRemoteRequest(code, data, reply, option);
-    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "end##ret = %{public}d", ret);
-    return ret;
 }
 
 int32_t AppDomainVerifyMgrServiceStub::OnVerifyDomain(MessageParcel& data, MessageParcel& reply)
@@ -191,6 +188,20 @@ int32_t AppDomainVerifyMgrServiceStub::OnIsAtomicServiceUrl(MessageParcel& data,
     WRITE_PARCEL_AND_RETURN_INT_IF_FAIL(Bool, reply, status);
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s call end", __func__);
     return ERR_OK;
+}
+int32_t AppDomainVerifyMgrServiceStub::OnUpdateWhiteListUrls(MessageParcel& data, MessageParcel& reply)
+{
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "%s called", __func__);
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s called", __func__);
+    uint32_t size = data.ReadUint32();
+    std::vector<std::string> urls;
+    for (uint32_t i = 0; i < size; i++) {
+        auto url = data.ReadString();
+        urls.emplace_back(url);
+    }
+    UpdateWhiteListUrls(urls);
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s call end", __func__);
+    return 0;
 }
 int32_t AppDomainVerifyMgrServiceStub::OnConvertToExplicitWant(MessageParcel& data, MessageParcel& reply)
 {
