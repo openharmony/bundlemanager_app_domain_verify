@@ -46,9 +46,7 @@ ohos_unittest("app_domain_verify_config_test") {
   module_out_path = module_output_path
 
   sources = [
-    "${app_domain_verify_frameworks_common_path}/src/config/white_list_checker.cpp",
     "${app_domain_verify_frameworks_common_path}/src/config/white_list_config_mgr.cpp",
-    "${app_domain_verify_frameworks_common_path}/src/config/white_list_updater.cpp",
     "${app_domain_verify_test_path}/mock/src/mock_preferences_helper.cpp",
     "config_test.cpp",
   ]

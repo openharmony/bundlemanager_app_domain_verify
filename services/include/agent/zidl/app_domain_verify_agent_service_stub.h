@@ -39,7 +39,6 @@ private:
     int32_t OnConvertToExplicitWant(MessageParcel& data, MessageParcel& reply);
 
 private:
-    std::map<uint32_t, ServiceFunc> memberFuncMap_;
     std::shared_ptr<AppExecFwk::EventHandler> unloadHandler_;
     std::shared_ptr<AppExecFwk::EventRunner> runner_;
 };

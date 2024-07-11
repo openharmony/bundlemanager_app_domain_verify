@@ -236,6 +236,7 @@ bool AppDomainVerifyMgrClient::IsValidUrl(OHOS::Uri& uri)
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "is valid Url");
     return true;
 }
+
 #endif
 bool AppDomainVerifyMgrClient::IsAtomicServiceUrl(const std::string& url)
 {
@@ -258,7 +259,20 @@ bool AppDomainVerifyMgrClient::IsAtomicServiceUrl(const std::string& url)
     return ret;
 #endif
 }
-
+void AppDomainVerifyMgrClient::UpdateWhiteListUrls(const std::vector<std::string>& urls)
+{
+#ifdef _CUT_LINK_CONVERT_
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "%s not support, will return.!", __func__);
+    return;
+#else
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "%s called", __func__);
+    if (IsServiceAvailable()) {
+        appDomainVerifyMgrServiceProxy_->UpdateWhiteListUrls(urls);
+    }
+    APP_DOMAIN_VERIFY_HILOGI(
+        APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "%s call end", __func__);
+#endif
+}
 AppDomainVerifyMgrSaDeathRecipient::AppDomainVerifyMgrSaDeathRecipient()
 {
 }

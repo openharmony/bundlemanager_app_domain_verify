@@ -46,7 +46,6 @@ config("app_domain_verify_service_config") {
 
 ohos_shared_library("app_domain_verify_mgr_service") {
   sources = [
-    "${app_domain_verify_frameworks_common_path}/src/config/white_list_checker.cpp",
     "${app_domain_verify_frameworks_common_path}/src/config/white_list_config_mgr.cpp",
     "${app_domain_verify_frameworks_common_path}/src/utils/domain_url_util.cpp",
     "src/manager/core/app_domain_verify_data_mgr.cpp",

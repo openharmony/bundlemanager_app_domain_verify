@@ -21,7 +21,6 @@
 #include "domain_url_util.h"
 #include "app_domain_verify_agent_client.h"
 #include "white_list_config_mgr.h"
-
 namespace OHOS {
 namespace AppDomainVerify {
 
@@ -127,11 +126,11 @@ bool AppDomainVerifyMgrService::SaveDomainVerifyStatus(
 bool AppDomainVerifyMgrService::IsAtomicServiceUrl(const std::string& url)
 {
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s called", __func__);
-    if (!InitWhiteListChecker()) {
-        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "InitWhiteListChecker failed.");
+    if (!InitConfigMgr()) {
+        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "InitConfigMgr failed.");
         return false;
     }
-    return checker_->IsInWhiteList(url);
+    return whiteListConfigMgr_->IsInWhiteList(url);
 }
 void AppDomainVerifyMgrService::ConvertToExplicitWant(OHOS::AAFwk::Want& implicitWant, sptr<IConvertCallback>& callback)
 {
@@ -195,19 +194,28 @@ void AppDomainVerifyMgrService::DumpAllVerifyInfos(std::string& dumpString)
         }
     }
 }
-bool AppDomainVerifyMgrService::InitWhiteListChecker()
+bool AppDomainVerifyMgrService::InitConfigMgr()
 {
-    if (checker_ != nullptr) {
+    if (whiteListConfigMgr_ != nullptr) {
         return true;
     }
-    std::lock_guard<std::mutex> lock(initCheckerMutex);
-    if (checker_ == nullptr) {
-        checker_ = std::make_shared<WhiteListChecker>();
+    std::lock_guard<std::mutex> lock(initConfigMutex);
+    if (whiteListConfigMgr_ == nullptr) {
+        whiteListConfigMgr_ = std::make_shared<WhiteListConfigMgr>();
     }
-    if (checker_ == nullptr) {
+    if (whiteListConfigMgr_ == nullptr) {
         return false;
     }
     return true;
+}
+void AppDomainVerifyMgrService::UpdateWhiteListUrls(const std::vector<std::string>& urls)
+{
+    if (!InitConfigMgr()) {
+        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "InitConfigMgr failed.");
+        return;
+    }
+    std::unordered_set<std::string> whiteList(urls.begin(),urls.end());
+    whiteListConfigMgr_->UpdateWhiteList(whiteList);
 }
 }  // namespace AppDomainVerify
 }  // namespace OHOS

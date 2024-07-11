@@ -98,8 +98,7 @@ HWTEST_F(AppDomainVerifyAgentExtTest, AppDomainVerifyAgentExtTest002, TestSize.L
 HWTEST_F(AppDomainVerifyAgentExtTest, AppDomainVerifyAgentExtTest003, TestSize.Level0)
 {
     AppDomainVerifyAgentExt appDomainVerifyAgentExt;
-    OnWhiteListUpdate func;
-    ASSERT_TRUE(appDomainVerifyAgentExt.UpdateWhiteList(std::move(func)) == ErrorCode::E_EXTENSIONS_LIB_NOT_FOUND);
+    ASSERT_TRUE(appDomainVerifyAgentExt.UpdateWhiteList() == ErrorCode::E_EXTENSIONS_LIB_NOT_FOUND);
 }
 /**
  * @tc.name: AppDomainVerifyAgentExtTest004
