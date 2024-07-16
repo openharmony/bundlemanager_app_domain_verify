@@ -194,6 +194,10 @@ int32_t AppDomainVerifyMgrServiceStub::OnUpdateWhiteListUrls(MessageParcel& data
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "%s called", __func__);
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s called", __func__);
     uint32_t size = data.ReadUint32();
+    if (IsInvalidParcelArraySize(size)) {
+        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "read parcelable size invalid.");
+        return false;
+    }
     std::vector<std::string> urls;
     for (uint32_t i = 0; i < size; i++) {
         auto url = data.ReadString();
