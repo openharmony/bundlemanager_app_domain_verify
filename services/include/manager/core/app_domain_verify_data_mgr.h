@@ -39,7 +39,7 @@ public:
      * @return Returns true if this function is successfully called; returns false
      * otherwise.
      */
-    bool GetVerifyStatus(const std::string &bundleName, VerifyResultInfo &verifyResultInfo);
+    bool GetVerifyStatus(const std::string& bundleName, VerifyResultInfo& verifyResultInfo);
 
     /**
      * @brief Save the AppDomainVerify status.
@@ -48,7 +48,7 @@ public:
      * @return Returns true if this function is successfully called; returns false
      * otherwise.
      */
-    bool SaveVerifyStatus(const std::string &bundleName, const VerifyResultInfo &verifyResultInfo);
+    bool SaveVerifyStatus(const std::string& bundleName, const VerifyResultInfo& verifyResultInfo);
 
     /**
      * @brief Delete the AppDomainVerify status.
@@ -56,19 +56,21 @@ public:
      * @return Returns true if this function is successfully called; returns false
      * otherwise.
      */
-    bool DeleteVerifyStatus(const std::string &bundleName);
+    bool DeleteVerifyStatus(const std::string& bundleName);
 
     /**
      * @brief Get all AppDomainVerify status.
      * @return Returns verifyMap_ const ref
      * otherwise.
      */
-    const std::unordered_map<std::string, VerifyResultInfo> &GetAllVerifyStatus();
+    const std::unordered_map<std::string, VerifyResultInfo>& GetAllVerifyStatus();
 
 private:
-    bool GetParamKey(const std::string &bundleName, std::string &paramKey);
+    bool GetParamKey(const std::string& bundleName, std::string& paramKey);
     bool InitRdb();
     bool LoadAllFromRdb();
+    bool VerifyResultInfoToDB(const std::string bundleName, const VerifyResultInfo& verifyResultInfo);
+    bool DBToVerifyResultInfo(const std::vector<RdbDataItem>& items, VerifyResultInfo& verifyResultInfo);
 
 private:
     std::shared_ptr<AppDomainVerifyRdbDataManager> rdbDataManager_ = nullptr;

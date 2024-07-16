@@ -152,7 +152,7 @@ void AppDomainVerifyAgentService::OnStart(const SystemAbilityOnDemandReason& sta
                 std::vector<InnerVerifyStatus>{ InnerVerifyStatus::UNKNOWN, InnerVerifyStatus::STATE_FAIL,
                     InnerVerifyStatus::FAILURE_REDIRECT, InnerVerifyStatus::FAILURE_CLIENT_ERROR,
                     InnerVerifyStatus::FAILURE_REJECTED_BY_SERVER, InnerVerifyStatus::FAILURE_HTTP_UNKNOWN,
-                    InnerVerifyStatus::FAILURE_TIMEOUT },
+                    InnerVerifyStatus::FAILURE_TIMEOUT, InnerVerifyStatus::FAILURE_CONFIG },
                 0, type);
         };
         auto updateWhiteListFunc = [this]() { UpdateWhiteList(); };

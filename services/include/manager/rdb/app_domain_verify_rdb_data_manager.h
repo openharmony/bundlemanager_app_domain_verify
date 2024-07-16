@@ -26,20 +26,30 @@
 
 namespace OHOS {
 namespace AppDomainVerify {
+struct RdbDataItem {
+    std::string bundleName;
+    std::string appIdentifier;
+    std::string domain;
+    int status;
+};
 class AppDomainVerifyRdbDataManager : public std::enable_shared_from_this<AppDomainVerifyRdbDataManager> {
 public:
-    AppDomainVerifyRdbDataManager(const AppDomainVerifyRdbConfig &rdbConfig);
+    AppDomainVerifyRdbDataManager(const AppDomainVerifyRdbConfig& rdbConfig);
     virtual ~AppDomainVerifyRdbDataManager();
-    bool InsertData(const std::string &key, const std::string &value);
-    bool DeleteData(const std::string &key);
-    bool QueryAllData(std::unordered_map<std::string, std::string> &dataMap);
+    bool InsertData(const RdbDataItem& rdbDataItem);
+    bool DeleteData(const std::string& bundleName);
+    bool QueryAllData(std::unordered_map<std::string, std::vector<RdbDataItem>>& dataMap);
+    bool QueryBundleNameByDomain(const std::string& domain, std::vector<RdbDataItem>& items);
+    bool QueryDomainByBundleName(const std::string& bundleName, std::vector<RdbDataItem>& items);
     bool CreateTable();
 
 private:
     std::shared_ptr<NativeRdb::RdbStore> GetRdbStore();
     void DelayCloseRdbStore();
     bool CheckRdbReturnIfOk(int errcode);
-    bool CheckRdbStoreExist(const std::shared_ptr<NativeRdb::RdbStore> &rdbStore);
+    bool CheckRdbStoreExist(const std::shared_ptr<NativeRdb::RdbStore>& rdbStore);
+    bool Query(const NativeRdb::AbsRdbPredicates& predicates, const std::vector<std::string>& columns,
+        std::vector<RdbDataItem>& items);
 
 private:
     std::mutex rdbMutex_;
