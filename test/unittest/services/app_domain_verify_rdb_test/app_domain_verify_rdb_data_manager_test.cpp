@@ -128,7 +128,8 @@ HWTEST_F(RdbDataMgrTest, RdbDataMgrInsertTest001, TestSize.Level0)
         "CREATE TABLE IF NOT EXISTS " + rdbConfig.tableName + "(KEY TEXT NOT NULL PRIMARY KEY, VALUE TEXT NOT NULL);");
 
     auto appDomainVerifyRdbDataManager = std::make_shared<AppDomainVerifyRdbDataManager>(rdbConfig);
-    ASSERT_FALSE(appDomainVerifyRdbDataManager->InsertData("key", "value"));
+    RdbDataItem item;
+    ASSERT_FALSE(appDomainVerifyRdbDataManager->InsertData(item));
 }
 /**
  * @tc.name: RdbDataMgrInsertTest002
@@ -146,9 +147,9 @@ HWTEST_F(RdbDataMgrTest, RdbDataMgrInsertTest002, TestSize.Level0)
     rdbConfig.tableName = Constants::RDB_TABLE_NAME;
     rdbConfig.createTableSql = std::string(
         "CREATE TABLE IF NOT EXISTS " + rdbConfig.tableName + "(KEY TEXT NOT NULL PRIMARY KEY, VALUE TEXT NOT NULL);");
-
+    RdbDataItem item;
     auto appDomainVerifyRdbDataManager = std::make_shared<AppDomainVerifyRdbDataManager>(rdbConfig);
-    ASSERT_FALSE(appDomainVerifyRdbDataManager->InsertData("key", "value"));
+    ASSERT_FALSE(appDomainVerifyRdbDataManager->InsertData(item));
 }
 /**
  * @tc.name: RdbDataMgrInsertTest003
@@ -166,9 +167,9 @@ HWTEST_F(RdbDataMgrTest, RdbDataMgrInsertTest003, TestSize.Level0)
     rdbConfig.tableName = Constants::RDB_TABLE_NAME;
     rdbConfig.createTableSql = std::string(
         "CREATE TABLE IF NOT EXISTS " + rdbConfig.tableName + "(KEY TEXT NOT NULL PRIMARY KEY, VALUE TEXT NOT NULL);");
-
+    RdbDataItem item;
     auto appDomainVerifyRdbDataManager = std::make_shared<AppDomainVerifyRdbDataManager>(rdbConfig);
-    ASSERT_TRUE(appDomainVerifyRdbDataManager->InsertData("key", "value"));
+    ASSERT_TRUE(appDomainVerifyRdbDataManager->InsertData(item));
 }
 /**
  * @tc.name: RdbDataMgrDeleteDataTest001
@@ -244,7 +245,7 @@ HWTEST_F(RdbDataMgrTest, RdbDataMgrQueryDataTest001, TestSize.Level0)
         "CREATE TABLE IF NOT EXISTS " + rdbConfig.tableName + "(KEY TEXT NOT NULL PRIMARY KEY, VALUE TEXT NOT NULL);");
 
     auto appDomainVerifyRdbDataManager = std::make_shared<AppDomainVerifyRdbDataManager>(rdbConfig);
-    std::unordered_map<std::string, std::string> dataMap;
+    std::unordered_map<std::string, std::vector<RdbDataItem>> dataMap;
     ASSERT_FALSE(appDomainVerifyRdbDataManager->QueryAllData(dataMap));
 }
 /**
@@ -265,7 +266,7 @@ HWTEST_F(RdbDataMgrTest, RdbDataMgrQueryDataTest002, TestSize.Level0)
         "CREATE TABLE IF NOT EXISTS " + rdbConfig.tableName + "(KEY TEXT NOT NULL PRIMARY KEY, VALUE TEXT NOT NULL);");
 
     auto appDomainVerifyRdbDataManager = std::make_shared<AppDomainVerifyRdbDataManager>(rdbConfig);
-    std::unordered_map<std::string, std::string> dataMap;
+    std::unordered_map<std::string, std::vector<RdbDataItem>> dataMap;
     ASSERT_FALSE(appDomainVerifyRdbDataManager->QueryAllData(dataMap));
 }
 /**
@@ -290,7 +291,7 @@ HWTEST_F(RdbDataMgrTest, RdbDataMgrQueryDataTest003, TestSize.Level0)
         "CREATE TABLE IF NOT EXISTS " + rdbConfig.tableName + "(KEY TEXT NOT NULL PRIMARY KEY, VALUE TEXT NOT NULL);");
 
     auto appDomainVerifyRdbDataManager = std::make_shared<AppDomainVerifyRdbDataManager>(rdbConfig);
-    std::unordered_map<std::string, std::string> dataMap;
+    std::unordered_map<std::string, std::vector<RdbDataItem>> dataMap;
     ASSERT_TRUE(appDomainVerifyRdbDataManager->QueryAllData(dataMap));
 }
 /**
@@ -301,8 +302,8 @@ HWTEST_F(RdbDataMgrTest, RdbDataMgrQueryDataTest003, TestSize.Level0)
 HWTEST_F(RdbDataMgrTest, RdbDataMgrQueryDataTest004, TestSize.Level0)
 {
     std::shared_ptr<MockResultSet> mockResultSet = std::make_shared<MockResultSet>();
-    EXPECT_CALL(*mockResultSet, GoToFirstRow()).Times(1).WillOnce(Return(E_OK));
-    EXPECT_CALL(*mockResultSet, GetString(0, _)).Times(1).WillOnce(Return(E_ERROR));
+    EXPECT_CALL(*mockResultSet, GoToFirstRow()).Times(AtLeast(1)).WillRepeatedly(Return(E_OK));
+    EXPECT_CALL(*mockResultSet, GetString(1, _)).Times(AtLeast(1)).WillRepeatedly(Return(E_ERROR));
     EXPECT_CALL(*mockResultSet, Close()).Times(1).WillOnce(Return(E_OK));
     std::shared_ptr<MockRdbStore> mocRdbStore = std::make_shared<MockRdbStore>();
     EXPECT_CALL(*mocRdbStore, Query(_, _)).Times(1).WillOnce(Return(mockResultSet));
@@ -315,7 +316,7 @@ HWTEST_F(RdbDataMgrTest, RdbDataMgrQueryDataTest004, TestSize.Level0)
         "CREATE TABLE IF NOT EXISTS " + rdbConfig.tableName + "(KEY TEXT NOT NULL PRIMARY KEY, VALUE TEXT NOT NULL);");
 
     auto appDomainVerifyRdbDataManager = std::make_shared<AppDomainVerifyRdbDataManager>(rdbConfig);
-    std::unordered_map<std::string, std::string> dataMap;
+    std::unordered_map<std::string, std::vector<RdbDataItem>> dataMap;
     ASSERT_FALSE(appDomainVerifyRdbDataManager->QueryAllData(dataMap));
 }
 /**
@@ -326,8 +327,8 @@ HWTEST_F(RdbDataMgrTest, RdbDataMgrQueryDataTest004, TestSize.Level0)
 HWTEST_F(RdbDataMgrTest, RdbDataMgrQueryDataTest005, TestSize.Level0)
 {
     std::shared_ptr<MockResultSet> mockResultSet = std::make_shared<MockResultSet>();
-    EXPECT_CALL(*mockResultSet, GoToFirstRow()).Times(1).WillOnce(Return(E_OK));
-    EXPECT_CALL(*mockResultSet, GetString(0, _)).Times(1).WillOnce(Return(E_ERROR));
+    EXPECT_CALL(*mockResultSet, GoToFirstRow()).Times(AtLeast(1)).WillRepeatedly(Return(E_OK));
+    EXPECT_CALL(*mockResultSet, GetString(1, _)).Times(AtLeast(1)).WillRepeatedly(Return(E_ERROR));
     EXPECT_CALL(*mockResultSet, Close()).Times(1).WillOnce(Return(E_OK));
     std::shared_ptr<MockRdbStore> mocRdbStore = std::make_shared<MockRdbStore>();
     EXPECT_CALL(*mocRdbStore, Query(_, _)).Times(1).WillOnce(Return(mockResultSet));
@@ -340,7 +341,7 @@ HWTEST_F(RdbDataMgrTest, RdbDataMgrQueryDataTest005, TestSize.Level0)
         "CREATE TABLE IF NOT EXISTS " + rdbConfig.tableName + "(KEY TEXT NOT NULL PRIMARY KEY, VALUE TEXT NOT NULL);");
 
     auto appDomainVerifyRdbDataManager = std::make_shared<AppDomainVerifyRdbDataManager>(rdbConfig);
-    std::unordered_map<std::string, std::string> dataMap;
+    std::unordered_map<std::string, std::vector<RdbDataItem>> dataMap;
     ASSERT_FALSE(appDomainVerifyRdbDataManager->QueryAllData(dataMap));
 }
 /**
@@ -351,9 +352,9 @@ HWTEST_F(RdbDataMgrTest, RdbDataMgrQueryDataTest005, TestSize.Level0)
 HWTEST_F(RdbDataMgrTest, RdbDataMgrQueryDataTest006, TestSize.Level0)
 {
     std::shared_ptr<MockResultSet> mockResultSet = std::make_shared<MockResultSet>();
-    EXPECT_CALL(*mockResultSet, GoToFirstRow()).Times(1).WillOnce(Return(E_OK));
-    EXPECT_CALL(*mockResultSet, GetString(0, _)).Times(1).WillOnce(Return(E_OK));
-    EXPECT_CALL(*mockResultSet, GetString(1, _)).Times(1).WillOnce(Return(E_ERROR));
+    EXPECT_CALL(*mockResultSet, GoToFirstRow()).Times(AtLeast(1)).WillRepeatedly(Return(E_OK));
+    EXPECT_CALL(*mockResultSet, GetString(1, _)).Times(AtLeast(1)).WillRepeatedly(Return(E_OK));
+    EXPECT_CALL(*mockResultSet, GetString(2, _)).Times(AtLeast(1)).WillRepeatedly(Return(E_ERROR));
     EXPECT_CALL(*mockResultSet, Close()).Times(1).WillOnce(Return(E_OK));
     std::shared_ptr<MockRdbStore> mocRdbStore = std::make_shared<MockRdbStore>();
     EXPECT_CALL(*mocRdbStore, Query(_, _)).Times(1).WillOnce(Return(mockResultSet));
@@ -366,7 +367,7 @@ HWTEST_F(RdbDataMgrTest, RdbDataMgrQueryDataTest006, TestSize.Level0)
         "CREATE TABLE IF NOT EXISTS " + rdbConfig.tableName + "(KEY TEXT NOT NULL PRIMARY KEY, VALUE TEXT NOT NULL);");
 
     auto appDomainVerifyRdbDataManager = std::make_shared<AppDomainVerifyRdbDataManager>(rdbConfig);
-    std::unordered_map<std::string, std::string> dataMap;
+    std::unordered_map<std::string, std::vector<RdbDataItem>> dataMap;
     ASSERT_FALSE(appDomainVerifyRdbDataManager->QueryAllData(dataMap));
 }
 
@@ -378,10 +379,12 @@ HWTEST_F(RdbDataMgrTest, RdbDataMgrQueryDataTest006, TestSize.Level0)
 HWTEST_F(RdbDataMgrTest, RdbDataMgrQueryDataTest007, TestSize.Level0)
 {
     std::shared_ptr<MockResultSet> mockResultSet = std::make_shared<MockResultSet>();
-    EXPECT_CALL(*mockResultSet, GoToFirstRow()).Times(1).WillOnce(Return(E_OK));
-    EXPECT_CALL(*mockResultSet, GetString(0, _)).Times(1).WillOnce(Return(E_OK));
-    EXPECT_CALL(*mockResultSet, GetString(1, _)).Times(1).WillOnce(Return(E_OK));
-    EXPECT_CALL(*mockResultSet, GoToNextRow()).Times(1).WillOnce(Return(E_ERROR));
+    EXPECT_CALL(*mockResultSet, GoToFirstRow()).Times(AtLeast(1)).WillRepeatedly(Return(E_OK));
+    EXPECT_CALL(*mockResultSet, GetString(1, _)).Times(AtLeast(1)).WillRepeatedly(Return(E_OK));
+    EXPECT_CALL(*mockResultSet, GetString(2, _)).Times(AtLeast(1)).WillRepeatedly(Return(E_OK));
+    EXPECT_CALL(*mockResultSet, GetString(3, _)).Times(AtLeast(1)).WillRepeatedly(Return(E_OK));
+    EXPECT_CALL(*mockResultSet, GetInt(4, _)).Times(AtLeast(1)).WillRepeatedly(Return(E_OK));
+    EXPECT_CALL(*mockResultSet, GoToNextRow()).Times(AtLeast(1)).WillRepeatedly(Return(E_ERROR));
     EXPECT_CALL(*mockResultSet, Close()).Times(1).WillOnce(Return(E_OK));
     std::shared_ptr<MockRdbStore> mocRdbStore = std::make_shared<MockRdbStore>();
     EXPECT_CALL(*mocRdbStore, Query(_, _)).Times(1).WillOnce(Return(mockResultSet));
@@ -394,7 +397,7 @@ HWTEST_F(RdbDataMgrTest, RdbDataMgrQueryDataTest007, TestSize.Level0)
         "CREATE TABLE IF NOT EXISTS " + rdbConfig.tableName + "(KEY TEXT NOT NULL PRIMARY KEY, VALUE TEXT NOT NULL);");
 
     auto appDomainVerifyRdbDataManager = std::make_shared<AppDomainVerifyRdbDataManager>(rdbConfig);
-    std::unordered_map<std::string, std::string> dataMap;
+    std::unordered_map<std::string, std::vector<RdbDataItem>> dataMap;
     ASSERT_TRUE(appDomainVerifyRdbDataManager->QueryAllData(dataMap));
 }
 }

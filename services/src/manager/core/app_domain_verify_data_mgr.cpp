@@ -32,7 +32,7 @@ AppDomainVerifyDataMgr::~AppDomainVerifyDataMgr()
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "instance dead.");
 }
 
-bool AppDomainVerifyDataMgr::GetVerifyStatus(const std::string &bundleName, VerifyResultInfo &verifyResultInfo)
+bool AppDomainVerifyDataMgr::GetVerifyStatus(const std::string& bundleName, VerifyResultInfo& verifyResultInfo)
 {
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s called", __func__);
     std::string key;
@@ -48,8 +48,38 @@ bool AppDomainVerifyDataMgr::GetVerifyStatus(const std::string &bundleName, Veri
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s call end", __func__);
     return true;
 }
-
-bool AppDomainVerifyDataMgr::SaveVerifyStatus(const std::string &bundleName, const VerifyResultInfo &verifyResultInfo)
+bool AppDomainVerifyDataMgr::VerifyResultInfoToDB(
+    const std::string bundleName, const VerifyResultInfo& verifyResultInfo)
+{
+    if (!rdbDataManager_->DeleteData(bundleName)) {
+        APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "try delete bundleName failed.");
+    }
+    for (auto it : verifyResultInfo.hostVerifyStatusMap) {
+        RdbDataItem item = { .bundleName = bundleName,
+            .appIdentifier = verifyResultInfo.appIdentifier,
+            .domain = it.first,
+            .status = it.second };
+        if (!rdbDataManager_->InsertData(item)) {
+            APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "insert to db failed!");
+            return false;
+        }
+    }
+    return true;
+}
+bool AppDomainVerifyDataMgr::DBToVerifyResultInfo(
+    const std::vector<RdbDataItem>& items, VerifyResultInfo& verifyResultInfo)
+{
+    if (items.empty()) {
+        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "items empty!");
+        return false;
+    }
+    verifyResultInfo.appIdentifier = items[0].appIdentifier;
+    for (auto it : items) {
+        verifyResultInfo.hostVerifyStatusMap.insert(std::make_pair(it.domain, InnerVerifyStatus(it.status)));
+    }
+    return true;
+}
+bool AppDomainVerifyDataMgr::SaveVerifyStatus(const std::string& bundleName, const VerifyResultInfo& verifyResultInfo)
 {
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s called", __func__);
     std::string key;
@@ -63,8 +93,22 @@ bool AppDomainVerifyDataMgr::SaveVerifyStatus(const std::string &bundleName, con
     }
 
     std::lock_guard<std::mutex> lock(verifyMapMutex_);
-    verifyMap_->insert_or_assign(key, verifyResultInfo);
-    if (!rdbDataManager_->InsertData(key, VerifyResultInfo::VerifyResultInfoToJson(verifyResultInfo).dump())) {
+
+    auto bundleInfo = verifyMap_->find(key);
+    if (bundleInfo != verifyMap_->end()) {
+        std::for_each(verifyResultInfo.hostVerifyStatusMap.begin(), verifyResultInfo.hostVerifyStatusMap.end(),
+            [&bundleInfo](auto iter) {
+                bundleInfo->second.hostVerifyStatusMap.insert_or_assign(iter.first, iter.second);
+            });
+    } else {
+        verifyMap_->insert_or_assign(key, verifyResultInfo);
+    }
+    auto completeBundleInfo = verifyMap_->find(key);
+    if (completeBundleInfo == verifyMap_->end()) {
+        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "InnerVerifyStatus save bundleInfo failed");
+        return false;
+    }
+    if (!VerifyResultInfoToDB(key, completeBundleInfo->second)) {
         APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "InnerVerifyStatus save to db failed");
         return false;
     }
@@ -72,7 +116,7 @@ bool AppDomainVerifyDataMgr::SaveVerifyStatus(const std::string &bundleName, con
     return true;
 }
 
-bool AppDomainVerifyDataMgr::DeleteVerifyStatus(const std::string &bundleName)
+bool AppDomainVerifyDataMgr::DeleteVerifyStatus(const std::string& bundleName)
 {
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s called", __func__);
 
@@ -95,13 +139,13 @@ bool AppDomainVerifyDataMgr::DeleteVerifyStatus(const std::string &bundleName)
     return true;
 }
 
-const std::unordered_map<std::string, VerifyResultInfo> &AppDomainVerifyDataMgr::GetAllVerifyStatus()
+const std::unordered_map<std::string, VerifyResultInfo>& AppDomainVerifyDataMgr::GetAllVerifyStatus()
 {
     std::lock_guard<std::mutex> lock(verifyMapMutex_);
     return *verifyMap_;
 }
 
-bool AppDomainVerifyDataMgr::GetParamKey(const std::string &bundleName, std::string &paramKey)
+bool AppDomainVerifyDataMgr::GetParamKey(const std::string& bundleName, std::string& paramKey)
 {
     if (bundleName.empty()) {
         return false;
@@ -121,25 +165,15 @@ bool AppDomainVerifyDataMgr::InitRdb()
 
 bool AppDomainVerifyDataMgr::LoadAllFromRdb()
 {
-    std::unordered_map<std::string, std::string> dataMap;
+    std::unordered_map<std::string, std::vector<RdbDataItem>> dataMap;
     if (!rdbDataManager_->QueryAllData(dataMap)) {
         APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "LoadAllFromRdb failed");
         return false;
     }
     for (auto it = dataMap.begin(); it != dataMap.end(); ++it) {
-        json verifyResultInfoJson;
-        try {
-            if (!json::accept(it->second)) {
-                APP_DOMAIN_VERIFY_HILOGE(
-                    APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "hostVerifyStatusJson can not be accept.");
-                return false;
-            }
-            verifyResultInfoJson = json::parse(it->second);
-        } catch (json::parse_error &e) {
-            APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "hostVerifyStatusJson can not be parsed.");
-            continue;
-        }
-        verifyMap_->insert(std::make_pair(it->first, VerifyResultInfo::JsonToVerifyResultInfo(verifyResultInfoJson)));
+        VerifyResultInfo verifyResultInfo;
+        DBToVerifyResultInfo(it->second, verifyResultInfo);
+        verifyMap_->insert(std::make_pair(it->first, verifyResultInfo));
     }
     return true;
 }

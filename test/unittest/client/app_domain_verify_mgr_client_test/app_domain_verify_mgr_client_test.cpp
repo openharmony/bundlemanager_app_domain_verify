@@ -226,6 +226,25 @@ HWTEST_F(AppDomainVerifyMgrClientTest, AppDomainVerifyMgrClientTest007, TestSize
     ASSERT_TRUE(g_mgrInvokeOK);
     AppDomainVerifyMgrClient::appDomainVerifyMgrServiceProxy_.ForceSetRefPtr(nullptr);
 }
+
+/**
+ * @tc.name: AppDomainVerifyMgrClientTest008
+ * @tc.desc: VerifyDomain test.
+ * @tc.type: FUNC
+ */
+HWTEST_F(AppDomainVerifyMgrClientTest, AppDomainVerifyMgrClientTest008, TestSize.Level0)
+{
+    std::shared_ptr<AppDomainVerifyMgrRemoteStubMock> mgrStubMock_ =
+        std::make_shared<AppDomainVerifyMgrRemoteStubMock>();
+    EXPECT_CALL(*mgrStubMock_, SendRequest(_, _, _, _)).Times(1).WillOnce(::testing::Invoke(MgrInvokeOK));
+    AppDomainVerifyMgrClient::appDomainVerifyMgrServiceProxy_ = sptr<AppDomainVerifyMgrServiceProxy>::MakeSptr(
+        mgrStubMock_.get());
+
+    std::vector<std::string> urls;
+    AppDomainVerifyMgrClient::GetInstance()->UpdateWhiteListUrls(urls);
+    ASSERT_TRUE(g_mgrInvokeOK);
+    AppDomainVerifyMgrClient::appDomainVerifyMgrServiceProxy_.ForceSetRefPtr(nullptr);
+}
 /**
  * @tc.name: AppDomainVerifyMgrSaDeathRecipientTest001
  * @tc.desc: VerifyDomain test.

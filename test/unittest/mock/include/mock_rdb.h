@@ -26,6 +26,7 @@ public:
     MOCK_METHOD(int, GoToFirstRow, (), (override));
     MOCK_METHOD(int, GoToNextRow, (), (override));
     MOCK_METHOD(int, GetString, (int columnIndex, std::string& value), (override));
+    MOCK_METHOD(int, GetInt, (int columnIndex, int& value), (override));
     MOCK_METHOD(int, Close, (), (override));
 };
 class MockRdbStore : public RdbStore {
