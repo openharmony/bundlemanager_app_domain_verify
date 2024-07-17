@@ -23,14 +23,10 @@
 namespace OHOS {
 namespace AppDomainVerify {
 using json = nlohmann::json;
-
 struct VerifyResultInfo : public Parcelable {
 public:
     bool Marshalling(Parcel &parcel) const override;
     static VerifyResultInfo *Unmarshalling(Parcel &parcel);
-
-    static json VerifyResultInfoToJson(const VerifyResultInfo &verifyResultInfo);
-    static VerifyResultInfo JsonToVerifyResultInfo(const json &verifyResultInfoJson);
 
 private:
     bool ReadFromParcel(Parcel &parcel);

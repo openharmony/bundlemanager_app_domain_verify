@@ -59,32 +59,6 @@ bool VerifyResultInfo::ReadFromParcel(Parcel &parcel)
     return true;
 }
 
-json VerifyResultInfo::VerifyResultInfoToJson(const VerifyResultInfo &verifyResultInfo)
-{
-    json verifyResultInfoJson;
-    verifyResultInfoJson["appIdentifier"] = verifyResultInfo.appIdentifier;
-    for (const auto &hostVerifyStatus : verifyResultInfo.hostVerifyStatusMap) {
-        verifyResultInfoJson["hostVerifyStatusMap"][hostVerifyStatus.first] = hostVerifyStatus.second;
-    }
-    return verifyResultInfoJson;
-}
-
-VerifyResultInfo VerifyResultInfo::JsonToVerifyResultInfo(const json &verifyResultInfoJson)
-{
-    VerifyResultInfo verifyResultInfo;
-    verifyResultInfo.appIdentifier = verifyResultInfoJson["appIdentifier"].is_string() ?
-        verifyResultInfoJson["appIdentifier"] :
-        "";
-    if (verifyResultInfoJson.contains("hostVerifyStatusMap") &&
-        verifyResultInfoJson["hostVerifyStatusMap"].is_object()) {
-        for (auto jsonIt = verifyResultInfoJson["hostVerifyStatusMap"].begin();
-             jsonIt != verifyResultInfoJson["hostVerifyStatusMap"].end(); ++jsonIt) {
-            verifyResultInfo.hostVerifyStatusMap.insert(std::make_pair(jsonIt.key(), jsonIt.value()));
-        }
-    }
-    return verifyResultInfo;
-}
-
 bool BundleVerifyStatusInfo::Marshalling(Parcel &parcel) const
 {
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Uint32, parcel, bundleVerifyStatusInfoMap_.size());

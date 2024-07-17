@@ -18,7 +18,7 @@
 #include "app_domain_verify_rdb_data_manager.h"
 #include "gmock/gmock.h"
 namespace OHOS::AppDomainVerify {
-using DataMap = std::unordered_map<std::string, std::string>;
+using DataMap = std::unordered_map<std::string, std::vector<RdbDataItem>>;
 class IMocAppDomainVerifyRdbDataManagerImpl {
 public:
     IMocAppDomainVerifyRdbDataManagerImpl()
@@ -27,16 +27,16 @@ public:
     virtual ~IMocAppDomainVerifyRdbDataManagerImpl()
     {
     }
-    virtual bool InsertData(const std::string& key, const std::string& value) = 0;
-    virtual bool DeleteData(const std::string& key) = 0;
-    virtual bool QueryAllData(DataMap& dataMap) = 0;
-    virtual bool CreateTable() = 0;
+    virtual bool InsertData(const RdbDataItem& rdbDataItem);
+    virtual bool DeleteData(const std::string& bundleName);
+    virtual bool QueryAllData(std::unordered_map<std::string, std::vector<RdbDataItem>>& dataMap);
+    virtual bool CreateTable();
 };
 class MocAppDomainVerifyRdbDataManagerImpl : public IMocAppDomainVerifyRdbDataManagerImpl {
 public:
-    MOCK_METHOD(bool, InsertData, (const std::string& key, const std::string& value), (override));
-    MOCK_METHOD(bool, DeleteData, (const std::string& key), (override));
-    MOCK_METHOD(bool, QueryAllData, (DataMap & dataMap), (override));
+    MOCK_METHOD(bool, InsertData, (const RdbDataItem& rdbDataItem), (override));
+    MOCK_METHOD(bool, DeleteData, (const std::string& bundleName), (override));
+    MOCK_METHOD(bool, QueryAllData, (DataMap& dataMap), (override));
     MOCK_METHOD(bool, CreateTable, (), (override));
 };
 namespace MOC {

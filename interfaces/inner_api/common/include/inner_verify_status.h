@@ -36,6 +36,8 @@ enum InnerVerifyStatus {
     FAILURE_HTTP_UNKNOWN = 6,
 
     FAILURE_TIMEOUT = 7,
+
+    FAILURE_CONFIG = 8,
 };
 static std::unordered_map<InnerVerifyStatus, std::string> InnerVerifyStatusMap = {
     { UNKNOWN, "unknown" },
@@ -46,6 +48,7 @@ static std::unordered_map<InnerVerifyStatus, std::string> InnerVerifyStatusMap =
     { FAILURE_REJECTED_BY_SERVER, "redirect_by_server" },
     { FAILURE_HTTP_UNKNOWN, "http_unknown" },
     { FAILURE_TIMEOUT, "timeout" },
+    { FAILURE_CONFIG, "config_error" },
 };
 }
 }  // namespace OHOS
