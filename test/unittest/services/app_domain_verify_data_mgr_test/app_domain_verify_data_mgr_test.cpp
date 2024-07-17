@@ -52,32 +52,45 @@ void MgrDataMgrTest::TearDown(void)
 {
 }
 
-bool InvokeQueryAllDataWrongData(std::unordered_map<std::string, std::string>& dataMap)
+bool InvokeQueryAllDataWrongData(std::unordered_map<std::string, std::vector<RdbDataItem>>& dataMap)
 {
-    dataMap.emplace("a", "b");
+    std::vector<RdbDataItem> item;
+    dataMap.emplace("a", item);
+    return false;
+}
+
+bool InvokeQueryAllData(std::unordered_map<std::string, std::vector<RdbDataItem>>& dataMap)
+{
+    std::vector<RdbDataItem> items;
+    RdbDataItem item1 = { .bundleName = "a",
+        .appIdentifier = APP_IDENTIFIER,
+        .domain = "https://" + HOST,
+        .status = InnerVerifyStatus::STATE_SUCCESS };
+    RdbDataItem item2 = { .bundleName = "a",
+        .appIdentifier = APP_IDENTIFIER,
+        .domain = "https://",
+        .status = InnerVerifyStatus::STATE_FAIL };
+    items.emplace_back(item1);
+    items.emplace_back(item2);
+    dataMap.emplace("a", items);
     return true;
 }
 
-bool InvokeQueryAllData(std::unordered_map<std::string, std::string>& dataMap)
+bool InvokeQueryAllDataBatchData(std::unordered_map<std::string, std::vector<RdbDataItem>>& dataMap)
 {
-    VerifyResultInfo verifyResultInfo;
-    verifyResultInfo.appIdentifier = APP_IDENTIFIER;
-    verifyResultInfo.hostVerifyStatusMap.insert_or_assign("https://" + HOST, InnerVerifyStatus::STATE_SUCCESS);
-    verifyResultInfo.hostVerifyStatusMap.insert_or_assign("https://", InnerVerifyStatus::STATE_FAIL);
-    auto jsonObj = VerifyResultInfo::VerifyResultInfoToJson(verifyResultInfo);
-    dataMap.emplace("a", jsonObj.dump());
-    return true;
-}
-
-bool InvokeQueryAllDataBatchData(std::unordered_map<std::string, std::string>& dataMap)
-{
-    VerifyResultInfo verifyResultInfo;
-    verifyResultInfo.appIdentifier = APP_IDENTIFIER;
-    verifyResultInfo.hostVerifyStatusMap.insert_or_assign("https://" + HOST, InnerVerifyStatus::STATE_SUCCESS);
-    verifyResultInfo.hostVerifyStatusMap.insert_or_assign("https://", InnerVerifyStatus::STATE_FAIL);
-    auto jsonObj = VerifyResultInfo::VerifyResultInfoToJson(verifyResultInfo);
-    dataMap.emplace("a", jsonObj.dump());
-    dataMap.emplace("b", jsonObj.dump());
+    std::vector<RdbDataItem> items;
+    RdbDataItem item1 = { .bundleName = "a",
+        .appIdentifier = APP_IDENTIFIER,
+        .domain = "https://" + HOST,
+        .status = InnerVerifyStatus::STATE_SUCCESS };
+    RdbDataItem item2 = { .bundleName = "a",
+        .appIdentifier = APP_IDENTIFIER,
+        .domain = "https://",
+        .status = InnerVerifyStatus::STATE_FAIL };
+    items.emplace_back(item1);
+    items.emplace_back(item2);
+    dataMap.emplace("a", items);
+    dataMap.emplace("b", items);
     return true;
 }
 
@@ -121,11 +134,13 @@ HWTEST_F(MgrDataMgrTest, MgrDataMgrSaveVerifyStatusTest002, TestSize.Level0)
     MOC::impl = std::make_shared<MocAppDomainVerifyRdbDataManagerImpl>();
     AppDomainVerifyRdbConfig rdbConfig;
     std::shared_ptr<AppDomainVerifyRdbDataManager> manager = std::make_shared<AppDomainVerifyRdbDataManager>(rdbConfig);
-    EXPECT_CALL(*MOC::impl, InsertData(_, _)).Times(1).WillOnce(Return(false));
+    EXPECT_CALL(*MOC::impl, InsertData(_)).Times(1).WillOnce(Return(false));
     auto appDomainVerifyDataMgr = std::make_shared<AppDomainVerifyDataMgr>();
     appDomainVerifyDataMgr->rdbDataManager_ = manager;
     std::string bundleName = "com.openharmony.com";
     VerifyResultInfo verifyResultInfo;
+    verifyResultInfo.appIdentifier = APP_IDENTIFIER;
+    verifyResultInfo.hostVerifyStatusMap.insert_or_assign("www.openharmony.com", InnerVerifyStatus::STATE_SUCCESS);
     ASSERT_FALSE(appDomainVerifyDataMgr->SaveVerifyStatus(bundleName, verifyResultInfo));
 }
 /**
@@ -138,11 +153,13 @@ HWTEST_F(MgrDataMgrTest, MgrDataMgrSaveVerifyStatusTest003, TestSize.Level0)
     MOC::impl = std::make_shared<MocAppDomainVerifyRdbDataManagerImpl>();
     AppDomainVerifyRdbConfig rdbConfig;
     std::shared_ptr<AppDomainVerifyRdbDataManager> manager = std::make_shared<AppDomainVerifyRdbDataManager>(rdbConfig);
-    EXPECT_CALL(*MOC::impl, InsertData(_, _)).Times(1).WillOnce(Return(true));
+    EXPECT_CALL(*MOC::impl, InsertData(_)).Times(1).WillOnce(Return(true));
     auto appDomainVerifyDataMgr = std::make_shared<AppDomainVerifyDataMgr>();
     appDomainVerifyDataMgr->rdbDataManager_ = manager;
     std::string bundleName = "com.openharmony.com";
     VerifyResultInfo verifyResultInfo;
+    verifyResultInfo.appIdentifier = APP_IDENTIFIER;
+    verifyResultInfo.hostVerifyStatusMap.insert_or_assign("www.openharmony.com", InnerVerifyStatus::STATE_SUCCESS);
     ASSERT_TRUE(appDomainVerifyDataMgr->SaveVerifyStatus(bundleName, verifyResultInfo));
 }
 
@@ -156,7 +173,6 @@ HWTEST_F(MgrDataMgrTest, MgrDataMgrDeleteVerifyStatusTest001, TestSize.Level0)
     auto appDomainVerifyDataMgr = std::make_shared<AppDomainVerifyDataMgr>();
     appDomainVerifyDataMgr->rdbDataManager_ = nullptr;
     std::string bundleName = "com.openharmony.com";
-    VerifyResultInfo verifyResultInfo;
     ASSERT_FALSE(appDomainVerifyDataMgr->DeleteVerifyStatus(bundleName));
 }
 /**
@@ -173,7 +189,6 @@ HWTEST_F(MgrDataMgrTest, MgrDataMgrDeleteVerifyStatusTest002, TestSize.Level0)
     auto appDomainVerifyDataMgr = std::make_shared<AppDomainVerifyDataMgr>();
     appDomainVerifyDataMgr->rdbDataManager_ = manager;
     std::string bundleName = "com.openharmony.com";
-    VerifyResultInfo verifyResultInfo;
     ASSERT_FALSE(appDomainVerifyDataMgr->DeleteVerifyStatus(bundleName));
 }
 /**
@@ -190,7 +205,6 @@ HWTEST_F(MgrDataMgrTest, MgrDataMgrDeleteVerifyStatusTest003, TestSize.Level0)
     auto appDomainVerifyDataMgr = std::make_shared<AppDomainVerifyDataMgr>();
     appDomainVerifyDataMgr->rdbDataManager_ = manager;
     std::string bundleName = "com.openharmony.com";
-    VerifyResultInfo verifyResultInfo;
     ASSERT_TRUE(appDomainVerifyDataMgr->DeleteVerifyStatus(bundleName));
 }
 /**

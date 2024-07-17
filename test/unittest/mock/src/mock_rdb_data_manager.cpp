@@ -17,12 +17,12 @@ namespace OHOS::AppDomainVerify {
 namespace MOC {
 std::shared_ptr<MocAppDomainVerifyRdbDataManagerImpl> impl = nullptr;
 }
-bool AppDomainVerifyRdbDataManager::InsertData(const std::string& key, const std::string& value)
+bool AppDomainVerifyRdbDataManager::InsertData(const RdbDataItem& rdbDataItem)
 {
     if (!MOC::impl) {
         return false;
     }
-    return MOC::impl->InsertData(key, value);
+    return MOC::impl->InsertData(rdbDataItem);
 }
 bool AppDomainVerifyRdbDataManager::DeleteData(const std::string& key)
 {
@@ -31,7 +31,7 @@ bool AppDomainVerifyRdbDataManager::DeleteData(const std::string& key)
     }
     return MOC::impl->DeleteData(key);
 }
-bool AppDomainVerifyRdbDataManager::QueryAllData(std::unordered_map<std::string, std::string>& dataMap)
+bool AppDomainVerifyRdbDataManager::QueryAllData(std::unordered_map<std::string, std::vector<RdbDataItem>>& dataMap)
 {
     if (!MOC::impl) {
         return false;
