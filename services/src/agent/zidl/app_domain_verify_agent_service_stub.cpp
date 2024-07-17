@@ -109,7 +109,7 @@ void AppDomainVerifyAgentServiceStub::PostDelayUnloadTask()
 {
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "%s called", __func__);
     if (runner_ == nullptr) {
-        runner_ = AppExecFwk::EventRunner::Create("unload");
+        runner_ = AppExecFwk::EventRunner::Create("unload", AppExecFwk::ThreadMode::FFRT);
     }
     if (unloadHandler_ == nullptr) {
         unloadHandler_ = std::make_shared<AppExecFwk::EventHandler>(runner_);
