@@ -24,7 +24,7 @@
 namespace OHOS {
 namespace AppDomainVerify {
 namespace {
-constexpr int32_t DELAY_TIME = 300000;  // 5min = 5*60*1000
+[[ maybe_unused ]] constexpr int32_t DELAY_TIME = 300000;  // 5min = 5*60*1000
 const std::string TASK_ID = "unload";
 }
 AppDomainVerifyMgrServiceStub::AppDomainVerifyMgrServiceStub()
