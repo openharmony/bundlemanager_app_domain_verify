@@ -59,9 +59,9 @@ private:
     std::shared_ptr<ffrt::queue> continuationHandler_;
     std::shared_ptr<AppDomainVerifyExtensionMgr> appDomainVerifyExtMgr_;
     std::shared_ptr<AppDomainVerifyTaskMgr> appDomainVerifyTaskMgr_;
-    bool IsUserSetUpUnComplete();
+    bool IsInOOBE();
     void DoSync(const TaskType& type);
-    bool IsInOobeSync();
+    bool ShouldRejectUnloadWhenOOBE();
 };
 
 }  // namespace AppDomainVerify

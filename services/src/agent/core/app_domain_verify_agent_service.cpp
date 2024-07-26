@@ -30,7 +30,7 @@
 namespace OHOS {
 namespace AppDomainVerify {
 
-static std::atomic<bool> needOobeSync = false;
+static std::atomic<bool> needDoSync = false;
 const bool REGISTER_RESULT = SystemAbility::MakeAndRegisterAbility(new AppDomainVerifyAgentService());
 constexpr int32_t UNLOAD_IMMEDIATELY = 0;
 constexpr int32_t UNLOAD_DELAY_TIME = 120000;  // 2min
@@ -175,17 +175,18 @@ void AppDomainVerifyAgentService::OnStop()
 {
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "%s called", __func__);
 }
-bool AppDomainVerifyAgentService::IsInOobeSync()
+bool AppDomainVerifyAgentService::ShouldRejectUnloadWhenOOBE()
 {
-    if (IsUserSetUpUnComplete()) {
-        APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "OnIdle OOBE not ready");
-        needOobeSync = true;
+    if (IsInOOBE()) {
+        APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "OnIdle is in OOBE, delay unload.");
+        needDoSync = true;
         return true;
     }
-    if (needOobeSync) {
+    if (needDoSync) {
         DoSync(EnumTaskType::BOOT_REFRESH_TASK);
-        needOobeSync = false;
-        APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "OnIdle OOBE sync submit");
+        needDoSync = false;
+        APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "OnIdle do sync submit, delay unload once.");
+        return true;
     }
     return false;
 }
@@ -193,8 +194,8 @@ int32_t AppDomainVerifyAgentService::OnIdle(const SystemAbilityOnDemandReason& i
 {
     APP_DOMAIN_VERIFY_HILOGI(
         APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "OnIdle reason:%{public}s", idleReason.GetName().c_str());
-    if (IsInOobeSync()) {
-        APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "IsInOobeSync, delay unload");
+    if (ShouldRejectUnloadWhenOOBE()) {
+        APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "OnIdle oobe, delay unload");
         return UNLOAD_DELAY_TIME;
     }
     if (IsIdle()) {
@@ -243,7 +244,7 @@ int AppDomainVerifyAgentService::Dump(int fd, const std::vector<std::u16string>&
     (void)write(fd, dumpString.c_str(), dumpString.size());
     return 0;
 }
-bool AppDomainVerifyAgentService::IsUserSetUpUnComplete()
+bool AppDomainVerifyAgentService::IsInOOBE()
 {
     auto datashareHelper = SettingsDataShareHelper::GetInstance();
     std::string device_provisioned{ "0" };
@@ -251,7 +252,7 @@ bool AppDomainVerifyAgentService::IsUserSetUpUnComplete()
         "datashare:///com.ohos.settingsdata/entry/settingsdata/SETTINGSDATA?Proxy=true&key=device_provisioned");
     int resp = datashareHelper->Query(uri, "device_provisioned", device_provisioned);
     if (resp == 0 && (device_provisioned == "0" || device_provisioned.empty())) {
-        APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "IsUserSetUpUnComplete: device_provisioned = 0");
+        APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "IsInOOBE: device_provisioned = 0");
         return true;
     }
 
@@ -259,8 +260,7 @@ bool AppDomainVerifyAgentService::IsUserSetUpUnComplete()
     std::vector<int> activedOsAccountIds;
     OHOS::AccountSA::OsAccountManager::QueryActiveOsAccountIds(activedOsAccountIds);
     if (activedOsAccountIds.empty()) {
-        APP_DOMAIN_VERIFY_HILOGI(
-            APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "IsUserSetUpUnComplete: activedOsAccountIds is empty");
+        APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "IsInOOBE: activedOsAccountIds is empty");
         return false;
     }
     int userId = activedOsAccountIds[0];
@@ -268,11 +268,10 @@ bool AppDomainVerifyAgentService::IsUserSetUpUnComplete()
         std::to_string(userId) + "?Proxy=true&key=user_setup_complete");
     int resp_userSetup = datashareHelper->Query(uri_setup, "user_setup_complete", user_setup_complete);
     if (resp_userSetup == 0 && (user_setup_complete == "0" || user_setup_complete.empty())) {
-        APP_DOMAIN_VERIFY_HILOGI(
-            APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "IsUserSetUpUnComplete: user_setup_complete = 0");
+        APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "IsInOOBE: user_setup_complete = 0");
         return true;
     }
-    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "IsUserSetUpUnComplete: complete");
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "IsInOOBE: complete");
     return false;
 }
 }  // namespace AppDomainVerify
