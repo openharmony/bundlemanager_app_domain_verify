@@ -89,11 +89,8 @@ config("app_domain_verify_agent_service_config") {
   visibility = [ ":*" ]
   include_dirs = [
     "${app_domain_verify_client_path}/include",
-    "include/agent/bms",
-    "include/agent/constant",
+    "include/agent/data_share",
     "include/agent/core",
-    "include/agent/httpsession",
-    "include/agent/utils",
     "include/agent/zidl",
     "include/manager/core",
     "include/manager/zidl",
@@ -124,6 +121,7 @@ config("app_domain_verify_agent_service_config") {
 ohos_shared_library("app_domain_verify_agent_service") {
   sources = [
     "src/agent/core/app_domain_verify_agent_service.cpp",
+    "src/agent/data_share/setting_data_share_helper.cpp",
     "src/agent/zidl/app_domain_verify_agent_service_proxy.cpp",
     "src/agent/zidl/app_domain_verify_agent_service_stub.cpp",
   ]
@@ -140,10 +138,12 @@ ohos_shared_library("app_domain_verify_agent_service") {
   external_deps = [
     "ability_base:base",
     "ability_base:want",
+    "ability_base:zuri",
     "ability_runtime:ability_manager",
     "bundle_framework:appexecfwk_core",
     "c_utils:utils",
     "curl:curl_shared",
+    "data_share:datashare_consumer",
     "eventhandler:libeventhandler",
     "ffrt:libffrt",
     "hilog:libhilog",
@@ -151,6 +151,7 @@ ohos_shared_library("app_domain_verify_agent_service") {
     "ipc:ipc_core",
     "json:nlohmann_json_static",
     "netstack:http_client",
+    "os_account:os_account_innerkits",
     "preferences:native_preferences",
     "safwk:system_ability_fwk",
     "samgr:samgr_proxy",
