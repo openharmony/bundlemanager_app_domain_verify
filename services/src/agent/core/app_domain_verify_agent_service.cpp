@@ -156,6 +156,11 @@ void AppDomainVerifyAgentService::OnStart(const SystemAbilityOnDemandReason& sta
     bool res = Publish(this);
     if (!res) {
         APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "Publish failed");
+    } else {
+        if (IsInOOBE()) {
+            APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "OnStart is in OOBE, needDoSync.");
+            needDoSync = true;
+        }
     }
 }
 void AppDomainVerifyAgentService::DoSync(const TaskType& type)
