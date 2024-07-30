@@ -20,16 +20,17 @@
 #include "system_ability_definition.h"
 #include "domain_url_util.h"
 #include "app_domain_verify_agent_client.h"
-#include "white_list_config_mgr.h"
+#include "comm_define.h"
 namespace OHOS {
 namespace AppDomainVerify {
-
+constexpr const char* GET_DOMAIN_VERIFY_INFO = "ohos.permission.GET_APP_DOMAIN_BUNDLE_INFO";
 const bool REGISTER_RESULT = SystemAbility::MakeAndRegisterAbility(new AppDomainVerifyMgrService());
 
 AppDomainVerifyMgrService::AppDomainVerifyMgrService() : SystemAbility(APP_DOMAIN_VERIFY_MANAGER_SA_ID, true)
 {
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "new instance create.");
     dataManager_ = std::make_shared<AppDomainVerifyDataMgr>();
+    permissionMgr_ = std::make_shared<PermissionManager>();
 }
 AppDomainVerifyMgrService::~AppDomainVerifyMgrService()
 {
@@ -199,7 +200,7 @@ bool AppDomainVerifyMgrService::InitConfigMgr()
     if (whiteListConfigMgr_ != nullptr) {
         return true;
     }
-    std::lock_guard<std::mutex> lock(initConfigMutex);
+    std::lock_guard<std::mutex> lock(initConfigMutex_);
     if (whiteListConfigMgr_ == nullptr) {
         whiteListConfigMgr_ = std::make_shared<WhiteListConfigMgr>();
     }
@@ -216,6 +217,42 @@ void AppDomainVerifyMgrService::UpdateWhiteListUrls(const std::vector<std::strin
     }
     std::unordered_set<std::string> whiteList(urls.begin(), urls.end());
     whiteListConfigMgr_->UpdateWhiteList(whiteList);
+}
+int AppDomainVerifyMgrService::CheckPermission()
+{
+    if (!permissionMgr_->CheckPermission(GET_DOMAIN_VERIFY_INFO)) {
+        APP_DOMAIN_VERIFY_HILOGE(
+            APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "CheckPermission failed %{public}s.", GET_DOMAIN_VERIFY_INFO);
+        return CommonErrorCode::E_PERMISSION_DENIED;
+    }
+
+    if (!permissionMgr_->IsSystemAppCall()) {
+        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "IsSystemAppCall failed .");
+        return CommonErrorCode::E_IS_NOT_SYS_APP;
+    }
+    APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "CheckPermission ok .");
+    return CommonErrorCode::E_OK;
+}
+int AppDomainVerifyMgrService::QueryAssociatedDomains(const std::string& bundleName, std::vector<std::string>& domains)
+{
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s called", __func__);
+    auto ret = CheckPermission();
+    if (ret != CommonErrorCode::E_OK) {
+        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "CheckPermission failed:%{public}d", ret);
+        return ret;
+    }
+    return dataManager_->QueryAssociatedDomains(bundleName, domains) ? E_OK : E_INTERNAL_ERR;
+}
+int AppDomainVerifyMgrService::QueryAssociatedBundleNames(
+    const std::string& domain, std::vector<std::string>& bundleNames)
+{
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s called", __func__);
+    auto ret = CheckPermission();
+    if (ret != CommonErrorCode::E_OK) {
+        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "CheckPermission failed:%{public}d", ret);
+        return ret;
+    }
+    return dataManager_->QueryAssociatedBundleNames(domain, bundleNames) ? E_OK : E_INTERNAL_ERR;
 }
 }  // namespace AppDomainVerify
 }  // namespace OHOS

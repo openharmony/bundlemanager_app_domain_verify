@@ -16,6 +16,7 @@
 #define APP_VERIFY_PARCEL_UTIL_H
 
 #include "app_domain_verify_hilog.h"
+#include "comm_define.h"
 #include "string_ex.h"
 
 #define WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(type, parcel, data)                                              \
@@ -38,8 +39,16 @@
     do {                                                                                                       \
         if (!(parcel).Write##type(data)) {                                                                     \
             APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MODULE_COMMON, "fail to write %{public}s type", #type); \
-            return ERR_INVALID_VALUE;                                                                          \
+            return CommonErrorCode::E_INTERNAL_ERR;                                                            \
         }                                                                                                      \
+    } while (0)
+
+#define READ_PARCEL_AND_RETURN_INT_IF_FAIL(type, parcel, data)                                                \
+    do {                                                                                                      \
+        if (!(parcel).Read##type(data)) {                                                                     \
+            APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MODULE_COMMON, "fail to read %{public}s type", #type); \
+            return CommonErrorCode::E_INTERNAL_ERR;                                                           \
+        }                                                                                                     \
     } while (0)
 
 #define READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(type, parcel, data)                                              \

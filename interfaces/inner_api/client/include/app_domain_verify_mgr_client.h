@@ -41,8 +41,8 @@ public:
      * @param fingerprint fingerprint.
      * @param skillUris skillUris.
      */
-    void VerifyDomain(const std::string &appIdentifier, const std::string &bundleName, const std::string &fingerprint,
-        const std::vector<SkillUri> &skillUris);
+    void VerifyDomain(const std::string& appIdentifier, const std::string& bundleName, const std::string& fingerprint,
+        const std::vector<SkillUri>& skillUris);
 
     /**
      * ClearDomainVerifyStatus
@@ -51,7 +51,7 @@ public:
      * @param bundleName bundleName.
      * @return bool clear result.
      */
-    bool ClearDomainVerifyStatus(const std::string &appIdentifier, const std::string &bundleName);
+    bool ClearDomainVerifyStatus(const std::string& appIdentifier, const std::string& bundleName);
 
     /**
      * FilterAbilities
@@ -61,9 +61,9 @@ public:
      * @param filtedAbilityInfos AbilityInfo vector output.
      * @return bool filterAbilities success or not.
      */
-    bool FilterAbilities(const OHOS::AAFwk::Want &want,
-        const std::vector<OHOS::AppExecFwk::AbilityInfo> &originAbilityInfos,
-        std::vector<OHOS::AppExecFwk::AbilityInfo> &filtedAbilityInfos);
+    bool FilterAbilities(const OHOS::AAFwk::Want& want,
+        const std::vector<OHOS::AppExecFwk::AbilityInfo>& originAbilityInfos,
+        std::vector<OHOS::AppExecFwk::AbilityInfo>& filtedAbilityInfos);
 
     /**
      * QueryDomainVerifyStatus
@@ -72,7 +72,7 @@ public:
      * @param domainVerificationState domainVerificationState.
      * @return bool query success or not.
      */
-    bool QueryDomainVerifyStatus(const std::string &bundleName, DomainVerifyStatus &domainVerificationState);
+    bool QueryDomainVerifyStatus(const std::string& bundleName, DomainVerifyStatus& domainVerificationState);
 
     /**
      * QueryAllDomainVerifyStatus
@@ -80,7 +80,7 @@ public:
      * @param bundleVerifyStatusInfo bundleVerifyStatusInfo.
      * @return bool query success or not.
      */
-    bool QueryAllDomainVerifyStatus(BundleVerifyStatusInfo &bundleVerifyStatusInfo);
+    bool QueryAllDomainVerifyStatus(BundleVerifyStatusInfo& bundleVerifyStatusInfo);
 
     /**
      * SaveDomainVerifyStatus
@@ -89,7 +89,7 @@ public:
      * @param verifyResultInfo verifyResultInfo.
      * @return bool query success or not.
      */
-    bool SaveDomainVerifyStatus(const std::string &bundleName, const VerifyResultInfo &verifyResultInfo);
+    bool SaveDomainVerifyStatus(const std::string& bundleName, const VerifyResultInfo& verifyResultInfo);
 
     /**
      * IsAtomicServiceUrl
@@ -114,12 +114,29 @@ public:
     void ConvertToExplicitWant(OHOS::AAFwk::Want& implicitWant, sptr<IConvertCallback>& callback);
 
     /**
+     * QueryAssociatedDomains
+     * @descrition query domains associated to bundle name.
+     * @param bundleName bundleName as key.
+     * @param domains domains as result.
+     * @return int result of query.
+     */
+    int QueryAssociatedDomains(const std::string& bundleName, std::vector<std::string>& domains);
+    /**
+     * QueryAssociatedBundleNames
+     * @descrition query bundleNames associated to domain.
+     * @param bundleName domain as key.
+     * @param bundleNames domains as result.
+     * @return int result of query.
+     */
+    int QueryAssociatedBundleNames(const std::string& domain, std::vector<std::string>& bundleNames);
+
+    /**
      * OnRemoteSaDied
      * @descrition
      * @param object systemAbility proxy object
      * @return void.
      */
-    void OnRemoteSaDied(const wptr<IRemoteObject> &object);
+    void OnRemoteSaDied(const wptr<IRemoteObject>& object);
 
 private:
     bool IsServiceAvailable();
@@ -130,8 +147,7 @@ private:
 private:
     class StaticDestoryMonitor {
     public:
-        StaticDestoryMonitor()
-            : destoryed_(false)
+        StaticDestoryMonitor() : destoryed_(false)
         {
         }
         ~StaticDestoryMonitor()
@@ -159,7 +175,7 @@ class AppDomainVerifyMgrSaDeathRecipient : public IRemoteObject::DeathRecipient 
 public:
     explicit AppDomainVerifyMgrSaDeathRecipient();
     virtual ~AppDomainVerifyMgrSaDeathRecipient();
-    void OnRemoteDied(const wptr<IRemoteObject> &object) override;
+    void OnRemoteDied(const wptr<IRemoteObject>& object) override;
 
 private:
     DISALLOW_COPY_AND_MOVE(AppDomainVerifyMgrSaDeathRecipient);

@@ -47,7 +47,7 @@ config("app_domain_verify_agent_client_config") {
     "-ffunction-sections",
     "-Os",
   ]
-  if (app_domain_verify_cut_link_convert) {
+  if (!app_domain_verify_feature_target_from_cloud) {
     cflags += [ "-D_CUT_LINK_CONVERT_" ]
   }
   cflags_cc = [ "-Os" ]

@@ -17,6 +17,7 @@
 #include <string>
 #include "app_domain_verify_hilog.h"
 #include "scope_guard.h"
+#include "inner_verify_status.h"
 
 namespace OHOS {
 namespace AppDomainVerify {
@@ -66,7 +67,7 @@ bool AppDomainVerifyRdbDataManager::QueryDomainByBundleName(
 {
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s called", __func__);
     NativeRdb::AbsRdbPredicates absRdbPredicates(appDomainVerifyRdbConfig_.tableName);
-    absRdbPredicates.EqualTo(DB_BUNDLE_NAME, bundleName);
+    absRdbPredicates.EqualTo(DB_BUNDLE_NAME, bundleName)->And()->EqualTo(DB_STATUES, InnerVerifyStatus::STATE_SUCCESS);
     std::vector<std::string> columns = {};
     return Query(absRdbPredicates, columns, items);
 }
@@ -74,7 +75,7 @@ bool AppDomainVerifyRdbDataManager::QueryBundleNameByDomain(const std::string& d
 {
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s called", __func__);
     NativeRdb::AbsRdbPredicates absRdbPredicates(appDomainVerifyRdbConfig_.tableName);
-    absRdbPredicates.EqualTo(DB_DOMAIN, domain);
+    absRdbPredicates.EqualTo(DB_DOMAIN, domain)->And()->EqualTo(DB_STATUES, InnerVerifyStatus::STATE_SUCCESS);
     std::vector<std::string> columns = {};
 
     return Query(absRdbPredicates, columns, items);
