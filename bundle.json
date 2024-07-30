@@ -12,8 +12,10 @@
   "component": {
     "name": "app_domain_verify",
     "subsystem": "bundlemanager",
-    "syscap": [],
-    "features": ["app_domain_verify_cut_link_convert"],
+    "syscap": [
+      "SystemCapability.BundleManager.AppDomainVerify"
+    ],
+    "features": ["app_domain_verify_feature_target_from_cloud"],
     "hisysevent_config": [
       "//foundation/bundlemanager/app_domain_verify/hisysevent.yaml"
     ],
@@ -42,6 +44,7 @@
         "curl",
         "preferences",
         "data_share",
+        "access_token",
         "eventhandler"
       ],
       "third_party": [

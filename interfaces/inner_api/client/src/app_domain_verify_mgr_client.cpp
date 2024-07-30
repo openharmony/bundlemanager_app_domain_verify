@@ -269,9 +269,28 @@ void AppDomainVerifyMgrClient::UpdateWhiteListUrls(const std::vector<std::string
     if (IsServiceAvailable()) {
         appDomainVerifyMgrServiceProxy_->UpdateWhiteListUrls(urls);
     }
-    APP_DOMAIN_VERIFY_HILOGI(
-        APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "%s call end", __func__);
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "%s call end", __func__);
 #endif
+}
+int AppDomainVerifyMgrClient::QueryAssociatedDomains(
+    const std::string& bundleName, std::vector<std::string>& domains)
+{
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "%s called", __func__);
+    if (IsServiceAvailable()) {
+        return appDomainVerifyMgrServiceProxy_->QueryAssociatedDomains(bundleName, domains);
+    }
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "%s call end", __func__);
+    return false;
+}
+int AppDomainVerifyMgrClient::QueryAssociatedBundleNames(
+    const std::string& domain, std::vector<std::string>& bundleNames)
+{
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "%s called", __func__);
+    if (IsServiceAvailable()) {
+        return appDomainVerifyMgrServiceProxy_->QueryAssociatedBundleNames(domain, bundleNames);
+    }
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "%s call end", __func__);
+    return false;
 }
 AppDomainVerifyMgrSaDeathRecipient::AppDomainVerifyMgrSaDeathRecipient()
 {

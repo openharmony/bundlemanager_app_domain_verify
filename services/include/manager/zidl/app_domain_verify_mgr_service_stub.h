@@ -41,6 +41,8 @@ private:
     int32_t OnIsAtomicServiceUrl(MessageParcel& data, MessageParcel& reply);
     int32_t OnConvertToExplicitWant(MessageParcel& data, MessageParcel& reply);
     int32_t OnUpdateWhiteListUrls(MessageParcel& data, MessageParcel& reply);
+    int32_t OnQueryAssociatedDomains(MessageParcel& data, MessageParcel& reply);
+    int32_t OnQueryAssociatedBundleNames(MessageParcel& data, MessageParcel& reply);
 };
 }  // namespace AppDomainVerify
 }  // namespace OHOS

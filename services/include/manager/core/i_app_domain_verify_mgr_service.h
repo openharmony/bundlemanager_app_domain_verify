@@ -41,6 +41,8 @@ public:
     virtual bool IsAtomicServiceUrl(const std::string& url) = 0;
     virtual void UpdateWhiteListUrls(const std::vector<std::string>& urls) = 0;
     virtual void ConvertToExplicitWant(OHOS::AAFwk::Want& implicitWant, sptr<IConvertCallback>& callback) = 0;
+    virtual int QueryAssociatedDomains(const std::string& bundleName, std::vector<std::string>& domains) = 0;
+    virtual int QueryAssociatedBundleNames(const std::string& domain, std::vector<std::string>& bundleNames) = 0;
     DECLARE_INTERFACE_DESCRIPTOR(u"ohos.appDomainVerify.IAppDomainVerifyMgrService");
 };
 }  // namespace AppDomainVerify

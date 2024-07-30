@@ -65,6 +65,14 @@ public:
     virtual void UpdateWhiteListUrls(const std::vector<std::string>& urls) override
     {
     }
+    virtual int QueryAssociatedDomains(const std::string& bundleName, std::vector<std::string>& domains) override
+    {
+        return true;
+    }
+    virtual int QueryAssociatedBundleNames(const std::string& domain, std::vector<std::string>& bundleNames) override
+    {
+        return true;
+    }
     MOCK_METHOD4(SendRequest, int(uint32_t, MessageParcel&, MessageParcel&, MessageOption&));
     MOCK_METHOD(sptr<IRemoteObject>, AsObject, (), (override));
 };
@@ -113,6 +121,14 @@ public:
     }
     virtual void UpdateWhiteListUrls(const std::vector<std::string>& urls) override
     {
+    }
+    virtual int QueryAssociatedDomains(const std::string& bundleName, std::vector<std::string>& domains) override
+    {
+        return true;
+    }
+    virtual int QueryAssociatedBundleNames(const std::string& domain, std::vector<std::string>& bundleNames) override
+    {
+        return true;
     }
 };
 }  // namespace AppDomainVerify

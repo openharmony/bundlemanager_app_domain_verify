@@ -177,5 +177,32 @@ bool AppDomainVerifyDataMgr::LoadAllFromRdb()
     }
     return true;
 }
+bool AppDomainVerifyDataMgr::QueryAssociatedDomains(const std::string& bundleName, std::vector<std::string>& domains)
+{
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s called", __func__);
+    std::vector<RdbDataItem> items;
+    if (!rdbDataManager_->QueryDomainByBundleName(bundleName, items)) {
+        return false;
+    }
+    for (const auto& item : items) {
+        domains.emplace_back(item.domain);
+    }
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s end", __func__);
+    return true;
+}
+bool AppDomainVerifyDataMgr::QueryAssociatedBundleNames(
+    const std::string& domain, std::vector<std::string>& bundleNames)
+{
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s called", __func__);
+    std::vector<RdbDataItem> items;
+    if (!rdbDataManager_->QueryBundleNameByDomain(domain, items)) {
+        return false;
+    }
+    for (const auto& item : items) {
+        bundleNames.emplace_back(item.bundleName);
+    }
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s end", __func__);
+    return true;
+}
 }  // namespace AppDomainVerify
 }  // namespace OHOS
