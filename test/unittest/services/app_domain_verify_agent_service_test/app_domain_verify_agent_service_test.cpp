@@ -18,7 +18,7 @@
 #include "mock_constant.h"
 #include "rdb_helper.h"
 #include "mock_verify_mgr.h"
-#include "parcel_util.h"
+#include "app_domain_verify_parcel_util.h"
 #include "app_domain_verify_agent_service_proxy.h"
 #define private public
 #define protected public
