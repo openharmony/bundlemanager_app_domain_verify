@@ -62,6 +62,10 @@ int32_t AppDomainVerifyMgrServiceStub::OnRemoteRequest(
             return OnConvertToExplicitWant(data, reply);
         case static_cast<uint32_t>(AppDomainVerifyMgrInterfaceCode::UPDATE_WHITE_LIST_URLS):
             return OnUpdateWhiteListUrls(data, reply);
+        case static_cast<uint32_t>(AppDomainVerifyMgrInterfaceCode::QUERY_ASSOCIATED_DOMAINS):
+            return OnQueryAssociatedDomains(data, reply);
+        case static_cast<uint32_t>(AppDomainVerifyMgrInterfaceCode::QUERY_ASSOCIATED_BUNDLE_NAMES):
+            return OnQueryAssociatedBundleNames(data, reply);
         default:
             APP_DOMAIN_VERIFY_HILOGW(
                 APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "receive unknown code, code = %{public}d", code);
@@ -223,6 +227,40 @@ int32_t AppDomainVerifyMgrServiceStub::OnConvertToExplicitWant(MessageParcel& da
     }
     sptr<IConvertCallback> cleanCacheCallback = iface_cast<IConvertCallback>(object);
     ConvertToExplicitWant(want, cleanCacheCallback);
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s call end", __func__);
+    return ERR_OK;
+}
+int32_t AppDomainVerifyMgrServiceStub::OnQueryAssociatedDomains(MessageParcel& data, MessageParcel& reply)
+{
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s called", __func__);
+    std::string bundleName;
+    READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(String, data, bundleName);
+
+    std::vector<std::string> domains;
+    int ret = QueryAssociatedDomains(bundleName, domains);
+
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, reply, ret);
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, reply, domains.size());
+    for (const auto& i : domains) {
+        WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String, reply, i);
+    }
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s call end", __func__);
+    return ERR_OK;
+}
+int32_t AppDomainVerifyMgrServiceStub::OnQueryAssociatedBundleNames(MessageParcel& data, MessageParcel& reply)
+{
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s called", __func__);
+    std::string domain;
+    READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(String, data, domain);
+    std::vector<std::string> bundleNames;
+
+    int ret = QueryAssociatedBundleNames(domain, bundleNames);
+
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, reply, ret);
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, reply, bundleNames.size());
+    for (const auto& i : bundleNames) {
+        WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String, reply, i);
+    }
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s call end", __func__);
     return ERR_OK;
 }
