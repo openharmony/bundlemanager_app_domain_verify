@@ -14,7 +14,7 @@
  */
 #include "bundle_verify_status_info.h"
 #include "app_domain_verify_hilog.h"
-#include "parcel_util.h"
+#include "app_domain_verify_parcel_util.h"
 namespace OHOS {
 namespace AppDomainVerify {
 bool VerifyResultInfo::Marshalling(Parcel &parcel) const

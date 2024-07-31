@@ -15,7 +15,7 @@
 #include "app_domain_verify_mgr_service_proxy.h"
 #include "app_domain_verify_mgr_interface_code.h"
 #include "system_ability_definition.h"
-#include "parcel_util.h"
+#include "app_domain_verify_parcel_util.h"
 
 namespace OHOS {
 namespace AppDomainVerify {

@@ -17,7 +17,7 @@
 #include "app_domain_verify_mgr_service_stub.h"
 #include "app_domain_verify_mgr_interface_code.h"
 #include "errors.h"
-#include "parcel_util.h"
+#include "app_domain_verify_parcel_util.h"
 #include "iservice_registry.h"
 #include "system_ability_definition.h"
 
