@@ -24,6 +24,7 @@
 #include "i_app_domain_verify_agent_service.h"
 #include "app_domain_verify_data_mgr.h"
 #include "white_list_config_mgr.h"
+#include "permission_manager.h"
 
 namespace OHOS {
 namespace AppDomainVerify {
@@ -47,6 +48,10 @@ public:
     API_EXPORT bool IsAtomicServiceUrl(const std::string& url) override;
     API_EXPORT void ConvertToExplicitWant(OHOS::AAFwk::Want& implicitWant, sptr<IConvertCallback>& callback) override;
     API_EXPORT void UpdateWhiteListUrls(const std::vector<std::string>& urls) override;
+    API_EXPORT int QueryAssociatedDomains(const std::string& bundleName, std::vector<std::string>& domains) override;
+    API_EXPORT int QueryAssociatedBundleNames(
+        const std::string& domain, std::vector<std::string>& bundleNames) override;
+
 protected:
     void OnDump() override;
     int Dump(int fd, const std::vector<std::u16string>& args) override;
@@ -56,12 +61,14 @@ protected:
 private:
     void DumpAllVerifyInfos(std::string& dumpString);
     bool IsWantImplicit(const OHOS::AAFwk::Want& want);
+    int CheckPermission();
 
 private:
     std::shared_ptr<AppDomainVerifyDataMgr> dataManager_ = nullptr;
     bool InitConfigMgr();
     std::shared_ptr<WhiteListConfigMgr> whiteListConfigMgr_;
-    std::mutex initConfigMutex;
+    std::mutex initConfigMutex_;
+    std::shared_ptr<PermissionManager> permissionMgr_;
 };
 }  // namespace AppDomainVerify
 }  // namespace OHOS

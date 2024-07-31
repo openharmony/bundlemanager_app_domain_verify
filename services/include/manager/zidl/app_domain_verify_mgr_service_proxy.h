@@ -39,7 +39,8 @@ public:
     virtual bool IsAtomicServiceUrl(const std::string& url) override;
     virtual void ConvertToExplicitWant(OHOS::AAFwk::Want& implicitWant, sptr<IConvertCallback>& callback) override;
     virtual void UpdateWhiteListUrls(const std::vector<std::string>& urls) override;
-
+    virtual int QueryAssociatedDomains(const std::string& bundleName, std::vector<std::string>& domains) override;
+    virtual int QueryAssociatedBundleNames(const std::string& domain, std::vector<std::string>& bundleNames) override;
 private:
     static inline BrokerDelegator<AppDomainVerifyMgrServiceProxy> delegator_;
 };

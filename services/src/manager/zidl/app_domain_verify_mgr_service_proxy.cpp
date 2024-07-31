@@ -42,7 +42,6 @@ void AppDomainVerifyMgrServiceProxy::VerifyDomain(const std::string& appIdentifi
 
     uint32_t size = static_cast<uint32_t>(skillUris.size());
     WRITE_PARCEL_AND_RETURN_IF_FAIL(Uint32, data, size);
-
     for (uint32_t i = 0; i < skillUris.size(); ++i) {
         WRITE_PARCEL_AND_RETURN_IF_FAIL(Parcelable, data, &skillUris[i]);
     }
@@ -103,6 +102,10 @@ bool AppDomainVerifyMgrServiceProxy::FilterAbilities(const OHOS::AAFwk::Want& wa
         return false;
     }
     int32_t infoSize = reply.ReadInt32();
+    if (IsInvalidParcelArraySize(infoSize)) {
+        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "read parcelable size invalid.");
+        return false;
+    }
     for (int32_t i = 0; i < infoSize; i++) {
         std::unique_ptr<OHOS::AppExecFwk::AbilityInfo> info(reply.ReadParcelable<OHOS::AppExecFwk::AbilityInfo>());
         if (info == nullptr) {
@@ -206,8 +209,7 @@ bool AppDomainVerifyMgrServiceProxy::IsAtomicServiceUrl(const std::string& url)
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String, data, url);
     int32_t error = Remote()->SendRequest(AppDomainVerifyMgrInterfaceCode::IS_ATOMIC_SERVICE_URL, data, reply, option);
     if (error != ERR_NONE) {
-        APP_DOMAIN_VERIFY_HILOGE(
-            APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "IsAtomicServiceUrl failed, error: %d", error);
+        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "IsAtomicServiceUrl failed, error: %d", error);
         return false;
     }
     bool status = false;
@@ -228,9 +230,8 @@ void AppDomainVerifyMgrServiceProxy::UpdateWhiteListUrls(const std::vector<std::
     }
     int32_t error = Remote()->SendRequest(AppDomainVerifyMgrInterfaceCode::UPDATE_WHITE_LIST_URLS, data, reply, option);
     if (error != ERR_NONE) {
-        APP_DOMAIN_VERIFY_HILOGE(
-            APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "IsAtomicServiceUrl failed, error: %d", error);
-        return ;
+        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "IsAtomicServiceUrl failed, error: %d", error);
+        return;
     }
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "%s call end", __func__);
 }
@@ -248,10 +249,79 @@ void AppDomainVerifyMgrServiceProxy::ConvertToExplicitWant(
     int32_t error = Remote()->SendRequest(
         AppDomainVerifyMgrInterfaceCode::CONVERT_TO_EXPLICIT_WANT, data, reply, option);
     if (error != ERR_NONE) {
-        APP_DOMAIN_VERIFY_HILOGE(
-            APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "ConvertToExplicitWant failed, error: %d", error);
+        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "ConvertToExplicitWant failed, error: %d", error);
     }
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "%s call end", __func__);
+}
+int AppDomainVerifyMgrServiceProxy::QueryAssociatedDomains(
+    const std::string& bundleName, std::vector<std::string>& domains)
+{
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "%s called", __func__);
+    MessageParcel data;
+    MessageParcel reply;
+    MessageOption option;
+    WRITE_PARCEL_AND_RETURN_INT_IF_FAIL(InterfaceToken, data, GetDescriptor());
+    WRITE_PARCEL_AND_RETURN_INT_IF_FAIL(String, data, bundleName);
+
+    int32_t error = Remote()->SendRequest(
+        AppDomainVerifyMgrInterfaceCode::QUERY_ASSOCIATED_DOMAINS, data, reply, option);
+    if (error != ERR_NONE) {
+        APP_DOMAIN_VERIFY_HILOGE(
+            APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "QueryAssociatedDomains failed, error: %d", error);
+    }
+    int32_t result = reply.ReadInt32();
+    if (result != 0) {
+        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "result failed, result: %d", result);
+        return result;
+    }
+    int32_t size = reply.ReadInt32();
+    if (IsInvalidParcelArraySize(size)) {
+        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "read parcelable size invalid.");
+        return ERR_INVALID_VALUE;
+    }
+    domains.clear();
+    for (int32_t i = 0; i < size; i++) {
+        std::string domain;
+        READ_PARCEL_AND_RETURN_INT_IF_FAIL(String, reply, domain);
+        domains.emplace_back(domain);
+    }
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "%s call end", __func__);
+    return result;
+}
+int AppDomainVerifyMgrServiceProxy::QueryAssociatedBundleNames(
+    const std::string& domain, std::vector<std::string>& bundleNames)
+{
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "%s called", __func__);
+    MessageParcel data;
+    MessageParcel reply;
+    MessageOption option;
+    WRITE_PARCEL_AND_RETURN_INT_IF_FAIL(InterfaceToken, data, GetDescriptor());
+    WRITE_PARCEL_AND_RETURN_INT_IF_FAIL(String, data, domain);
+
+    int32_t error = Remote()->SendRequest(
+        AppDomainVerifyMgrInterfaceCode::QUERY_ASSOCIATED_BUNDLE_NAMES, data, reply, option);
+    if (error != ERR_NONE) {
+        APP_DOMAIN_VERIFY_HILOGE(
+            APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "QueryAssociatedBundleNames failed, error: %d", error);
+    }
+    int32_t result = reply.ReadInt32();
+    if (result != 0) {
+        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "result failed, result: %d", result);
+        return result;
+    }
+    int32_t size = reply.ReadInt32();
+    if (IsInvalidParcelArraySize(size)) {
+        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "read parcelable size invalid.");
+        return E_INTERNAL_ERR;
+    }
+    bundleNames.clear();
+    for (int32_t i = 0; i < size; i++) {
+        std::string bundleName;
+        READ_PARCEL_AND_RETURN_INT_IF_FAIL(String, reply, bundleName);
+        bundleNames.emplace_back(bundleName);
+    }
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "%s call end", __func__);
+    return result;
 }
 }  // namespace AppDomainVerify
 }  // namespace OHOS

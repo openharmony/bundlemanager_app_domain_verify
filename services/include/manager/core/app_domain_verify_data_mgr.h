@@ -64,6 +64,8 @@ public:
      * otherwise.
      */
     const std::unordered_map<std::string, VerifyResultInfo>& GetAllVerifyStatus();
+    bool QueryAssociatedDomains(const std::string& bundleName, std::vector<std::string>& domains);
+    bool QueryAssociatedBundleNames(const std::string& domain, std::vector<std::string>& bundleNames);
 
 private:
     bool GetParamKey(const std::string& bundleName, std::string& paramKey);
