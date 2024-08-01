@@ -466,4 +466,184 @@ HWTEST_F(MgrServiceTest, MgrServiceTest023, TestSize.Level0)
     int ret = appDomainVerifyMgrService->Dump(fd, args);
     ASSERT_TRUE(ret == ERR_OK);
 }
+/**
+ * @tc.name: MgrServiceTest024
+ * @tc.desc: UpdateWhiteListUrls
+ * @tc.type: FUNC
+ */
+HWTEST_F(MgrServiceTest, MgrServiceTest024, TestSize.Level0)
+{
+    ASSERT_TRUE(appDomainVerifyMgrService);
+    std::string url = "https://www.openharmonytest1.com";
+    EXPECT_FALSE(appDomainVerifyMgrService->IsAtomicServiceUrl(url));
+
+    std::vector<std::string> urls{ url };
+    appDomainVerifyMgrService->UpdateWhiteListUrls(urls);
+    EXPECT_TRUE(appDomainVerifyMgrService->IsAtomicServiceUrl(url));
+}
+
+/**
+ * @tc.name: MgrServiceTest025
+ * @tc.desc: UpdateWhiteListUrls
+ * @tc.type: FUNC
+ */
+HWTEST_F(MgrServiceTest, MgrServiceTest025, TestSize.Level0)
+{
+    ASSERT_TRUE(appDomainVerifyMgrService);
+    std::string url2 = "https://www.openharmonytest2.com";
+    std::string url3 = "https://www.openharmonytest2.com";
+    EXPECT_FALSE(appDomainVerifyMgrService->IsAtomicServiceUrl(url2));
+    EXPECT_FALSE(appDomainVerifyMgrService->IsAtomicServiceUrl(url3));
+
+    std::vector<std::string> urls{ url2, url3};
+    appDomainVerifyMgrService->UpdateWhiteListUrls(urls);
+    EXPECT_TRUE(appDomainVerifyMgrService->IsAtomicServiceUrl(url3));
+}
+
+/**
+ * @tc.name: MgrServiceTest026
+ * @tc.desc: UpdateWhiteListUrls
+ * @tc.type: FUNC
+ */
+HWTEST_F(MgrServiceTest, MgrServiceTest026, TestSize.Level0)
+{
+    ASSERT_TRUE(appDomainVerifyMgrService);
+    std::string getDumpString{ " " };
+    appDomainVerifyMgrService->DumpAllVerifyInfos(getDumpString);
+    EXPECT_FALSE(getDumpString.empty());
+}
+
+/**
+ * @tc.name: MgrServiceTest027
+ * @tc.desc: IsWantImplicit
+ * @tc.type: FUNC
+ */
+HWTEST_F(MgrServiceTest, MgrServiceTest027, TestSize.Level0)
+{
+    ASSERT_TRUE(appDomainVerifyMgrService);
+    AAFwk::Want want;
+    EXPECT_TRUE(appDomainVerifyMgrService->IsWantImplicit(want));
+}
+
+/**
+ * @tc.name: MgrServiceTest028
+ * @tc.desc: IsWantImplicit
+ * @tc.type: FUNC
+ */
+HWTEST_F(MgrServiceTest, MgrServiceTest028, TestSize.Level0)
+{
+    ASSERT_TRUE(appDomainVerifyMgrService);
+    AAFwk::Want want;
+    AppExecFwk::ElementName element("10", "bundleName", "abilityName", "moduleName");
+    want.SetElement(element);
+    EXPECT_FALSE(appDomainVerifyMgrService->IsWantImplicit(want));
+}
+
+/**
+ * @tc.name: MgrServiceTest029
+ * @tc.desc: QueryDomainVerifyStatus
+ * @tc.type: FUNC
+ */
+HWTEST_F(MgrServiceTest, MgrServiceTest029, TestSize.Level0)
+{
+    ASSERT_TRUE(appDomainVerifyMgrService);
+    ASSERT_TRUE(appDomainVerifyMgrService->dataManager_);
+    std::string bundleName{ "MgrServiceTest029" };
+    VerifyResultInfo verifyResultInfo;
+    verifyResultInfo.hostVerifyStatusMap.emplace(bundleName, InnerVerifyStatus::STATE_SUCCESS);
+    verifyResultInfo.hostVerifyStatusMap.emplace("test", InnerVerifyStatus::STATE_SUCCESS);
+    appDomainVerifyMgrService->dataManager_->SaveVerifyStatus(bundleName, verifyResultInfo);
+
+    DomainVerifyStatus domainVerificationState = DomainVerifyStatus::STATE_NONE;
+    EXPECT_TRUE(appDomainVerifyMgrService->QueryDomainVerifyStatus(bundleName, domainVerificationState));
+    EXPECT_TRUE(domainVerificationState == DomainVerifyStatus::STATE_VERIFIED);
+}
+
+/**
+ * @tc.name: MgrServiceTest030
+ * @tc.desc: QueryDomainVerifyStatus
+ * @tc.type: FUNC
+ */
+HWTEST_F(MgrServiceTest, MgrServiceTest030, TestSize.Level0)
+{
+    ASSERT_TRUE(appDomainVerifyMgrService);
+    ASSERT_TRUE(appDomainVerifyMgrService->dataManager_);
+    std::string bundleName{ "MgrServiceTest030" };
+    VerifyResultInfo verifyResultInfo;
+    verifyResultInfo.hostVerifyStatusMap.emplace(bundleName, InnerVerifyStatus::UNKNOWN);
+    appDomainVerifyMgrService->dataManager_->SaveVerifyStatus(bundleName, verifyResultInfo);
+
+    DomainVerifyStatus domainVerificationState = DomainVerifyStatus::STATE_NONE;
+    EXPECT_TRUE(appDomainVerifyMgrService->QueryDomainVerifyStatus(bundleName, domainVerificationState));
+    EXPECT_TRUE(domainVerificationState != DomainVerifyStatus::STATE_VERIFIED);
+}
+
+/**
+ * @tc.name: MgrServiceTest031
+ * @tc.desc: QueryDomainVerifyStatus
+ * @tc.type: FUNC
+ */
+HWTEST_F(MgrServiceTest, MgrServiceTest031, TestSize.Level0)
+{
+    ASSERT_TRUE(appDomainVerifyMgrService);
+    ASSERT_TRUE(appDomainVerifyMgrService->dataManager_);
+    std::string bundleName{ "MgrServiceTest031" };
+    VerifyResultInfo verifyResultInfo;
+    appDomainVerifyMgrService->dataManager_->SaveVerifyStatus(bundleName, verifyResultInfo);
+
+    DomainVerifyStatus domainVerificationState = DomainVerifyStatus::STATE_NONE;
+    EXPECT_TRUE(appDomainVerifyMgrService->QueryDomainVerifyStatus(bundleName, domainVerificationState));
+    EXPECT_TRUE(domainVerificationState == DomainVerifyStatus::STATE_NONE);
+}
+
+/**
+ * @tc.name: MgrServiceTest032
+ * @tc.desc: QueryAllDomainVerifyStatus
+ * @tc.type: FUNC
+ */
+HWTEST_F(MgrServiceTest, MgrServiceTest032, TestSize.Level0)
+{
+    ASSERT_TRUE(appDomainVerifyMgrService);
+    ASSERT_TRUE(appDomainVerifyMgrService->dataManager_);
+    std::string bundleName{ "MgrServiceTest031" };
+    VerifyResultInfo verifyResultInfo;
+    verifyResultInfo.hostVerifyStatusMap.emplace(bundleName, InnerVerifyStatus::STATE_FAIL);
+    appDomainVerifyMgrService->dataManager_->SaveVerifyStatus(bundleName, verifyResultInfo);
+
+    BundleVerifyStatusInfo bundleVerificationState;
+    EXPECT_TRUE(appDomainVerifyMgrService->QueryAllDomainVerifyStatus(bundleVerificationState));
+    EXPECT_TRUE(bundleVerificationState.bundleVerifyStatusInfoMap_.size() != 0);
+}
+
+/**
+ * @tc.name: MgrServiceTest033
+ * @tc.desc: SaveDomainVerifyStatus
+ * @tc.type: FUNC
+ */
+HWTEST_F(MgrServiceTest, MgrServiceTest033, TestSize.Level0)
+{
+    ASSERT_TRUE(appDomainVerifyMgrService);
+    ASSERT_TRUE(appDomainVerifyMgrService->dataManager_);
+    std::string bundleName{ "MgrServiceTest033" };
+    VerifyResultInfo verifyResultInfo;
+    verifyResultInfo.hostVerifyStatusMap.emplace(bundleName, InnerVerifyStatus::STATE_FAIL);
+    EXPECT_TRUE(appDomainVerifyMgrService->SaveDomainVerifyStatus(bundleName, verifyResultInfo));
+    VerifyResultInfo getVerifyResultInfo;
+    EXPECT_TRUE(appDomainVerifyMgrService->dataManager_->GetVerifyStatus(bundleName, getVerifyResultInfo));
+}
+
+/**
+ * @tc.name: MgrServiceTest034
+ * @tc.desc: SaveDomainVerifyStatus
+ * @tc.type: FUNC
+ */
+HWTEST_F(MgrServiceTest, MgrServiceTest034, TestSize.Level0)
+{
+    ASSERT_TRUE(appDomainVerifyMgrService);
+    ASSERT_TRUE(appDomainVerifyMgrService->dataManager_);
+    std::string bundleName{ "" };
+    VerifyResultInfo verifyResultInfo;
+    verifyResultInfo.hostVerifyStatusMap.emplace(bundleName, InnerVerifyStatus::STATE_FAIL);
+    EXPECT_FALSE(appDomainVerifyMgrService->SaveDomainVerifyStatus(bundleName, verifyResultInfo));
+}
 }
