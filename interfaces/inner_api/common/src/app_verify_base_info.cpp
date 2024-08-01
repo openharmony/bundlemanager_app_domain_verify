@@ -14,7 +14,7 @@
  */
 
 #include "app_verify_base_info.h"
-#include "parcel_util.h"
+#include "app_domain_verify_parcel_util.h"
 
 namespace OHOS {
 namespace AppDomainVerify {

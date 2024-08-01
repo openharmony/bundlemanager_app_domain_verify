@@ -24,7 +24,8 @@ constexpr int32_t MAX_STR_INPUT_SIZE = 256;
 constexpr int32_t STRING_BUF_MAX_SIZE = 4096;
 std::map<CommonErrorCode, const char*> ErrCodeMap = { { CommonErrorCode::E_PERMISSION_DENIED, "Permission denied." },
     { CommonErrorCode::E_PERMISSION_DENIED, "System API accessed by non-system app." },
-    { CommonErrorCode::E_PARAM_ERROR, "Parameter error." } };
+    { CommonErrorCode::E_PARAM_ERROR, "Parameter error." },
+    { CommonErrorCode::E_INTERNAL_ERR, "Internal error." }};
 static std::string GetString(napi_env env, napi_value value)
 {
     std::unique_ptr<char[]> valueBuf = std::make_unique<char[]>(STRING_BUF_MAX_SIZE);

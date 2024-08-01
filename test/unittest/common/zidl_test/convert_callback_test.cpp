@@ -18,7 +18,7 @@
 #include "convert_callback_stub.h"
 #include "convert_callback_proxy.h"
 #include "convert_callback_interface_code.h"
-#include "parcel_util.h"
+#include "app_domain_verify_parcel_util.h"
 namespace OHOS::AppDomainVerify {
 using namespace testing;
 using namespace testing::ext;

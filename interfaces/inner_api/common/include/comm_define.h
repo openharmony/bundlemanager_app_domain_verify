@@ -20,7 +20,7 @@ enum CommonErrorCode {
     E_PERMISSION_DENIED = 201,
     E_IS_NOT_SYS_APP = 202,
     E_PARAM_ERROR = 401,
-    E_INTERNAL_ERR = 800,
+    E_INTERNAL_ERR = 29900001,
 };
 }
 #endif  // APP_DOMAIN_VERIFY_COMM_DEFINE_H

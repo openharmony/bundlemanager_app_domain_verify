@@ -15,7 +15,7 @@
 #include "zidl/convert_callback_proxy.h"
 #include "zidl/convert_callback_interface_code.h"
 #include "app_domain_verify_hilog.h"
-#include "parcel_util.h"
+#include "app_domain_verify_parcel_util.h"
 
 namespace OHOS {
 namespace AppDomainVerify {
