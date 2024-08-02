@@ -20,6 +20,7 @@
 #include "app_domain_verify_hisysevent.h"
 #include "zidl/convert_callback_stub.h"
 #include "regex.h"
+#include "comm_define.h"
 
 namespace OHOS {
 namespace AppDomainVerify {
@@ -280,7 +281,7 @@ int AppDomainVerifyMgrClient::QueryAssociatedDomains(
         return appDomainVerifyMgrServiceProxy_->QueryAssociatedDomains(bundleName, domains);
     }
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "%s call end", __func__);
-    return false;
+    return CommonErrorCode::E_INTERNAL_ERR;
 }
 int AppDomainVerifyMgrClient::QueryAssociatedBundleNames(
     const std::string& domain, std::vector<std::string>& bundleNames)
@@ -290,7 +291,7 @@ int AppDomainVerifyMgrClient::QueryAssociatedBundleNames(
         return appDomainVerifyMgrServiceProxy_->QueryAssociatedBundleNames(domain, bundleNames);
     }
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "%s call end", __func__);
-    return false;
+    return CommonErrorCode::E_INTERNAL_ERR;
 }
 AppDomainVerifyMgrSaDeathRecipient::AppDomainVerifyMgrSaDeathRecipient()
 {
