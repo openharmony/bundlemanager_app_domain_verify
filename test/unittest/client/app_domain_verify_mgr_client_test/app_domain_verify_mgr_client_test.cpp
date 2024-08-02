@@ -335,4 +335,74 @@ HWTEST_F(AppDomainVerifyMgrClientTest, AppDomainVerifyMgrSaDeathRecipientTest003
     ASSERT_TRUE(AppDomainVerifyMgrClient::appDomainVerifyMgrServiceProxy_ == nullptr);
 }
 
+/**
+ * @tc.name: IsServiceAvailable_0100
+ * @tc.desc: Test IsServiceAvailable.
+ * @tc.type: FUNC
+ */
+HWTEST_F(AppDomainVerifyMgrClientTest, IsServiceAvailable_0100, TestSize.Level0)
+{
+    AppDomainVerifyMgrSaDeathRecipient AppDomainVerifyMgrSaDeathRecipient;
+    AppDomainVerifyMgrSaDeathRecipient.OnRemoteDied(nullptr);
+    auto res = AppDomainVerifyMgrClient::GetInstance()->IsServiceAvailable();
+    EXPECT_NE(AppDomainVerifyMgrClient::appDomainVerifyMgrServiceProxy_, nullptr);
+    EXPECT_EQ(res, true);
+}
+
+/**
+ * @tc.name: ConnectService_0100
+ * @tc.desc: Test ConnectService.
+ * @tc.type: FUNC
+ */
+HWTEST_F(AppDomainVerifyMgrClientTest, ConnectService_0100, TestSize.Level0)
+{
+    AppDomainVerifyMgrSaDeathRecipient AppDomainVerifyMgrSaDeathRecipient;
+    AppDomainVerifyMgrSaDeathRecipient.OnRemoteDied(nullptr);
+    AppDomainVerifyMgrClient::GetInstance()->ConnectService();
+    EXPECT_NE(AppDomainVerifyMgrClient::appDomainVerifyMgrServiceProxy_, nullptr);
+}
+
+/**
+ * @tc.name: OnRemoteSaDied_0100
+ * @tc.desc: Test OnRemoteSaDied.
+ * @tc.type: FUNC
+ */
+HWTEST_F(AppDomainVerifyMgrClientTest, OnRemoteSaDied_0100, TestSize.Level0)
+{
+    AppDomainVerifyMgrClient::GetInstance()->ConnectService();
+    AppDomainVerifyMgrClient::GetInstance()->OnRemoteSaDied(nullptr);
+    EXPECT_EQ(AppDomainVerifyMgrClient::appDomainVerifyMgrServiceProxy_, nullptr);
+}
+
+/**
+ * @tc.name: IsValidUrl_0100
+ * @tc.desc: Test IsValidUrl.
+ * @tc.type: FUNC
+ */
+HWTEST_F(AppDomainVerifyMgrClientTest, IsValidUrl_0100, TestSize.Level0)
+{
+    OHOS::Uri schemeWrongUri("schemeWrongUri");
+    EXPECT_FALSE(AppDomainVerifyMgrClient::GetInstance()->IsValidUrl(schemeWrongUri));
+    OHOS::Uri hostEmptyUri("https://");
+    EXPECT_FALSE(AppDomainVerifyMgrClient::GetInstance()->IsValidUrl(hostEmptyUri));
+    OHOS::Uri segmentsSizeWrongUri("https://www.openharmony.com/");
+    EXPECT_FALSE(AppDomainVerifyMgrClient::GetInstance()->IsValidUrl(segmentsSizeWrongUri));
+    OHOS::Uri segmentsWrongUri("https://www.openharmony.com/test*");
+    EXPECT_FALSE(AppDomainVerifyMgrClient::GetInstance()->IsValidUrl(segmentsWrongUri));
+    OHOS::Uri trueUri("https://www.openharmony.com/t1_-est/");
+    EXPECT_TRUE(AppDomainVerifyMgrClient::GetInstance()->IsValidUrl(trueUri));
+}
+
+/**
+ * @tc.name: IsValidPath_0100
+ * @tc.desc: Test IsValidPath.
+ * @tc.type: FUNC
+ */
+HWTEST_F(AppDomainVerifyMgrClientTest, IsValidPath_0100, TestSize.Level0)
+{
+    OHOS::Uri uri("https://www.openharmony.com/t1_-est/");
+    std::vector<std::string> segments;
+    uri.GetPathSegments(segments);
+    EXPECT_TRUE(AppDomainVerifyMgrClient::GetInstance()->IsValidPath(segments[0]));
+}
 }
