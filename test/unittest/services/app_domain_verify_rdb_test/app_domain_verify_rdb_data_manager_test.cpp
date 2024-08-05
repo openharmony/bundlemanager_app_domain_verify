@@ -400,4 +400,99 @@ HWTEST_F(RdbDataMgrTest, RdbDataMgrQueryDataTest007, TestSize.Level0)
     std::unordered_map<std::string, std::vector<RdbDataItem>> dataMap;
     ASSERT_TRUE(appDomainVerifyRdbDataManager->QueryAllData(dataMap));
 }
+
+/**
+ * @tc.name: CheckRdbStoreExist_0100
+ * @tc.desc: Test CheckRdbStoreExist.
+ * @tc.type: FUNC
+ */
+HWTEST_F(RdbDataMgrTest, CheckRdbStoreExist_0100, TestSize.Level0)
+{
+    AppDomainVerifyRdbConfig rdbConfig;
+    rdbConfig.dbName = Constants::RDB_NAME;
+    rdbConfig.tableName = Constants::RDB_TABLE_NAME;
+    auto appDomainVerifyRdbDataManager = std::make_shared<AppDomainVerifyRdbDataManager>(rdbConfig);
+    std::shared_ptr<NativeRdb::RdbStore> rdbStore = nullptr;
+    auto res = appDomainVerifyRdbDataManager->CheckRdbStoreExist(rdbStore);
+    EXPECT_EQ(res, false);
+}
+
+/**
+ * @tc.name: CheckRdbStoreExist_0200
+ * @tc.desc: Test CheckRdbStoreExist.
+ * @tc.type: FUNC
+ */
+HWTEST_F(RdbDataMgrTest, CheckRdbStoreExist_0200, TestSize.Level0)
+{
+    AppDomainVerifyRdbConfig rdbConfig;
+    rdbConfig.dbName = Constants::RDB_NAME;
+    rdbConfig.tableName = Constants::RDB_TABLE_NAME;
+    auto appDomainVerifyRdbDataManager = std::make_shared<AppDomainVerifyRdbDataManager>(rdbConfig);
+    std::shared_ptr<NativeRdb::RdbStore> rdbStore = appDomainVerifyRdbDataManager->GetRdbStore();
+    auto res = appDomainVerifyRdbDataManager->CheckRdbStoreExist(rdbStore);
+    EXPECT_EQ(res, true);
+}
+
+/**
+ * @tc.name: CheckRdbReturnIfOk_0100
+ * @tc.desc: Test CheckRdbReturnIfOk.
+ * @tc.type: FUNC
+ */
+HWTEST_F(RdbDataMgrTest, CheckRdbReturnIfOk_0100, TestSize.Level0)
+{
+    AppDomainVerifyRdbConfig rdbConfig;
+    rdbConfig.dbName = Constants::RDB_NAME;
+    rdbConfig.tableName = Constants::RDB_TABLE_NAME;
+    auto appDomainVerifyRdbDataManager = std::make_shared<AppDomainVerifyRdbDataManager>(rdbConfig);
+    int errcode = NativeRdb::E_OK;
+    auto res = appDomainVerifyRdbDataManager->CheckRdbReturnIfOk(errcode);
+    EXPECT_EQ(res, true);
+}
+
+/**
+ * @tc.name: CheckRdbReturnIfOk_0200
+ * @tc.desc: Test CheckRdbReturnIfOk.
+ * @tc.type: FUNC
+ */
+HWTEST_F(RdbDataMgrTest, CheckRdbReturnIfOk_0200, TestSize.Level0)
+{
+    AppDomainVerifyRdbConfig rdbConfig;
+    rdbConfig.dbName = Constants::RDB_NAME;
+    rdbConfig.tableName = Constants::RDB_TABLE_NAME;
+    auto appDomainVerifyRdbDataManager = std::make_shared<AppDomainVerifyRdbDataManager>(rdbConfig);
+    int errcode = NativeRdb::E_ERROR;
+    auto res = appDomainVerifyRdbDataManager->CheckRdbReturnIfOk(errcode);
+    EXPECT_EQ(res, false);
+}
+
+/**
+ * @tc.name: GetRdbStore_0100
+ * @tc.desc: Test GetRdbStore.
+ * @tc.type: FUNC
+ */
+HWTEST_F(RdbDataMgrTest, GetRdbStore_0100, TestSize.Level0)
+{
+    AppDomainVerifyRdbConfig rdbConfig;
+    rdbConfig.dbName = Constants::RDB_NAME;
+    rdbConfig.tableName = Constants::RDB_TABLE_NAME;
+    auto appDomainVerifyRdbDataManager = std::make_shared<AppDomainVerifyRdbDataManager>(rdbConfig);
+    auto res = appDomainVerifyRdbDataManager->GetRdbStore();
+    EXPECT_NE(res, nullptr);
+}
+
+/**
+ * @tc.name: DelayCloseRdbStore_0100
+ * @tc.desc: Test DelayCloseRdbStore.
+ * @tc.type: FUNC
+ */
+HWTEST_F(RdbDataMgrTest, DelayCloseRdbStore_0100, TestSize.Level0)
+{
+    AppDomainVerifyRdbConfig rdbConfig;
+    rdbConfig.dbName = Constants::RDB_NAME;
+    rdbConfig.tableName = Constants::RDB_TABLE_NAME;
+    auto appDomainVerifyRdbDataManager = std::make_shared<AppDomainVerifyRdbDataManager>(rdbConfig);
+    appDomainVerifyRdbDataManager->continuationHandler_ = nullptr;
+    appDomainVerifyRdbDataManager->DelayCloseRdbStore();
+    EXPECT_NE(appDomainVerifyRdbDataManager->continuationHandler_, nullptr);
+}
 }
