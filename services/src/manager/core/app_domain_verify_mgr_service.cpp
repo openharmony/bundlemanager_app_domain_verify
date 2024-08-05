@@ -230,7 +230,7 @@ int AppDomainVerifyMgrService::CheckPermission()
         APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "IsSystemAppCall failed .");
         return CommonErrorCode::E_IS_NOT_SYS_APP;
     }
-    APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "CheckPermission ok .");
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "CheckPermission ok .");
     return CommonErrorCode::E_OK;
 }
 int AppDomainVerifyMgrService::QueryAssociatedDomains(const std::string& bundleName, std::vector<std::string>& domains)
