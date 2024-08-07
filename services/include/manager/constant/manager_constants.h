@@ -23,7 +23,7 @@ namespace Constants {
 constexpr const char *SERVICE_PATH = "/data/service/el1/public/app_domain_verify_mgr_service";
 const int32_t RDB_VERSION = 1;
 
-constexpr const char *RDB_NAME = "/advdb.db";
+constexpr const char *RDB_NAME = "/AppDomainVerify.db";
 constexpr const char *RDB_TABLE_NAME = "verified_domain";
 }  // namespace Constants
 }  // namespace AppDomainVerify
