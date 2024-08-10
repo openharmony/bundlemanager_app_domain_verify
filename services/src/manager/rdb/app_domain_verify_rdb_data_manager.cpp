@@ -35,8 +35,18 @@ AppDomainVerifyRdbDataManager::AppDomainVerifyRdbDataManager(const AppDomainVeri
     : appDomainVerifyRdbConfig_(rdbConfig)
 {
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "new instance create.");
+    DeleteIfCannotAccess();
 }
-
+void AppDomainVerifyRdbDataManager::DeleteIfCannotAccess()
+{
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "DeleteIfCannotAccess.");
+    auto rdbFile = appDomainVerifyRdbConfig_.dbPath + appDomainVerifyRdbConfig_.dbName;
+    if (access(rdbFile.c_str(), F_OK) == 0) {
+        APP_DOMAIN_VERIFY_HILOGW(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "DeleteIfCannotAccess need Remove.");
+        remove(rdbFile.c_str());
+    }
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "DeleteIfCannotAccess end.");
+}
 AppDomainVerifyRdbDataManager::~AppDomainVerifyRdbDataManager()
 {
     rdbStore_ = nullptr;

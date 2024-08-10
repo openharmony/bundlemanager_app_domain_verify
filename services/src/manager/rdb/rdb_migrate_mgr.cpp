@@ -89,12 +89,12 @@ void RdbMigrateMgr::UpgradeFromV1_0(NativeRdb::RdbStore& rdbStore)
         "INSERT INTO verified_domain (BUNDLE_NAME,APP_IDENTIFIER,DOMAIN,VERIFY_STATUES) select * from final_table; ",
         "drop table IF EXISTS final_table; " };
     for (auto it : migrateSqls) {
-        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "sql  %{public}s", it.c_str());
+        APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "sql  %{public}s", it.c_str());
         auto ret = rdbStore.ExecuteSql(it);
         if (ret != NativeRdb::E_OK) {
             auto dropTableSql = "drop table IF EXISTS verified_domain";
             (void)rdbStore.ExecuteSql(dropTableSql);
-            APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "UpgradeFromV1_0, ret: %{public}d", ret);
+            APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "UpgradeFromV1_0, ret: %{public}d", ret);
         }
     }
 
