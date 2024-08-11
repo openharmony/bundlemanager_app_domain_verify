@@ -15,39 +15,41 @@
 #include "app_domain_verify_rdb_open_callback.h"
 #include "app_domain_verify_hilog.h"
 #include "rdb_migrate_mgr.h"
-constexpr int VERSION_1 = 1;
+
 namespace OHOS {
 namespace AppDomainVerify {
-AppDomainVerifyRdbOpenCallback::AppDomainVerifyRdbOpenCallback(const AppDomainVerifyRdbConfig &rdbConfig)
+constexpr int RDB_VERSION_1 = 1;
+AppDomainVerifyRdbOpenCallback::AppDomainVerifyRdbOpenCallback(const AppDomainVerifyRdbConfig& rdbConfig)
     : appDomainVerifyRdbConfig_(rdbConfig)
 {
 }
-int32_t AppDomainVerifyRdbOpenCallback::OnCreate(NativeRdb::RdbStore &rdbStore)
+int32_t AppDomainVerifyRdbOpenCallback::OnCreate(NativeRdb::RdbStore& rdbStore)
 {
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "RdbStore OnCreate");
     return NativeRdb::E_OK;
 }
-int32_t AppDomainVerifyRdbOpenCallback::OnUpgrade(NativeRdb::RdbStore &rdbStore, int currentVersion, int targetVersion)
+int32_t AppDomainVerifyRdbOpenCallback::OnUpgrade(NativeRdb::RdbStore& rdbStore, int currentVersion, int targetVersion)
 {
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE,
         "OnUpgrade currentVersion: %{public}d, targetVersion: %{public}d", currentVersion, targetVersion);
 
-    if (VERSION_1 == 1) {
+    if (currentVersion == RDB_VERSION_1) {
         APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "DoUpgrade");
         RdbMigrateMgr rdbMigrateMgr(appDomainVerifyRdbConfig_);
         (void)rdbMigrateMgr.Upgrade(rdbStore);
+        APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "DoUpgrade end");
     }
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "OnUpgrade End");
     return NativeRdb::E_OK;
 }
-int32_t AppDomainVerifyRdbOpenCallback::OnDowngrade(NativeRdb::RdbStore &rdbStore, int currentVersion,
-    int targetVersion)
+int32_t AppDomainVerifyRdbOpenCallback::OnDowngrade(
+    NativeRdb::RdbStore& rdbStore, int currentVersion, int targetVersion)
 {
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE,
         "OnDowngrade currentVersion: %{plubic}d, targetVersion: %{plubic}d", currentVersion, targetVersion);
     return NativeRdb::E_OK;
 }
-int32_t AppDomainVerifyRdbOpenCallback::OnOpen(NativeRdb::RdbStore &rdbStore)
+int32_t AppDomainVerifyRdbOpenCallback::OnOpen(NativeRdb::RdbStore& rdbStore)
 {
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "RdbStore OnOpen");
     return NativeRdb::E_OK;

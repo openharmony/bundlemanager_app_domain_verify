@@ -41,9 +41,11 @@ void AppDomainVerifyRdbDataManager::DeleteIfCannotAccess()
 {
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "DeleteIfCannotAccess.");
     auto rdbFile = appDomainVerifyRdbConfig_.dbPath + appDomainVerifyRdbConfig_.dbName;
-    if (access(rdbFile.c_str(), F_OK) == 0) {
-        APP_DOMAIN_VERIFY_HILOGW(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "DeleteIfCannotAccess need Remove.");
-        remove(rdbFile.c_str());
+    // 文件存在但是没有读写权限，删除文件
+    if (access(rdbFile.c_str(), F_OK) == 0 && access(rdbFile.c_str(), R_OK | W_OK) != 0) {
+        auto ret = remove(rdbFile.c_str());
+        APP_DOMAIN_VERIFY_HILOGW(
+            APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "DeleteIfCannotAccess remove, ret:%{public}d.", ret);
     }
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "DeleteIfCannotAccess end.");
 }
