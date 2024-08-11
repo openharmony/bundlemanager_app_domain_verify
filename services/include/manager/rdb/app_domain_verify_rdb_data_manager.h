@@ -44,6 +44,7 @@ public:
     bool CreateTable();
 
 private:
+    void DeleteIfCannotAccess();
     std::shared_ptr<NativeRdb::RdbStore> GetRdbStore();
     void DelayCloseRdbStore();
     bool CheckRdbReturnIfOk(int errcode);
