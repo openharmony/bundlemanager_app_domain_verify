@@ -20,15 +20,14 @@ constexpr int INNER_VERSION_UNKNOWN = 0;
 constexpr int INNER_VERSION_1_0 = 1;
 constexpr int INNER_VERSION_1_0_COL_CNT = 2;
 
-constexpr int INNER_VERSION_1_1 = 2;
-constexpr int INNER_VERSION_1_1_COL_CNT = 5;
-
 int RdbMigrateMgr::Upgrade(NativeRdb::RdbStore& rdbStore)
 {
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s called", __func__);
     int innerVersion = QueryInnerVersion(rdbStore);
     if (innerVersion == INNER_VERSION_1_0) {
         UpgradeFromV1_0(rdbStore);
+    } else {
+        APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s called, no need upgrade.", __func__);
     }
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s called, end", __func__);
     return true;
@@ -51,9 +50,6 @@ int RdbMigrateMgr::QueryInnerVersion(NativeRdb::RdbStore& rdbStore)
     int count = -1;
     absSharedResultSet->GetColumnCount(count);
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "rdbStore GetColumnCount %{public}d", count);
-    if (count == INNER_VERSION_1_1_COL_CNT) {
-        innerVersion = INNER_VERSION_1_1;
-    }
     if (count == INNER_VERSION_1_0_COL_CNT) {
         innerVersion = INNER_VERSION_1_0;
     }
@@ -65,39 +61,39 @@ int RdbMigrateMgr::QueryInnerVersion(NativeRdb::RdbStore& rdbStore)
 void RdbMigrateMgr::UpgradeFromV1_0(NativeRdb::RdbStore& rdbStore)
 {
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s called", __func__);
-    const std::string migrateSqls[] = { "drop table IF EXISTS temp_table; ", "drop table IF EXISTS final_table; ",
-        "CREATE TEMPORARY TABLE temp_table AS "
-        "SELECT "
-        "  verified_domain.KEY, "
-        "  json_extract(verified_domain.VALUE, '$.appIdentifier') as appid, "
-        "  json_extract(verified_domain.VALUE, '$.hostVerifyStatusMap') as map "
-        "FROM "
-        "  verified_domain; ",
-        "CREATE TABLE final_table AS "
-        "SELECT "
-        "  temp_table.KEY as BUNDLE_NAME, "
-        "  temp_table.appid as APP_IDENTIFIER, "
-        "  json_each.key AS DOMAIN, "
-        "  json_each.value AS VERIFY_STATUES "
-        "FROM "
-        "  temp_table, "
-        "  json_each(temp_table.map); ",
-        "drop table IF EXISTS verified_domain; ",
-        "CREATE TABLE IF NOT EXISTS  verified_domain (ID INTEGER PRIMARY KEY AUTOINCREMENT, BUNDLE_NAME TEXT NOT NULL, "
-        "APP_IDENTIFIER TEXT, "
-        "DOMAIN TEXT NOT NULL, VERIFY_STATUES INTEGER); ",
-        "INSERT INTO verified_domain (BUNDLE_NAME,APP_IDENTIFIER,DOMAIN,VERIFY_STATUES) select * from final_table; ",
-        "drop table IF EXISTS final_table; " };
-    for (auto it : migrateSqls) {
-        APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "sql  %{public}s", it.c_str());
-        auto ret = rdbStore.ExecuteSql(it);
+    const std::string migrateSqls[] = { R"(drop table IF EXISTS temp_table;)", R"(drop table IF EXISTS final_table;)",
+        R"(CREATE TEMPORARY TABLE temp_table AS
+            SELECT
+              verified_domain.KEY,
+              json_extract(verified_domain.VALUE, '$.appIdentifier') as appid,
+              json_extract(verified_domain.VALUE, '$.hostVerifyStatusMap') as map
+            FROM
+              verified_domain;)",
+        R"(CREATE TABLE final_table AS
+            SELECT
+              temp_table.KEY as BUNDLE_NAME,
+              temp_table.appid as APP_IDENTIFIER,
+              json_each.key AS DOMAIN,
+              json_each.value AS VERIFY_STATUES
+            FROM
+              temp_table,
+              json_each(temp_table.map);)",
+        R"(drop table IF EXISTS verified_domain;)",
+        R"(CREATE TABLE IF NOT EXISTS  verified_domain (ID INTEGER PRIMARY KEY AUTOINCREMENT, BUNDLE_NAME TEXT NOT NULL,
+            APP_IDENTIFIER TEXT,
+            DOMAIN TEXT NOT NULL, VERIFY_STATUES INTEGER);)",
+        R"(INSERT INTO verified_domain (BUNDLE_NAME,APP_IDENTIFIER,DOMAIN,VERIFY_STATUES) select * from final_table;)",
+        R"(drop table IF EXISTS final_table;)" };
+    for (const auto& sql : migrateSqls) {
+        APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "sql  %{public}s", sql.c_str());
+        auto ret = rdbStore.ExecuteSql(sql);
         if (ret != NativeRdb::E_OK) {
-            auto dropTableSql = "drop table IF EXISTS verified_domain";
+            auto dropTableSql = R"(drop table IF EXISTS verified_domain;)";
             (void)rdbStore.ExecuteSql(dropTableSql);
-            APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "UpgradeFromV1_0, ret: %{public}d", ret);
+            APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "UpgradeFromV1_0 executeSql failed, ret: %{public}d", ret);
+            break;
         }
     }
-
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s called", __func__);
 }
 }
