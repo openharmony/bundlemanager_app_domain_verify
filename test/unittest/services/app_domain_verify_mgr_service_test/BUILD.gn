@@ -46,6 +46,7 @@ ohos_unittest("app_domain_verify_mgr_service_test") {
     "${app_domain_verify_service_path}/src/manager/permission/permission_manager.cpp",
     "${app_domain_verify_service_path}/src/manager/rdb/app_domain_verify_rdb_data_manager.cpp",
     "${app_domain_verify_service_path}/src/manager/rdb/app_domain_verify_rdb_open_callback.cpp",
+    "${app_domain_verify_service_path}/src/manager/rdb/rdb_migrate_mgr.cpp",
     "${app_domain_verify_service_path}/src/manager/zidl/app_domain_verify_mgr_service_proxy.cpp",
     "${app_domain_verify_service_path}/src/manager/zidl/app_domain_verify_mgr_service_stub.cpp",
     "${app_domain_verify_test_path}/mock/src/mock_bundle_manager.cpp",
