@@ -31,6 +31,7 @@
 #include "app_domain_verify_mgr_service.h"
 #undef private
 #undef protected
+#include "mock_access_token.h"
 
 namespace OHOS::AppDomainVerify {
 using ::testing::_;
@@ -59,6 +60,7 @@ void AppDomainVerifyAgentModuleTest::TearDownTestCase(void)
 void AppDomainVerifyAgentModuleTest::SetUp(void)
 {
     printf("SetUp \n");
+    MockAccessToken::mockSA();
     AppDomainVerifyMgrClient::GetInstance()->ClearDomainVerifyStatus(APP_IDENTIFIER, BUNDLE_NAME);
 }
 

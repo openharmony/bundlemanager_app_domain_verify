@@ -68,7 +68,6 @@ private:
     bool InitConfigMgr();
     std::shared_ptr<WhiteListConfigMgr> whiteListConfigMgr_;
     std::mutex initConfigMutex_;
-    std::shared_ptr<PermissionManager> permissionMgr_;
 };
 }  // namespace AppDomainVerify
 }  // namespace OHOS

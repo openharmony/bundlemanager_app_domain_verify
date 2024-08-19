@@ -21,6 +21,7 @@ namespace OHOS::AppDomainVerify {
 
 bool PermissionManager::CheckPermission(const std::string& permission)
 {
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%{public}s: is called.", __func__);
     if (permission.empty()) {
         APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "permission empty.");
         return false;
@@ -36,6 +37,7 @@ bool PermissionManager::CheckPermission(const std::string& permission)
 }
 bool PermissionManager::IsSystemAppCall()
 {
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%{public}s: is called.", __func__);
     if (Security::AccessToken::AccessTokenKit::GetTokenTypeFlag(IPCSkeleton::GetCallingTokenID()) !=
         Security::AccessToken::ATokenTypeEnum::TOKEN_HAP) {
         return true;
@@ -45,5 +47,17 @@ bool PermissionManager::IsSystemAppCall()
         APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "Caller is not allowed, need system app");
     }
     return result;
+}
+bool PermissionManager::IsSACall()
+{
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%{public}s: is called.", __func__);
+    auto callerToken = IPCSkeleton::GetCallingTokenID();
+    auto tokenType = Security::AccessToken::AccessTokenKit::GetTokenTypeFlag(callerToken);
+    if (tokenType == Security::AccessToken::ATokenTypeEnum::TOKEN_NATIVE) {
+        APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "caller tokenType is native, verify success");
+        return true;
+    }
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "Not SA called.");
+    return false;
 }
 }
