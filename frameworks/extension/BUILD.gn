@@ -60,7 +60,11 @@ ohos_shared_library("app_domain_verify_extension_framework") {
     "ipc:ipc_single",
     "samgr:samgr_proxy",
   ]
-
+  sanitize = {
+    cfi = true
+    cfi_cross_dso = true
+    debug = false
+  }
   subsystem_name = "bundlemanager"
   part_name = "app_domain_verify"
 }

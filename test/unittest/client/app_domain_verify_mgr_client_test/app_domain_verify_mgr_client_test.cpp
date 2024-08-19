@@ -24,6 +24,7 @@
 #undef private
 #undef protected
 #include "convert_callback_stub.h"
+#include "mock_access_token.h"
 
 namespace OHOS::AppDomainVerify {
 using namespace testing;
@@ -62,6 +63,7 @@ void AppDomainVerifyMgrClientTest::TearDownTestCase(void)
 
 void AppDomainVerifyMgrClientTest::SetUp(void)
 {
+    MockAccessToken::mockSA();
 }
 
 void AppDomainVerifyMgrClientTest::TearDown(void)
