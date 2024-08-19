@@ -74,7 +74,11 @@ ohos_shared_library("app_domain_verify_mgr_client") {
     "samgr:samgr_proxy",
   ]
   version_script = "mgr.versionscript"
-
+  sanitize = {
+    cfi = true
+    cfi_cross_dso = true
+    debug = false
+  }
   subsystem_name = "bundlemanager"
   part_name = "app_domain_verify"
 }
@@ -98,7 +102,11 @@ ohos_shared_library("app_domain_verify_agent_client") {
     "ipc:ipc_core",
     "samgr:samgr_proxy",
   ]
-
+  sanitize = {
+    cfi = true
+    cfi_cross_dso = true
+    debug = false
+  }
   subsystem_name = "bundlemanager"
   part_name = "app_domain_verify"
 }

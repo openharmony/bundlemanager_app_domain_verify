@@ -28,6 +28,7 @@
 #include "iservice_registry.h"
 #include "system_ability_definition.h"
 #include "convert_callback_stub.h"
+#include "mock_access_token.h"
 namespace OHOS::AppDomainVerify {
 using ::testing::_;
 using ::testing::Invoke;
@@ -68,6 +69,7 @@ void AppDomainVerifyAgentClientTest::TearDownTestCase(void)
 
 void AppDomainVerifyAgentClientTest::SetUp(void)
 {
+    MockAccessToken::mockSA();
     AppDomainVerifyAgentClient::staticDestoryMonitor_.destoryed_ = true;
 }
 

@@ -26,6 +26,7 @@
 #include "mock_verify_agent.h"
 #include "mock_constant.h"
 #include "mock_verify_mgr.h"
+#include "mock_access_token.h"
 #include "app_domain_verify_mgr_interface_code.h"
 #include "rdb_helper.h"
 #include "app_domain_verify_mgr_service_proxy.h"
@@ -85,6 +86,7 @@ void MgrServiceTest::TearDownTestCase(void)
 
 void MgrServiceTest::SetUp(void)
 {
+    MockAccessToken::mockSA();
     AppDomainVerifyAgentClient::staticDestoryMonitor_.destoryed_ = true;
     printf("SetUp \n");
 }
