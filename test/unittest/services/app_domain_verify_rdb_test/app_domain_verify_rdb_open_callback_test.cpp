@@ -66,7 +66,7 @@ HWTEST_F(RdbOpenCallbackTest, RdbOpenCallbackTest001, TestSize.Level0)
     auto rdbStored = NativeRdb::RdbHelper::GetRdbStore(
         rdbStoreConfig, rdbConfig.version, appDomainVerifyRdbOpenCallback, errCode);
     ASSERT_TRUE(appDomainVerifyRdbOpenCallback.OnCreate(*rdbStored) == NativeRdb::E_OK);
-    ASSERT_TRUE(appDomainVerifyRdbOpenCallback.OnUpgrade(*rdbStored, 1, 2) == NativeRdb::E_OK);
+    ASSERT_TRUE(appDomainVerifyRdbOpenCallback.OnUpgrade(*rdbStored, 2, 2) == NativeRdb::E_OK);
     ASSERT_TRUE(appDomainVerifyRdbOpenCallback.OnDowngrade(*rdbStored, 2, 1) == NativeRdb::E_OK);
     ASSERT_TRUE(appDomainVerifyRdbOpenCallback.onCorruption("") == NativeRdb::E_OK);
 }

@@ -24,7 +24,6 @@
 namespace OHOS {
 namespace AppDomainVerify {
 namespace {
-[[ maybe_unused ]] constexpr int32_t DELAY_TIME = 300000;  // 5min = 5*60*1000
 const std::string TASK_ID = "unload";
 }
 AppDomainVerifyMgrServiceStub::AppDomainVerifyMgrServiceStub()
@@ -43,6 +42,7 @@ int32_t AppDomainVerifyMgrServiceStub::OnRemoteRequest(
         APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "end##descriptor checked fail");
         return IPCObjectStub::OnRemoteRequest(code, data, reply, option);
     }
+
     switch (code) {
         case static_cast<uint32_t>(static_cast<uint32_t>(AppDomainVerifyMgrInterfaceCode::QUERY_VERIFY_STATUS)):
             return OnQueryDomainVerifyStatus(data, reply);
