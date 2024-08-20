@@ -44,6 +44,10 @@ void AppDomainVerifyMgrService::VerifyDomain(const std::string& appIdentifier, c
         APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s only sa can call", __func__);
         return;
     }
+    if (!PermissionManager::IsSACall()) {
+        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s only sa can call", __func__);
+        return;
+    }
     AppVerifyBaseInfo appVerifyBaseInfo;
     appVerifyBaseInfo.appIdentifier = appIdentifier;
     appVerifyBaseInfo.bundleName = bundleName;
@@ -59,6 +63,10 @@ bool AppDomainVerifyMgrService::ClearDomainVerifyStatus(const std::string& appId
         APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s only sa can call", __func__);
         return false;
     }
+    if (!PermissionManager::IsSACall()) {
+        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s only sa can call", __func__);
+        return false;
+    }
     bool res = dataManager_->DeleteVerifyStatus(bundleName);
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "call end");
     return res;
@@ -69,6 +77,10 @@ bool AppDomainVerifyMgrService::FilterAbilities(const OHOS::AAFwk::Want& want,
     std::vector<OHOS::AppExecFwk::AbilityInfo>& filtedAbilityInfos)
 {
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "called");
+    if (!PermissionManager::IsSACall()) {
+        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s only sa can call", __func__);
+        return false;
+    }
     if (!PermissionManager::IsSACall()) {
         APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s only sa can call", __func__);
         return false;
@@ -109,6 +121,10 @@ bool AppDomainVerifyMgrService::QueryDomainVerifyStatus(
         APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s only sa can call", __func__);
         return false;
     }
+    if (!PermissionManager::IsSACall()) {
+        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s only sa can call", __func__);
+        return false;
+    }
     VerifyResultInfo verifyResultInfo;
     bool res = dataManager_->GetVerifyStatus(bundleName, verifyResultInfo);
     domainVerificationState = DomainVerifyStatus::STATE_NONE;
@@ -130,6 +146,10 @@ bool AppDomainVerifyMgrService::QueryAllDomainVerifyStatus(BundleVerifyStatusInf
         APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s only sa can call", __func__);
         return false;
     }
+    if (!PermissionManager::IsSACall()) {
+        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s only sa can call", __func__);
+        return false;
+    }
     bundleVerifyStatusInfo.bundleVerifyStatusInfoMap_ = dataManager_->GetAllVerifyStatus();
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "call end");
     return true;
@@ -139,6 +159,10 @@ bool AppDomainVerifyMgrService::SaveDomainVerifyStatus(
     const std::string& bundleName, const VerifyResultInfo& verifyResultInfo)
 {
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "called");
+    if (!PermissionManager::IsSACall()) {
+        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s only sa can call", __func__);
+        return false;
+    }
     if (!PermissionManager::IsSACall()) {
         APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s only sa can call", __func__);
         return false;
@@ -159,6 +183,10 @@ bool AppDomainVerifyMgrService::IsAtomicServiceUrl(const std::string& url)
         APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s only sa can call", __func__);
         return false;
     }
+    if (!PermissionManager::IsSACall()) {
+        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s only sa can call", __func__);
+        return false;
+    }
     if (!InitConfigMgr()) {
         APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "InitConfigMgr failed.");
         return false;
@@ -172,8 +200,27 @@ void AppDomainVerifyMgrService::ConvertToExplicitWant(OHOS::AAFwk::Want& implici
         APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s only sa can call", __func__);
         return;
     }
+    if (!PermissionManager::IsSACall()) {
+        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s only sa can call", __func__);
+        return;
+    }
     AppDomainVerifyAgentClient::GetInstance()->ConvertToExplicitWant(implicitWant, callback);
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "called");
+}
+
+void AppDomainVerifyMgrService::UpdateWhiteListUrls(const std::vector<std::string>& urls)
+{
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s called", __func__);
+    if (!PermissionManager::IsSACall()) {
+        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s only sa can call", __func__);
+        return;
+    }
+    if (!InitConfigMgr()) {
+        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "InitConfigMgr failed.");
+        return;
+    }
+    std::unordered_set<std::string> whiteList(urls.begin(), urls.end());
+    whiteListConfigMgr_->UpdateWhiteList(whiteList);
 }
 
 void AppDomainVerifyMgrService::UpdateWhiteListUrls(const std::vector<std::string>& urls)
