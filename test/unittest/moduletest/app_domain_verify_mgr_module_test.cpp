@@ -29,6 +29,7 @@
 #include "app_domain_verify_mgr_service.h"
 #undef private
 #undef protected
+#include "mock_access_token.h"
 
 namespace OHOS::AppDomainVerify {
 using ::testing::_;
@@ -77,6 +78,7 @@ void AppDomainVerifyMgrModuleTest::TearDownTestCase(void)
 
 void AppDomainVerifyMgrModuleTest::SetUp(void)
 {
+    MockAccessToken::mockSA();
     AppDomainVerifyAgentClient::staticDestoryMonitor_.destoryed_ = true;
 }
 
