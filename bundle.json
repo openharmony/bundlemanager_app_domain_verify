@@ -45,7 +45,8 @@
         "preferences",
         "data_share",
         "access_token",
-        "eventhandler"
+        "eventhandler",
+        "hiappevent"
       ],
       "third_party": [
         "openssl"

@@ -40,6 +40,7 @@ ohos_shared_library("appdomainverify_napi") {
   sources = [
     "src/app_domain_verify_manager_napi.cpp",
     "src/native_module.cpp",
+    "src/api_event_reporter.cpp"
   ]
   public_configs = [ ":app_domain_verify_mgr_napi_config" ]
   deps = [
@@ -56,6 +57,7 @@ ohos_shared_library("appdomainverify_napi") {
     "napi:ace_napi",
     "safwk:system_ability_fwk",
     "samgr:samgr_proxy",
+    "hiappevent:hiappevent_innerapi"
   ]
 
   relative_install_dir = "module/bundle"
