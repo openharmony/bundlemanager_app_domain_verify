@@ -38,6 +38,7 @@ config("app_domain_verify_mgr_napi_config") {
 
 ohos_shared_library("appdomainverify_napi") {
   sources = [
+    "src/api_event_reporter.cpp",
     "src/app_domain_verify_manager_napi.cpp",
     "src/native_module.cpp",
   ]
@@ -51,6 +52,7 @@ ohos_shared_library("appdomainverify_napi") {
     "ability_base:want",
     "bundle_framework:appexecfwk_base",
     "c_utils:utils",
+    "hiappevent:hiappevent_innerapi",
     "hilog:libhilog",
     "ipc:ipc_core",
     "napi:ace_napi",
