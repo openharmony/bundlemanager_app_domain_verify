@@ -20,7 +20,7 @@ namespace OHOS::AppDomainVerify::Dfx {
 class ApiEventReporter {
 public:
     explicit ApiEventReporter(const std::string& apiName);
-    ~ApiEventReporter();
+    ~ApiEventReporter() = default;
     void WriteEvent(const int result, const int32_t errCode);
 
 private:
