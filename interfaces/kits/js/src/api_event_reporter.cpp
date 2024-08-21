@@ -26,8 +26,7 @@ constexpr int TRIGGER_COND_TIMEOUT = 90;
 constexpr int TRIGGER_COND_ROW = 30;
 static const std::string SDK_NAME("AbilityKit");
 
-ApiEventReporter::ApiEventReporter(const std::string& apiName)
-    : apiName_(apiName)
+ApiEventReporter::ApiEventReporter(const std::string& apiName) : apiName_(apiName)
 {
     transId_ = std::string("transId_") + std::to_string(std::rand());
     startTime_ = std::chrono::duration_cast<std::chrono::milliseconds>(
@@ -90,8 +89,8 @@ void ApiEventReporter::WriteEvent(const int result, const int32_t errCode)
     event.AddParam("error_code", errCode);
     int ret = Write(event);
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MODULE_JS_NAPI,
-        "WriteEndEvent transId:%{public}s, apiName:%{public}s, sdkName:%{public}s, startTime:%{public}ld, "
-        "endTime:%{public}ld, result:%{public}d, errCode:%{public}d, ret:%{public}d",
+        "WriteEndEvent transId:%{public}s, apiName:%{public}s, sdkName:%{public}s, startTime:%{public}lld, "
+        "endTime:%{public}lld, result:%{public}d, errCode:%{public}d, ret:%{public}d",
         transId_.c_str(), apiName_.c_str(), SDK_NAME.c_str(), startTime_, endTime, result, errCode, ret);
 }
 }
