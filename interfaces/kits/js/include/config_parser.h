@@ -12,24 +12,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#ifndef APP_DOMAIN_VERIFY_MANAGER_API_EVENT_REPORTER_H
-#define APP_DOMAIN_VERIFY_MANAGER_API_EVENT_REPORTER_H
+#ifndef APP_DOMAIN_VERIFY_MANAGER_CONFIG_PARSER
+#define APP_DOMAIN_VERIFY_MANAGER_CONFIG_PARSER
 
+#include <map>
 #include <string>
+
 namespace OHOS::AppDomainVerify::Dfx {
-class ApiEventReporter {
+
+class ConfigParser {
 public:
-    explicit ApiEventReporter(const std::string& apiName);
-    ~ApiEventReporter() = default;
-    void WriteEndEvent(const int result, const int32_t errCode);
+    bool load(const std::string& filename);
+
+    std::string get(const std::string& key, const std::string& defaultValue = "") const;
 
 private:
-    int64_t AddProcessor();
+    static std::string trim(const std::string& str);
 
-private:
-    std::string transId_;
-    std::string apiName_;
-    int64_t startTime_;
+    std::map<std::string, std::string> configData;
 };
+
 }
-#endif  // APP_DOMAIN_VERIFY_MANAGER_API_EVENT_REPORTER_H
+#endif  // APP_DOMAIN_VERIFY_MANAGER_CONFIG_PARSER
