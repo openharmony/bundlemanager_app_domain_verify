@@ -86,7 +86,7 @@ int64_t ApiEventReporter::AddProcessor()
     return HiviewDFX::HiAppEvent::AppEventProcessorMgr::AddProcessor(config);
 }
 
-void ApiEventReporter::WriteEvent(const int result, const int32_t errCode)
+void ApiEventReporter::WriteEndEvent(const int result, const int32_t errCode)
 {
     int64_t endTime = std::chrono::duration_cast<std::chrono::milliseconds>(
         std::chrono::system_clock::now().time_since_epoch())
