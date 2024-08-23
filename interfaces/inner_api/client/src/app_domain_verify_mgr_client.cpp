@@ -21,6 +21,7 @@
 #include "zidl/convert_callback_stub.h"
 #include "regex.h"
 #include "comm_define.h"
+#include "ipc_skeleton.h"
 
 namespace OHOS {
 namespace AppDomainVerify {
@@ -180,7 +181,9 @@ void AppDomainVerifyMgrClient::ConvertToExplicitWant(AAFwk::Want& implicitWant, 
 #else
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "%s called", __func__);
     if (IsServiceAvailable()) {
+        std::string identity = IPCSkeleton::ResetCallingIdentity();
         appDomainVerifyMgrServiceProxy_->ConvertToExplicitWant(implicitWant, callback);
+        IPCSkeleton::SetCallingIdentity(identity);
     }
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "%s call end", __func__);
 #endif
@@ -253,7 +256,9 @@ bool AppDomainVerifyMgrClient::IsAtomicServiceUrl(const std::string& url)
     }
     bool ret{ false };
     if (IsServiceAvailable()) {
+        std::string identity = IPCSkeleton::ResetCallingIdentity();
         ret = appDomainVerifyMgrServiceProxy_->IsAtomicServiceUrl(uri.GetScheme() + "://" + uri.GetHost());
+        IPCSkeleton::SetCallingIdentity(identity);
     }
     APP_DOMAIN_VERIFY_HILOGI(
         APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "%s call end, IsAtomicServiceUrl:%{public}d", __func__, ret);
