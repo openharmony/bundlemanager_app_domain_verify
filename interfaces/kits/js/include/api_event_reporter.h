@@ -21,7 +21,7 @@ class ApiEventReporter {
 public:
     explicit ApiEventReporter(const std::string& apiName);
     ~ApiEventReporter() = default;
-    void WriteEvent(const int result, const int32_t errCode);
+    void WriteEndEvent(const int result, const int32_t errCode);
 
 private:
     int64_t AddProcessor();

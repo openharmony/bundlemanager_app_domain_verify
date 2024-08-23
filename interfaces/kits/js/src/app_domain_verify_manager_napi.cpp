@@ -77,22 +77,22 @@ napi_value QueryAssociatedDomains(napi_env env, napi_callback_info info)
     NAPI_CALL_BASE(env, napi_get_cb_info(env, info, &argc, args, nullptr, nullptr), nullptr);
     std::string bundleName = GetString(env, args[0]);
     if (!CheckInput(bundleName)) {
-        reporter.WriteEvent(API_FAIL, CommonErrorCode::E_PARAM_ERROR);
+        reporter.WriteEndEvent(API_FAIL, CommonErrorCode::E_PARAM_ERROR);
         return BuildError(env, CommonErrorCode::E_PARAM_ERROR);
     }
     std::vector<std::string> domains;
     auto ret = AppDomainVerifyMgrClient::GetInstance()->QueryAssociatedDomains(bundleName, domains);
     if (ret != 0) {
         if (ErrCodeMap.count(static_cast<CommonErrorCode>(ret)) != 0) {
-            reporter.WriteEvent(API_FAIL, static_cast<CommonErrorCode>(ret));
+            reporter.WriteEndEvent(API_FAIL, static_cast<CommonErrorCode>(ret));
             return BuildError(env, static_cast<CommonErrorCode>(ret));
         } else {
             APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "unknown error:%{public}d.", ret);
-            reporter.WriteEvent(API_FAIL, ret);
+            reporter.WriteEndEvent(API_FAIL, ret);
             return BuildStringArray(env, domains);
         }
     }
-    reporter.WriteEvent(API_SUCCESS, ret);
+    reporter.WriteEndEvent(API_SUCCESS, ret);
     return BuildStringArray(env, domains);
 }
 napi_value QueryAssociatedBundleNames(napi_env env, napi_callback_info info)
@@ -104,22 +104,22 @@ napi_value QueryAssociatedBundleNames(napi_env env, napi_callback_info info)
     NAPI_CALL_BASE(env, napi_get_cb_info(env, info, &argc, args, nullptr, nullptr), nullptr);
     std::string domain = GetString(env, args[0]);
     if (!CheckInput(domain)) {
-        reporter.WriteEvent(API_FAIL, CommonErrorCode::E_PARAM_ERROR);
+        reporter.WriteEndEvent(API_FAIL, CommonErrorCode::E_PARAM_ERROR);
         return BuildError(env, CommonErrorCode::E_PARAM_ERROR);
     }
     std::vector<std::string> bundleNames;
     auto ret = AppDomainVerifyMgrClient::GetInstance()->QueryAssociatedBundleNames(domain, bundleNames);
     if (ret != 0) {
         if (ErrCodeMap.count(static_cast<CommonErrorCode>(ret)) != 0) {
-            reporter.WriteEvent(API_FAIL, static_cast<CommonErrorCode>(ret));
+            reporter.WriteEndEvent(API_FAIL, static_cast<CommonErrorCode>(ret));
             return BuildError(env, static_cast<CommonErrorCode>(ret));
         } else {
             APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "unknown error:%{public}d.", ret);
-            reporter.WriteEvent(API_FAIL, ret);
+            reporter.WriteEndEvent(API_FAIL, ret);
             return BuildStringArray(env, bundleNames);
         }
     }
-    reporter.WriteEvent(API_SUCCESS, ret);
+    reporter.WriteEndEvent(API_SUCCESS, ret);
     return BuildStringArray(env, bundleNames);
 }
 }
