@@ -183,7 +183,9 @@ void AppDomainVerifyMgrClient::ConvertToExplicitWant(AAFwk::Want& implicitWant, 
 #else
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "called");
     if (IsServiceAvailable()) {
+        std::string identity = IPCSkeleton::ResetCallingIdentity();
         appDomainVerifyMgrServiceProxy_->ConvertToExplicitWant(implicitWant, callback);
+        IPCSkeleton::SetCallingIdentity(identity);
     }
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "call end");
 #endif
@@ -272,9 +274,7 @@ void AppDomainVerifyMgrClient::UpdateWhiteListUrls(const std::vector<std::string
 #else
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "called");
     if (IsServiceAvailable()) {
-        std::string identity = IPCSkeleton::ResetCallingIdentity();
         appDomainVerifyMgrServiceProxy_->UpdateWhiteListUrls(urls);
-        IPCSkeleton::SetCallingIdentity(identity);
     }
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "call end");
 #endif
