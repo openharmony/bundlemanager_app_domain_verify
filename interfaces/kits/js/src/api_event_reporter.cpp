@@ -89,8 +89,8 @@ void ApiEventReporter::WriteEvent(const int result, const int32_t errCode)
     event.AddParam("error_code", errCode);
     int ret = Write(event);
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MODULE_JS_NAPI,
-        "WriteEndEvent transId:%{public}s, apiName:%{public}s, sdkName:%{public}s, startTime:%{public}ld, "
-        "endTime:%{public}ld, result:%{public}d, errCode:%{public}d, ret:%{public}d",
+        "WriteEndEvent transId:%{public}s, apiName:%{public}s, sdkName:%{public}s, startTime:%{public}" PRId64 ", "
+        "endTime:%{public}" PRId64 ", result:%{public}d, errCode:%{public}d, ret:%{public}d",
         transId_.c_str(), apiName_.c_str(), SDK_NAME.c_str(), startTime_, endTime, result, errCode, ret);
 }
 }
