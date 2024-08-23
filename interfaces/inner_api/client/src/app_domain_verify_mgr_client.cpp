@@ -21,6 +21,7 @@
 #include "zidl/convert_callback_stub.h"
 #include "regex.h"
 #include "comm_define.h"
+#include "ipc_skeleton.h"
 #include "common_utils.h"
 
 namespace OHOS {
@@ -255,7 +256,9 @@ bool AppDomainVerifyMgrClient::IsAtomicServiceUrl(const std::string& url)
     }
     bool ret{ false };
     if (IsServiceAvailable()) {
+        std::string identity = IPCSkeleton::ResetCallingIdentity();
         ret = appDomainVerifyMgrServiceProxy_->IsAtomicServiceUrl(uri.GetScheme() + "://" + uri.GetHost());
+        IPCSkeleton::SetCallingIdentity(identity);
     }
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "call end, IsAtomicServiceUrl:%{public}d", ret);
     return ret;
@@ -269,7 +272,9 @@ void AppDomainVerifyMgrClient::UpdateWhiteListUrls(const std::vector<std::string
 #else
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "called");
     if (IsServiceAvailable()) {
+        std::string identity = IPCSkeleton::ResetCallingIdentity();
         appDomainVerifyMgrServiceProxy_->UpdateWhiteListUrls(urls);
+        IPCSkeleton::SetCallingIdentity(identity);
     }
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "call end");
 #endif
