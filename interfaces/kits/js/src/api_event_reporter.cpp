@@ -14,19 +14,22 @@
  */
 #include "api_event_reporter.h"
 #include <thread>
+#include <mutex>
 #include "app_event.h"
 #include "app_event_processor_mgr.h"
 #include "app_domain_verify_hilog.h"
-#include <mutex>
+#include "config_parser.h"
 
 namespace OHOS::AppDomainVerify::Dfx {
+#define API_REPORT_CONFIG_PATH "/system/etc/app_domain_verify/api_report.conf"
 static int64_t g_processId = -1;
 static std::mutex g_mutex;
 constexpr int TRIGGER_COND_TIMEOUT = 90;
 constexpr int TRIGGER_COND_ROW = 30;
 static const std::string SDK_NAME("AbilityKit");
 
-ApiEventReporter::ApiEventReporter(const std::string& apiName) : apiName_(apiName)
+ApiEventReporter::ApiEventReporter(const std::string& apiName)
+    : apiName_(apiName)
 {
     transId_ = std::string("transId_") + std::to_string(std::rand());
     startTime_ = std::chrono::duration_cast<std::chrono::milliseconds>(
@@ -41,12 +44,21 @@ ApiEventReporter::ApiEventReporter(const std::string& apiName) : apiName_(apiNam
 int64_t ApiEventReporter::AddProcessor()
 {
     HiviewDFX::HiAppEvent::ReportConfig config;
-    config.name = "ha_app_event";
-
+    config.appId = "app_domain_verify_ohos_sdk_ocg";
+    config.name = "app_domain_verify_processor";
+    ConfigParser parser;
+    if (parser.load(API_REPORT_CONFIG_PATH)) {
+        config.appId = parser.get("report_appId");
+        config.name = parser.get("report_name");
+    }
     config.routeInfo = "AUTO";
-
     config.triggerCond.timeout = TRIGGER_COND_TIMEOUT;
     config.triggerCond.row = TRIGGER_COND_ROW;
+
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MODULE_JS_NAPI,
+        "AddProcessor appId:%{public}s, name:%{public}s, routeInfo:%{public}s", config.appId.c_str(),
+        config.name.c_str(), config.routeInfo.c_str());
+
     config.eventConfigs.clear();
     {
         HiviewDFX::HiAppEvent::EventConfig event1;
@@ -89,8 +101,7 @@ void ApiEventReporter::WriteEvent(const int result, const int32_t errCode)
     event.AddParam("error_code", errCode);
     int ret = Write(event);
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MODULE_JS_NAPI,
-        "WriteEndEvent transId:%{public}s, apiName:%{public}s, sdkName:%{public}s, startTime:%{public}" PRId64 ", "
-        "endTime:%{public}" PRId64 ", result:%{public}d, errCode:%{public}d, ret:%{public}d",
-        transId_.c_str(), apiName_.c_str(), SDK_NAME.c_str(), startTime_, endTime, result, errCode, ret);
+        "WriteEndEvent transId:%{public}s, apiName:%{public}s, sdkName:%{public}s, result:%{public}d, errCode:%{public}d, ret:%{public}d",
+        transId_.c_str(), apiName_.c_str(), SDK_NAME.c_str(), result, errCode, ret);
 }
 }
