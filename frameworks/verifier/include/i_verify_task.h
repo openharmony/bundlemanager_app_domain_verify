@@ -17,7 +17,7 @@
 #define APP_DOMAIN_VERIFY_I_VERIFY_TASK_H
 #include "http_client_response.h"
 #include "http_client.h"
-#include "app_domain_verify_hisysevent.h"
+#include "dfx/app_domain_verify_hisysevent.h"
 #include "inner_verify_status.h"
 
 namespace OHOS {

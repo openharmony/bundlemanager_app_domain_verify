@@ -17,7 +17,7 @@
 #include "iservice_registry.h"
 #include "app_domain_verify_mgr_client.h"
 #include "system_ability_definition.h"
-#include "app_domain_verify_hisysevent.h"
+#include "dfx/app_domain_verify_hisysevent.h"
 #include "zidl/convert_callback_stub.h"
 #include "regex.h"
 #include "comm_define.h"
