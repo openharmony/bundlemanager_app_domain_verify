@@ -24,7 +24,7 @@
 #include "app_domain_verify_extension_mgr.h"
 #include "i_app_domain_verify_mgr_service.h"
 #include "app_domain_verify_task_mgr.h"
-#include "app_domain_verify_hisysevent.h"
+#include "dfx/app_domain_verify_hisysevent.h"
 
 namespace OHOS {
 namespace AppDomainVerify {
