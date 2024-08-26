@@ -30,6 +30,7 @@ config("module_private_config") {
     "${app_domain_verify_common_path}/include",
     "${app_domain_verify_frameworks_common_path}/include",
     "${app_domain_verify_frameworks_common_path}/include/utils",
+    "${app_domain_verify_frameworks_common_path}/include/dfx",
     "${app_domain_verify_frameworks_extension_path}/include",
     "${app_domain_verify_test_path}/mock/include",
   ]
@@ -62,6 +63,7 @@ ohos_unittest("app_domain_verify_agent_service_test") {
     "data_share:datashare_consumer",
     "eventhandler:libeventhandler",
     "ffrt:libffrt",
+    "hicollie:libhicollie",
     "hilog:libhilog",
     "hisysevent:libhisysevent",
     "image_framework:image_native",

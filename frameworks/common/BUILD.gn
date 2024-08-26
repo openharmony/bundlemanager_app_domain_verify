@@ -23,6 +23,7 @@ config("app_domain_verify_frameworks_common_config") {
     "include/bms",
     "include/zidl",
     "include/config",
+    "include/dfx",
   ]
   cflags = [
     "-fdata-sections",
@@ -52,6 +53,7 @@ ohos_shared_library("app_domain_verify_frameworks_common") {
     "bundle_framework:appexecfwk_core",
     "c_utils:utils",
     "ffrt:libffrt",
+    "hicollie:libhicollie",
     "hilog:libhilog",
     "ipc:ipc_core",
     "json:nlohmann_json_static",

@@ -46,7 +46,8 @@
         "data_share",
         "access_token",
         "eventhandler",
-        "hiappevent"
+        "hiappevent",
+        "hicollie"
       ],
       "third_party": [
         "openssl"
