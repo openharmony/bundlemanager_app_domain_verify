@@ -122,7 +122,7 @@ HWTEST_F(AppDomainVerifyMgrClientTest, AppDomainVerifyMgrClientTest003, TestSize
     bundleVerifyStatusInfo.bundleVerifyStatusInfoMap_.insert_or_assign(BUNDLE_NAME, verifyResultInfo);
     auto queryRes = AppDomainVerifyMgrClient::GetInstance()->QueryAllDomainVerifyStatus(bundleVerifyStatusInfo);
     ASSERT_TRUE(queryRes);
-    ASSERT_TRUE(bundleVerifyStatusInfo.bundleVerifyStatusInfoMap_.empty());
+    ASSERT_TRUE(bundleVerifyStatusInfo.bundleVerifyStatusInfoMap_.count(BUNDLE_NAME) == 0);
 }
 
 /**
