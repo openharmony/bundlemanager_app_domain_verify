@@ -30,6 +30,7 @@ constexpr const char* SETTINGS_DATA_COLUMN_KEYWORD = "KEYWORD";
 constexpr const char* SETTINGS_DATA_COLUMN_VALUE = "VALUE";
 constexpr const char* GET_DATA_SHARE = "get_data_share";
 constexpr const char* RELEASE_DATA_SHARE = "release_data_share";
+constexpr const char* QUERY_DATA_SHARE = "query_data_share";
 constexpr const int TIME_5_SECONDS = 5;
 SettingsDataShareHelper::SettingsDataShareHelper() = default;
 
@@ -74,6 +75,8 @@ std::shared_ptr<DataShare::DataShareHelper> SettingsDataShareHelper::GetDataShar
 int32_t SettingsDataShareHelper::Query(Uri& uri, const std::string& key, std::string& value)
 {
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "start Query");
+    auto id = XCollieHelper::SetTimer(QUERY_DATA_SHARE, TIME_5_SECONDS, nullptr, nullptr);
+    ScopeGuard stateGuard([&] { XCollieHelper::CancelTimer(id); });
     std::shared_ptr<DataShare::DataShareHelper> settingHelper = GetDataShareHelper();
     if (settingHelper == nullptr) {
         APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "query error, datashareHelper_ is nullptr");
