@@ -30,7 +30,7 @@
 namespace OHOS {
 namespace AppDomainVerify {
 
-static std::atomic<bool> needDoSync = false;
+static std::atomic<bool> needCheckOOBE = false;
 const bool REGISTER_RESULT = SystemAbility::MakeAndRegisterAbility(new AppDomainVerifyAgentService());
 constexpr int32_t UNLOAD_IMMEDIATELY = 0;
 constexpr int32_t UNLOAD_DELAY_TIME = 120000;  // 2min
@@ -159,7 +159,7 @@ void AppDomainVerifyAgentService::OnStart(const SystemAbilityOnDemandReason& sta
     } else {
         if (IsInOOBE()) {
             APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "OnStart is in OOBE, needDoSync.");
-            needDoSync = true;
+            needCheckOOBE = true;
         }
     }
 }
@@ -182,18 +182,20 @@ void AppDomainVerifyAgentService::OnStop()
 }
 bool AppDomainVerifyAgentService::ShouldRejectUnloadWhenOOBE()
 {
-    if (IsInOOBE()) {
-        APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "OnIdle is in OOBE, delay unload.");
-        needDoSync = true;
-        return true;
-    }
-    if (needDoSync) {
+    if (needCheckOOBE) {
+        if (IsInOOBE()) {
+            APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "OnIdle is in OOBE, delay unload.");
+            needCheckOOBE = true;
+            return true;
+        }
         DoSync(EnumTaskType::BOOT_REFRESH_TASK);
-        needDoSync = false;
+        needCheckOOBE = false;
         APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "OnIdle do sync submit, delay unload once.");
         return true;
+    } else {
+        APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "OnIdle no need check oobe status.");
+        return false;
     }
-    return false;
 }
 int32_t AppDomainVerifyAgentService::OnIdle(const SystemAbilityOnDemandReason& idleReason)
 {
