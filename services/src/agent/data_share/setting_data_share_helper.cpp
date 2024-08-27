@@ -75,9 +75,9 @@ std::shared_ptr<DataShare::DataShareHelper> SettingsDataShareHelper::GetDataShar
 int32_t SettingsDataShareHelper::Query(Uri& uri, const std::string& key, std::string& value)
 {
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "start Query");
+    std::shared_ptr<DataShare::DataShareHelper> settingHelper = GetDataShareHelper();
     auto id = XCollieHelper::SetTimer(QUERY_DATA_SHARE, TIME_5_SECONDS, nullptr, nullptr);
     ScopeGuard stateGuard([&] { XCollieHelper::CancelTimer(id); });
-    std::shared_ptr<DataShare::DataShareHelper> settingHelper = GetDataShareHelper();
     if (settingHelper == nullptr) {
         APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "query error, datashareHelper_ is nullptr");
         return -1;
@@ -99,7 +99,7 @@ int32_t SettingsDataShareHelper::Query(Uri& uri, const std::string& key, std::st
         result->Close();
         return 0;
     }
-
+    std::this_thread::sleep_for(std::chrono::seconds(6));
     if (result->GoToFirstRow() != DataShare::E_OK) {
         APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "query error, go to first row error");
         result->Close();
