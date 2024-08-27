@@ -99,7 +99,6 @@ int32_t SettingsDataShareHelper::Query(Uri& uri, const std::string& key, std::st
         result->Close();
         return 0;
     }
-    std::this_thread::sleep_for(std::chrono::seconds(6));
     if (result->GoToFirstRow() != DataShare::E_OK) {
         APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "query error, go to first row error");
         result->Close();
