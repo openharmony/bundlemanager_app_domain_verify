@@ -59,6 +59,7 @@ ohos_unittest("app_domain_verify_module_test") {
     "c_utils:utils",
     "eventhandler:libeventhandler",
     "ffrt:libffrt",
+    "hicollie:libhicollie",
     "hilog:libhilog",
     "hisysevent:libhisysevent",
     "image_framework:image_native",

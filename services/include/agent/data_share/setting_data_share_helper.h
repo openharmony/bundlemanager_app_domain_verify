@@ -33,7 +33,8 @@ public:
     int Query(Uri& uri, const std::string& key, std::string& values);
 
 private:
-    std::shared_ptr<DataShare::DataShareHelper> CreateDataShareHelper(int systemAbilityId);
+    std::shared_ptr<DataShare::DataShareHelper> GetDataShareHelper();
+    std::shared_ptr<DataShare::DataShareHelper> dataShareHelper_;
 };
 }
 #endif  // APP_DOMAIN_VERIFY_SETTINGDATASHAREHELPER_H

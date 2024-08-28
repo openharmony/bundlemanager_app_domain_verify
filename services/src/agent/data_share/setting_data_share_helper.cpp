@@ -19,6 +19,8 @@
 #include "uri.h"
 #include "singleton.h"
 #include "app_domain_verify_hilog.h"
+#include "app_domain_verify_xcollie_helper.h"
+#include "scope_guard.h"
 
 namespace OHOS::AppDomainVerify {
 const std::string SettingsDataShareHelper::SETTINGS_DATASHARE_URI =
@@ -26,32 +28,56 @@ const std::string SettingsDataShareHelper::SETTINGS_DATASHARE_URI =
 const std::string SETTINGS_DATASHARE_EXT_URI = "datashare:///com.ohos.settingsdata.DataAbility";
 constexpr const char* SETTINGS_DATA_COLUMN_KEYWORD = "KEYWORD";
 constexpr const char* SETTINGS_DATA_COLUMN_VALUE = "VALUE";
-
+constexpr const char* GET_DATA_SHARE = "get_data_share";
+constexpr const char* RELEASE_DATA_SHARE = "release_data_share";
+constexpr const char* QUERY_DATA_SHARE = "query_data_share";
+constexpr const int TIME_5_SECONDS = 5;
 SettingsDataShareHelper::SettingsDataShareHelper() = default;
 
-SettingsDataShareHelper::~SettingsDataShareHelper() = default;
-
-std::shared_ptr<DataShare::DataShareHelper> SettingsDataShareHelper::CreateDataShareHelper(int systemAbilityId)
+SettingsDataShareHelper::~SettingsDataShareHelper()
 {
-    sptr<ISystemAbilityManager> saManager = SystemAbilityManagerClient::GetInstance().GetSystemAbilityManager();
-    if (saManager == nullptr) {
-        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "GetSystemAbilityManager failed.");
-        return nullptr;
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "~SettingsDataShareHelper");
+    if (dataShareHelper_) {
+        APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "~SettingsDataShareHelper release datashare");
+        auto id = XCollieHelper::SetTimer(RELEASE_DATA_SHARE, TIME_5_SECONDS, nullptr, nullptr);
+        dataShareHelper_->Release();
+        XCollieHelper::CancelTimer(id);
     }
-    sptr<IRemoteObject> remote = saManager->GetSystemAbility(systemAbilityId);
-    if (remote == nullptr) {
-        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "GetSystemAbility Service Failed.");
-        return nullptr;
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "~SettingsDataShareHelper end");
+};
+
+std::shared_ptr<DataShare::DataShareHelper> SettingsDataShareHelper::GetDataShareHelper()
+{
+    if (dataShareHelper_ != nullptr) {
+        return dataShareHelper_;
     }
-    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "systemAbilityId = %{public}d", systemAbilityId);
-    return DataShare::DataShareHelper::Creator(remote, SETTINGS_DATASHARE_URI, SETTINGS_DATASHARE_EXT_URI);
+    auto id = XCollieHelper::SetTimer(GET_DATA_SHARE, TIME_5_SECONDS, nullptr, nullptr);
+    ScopeGuard stateGuard([&] { XCollieHelper::CancelTimer(id); });
+    {
+        sptr<ISystemAbilityManager> saManager = SystemAbilityManagerClient::GetInstance().GetSystemAbilityManager();
+        if (saManager == nullptr) {
+            APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "GetSystemAbilityManager failed.");
+            return nullptr;
+        }
+        sptr<IRemoteObject> remote = saManager->GetSystemAbility(APP_DOMAIN_VERIFY_AGENT_SA_ID);
+        if (remote == nullptr) {
+            APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "GetSystemAbility Service Failed.");
+            return nullptr;
+        }
+        APP_DOMAIN_VERIFY_HILOGI(
+            APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "systemAbilityId = %{public}d", APP_DOMAIN_VERIFY_AGENT_SA_ID);
+        dataShareHelper_ = DataShare::DataShareHelper::Creator(
+            remote, SETTINGS_DATASHARE_URI, SETTINGS_DATASHARE_EXT_URI);
+    }
+    return dataShareHelper_;
 }
 
 int32_t SettingsDataShareHelper::Query(Uri& uri, const std::string& key, std::string& value)
 {
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "start Query");
-    std::shared_ptr<DataShare::DataShareHelper> settingHelper = CreateDataShareHelper(
-        APP_DOMAIN_VERIFY_AGENT_SA_ID);
+    std::shared_ptr<DataShare::DataShareHelper> settingHelper = GetDataShareHelper();
+    auto id = XCollieHelper::SetTimer(QUERY_DATA_SHARE, TIME_5_SECONDS, nullptr, nullptr);
+    ScopeGuard stateGuard([&] { XCollieHelper::CancelTimer(id); });
     if (settingHelper == nullptr) {
         APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "query error, datashareHelper_ is nullptr");
         return -1;
@@ -63,7 +89,6 @@ int32_t SettingsDataShareHelper::Query(Uri& uri, const std::string& key, std::st
     auto result = settingHelper->Query(uri, predicates, columns);
     if (result == nullptr) {
         APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "query error, result is nullptr");
-        settingHelper->Release();
         return -1;
     }
 
@@ -71,14 +96,12 @@ int32_t SettingsDataShareHelper::Query(Uri& uri, const std::string& key, std::st
     result->GetRowCount(rowCount);
     if (rowCount == 0) {
         APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "query success, but rowCount is 0");
-        settingHelper->Release();
+        result->Close();
         return 0;
     }
-
     if (result->GoToFirstRow() != DataShare::E_OK) {
         APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "query error, go to first row error");
         result->Close();
-        settingHelper->Release();
         return -1;
     }
 
@@ -86,8 +109,8 @@ int32_t SettingsDataShareHelper::Query(Uri& uri, const std::string& key, std::st
     result->GetColumnIndex(SETTINGS_DATA_COLUMN_VALUE, columnIndex);
     result->GetString(columnIndex, value);
     result->Close();
-    settingHelper->Release();
-    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "SettingUtils: query success");
+    APP_DOMAIN_VERIFY_HILOGI(
+        APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "SettingUtils: query success %{public}s", value.c_str());
     return 0;
 }
 }
