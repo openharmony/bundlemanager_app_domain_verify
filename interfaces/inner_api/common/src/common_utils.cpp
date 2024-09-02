@@ -16,16 +16,16 @@
 #include "common_utils.h"
 namespace OHOS::AppDomainVerify {
 constexpr int MAX_STEP = 3;
-constexpr size_t MAX_MASK_LEN = 50;
+constexpr size_t MAX_MASK_LEN = 100;
 std::string MaskStr(const std::string& input)
 {
     if (input.empty()) {
         return "";
     }
     auto len = input.length();
-    len = std::min(len, MAX_MASK_LEN);
+    auto maskLen = std::min(len, MAX_MASK_LEN);
     auto ret = input;
-    for (auto i = 0; i < len; i++) {
+    for (auto i = 0; i < maskLen; i++) {
         if (i % MAX_STEP == 0) {
             ret[i] = input[i];
         } else {

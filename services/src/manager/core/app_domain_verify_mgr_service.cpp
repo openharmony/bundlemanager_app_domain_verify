@@ -146,7 +146,7 @@ bool AppDomainVerifyMgrService::SaveDomainVerifyStatus(
     bool res = dataManager_->SaveVerifyStatus(bundleName, verifyResultInfo);
     if (res) {
         APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE,
-            "Verification bundleName:%{public}s, result:%{public}s", bundleName.c_str(),
+            "package verify result bundleName:%{public}s\n%{public}s", bundleName.c_str(),
             verifyResultInfo.Dump().c_str());
     }
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "call end");

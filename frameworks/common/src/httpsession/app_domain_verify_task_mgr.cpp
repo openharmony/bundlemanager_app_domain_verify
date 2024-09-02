@@ -153,7 +153,7 @@ std::function<void()> AppDomainVerifyTaskMgr::GetTaskWrapper(const std::shared_p
             });
         clientTask->OnDataReceive(
             [&clientTask, &httpTask](const HttpClientRequest& request, const uint8_t* data, size_t length) {
-                APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "OnDataReceive");
+                APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "OnDataReceive");
                 httpTask->OnDataReceive(clientTask, request, data, length);
             });
         clientTask->Start();
