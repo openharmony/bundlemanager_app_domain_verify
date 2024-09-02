@@ -58,12 +58,12 @@ void WhiteListConfigMgr::LoadDynamic()
 }
 void WhiteListConfigMgr::Load()
 {
-    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MODULE_COMMON, "%s called", __func__);
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MODULE_COMMON, "called");
     std::lock_guard<std::mutex> lock(initLock);
     LoadDefault();
     LoadDynamic();
     init = true;
-    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MODULE_COMMON, "%s called end", __func__);
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MODULE_COMMON, "called end");
 }
 void WhiteListConfigMgr::Split(std::string src)
 {
@@ -101,7 +101,7 @@ std::shared_ptr<NativePreferences::Preferences> WhiteListConfigMgr::GetPreferenc
 }
 bool WhiteListConfigMgr::Save()
 {
-    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MODULE_COMMON, "%s called", __func__);
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MODULE_COMMON, "called");
     if (preferences_ == nullptr) {
         APP_DOMAIN_VERIFY_HILOGW(APP_DOMAIN_VERIFY_MODULE_COMMON, "preferences null");
         return false;
@@ -119,7 +119,7 @@ bool WhiteListConfigMgr::Save()
 
 bool WhiteListConfigMgr::IsInWhiteList(const std::string& url)
 {
-    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s called", __func__);
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "called");
     if (!init) {
         Load();
     }
@@ -136,7 +136,7 @@ bool WhiteListConfigMgr::IsInWhiteList(const std::string& url)
 }
 void WhiteListConfigMgr::UpdateWhiteList(const std::unordered_set<std::string>& whiteList)
 {
-    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s called", __func__);
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "called");
     if (!init) {
         Load();
     }

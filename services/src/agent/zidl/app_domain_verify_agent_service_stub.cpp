@@ -60,7 +60,7 @@ int32_t AppDomainVerifyAgentServiceStub::OnRemoteRequest(
 
 int32_t AppDomainVerifyAgentServiceStub::OnSingleVerify(MessageParcel& data, MessageParcel& reply)
 {
-    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "%s called", __func__);
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "called");
     std::unique_ptr<AppVerifyBaseInfo> info(data.ReadParcelable<AppVerifyBaseInfo>());
     if (!info) {
         APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "read parcelable AppVerifyBaseInfo failed.");
@@ -82,12 +82,12 @@ int32_t AppDomainVerifyAgentServiceStub::OnSingleVerify(MessageParcel& data, Mes
         skillUris.emplace_back(*skillUri);
     }
     SingleVerify(appVerifyBaseInfo, skillUris);
-    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "%s call end", __func__);
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "call end");
     return ERR_OK;
 }
 int32_t AppDomainVerifyAgentServiceStub::OnConvertToExplicitWant(MessageParcel& data, MessageParcel& reply)
 {
-    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s called", __func__);
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "called");
     OHOS::AAFwk::Want want;
     std::unique_ptr<OHOS::AAFwk::Want> w(data.ReadParcelable<OHOS::AAFwk::Want>());
     if (!w) {
@@ -102,12 +102,12 @@ int32_t AppDomainVerifyAgentServiceStub::OnConvertToExplicitWant(MessageParcel& 
     }
     sptr<IConvertCallback> cleanCacheCallback = iface_cast<IConvertCallback>(object);
     ConvertToExplicitWant(want, cleanCacheCallback);
-    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s call end", __func__);
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "call end");
     return ERR_OK;
 }
 void AppDomainVerifyAgentServiceStub::PostDelayUnloadTask()
 {
-    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "%s called", __func__);
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "called");
     if (runner_ == nullptr) {
         runner_ = AppExecFwk::EventRunner::Create("unload", AppExecFwk::ThreadMode::FFRT);
     }

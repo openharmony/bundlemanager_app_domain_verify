@@ -138,7 +138,8 @@ std::function<void()> AppDomainVerifyTaskMgr::GetTaskWrapper(const std::shared_p
             });
         clientTask->OnFail([&taskMap, httpTask, &promise, seq](const HttpClientRequest& request,
                                const HttpClientResponse& response, const HttpClientError& error) {
-            APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "OnFail");
+            APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE,
+                "OnFail, error code:%{public}d, msg:%{public}s", error.GetErrorCode(), error.GetErrorMessage().c_str());
             httpTask->OnFail(request, response, error);
             AutoSeqReleaser releaser(taskMap, seq);
             promise.set_value();
