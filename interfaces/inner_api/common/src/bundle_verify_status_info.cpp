@@ -62,8 +62,8 @@ std::string VerifyResultInfo::Dump() const
 {
     std::string dumpStr = "appIdentifier:" + appIdentifier + "\n";
     for (const auto& hostVerifyStatus : hostVerifyStatusMap) {
-        dumpStr + "    " + "domain:" + hostVerifyStatus.first + " status:" + std::to_string(hostVerifyStatus.second) +
-            ";\n";
+        dumpStr = dumpStr + "    " + "domain:" + hostVerifyStatus.first +
+            " status:" + InnerVerifyStatusMap[hostVerifyStatus.second] + ";\n";
     }
     return dumpStr;
 }
