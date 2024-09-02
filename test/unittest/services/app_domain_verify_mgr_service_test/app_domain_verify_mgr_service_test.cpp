@@ -50,7 +50,7 @@ public:
 
 int InvokeSingleVerifyOK(uint32_t code, MessageParcel& data, MessageParcel& reply, MessageOption& option)
 {
-    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MODULE_BUTT, "%s call end", __func__);
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MODULE_BUTT, "call end");
     std::string bundleName = BUNDLE_NAME;
     VerifyResultInfo verifyResultInfo;
     verifyResultInfo.hostVerifyStatusMap.insert_or_assign("https://" + HOST, InnerVerifyStatus::STATE_SUCCESS);
@@ -60,7 +60,7 @@ int InvokeSingleVerifyOK(uint32_t code, MessageParcel& data, MessageParcel& repl
 
 int InvokeSingleVerifyFail(uint32_t code, MessageParcel& data, MessageParcel& reply, MessageOption& option)
 {
-    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MODULE_BUTT, "%s call end", __func__);
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MODULE_BUTT, "call end");
     std::string bundleName = BUNDLE_NAME;
     VerifyResultInfo verifyResultInfo;
     verifyResultInfo.hostVerifyStatusMap.insert_or_assign("https://" + HOST, InnerVerifyStatus::STATE_FAIL);

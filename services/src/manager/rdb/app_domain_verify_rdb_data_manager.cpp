@@ -57,7 +57,7 @@ AppDomainVerifyRdbDataManager::~AppDomainVerifyRdbDataManager()
 
 bool AppDomainVerifyRdbDataManager::InsertData(const RdbDataItem& rdbDataItem)
 {
-    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s called", __func__);
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "called");
     auto rdbStore = GetRdbStore();
     if (!CheckRdbStoreExist(rdbStore)) {
         return false;
@@ -70,14 +70,14 @@ bool AppDomainVerifyRdbDataManager::InsertData(const RdbDataItem& rdbDataItem)
     valuesBucket.PutInt(DB_STATUES, rdbDataItem.status);
     auto ret = rdbStore->InsertWithConflictResolution(
         rowId, appDomainVerifyRdbConfig_.tableName, valuesBucket, NativeRdb::ConflictResolution::ON_CONFLICT_REPLACE);
-    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s call end", __func__);
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "call end");
     return CheckRdbReturnIfOk(ret);
 }
 
 bool AppDomainVerifyRdbDataManager::QueryDomainByBundleName(
     const std::string& bundleName, std::vector<RdbDataItem>& items)
 {
-    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s called", __func__);
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "called");
     NativeRdb::AbsRdbPredicates absRdbPredicates(appDomainVerifyRdbConfig_.tableName);
     absRdbPredicates.EqualTo(DB_BUNDLE_NAME, bundleName)->And()->EqualTo(DB_STATUES, InnerVerifyStatus::STATE_SUCCESS);
     std::vector<std::string> columns = {};
@@ -85,7 +85,7 @@ bool AppDomainVerifyRdbDataManager::QueryDomainByBundleName(
 }
 bool AppDomainVerifyRdbDataManager::QueryBundleNameByDomain(const std::string& domain, std::vector<RdbDataItem>& items)
 {
-    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s called", __func__);
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "called");
     NativeRdb::AbsRdbPredicates absRdbPredicates(appDomainVerifyRdbConfig_.tableName);
     absRdbPredicates.EqualTo(DB_DOMAIN, domain)->And()->EqualTo(DB_STATUES, InnerVerifyStatus::STATE_SUCCESS);
     std::vector<std::string> columns = {};
@@ -95,7 +95,7 @@ bool AppDomainVerifyRdbDataManager::QueryBundleNameByDomain(const std::string& d
 bool AppDomainVerifyRdbDataManager::Query(const NativeRdb::AbsRdbPredicates& predicates,
     const std::vector<std::string>& columns, std::vector<RdbDataItem>& items)
 {
-    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s called", __func__);
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "called");
     auto rdbStore = GetRdbStore();
     if (!CheckRdbStoreExist(rdbStore)) {
         return false;
@@ -125,12 +125,12 @@ bool AppDomainVerifyRdbDataManager::Query(const NativeRdb::AbsRdbPredicates& pre
     } else {
         APP_DOMAIN_VERIFY_HILOGW(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "GoToFirstRow fail, seems rdb table is empty");
     }
-    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s call end", __func__);
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "call end");
     return true;
 }
 bool AppDomainVerifyRdbDataManager::DeleteData(const std::string& bundleName)
 {
-    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s called", __func__);
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "called");
     auto rdbStore = GetRdbStore();
     if (!CheckRdbStoreExist(rdbStore)) {
         return false;
@@ -139,13 +139,13 @@ bool AppDomainVerifyRdbDataManager::DeleteData(const std::string& bundleName)
     NativeRdb::AbsRdbPredicates absRdbPredicates(appDomainVerifyRdbConfig_.tableName);
     absRdbPredicates.EqualTo(DB_BUNDLE_NAME, bundleName);
     auto ret = rdbStore->Delete(rowId, absRdbPredicates);
-    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s call end", __func__);
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "call end");
     return CheckRdbReturnIfOk(ret);
 }
 
 bool AppDomainVerifyRdbDataManager::QueryAllData(std::unordered_map<std::string, std::vector<RdbDataItem>>& dataMap)
 {
-    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s called", __func__);
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "called");
     auto rdbStore = GetRdbStore();
     if (!CheckRdbStoreExist(rdbStore)) {
         return false;
@@ -169,7 +169,7 @@ bool AppDomainVerifyRdbDataManager::QueryAllData(std::unordered_map<std::string,
         }
     }
 
-    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s call end", __func__);
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "call end");
     return true;
 }
 
@@ -192,7 +192,7 @@ bool AppDomainVerifyRdbDataManager::CreateTable()
 
 void AppDomainVerifyRdbDataManager::DelayCloseRdbStore()
 {
-    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s called", __func__);
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "called");
     if (continuationHandler_ == nullptr) {
         continuationHandler_ = std::make_shared<ffrt::queue>("RdbContinuationMgr");
     }
@@ -209,12 +209,12 @@ void AppDomainVerifyRdbDataManager::DelayCloseRdbStore()
         APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "DelayCloseRdbStore thread end");
     };
     continuationHandler_->submit(func);
-    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s call end", __func__);
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "call end");
 }
 
 std::shared_ptr<NativeRdb::RdbStore> AppDomainVerifyRdbDataManager::GetRdbStore()
 {
-    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s called", __func__);
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "called");
     std::lock_guard<std::mutex> lock(rdbMutex_);
     if (rdbStore_ != nullptr) {
         return rdbStore_;
@@ -226,7 +226,7 @@ std::shared_ptr<NativeRdb::RdbStore> AppDomainVerifyRdbDataManager::GetRdbStore(
     rdbStore_ = NativeRdb::RdbHelper::GetRdbStore(
         rdbStoreConfig, appDomainVerifyRdbConfig_.version, appDomainVerifyRdbOpenCallback, errCode);
     DelayCloseRdbStore();
-    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s call end", __func__);
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "call end");
     return rdbStore_;
 }
 
