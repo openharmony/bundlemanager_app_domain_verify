@@ -13,25 +13,10 @@
  * limitations under the License.
  */
 
-#ifndef APP_DOMAIN_VERIFY_URL_UTIL_H
-#define APP_DOMAIN_VERIFY_URL_UTIL_H
-
+#ifndef APP_DOMAIN_VERIFY_COMMON_UTILS_H
+#define APP_DOMAIN_VERIFY_COMMON_UTILS_H
 #include <string>
-
-namespace OHOS {
-namespace AppDomainVerify {
-class UrlUtil {
-public:
-    static bool IsValidAppDomainVerifyHost(const std::string& host);
-    static bool IsValidUrl(const std::string& url);
-    static std::string GetHost(const std::string& url);
-    static std::string GetScheme(const std::string& url);
-
-private:
-    UrlUtil(){};
-    ~UrlUtil(){};
-};
+namespace OHOS::AppDomainVerify {
+std::string MaskStr(const std::string& input);
 }
-}
-
-#endif
+#endif  // APP_DOMAIN_VERIFY_COMMON_UTILS_H

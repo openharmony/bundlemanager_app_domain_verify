@@ -44,11 +44,11 @@ AppDomainVerifyAgentClient::~AppDomainVerifyAgentClient()
 void AppDomainVerifyAgentClient::SingleVerify(const AppVerifyBaseInfo &appVerifyBaseInfo,
     const std::vector<SkillUri> &skillUris)
 {
-    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_AGENT_MODULE_CLIENT, "%s called", __func__);
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_AGENT_MODULE_CLIENT, "called");
     if (IsServiceAvailable()) {
         agentServiceProxy_->SingleVerify(appVerifyBaseInfo, skillUris);
     }
-    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_AGENT_MODULE_CLIENT, "%s call end", __func__);
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_AGENT_MODULE_CLIENT, "call end");
 }
 
 bool AppDomainVerifyAgentClient::IsServiceAvailable()
@@ -105,11 +105,11 @@ void AppDomainVerifyAgentClient::OnRemoteSaDied(const wptr<IRemoteObject> &objec
 
 void AppDomainVerifyAgentClient::ConvertToExplicitWant(AAFwk::Want& implicitWant, sptr<IConvertCallback>& callback)
 {
-    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "%s called", __func__);
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "called");
     if (IsServiceAvailable()) {
         agentServiceProxy_->ConvertToExplicitWant(implicitWant, callback);
     }
-    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "%s call end", __func__);
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "call end");
 }
 
 AgentSaDeathRecipient::AgentSaDeathRecipient()

@@ -31,7 +31,7 @@ const std::string FUZZY_HOST_START = "*.";
 
 void VerifyTask::OnPostVerify(const std::string& uri, const OHOS::NetStack::HttpClient::HttpClientResponse& response)
 {
-    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "%s called", __func__);
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "called");
     auto status = DomainVerifier::VerifyHost(response.GetResponseCode(), response.GetResult(), appVerifyBaseInfo_);
     uriVerifyMap_.insert_or_assign(uri, status);
     unVerifiedSet_.erase(uri);
@@ -42,18 +42,18 @@ void VerifyTask::OnPostVerify(const std::string& uri, const OHOS::NetStack::Http
 }
 void VerifyTask::OnSaveVerifyResult()
 {
-    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "%s called", __func__);
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "called");
     VerifyResultInfo verifyResultInfo;
     verifyResultInfo.appIdentifier = appVerifyBaseInfo_.appIdentifier;
     verifyResultInfo.hostVerifyStatusMap = uriVerifyMap_;
     if (!SaveDomainVerifyStatus(appVerifyBaseInfo_.bundleName, verifyResultInfo)) {
         APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "SaveVerifyResult failed");
     }
-    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "%s call end", __func__);
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "call end");
 }
 bool VerifyTask::OnPreRequest(OHOS::NetStack::HttpClient::HttpClientRequest& request, const std::string& uri)
 {
-    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "%s called", __func__);
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "called");
     request.SetURL(uri + ApplinkingAssetKeys::ASSET_PATH + ApplinkingAssetKeys::ASSET_NAME);
     request.SetMethod("GET");
     return true;
@@ -68,7 +68,7 @@ const std::unordered_map<std::string, InnerVerifyStatus>& VerifyTask::GetUriVeri
 }
 void VerifyTask::InitUriVerifyMap(const std::vector<SkillUri>& skillUris)
 {
-    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "%s called", __func__);
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "called");
     for (auto it = skillUris.begin(); it != skillUris.end(); ++it) {
         if (it->scheme.empty() || it->host.empty() || !UrlUtil::IsValidAppDomainVerifyHost(it->host) ||
             SCHEME_WHITE_SET.find(it->scheme) == SCHEME_WHITE_SET.end()) {
@@ -86,7 +86,7 @@ void VerifyTask::InitUriVerifyMap(const std::vector<SkillUri>& skillUris)
         uriVerifyMap_.insert(make_pair(uri, InnerVerifyStatus::UNKNOWN));
         unVerifiedSet_.insert(uri);
     }
-    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "%s call end", __func__);
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "call end");
 }
 VerifyTask::VerifyTask(OHOS::AppDomainVerify::TaskType type, const AppVerifyBaseInfo& appVerifyBaseInfo,
     const std::vector<SkillUri>& skillUris)

@@ -34,7 +34,7 @@ AppDomainVerifyDataMgr::~AppDomainVerifyDataMgr()
 
 bool AppDomainVerifyDataMgr::GetVerifyStatus(const std::string& bundleName, VerifyResultInfo& verifyResultInfo)
 {
-    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s called", __func__);
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "called");
     std::string key;
     if (!GetParamKey(bundleName, key)) {
         APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "key is empty");
@@ -45,7 +45,7 @@ bool AppDomainVerifyDataMgr::GetVerifyStatus(const std::string& bundleName, Veri
     if (it != verifyMap_->end()) {
         verifyResultInfo = it->second;
     }
-    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s call end", __func__);
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "call end");
     return true;
 }
 bool AppDomainVerifyDataMgr::VerifyResultInfoToDB(
@@ -81,7 +81,7 @@ bool AppDomainVerifyDataMgr::DBToVerifyResultInfo(
 }
 bool AppDomainVerifyDataMgr::SaveVerifyStatus(const std::string& bundleName, const VerifyResultInfo& verifyResultInfo)
 {
-    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s called", __func__);
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "called");
     std::string key;
     if (!GetParamKey(bundleName, key)) {
         APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "key is empty!");
@@ -112,13 +112,13 @@ bool AppDomainVerifyDataMgr::SaveVerifyStatus(const std::string& bundleName, con
         APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "InnerVerifyStatus save to db failed");
         return false;
     }
-    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s call end", __func__);
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "call end");
     return true;
 }
 
 bool AppDomainVerifyDataMgr::DeleteVerifyStatus(const std::string& bundleName)
 {
-    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s called", __func__);
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "called");
 
     std::string key;
     if (!GetParamKey(bundleName, key)) {
@@ -135,7 +135,7 @@ bool AppDomainVerifyDataMgr::DeleteVerifyStatus(const std::string& bundleName)
         APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "InnerVerifyStatus db delete failed");
         return false;
     }
-    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s call end", __func__);
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "call end");
     return true;
 }
 
@@ -179,7 +179,7 @@ bool AppDomainVerifyDataMgr::LoadAllFromRdb()
 }
 bool AppDomainVerifyDataMgr::QueryAssociatedDomains(const std::string& bundleName, std::vector<std::string>& domains)
 {
-    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s called", __func__);
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "called");
     std::vector<RdbDataItem> items;
     if (!rdbDataManager_->QueryDomainByBundleName(bundleName, items)) {
         return false;
@@ -187,13 +187,13 @@ bool AppDomainVerifyDataMgr::QueryAssociatedDomains(const std::string& bundleNam
     for (const auto& item : items) {
         domains.emplace_back(item.domain);
     }
-    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s end", __func__);
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "call end");
     return true;
 }
 bool AppDomainVerifyDataMgr::QueryAssociatedBundleNames(
     const std::string& domain, std::vector<std::string>& bundleNames)
 {
-    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s called", __func__);
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "called");
     std::vector<RdbDataItem> items;
     if (!rdbDataManager_->QueryBundleNameByDomain(domain, items)) {
         return false;
@@ -201,7 +201,7 @@ bool AppDomainVerifyDataMgr::QueryAssociatedBundleNames(
     for (const auto& item : items) {
         bundleNames.emplace_back(item.bundleName);
     }
-    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s end", __func__);
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "call end");
     return true;
 }
 }  // namespace AppDomainVerify

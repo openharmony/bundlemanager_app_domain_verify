@@ -26,7 +26,7 @@ namespace OHOS {
 namespace AppDomainVerify {
 bool BundleInfoQuery::GetBundleInfo(const std::string &bundleName, std::string &appIdentifier, std::string &fingerprint)
 {
-    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "%s called", __func__);
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "called");
     sptr<AppExecFwk::IBundleMgr> bundleMgrProxy = GetBundleMgrProxy();
 
     if (bundleMgrProxy == nullptr) {
@@ -46,13 +46,13 @@ bool BundleInfoQuery::GetBundleInfo(const std::string &bundleName, std::string &
     }
     appIdentifier = bundleInfo.signatureInfo.appIdentifier;
     fingerprint = bundleInfo.signatureInfo.fingerprint;
-    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "%s call end", __func__);
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "call end");
     return true;
 }
 
 sptr<AppExecFwk::IBundleMgr> BundleInfoQuery::GetBundleMgrProxy()
 {
-    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "%s called", __func__);
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "called");
     sptr<ISystemAbilityManager> systemAbilityManager =
         SystemAbilityManagerClient::GetInstance().GetSystemAbilityManager();
     if (!systemAbilityManager) {
@@ -65,13 +65,13 @@ sptr<AppExecFwk::IBundleMgr> BundleInfoQuery::GetBundleMgrProxy()
         APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "GetBundleMgrProxy, remoteObject is null");
         return nullptr;
     }
-    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "%s call end", __func__);
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "call end");
     return iface_cast<AppExecFwk::IBundleMgr>(remoteObject);
 }
 
 int32_t BundleInfoQuery::GetCurrentAccountId()
 {
-    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "%s called", __func__);
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "called");
     std::vector<int32_t> osAccountIds;
     ErrCode ret = AccountSA::OsAccountManager::QueryActiveOsAccountIds(osAccountIds);
     if (ret != ERR_OK) {
@@ -87,7 +87,7 @@ int32_t BundleInfoQuery::GetCurrentAccountId()
     auto iter = std::find_if(osAccountIds.cbegin(), osAccountIds.cend(),
         [](const int32_t &accountId) { return accountId >= 0; });
     if (iter != osAccountIds.end()) {
-        APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "%s call end", __func__);
+        APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "call end");
         return *iter;
     }
     APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE,
