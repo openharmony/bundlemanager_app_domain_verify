@@ -42,6 +42,7 @@ config("app_domain_verify_extension_public_config") {
 }
 
 ohos_shared_library("app_domain_verify_extension_framework") {
+  branch_protector_ret = "pac_ret"
   sources = [
     "src/app_domain_verify_agent_ext.cpp",
     "src/app_domain_verify_extension_mgr.cpp",
