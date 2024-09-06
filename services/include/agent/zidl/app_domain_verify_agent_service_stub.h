@@ -25,18 +25,13 @@ namespace OHOS {
 namespace AppDomainVerify {
 class AppDomainVerifyAgentServiceStub : public IRemoteStub<IAppDomainVerifyAgentService> {
 public:
-    AppDomainVerifyAgentServiceStub();
-    virtual ~AppDomainVerifyAgentServiceStub();
+    AppDomainVerifyAgentServiceStub() = default;
+    ~AppDomainVerifyAgentServiceStub() override = default;
     int32_t OnRemoteRequest(uint32_t code, MessageParcel& data, MessageParcel& reply, MessageOption& option) override;
-
-protected:
-    virtual void PostDelayUnloadTask() = 0;
-    virtual void ExitIdleState() = 0;
 
 private:
     int32_t OnSingleVerify(MessageParcel& data, MessageParcel& reply);
     int32_t OnConvertToExplicitWant(MessageParcel& data, MessageParcel& reply);
-
 };
 }  // namespace AppDomainVerify
 }  // namespace OHOS
