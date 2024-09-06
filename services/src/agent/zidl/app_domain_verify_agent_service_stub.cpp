@@ -23,10 +23,6 @@
 
 namespace OHOS {
 namespace AppDomainVerify {
-namespace {
-constexpr int32_t DELAY_TIME = 300000;  // 5min = 5*60*1000
-const std::string TASK_ID = "unload";
-}
 
 int32_t AppDomainVerifyAgentServiceStub::OnRemoteRequest(
     uint32_t code, MessageParcel& data, MessageParcel& reply, MessageOption& option)
