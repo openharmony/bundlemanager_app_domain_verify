@@ -57,9 +57,6 @@ public:
     virtual void ConvertToExplicitWant(OHOS::AAFwk::Want& implicitWant, sptr<IConvertCallback>& callback) override
     {
     }
-    virtual void ExitIdleState() override
-    {
-    }
 };
 
 }  // namespace AppDomainVerify

@@ -17,6 +17,7 @@
 #define APP_DOMAIN_VERIFY_AGENT_SERVICE_H
 
 #include "app_domain_verify_agent_service_stub.h"
+#include <chrono>
 #include "inner_verify_status.h"
 #include "skill_uri.h"
 #include "system_ability.h"
@@ -27,14 +28,17 @@
 #include "dfx/app_domain_verify_hisysevent.h"
 #include "event_handler.h"
 #include "event_runner.h"
+#include "net_conn_client.h"
+
 namespace OHOS {
 namespace AppDomainVerify {
+using namespace NetManagerStandard;
 class AppDomainVerifyAgentService : public SystemAbility, public AppDomainVerifyAgentServiceStub {
     DECLARE_SYSTEM_ABILITY(AppDomainVerifyAgentService);
 
 public:
     API_EXPORT AppDomainVerifyAgentService();
-    API_EXPORT virtual ~AppDomainVerifyAgentService();
+    API_EXPORT ~AppDomainVerifyAgentService() override;
     API_EXPORT void SingleVerify(
         const AppVerifyBaseInfo& appVerifyBaseInfo, const std::vector<SkillUri>& skillUris) override;
     API_EXPORT void ConvertToExplicitWant(OHOS::AAFwk::Want& implicitWant, sptr<IConvertCallback>& callback) override;
@@ -42,7 +46,6 @@ public:
 protected:
     void OnStart(const SystemAbilityOnDemandReason& startReason) override;
     void OnStop() override;
-    void ExitIdleState() override;
     void OnDump() override;
     int Dump(int fd, const std::vector<std::u16string>& args) override;
 
@@ -53,18 +56,22 @@ private:
     void ExecuteVerifyTask(
         const AppVerifyBaseInfo& appVerifyBaseInfo, const std::vector<SkillUri>& skillUris, TaskType type);
     void UpdateWhiteList();
-    bool CanUnloadSa();
     void OnDelayUnloadSA();
-    void PostDelayUnloadTask() override;
+    void PostDelayUnloadTask();
     void DoSync(const TaskType& type);
+    void DoSync();
     bool IsIdle();
-    bool IsNetAvaliable();
+    bool IsNetAvailable();
+    bool CanUnloadSa();
     void UnloadSa();
+    std::string GetStatTime();
+
 private:
     std::shared_ptr<AppDomainVerifyExtensionMgr> appDomainVerifyExtMgr_;
     std::shared_ptr<AppDomainVerifyTaskMgr> appDomainVerifyTaskMgr_;
     std::shared_ptr<AppExecFwk::EventHandler> unloadHandler_;
     std::shared_ptr<AppExecFwk::EventRunner> runner_;
+    std::chrono::system_clock::time_point now;
 };
 
 }  // namespace AppDomainVerify

@@ -47,7 +47,8 @@
         "access_token",
         "eventhandler",
         "hiappevent",
-        "hicollie"
+        "hicollie",
+        "netmanager_base"
       ],
       "third_party": [
         "openssl"

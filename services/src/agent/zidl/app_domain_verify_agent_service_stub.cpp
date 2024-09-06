@@ -27,19 +27,11 @@ namespace {
 constexpr int32_t DELAY_TIME = 300000;  // 5min = 5*60*1000
 const std::string TASK_ID = "unload";
 }
-AppDomainVerifyAgentServiceStub::AppDomainVerifyAgentServiceStub()
-{
-}
-AppDomainVerifyAgentServiceStub::~AppDomainVerifyAgentServiceStub()
-{
-}
+
 int32_t AppDomainVerifyAgentServiceStub::OnRemoteRequest(
     uint32_t code, MessageParcel& data, MessageParcel& reply, MessageOption& option)
 {
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "onRemoteRequest##code = %{public}u", code);
-    ExitIdleState();
-    PostDelayUnloadTask();
-
     std::u16string myDescripter = AppDomainVerifyAgentServiceStub::GetDescriptor();
     std::u16string remoteDescripter = data.ReadInterfaceToken();
     if (myDescripter != remoteDescripter) {
