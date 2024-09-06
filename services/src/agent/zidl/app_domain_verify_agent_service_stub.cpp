@@ -23,23 +23,11 @@
 
 namespace OHOS {
 namespace AppDomainVerify {
-namespace {
-constexpr int32_t DELAY_TIME = 300000;  // 5min = 5*60*1000
-const std::string TASK_ID = "unload";
-}
-AppDomainVerifyAgentServiceStub::AppDomainVerifyAgentServiceStub()
-{
-}
-AppDomainVerifyAgentServiceStub::~AppDomainVerifyAgentServiceStub()
-{
-}
+
 int32_t AppDomainVerifyAgentServiceStub::OnRemoteRequest(
     uint32_t code, MessageParcel& data, MessageParcel& reply, MessageOption& option)
 {
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "onRemoteRequest##code = %{public}u", code);
-    ExitIdleState();
-    PostDelayUnloadTask();
-
     std::u16string myDescripter = AppDomainVerifyAgentServiceStub::GetDescriptor();
     std::u16string remoteDescripter = data.ReadInterfaceToken();
     if (myDescripter != remoteDescripter) {
@@ -104,37 +92,6 @@ int32_t AppDomainVerifyAgentServiceStub::OnConvertToExplicitWant(MessageParcel& 
     ConvertToExplicitWant(want, cleanCacheCallback);
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "call end");
     return ERR_OK;
-}
-void AppDomainVerifyAgentServiceStub::PostDelayUnloadTask()
-{
-    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "called");
-    if (runner_ == nullptr) {
-        runner_ = AppExecFwk::EventRunner::Create("unload", AppExecFwk::ThreadMode::FFRT);
-    }
-    if (unloadHandler_ == nullptr) {
-        unloadHandler_ = std::make_shared<AppExecFwk::EventHandler>(runner_);
-    }
-    if (unloadHandler_ == nullptr) {
-        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "unloadHandler init failed!");
-        return;
-    }
-
-    auto task = [this]() {
-        APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "do unload task");
-        auto samgrProxy = SystemAbilityManagerClient::GetInstance().GetSystemAbilityManager();
-        if (samgrProxy == nullptr) {
-            APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "get samgr failed");
-            return;
-        }
-        int32_t ret = samgrProxy->UnloadSystemAbility(APP_DOMAIN_VERIFY_AGENT_SA_ID);
-        if (ret != 0) {
-            APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "remove system ability failed");
-            return;
-        }
-        APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "do unload task done");
-    };
-    unloadHandler_->RemoveTask(TASK_ID);
-    unloadHandler_->PostTask(task, TASK_ID, DELAY_TIME);
 }
 
 }  // namespace AppDomainVerify
