@@ -235,8 +235,7 @@ void AppDomainVerifyAgentService::OnDelayUnloadSA()
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "on unload task");
     if (!CanUnloadSa()) {
         APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "can not unload sa, delay unload");
-        unloadHandler_->RemoveTask(TASK_ID);
-        unloadHandler_->PostTask([this] { PostDelayUnloadTask(); }, TASK_ID, DELAY_TIME);
+        PostDelayUnloadTask();
         return;
     }
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "on unload task, do unload");
@@ -265,6 +264,11 @@ int AppDomainVerifyAgentService::Dump(int fd, const std::vector<std::u16string>&
     std::string dumpString{};
     dumpString.append("Running state: ");
     IsIdle() ? dumpString.append("idle.") : dumpString.append("running.");
+    dumpString.append("\n");
+    isDoSyncDone ? dumpString.append("isDoSyncDone:true.") : dumpString.append("isDoSyncDone:false.");
+    dumpString.append("\n");
+    dumpString.append("retryCnt:");
+    dumpString.append(std::to_string(retryCnt));
     dumpString.append("\n");
     (void)write(fd, dumpString.c_str(), dumpString.size());
     return 0;
