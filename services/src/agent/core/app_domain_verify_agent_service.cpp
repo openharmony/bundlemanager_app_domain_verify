@@ -24,24 +24,34 @@
 #include "bms/bundle_info_query.h"
 #include "app_domain_verify_mgr_client.h"
 #include "verify_task.h"
-#include "setting_data_share_helper.h"
-#include "os_account_manager.h"
+#include "net_conn_client.h"
+#include "iservice_registry.h"
 
 namespace OHOS {
 namespace AppDomainVerify {
+namespace {
+constexpr int32_t DELAY_TIME = 300000;  // 5min = 5*60*1000
+std::atomic<int> retryCnt = 0;
+std::atomic<bool> isDoSyncDone = false;
+constexpr int MAX_NET_RETRY_CNT = 3;
+}
+static const std::string TASK_ID = "unload";
+static const std::string BOOT_COMPLETED_EVENT = "usual.event.BOOT_COMPLETED";
+static const std::string LOOP_EVENT = "loopevent";
 
-static std::atomic<bool> needCheckOOBE = false;
 const bool REGISTER_RESULT = SystemAbility::MakeAndRegisterAbility(new AppDomainVerifyAgentService());
-constexpr int32_t UNLOAD_IMMEDIATELY = 0;
-constexpr int32_t UNLOAD_DELAY_TIME = 120000;  // 2min
-const std::string BOOT_COMPLETED_EVENT = "usual.event.BOOT_COMPLETED";
-const std::string LOOP_EVENT = "loopevent";
+
 AppDomainVerifyAgentService::AppDomainVerifyAgentService() : SystemAbility(APP_DOMAIN_VERIFY_AGENT_SA_ID, true)
 {
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "new instance create.");
     appDomainVerifyExtMgr_ = std::make_shared<AppDomainVerifyExtensionMgr>();
     appDomainVerifyTaskMgr_ = AppDomainVerifyTaskMgr::GetInstance();
-
-    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "new instance create.");
+    runner_ = AppExecFwk::EventRunner::Create("unload", AppExecFwk::ThreadMode::FFRT);
+    if (runner_ == nullptr) {
+        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "create runner failed.");
+        return;
+    }
+    unloadHandler_ = std::make_shared<AppExecFwk::EventHandler>(runner_);
 }
 AppDomainVerifyAgentService::~AppDomainVerifyAgentService()
 {
@@ -135,90 +145,38 @@ void AppDomainVerifyAgentService::QueryAndCompleteRefresh(
         CompleteVerifyRefresh(bundleVerifyStatusInfo, statuses, delaySeconds, type);
     }
 }
-
+void AppDomainVerifyAgentService::UpdateWhiteList()
+{
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "called");
+    if (ErrorCode::E_EXTENSIONS_LIB_NOT_FOUND != appDomainVerifyExtMgr_->UpdateWhiteList()) {
+        APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "extension call end");
+        return;
+    }
+}
 // sa_main进程统一调用
 void AppDomainVerifyAgentService::OnStart(const SystemAbilityOnDemandReason& startReason)
 {
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "OnStart reason %{public}s, reasonId_:%{public}d",
         startReason.GetName().c_str(), startReason.GetId());
-    if (continuationHandler_ == nullptr) {
-        continuationHandler_ = std::make_shared<ffrt::queue>("VerifyServiceContinuationMgr");
-    }
-
-    if (startReason.GetName() == BOOT_COMPLETED_EVENT || startReason.GetName() == LOOP_EVENT) {
-        TaskType type = startReason.GetName() == BOOT_COMPLETED_EVENT ?
-            TaskType::BOOT_REFRESH_TASK :
-            TaskType::SCHEDULE_REFRESH_TASK;
-        DoSync(type);
-    }
-
-    AppDomainVerifyAgentServiceStub::PostDelayUnloadTask();
+    PostDelayUnloadTask();
     bool res = Publish(this);
     if (!res) {
         APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "Publish failed");
-    } else {
-        if (IsInOOBE()) {
-            APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "OnStart is in OOBE, needDoSync.");
-            needCheckOOBE = true;
-        }
     }
-}
-void AppDomainVerifyAgentService::DoSync(const TaskType& type)
-{
-    auto func = [this, type]() {
-        QueryAndCompleteRefresh(
-            std::vector<InnerVerifyStatus>{ UNKNOWN, STATE_FAIL, FAILURE_REDIRECT, FAILURE_CLIENT_ERROR,
-                FAILURE_REJECTED_BY_SERVER, FAILURE_HTTP_UNKNOWN, FAILURE_TIMEOUT, FAILURE_CONFIG },
-            0, type);
-    };
-    auto updateWhiteListFunc = [this]() { UpdateWhiteList(); };
-    continuationHandler_->submit(updateWhiteListFunc);
-    continuationHandler_->submit(func);
 }
 
 void AppDomainVerifyAgentService::OnStop()
 {
-    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "%s called", __func__);
-}
-bool AppDomainVerifyAgentService::ShouldRejectUnloadWhenOOBE()
-{
-    if (needCheckOOBE) {
-        if (IsInOOBE()) {
-            APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "OnIdle is in OOBE, delay unload.");
-            needCheckOOBE = true;
-            return true;
-        }
-        DoSync(EnumTaskType::BOOT_REFRESH_TASK);
-        needCheckOOBE = false;
-        APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "OnIdle do sync submit, delay unload once.");
-        return true;
-    } else {
-        APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "OnIdle no need check oobe status.");
-        return false;
-    }
-}
-int32_t AppDomainVerifyAgentService::OnIdle(const SystemAbilityOnDemandReason& idleReason)
-{
-    APP_DOMAIN_VERIFY_HILOGI(
-        APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "OnIdle reason:%{public}s", idleReason.GetName().c_str());
-    if (ShouldRejectUnloadWhenOOBE()) {
-        APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "OnIdle oobe, delay unload");
-        return UNLOAD_DELAY_TIME;
-    }
-    if (IsIdle()) {
-        APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "OnIdle unload immediately");
-        return UNLOAD_IMMEDIATELY;
-    } else {
-        APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "OnIdle delay unload");
-        return UNLOAD_DELAY_TIME;
-    }
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "called");
 }
 
-void AppDomainVerifyAgentService::ExitIdleState()
+void AppDomainVerifyAgentService::DoSync(const TaskType& type)
 {
-    CancelIdle();
+    QueryAndCompleteRefresh(std::vector<InnerVerifyStatus>{ UNKNOWN, STATE_FAIL, FAILURE_REDIRECT, FAILURE_CLIENT_ERROR,
+                                FAILURE_REJECTED_BY_SERVER, FAILURE_HTTP_UNKNOWN, FAILURE_TIMEOUT, FAILURE_CONFIG },
+        0, type);
+    UpdateWhiteList();
 }
-
 bool AppDomainVerifyAgentService::IsIdle()
 {
     if (appDomainVerifyTaskMgr_ == nullptr) {
@@ -228,14 +186,74 @@ bool AppDomainVerifyAgentService::IsIdle()
     }
 }
 
-void AppDomainVerifyAgentService::UpdateWhiteList()
+bool AppDomainVerifyAgentService::IsNetAvaliable()
+{
+    bool IsNetAvailable = false;
+    NetManagerStandard::NetConnClient::GetInstance().HasDefaultNet(IsNetAvailable);
+    return IsNetAvailable;
+}
+
+bool AppDomainVerifyAgentService::CanUnloadSa()
 {
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "called");
-    if (ErrorCode::E_EXTENSIONS_LIB_NOT_FOUND != appDomainVerifyExtMgr_->UpdateWhiteList()) {
-        APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "extension call end");
+    // 尝试进行最大次数的有网络同步操作
+    if (!isDoSyncDone && retryCnt++ < MAX_NET_RETRY_CNT) {
+        if (IsNetAvaliable()) {
+            APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "net avaliable, do sync");
+            DoSync(BOOT_REFRESH_TASK);
+            isDoSyncDone = true;
+        } else {
+            APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "net un avaliable, retry and delay");
+            return false;
+        }
+    }
+    // 还需要判断是否有网络任务
+    if (IsIdle()) {
+        APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "task idle");
+        return true;
+    }
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "task not idle");
+    return false;
+}
+void AppDomainVerifyAgentService::UnloadSa()
+{
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "do unload sa");
+    auto samgrProxy = SystemAbilityManagerClient::GetInstance().GetSystemAbilityManager();
+    if (samgrProxy == nullptr) {
+        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "get samgr failed");
         return;
     }
+    int32_t ret = samgrProxy->UnloadSystemAbility(APP_DOMAIN_VERIFY_AGENT_SA_ID);
+    if (ret != 0) {
+        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "remove system ability failed");
+        return;
+    }
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "do unload sa done");
 }
+void AppDomainVerifyAgentService::OnDelayUnloadSA()
+{
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "on unload task");
+    if (!CanUnloadSa()) {
+        APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "can not unload sa, delay unload");
+        unloadHandler_->RemoveTask(TASK_ID);
+        unloadHandler_->PostTask([this] { PostDelayUnloadTask(); }, TASK_ID, DELAY_TIME);
+        return;
+    }
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "on unload task, do unload");
+    UnloadSa();
+}
+void AppDomainVerifyAgentService::PostDelayUnloadTask()
+{
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "called");
+    unloadHandler_->RemoveTask(TASK_ID);
+    unloadHandler_->PostTask([this] { OnDelayUnloadSA(); }, TASK_ID, DELAY_TIME);
+}
+
+void AppDomainVerifyAgentService::ExitIdleState()
+{
+    CancelIdle();
+}
+
 void AppDomainVerifyAgentService::OnDump()
 {
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "OnDump");
@@ -251,35 +269,6 @@ int AppDomainVerifyAgentService::Dump(int fd, const std::vector<std::u16string>&
     (void)write(fd, dumpString.c_str(), dumpString.size());
     return 0;
 }
-bool AppDomainVerifyAgentService::IsInOOBE()
-{
-    auto datashareHelper = SettingsDataShareHelper::GetInstance();
-    std::string device_provisioned{ "0" };
-    OHOS::Uri uri(
-        "datashare:///com.ohos.settingsdata/entry/settingsdata/SETTINGSDATA?Proxy=true&key=device_provisioned");
-    int resp = datashareHelper->Query(uri, "device_provisioned", device_provisioned);
-    if (resp == 0 && (device_provisioned == "0" || device_provisioned.empty())) {
-        APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "IsInOOBE: device_provisioned = 0");
-        return true;
-    }
 
-    std::string user_setup_complete{ "1" };
-    std::vector<int> activedOsAccountIds;
-    OHOS::AccountSA::OsAccountManager::QueryActiveOsAccountIds(activedOsAccountIds);
-    if (activedOsAccountIds.empty()) {
-        APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "IsInOOBE: activedOsAccountIds is empty");
-        return false;
-    }
-    int userId = activedOsAccountIds[0];
-    OHOS::Uri uri_setup("datashare:///com.ohos.settingsdata/entry/settingsdata/USER_SETTINGSDATA_SECURE_" +
-        std::to_string(userId) + "?Proxy=true&key=user_setup_complete");
-    int resp_userSetup = datashareHelper->Query(uri_setup, "user_setup_complete", user_setup_complete);
-    if (resp_userSetup == 0 && (user_setup_complete == "0" || user_setup_complete.empty())) {
-        APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "IsInOOBE: user_setup_complete = 0");
-        return true;
-    }
-    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "IsInOOBE: complete");
-    return false;
-}
 }  // namespace AppDomainVerify
 }  // namespace OHOS
