@@ -42,8 +42,6 @@ constexpr int32_t DUMP_SYSTEM_START_YEAR = 1900;
 constexpr int32_t FORMAT_BLANK_SIZE = 32;
 }
 static const std::string TASK_ID = "unload";
-static const std::string BOOT_COMPLETED_EVENT = "usual.event.BOOT_COMPLETED";
-static const std::string LOOP_EVENT = "loopevent";
 using namespace NetManagerStandard;
 const bool REGISTER_RESULT = SystemAbility::MakeAndRegisterAbility(new AppDomainVerifyAgentService());
 
