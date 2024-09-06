@@ -17,6 +17,7 @@
 #define APP_DOMAIN_VERIFY_AGENT_SERVICE_H
 
 #include "app_domain_verify_agent_service_stub.h"
+#include <chrono>
 #include "inner_verify_status.h"
 #include "skill_uri.h"
 #include "system_ability.h"
@@ -25,15 +26,19 @@
 #include "i_app_domain_verify_mgr_service.h"
 #include "app_domain_verify_task_mgr.h"
 #include "dfx/app_domain_verify_hisysevent.h"
+#include "event_handler.h"
+#include "event_runner.h"
+#include "net_conn_client.h"
 
 namespace OHOS {
 namespace AppDomainVerify {
+using namespace NetManagerStandard;
 class AppDomainVerifyAgentService : public SystemAbility, public AppDomainVerifyAgentServiceStub {
     DECLARE_SYSTEM_ABILITY(AppDomainVerifyAgentService);
 
 public:
     API_EXPORT AppDomainVerifyAgentService();
-    API_EXPORT virtual ~AppDomainVerifyAgentService();
+    API_EXPORT ~AppDomainVerifyAgentService() override;
     API_EXPORT void SingleVerify(
         const AppVerifyBaseInfo& appVerifyBaseInfo, const std::vector<SkillUri>& skillUris) override;
     API_EXPORT void ConvertToExplicitWant(OHOS::AAFwk::Want& implicitWant, sptr<IConvertCallback>& callback) override;
@@ -41,8 +46,6 @@ public:
 protected:
     void OnStart(const SystemAbilityOnDemandReason& startReason) override;
     void OnStop() override;
-    int32_t OnIdle(const SystemAbilityOnDemandReason& idleReason) override;
-    void ExitIdleState() override;
     void OnDump() override;
     int Dump(int fd, const std::vector<std::u16string>& args) override;
 
@@ -52,16 +55,23 @@ private:
         const std::vector<InnerVerifyStatus>& statuses, int delaySeconds, TaskType type);
     void ExecuteVerifyTask(
         const AppVerifyBaseInfo& appVerifyBaseInfo, const std::vector<SkillUri>& skillUris, TaskType type);
-    bool IsIdle();
     void UpdateWhiteList();
+    void OnDelayUnloadSA();
+    void PostDelayUnloadTask();
+    void DoSync(const TaskType& type);
+    void DoSync();
+    bool IsIdle();
+    bool IsNetAvailable();
+    bool CanUnloadSa();
+    void UnloadSa();
+    std::string GetStatTime();
 
 private:
-    std::shared_ptr<ffrt::queue> continuationHandler_;
     std::shared_ptr<AppDomainVerifyExtensionMgr> appDomainVerifyExtMgr_;
     std::shared_ptr<AppDomainVerifyTaskMgr> appDomainVerifyTaskMgr_;
-    bool IsInOOBE();
-    void DoSync(const TaskType& type);
-    bool ShouldRejectUnloadWhenOOBE();
+    std::shared_ptr<AppExecFwk::EventHandler> unloadHandler_;
+    std::shared_ptr<AppExecFwk::EventRunner> runner_;
+    std::chrono::system_clock::time_point now;
 };
 
 }  // namespace AppDomainVerify
