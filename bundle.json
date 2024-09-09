@@ -45,7 +45,10 @@
         "preferences",
         "data_share",
         "access_token",
-        "eventhandler"
+        "eventhandler",
+        "hiappevent",
+        "hicollie",
+        "netmanager_base"
       ],
       "third_party": [
         "openssl"

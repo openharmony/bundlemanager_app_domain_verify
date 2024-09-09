@@ -155,6 +155,7 @@ ohos_shared_library("app_domain_verify_agent_service") {
     "hisysevent:libhisysevent",
     "ipc:ipc_core",
     "json:nlohmann_json_static",
+    "netmanager_base:net_conn_manager_if",
     "netstack:http_client",
     "os_account:os_account_innerkits",
     "preferences:native_preferences",
