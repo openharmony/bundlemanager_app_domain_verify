@@ -36,14 +36,14 @@ enum AppDomainVerifySubModule {
 static constexpr unsigned int APP_DOMAIN_VERIFY_DOMAIN_ID = 0xD0011FD;
 
 static constexpr const char* APP_DOMAIN_VERIFY_MODULE_LABEL[APP_DOMAIN_VERIFY_MODULE_BUTT + 1] = {
-    "AppDomainVerifyExtension",
-    "AppDomainVerifyMgrClient",
-    "AppDomainVerifyAgentClient",
-    "AppDomainVerifyMgrService",
-    "AppDomainVerifyAgentService",
-    "AppDomainVerifyJSNAPI",
-    "AppDomainVerifyCommon",
-    "AppDomainVerifyButt",
+    "ADVExt",
+    "ADVMgrClient",
+    "ADVAgtClient",
+    "ADVMgrSrv",
+    "ADVAgtSrv",
+    "ADVNapi",
+    "ADVComm",
+    "ADVButt",
 };
 
 #ifndef APP_DOMAIN_VERIFY_FUNC_FMT

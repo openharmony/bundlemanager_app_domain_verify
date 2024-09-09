@@ -23,6 +23,7 @@
 #include "domain_url_util.h"
 #undef private
 #undef protected
+#include "common_utils.h"
 
 namespace OHOS::AppDomainVerify {
 using namespace testing;
@@ -233,6 +234,21 @@ HWTEST_F(AppDomainVerifyBeanTest, AppDomainVerifyUrlUtilTest001, TestSize.Level0
     ASSERT_TRUE(UrlUtil::IsValidAppDomainVerifyHost("https://" + HOST));
     ASSERT_TRUE(UrlUtil::IsValidUrl("https://" + HOST));
     ASSERT_TRUE(UrlUtil::GetScheme(HOST) == "");
+}
+
+/**
+ * @tc.name: AppDomainVerifyCommonUtilTest001
+ * @tc.desc: CommonUtil test.
+ * @tc.type: FUNC
+ */
+HWTEST_F(AppDomainVerifyBeanTest, AppDomainVerifyCommonUtilTest001, TestSize.Level0)
+{
+    ASSERT_TRUE(MaskStr("").empty());
+    std::string ONE_TEST = "a";
+    ASSERT_TRUE(MaskStr(ONE_TEST) == ONE_TEST);
+    std::string NORMAL_TEST = "https://www.openharmony.cn/res";
+    std::string NORMAL_TEST_EXPECT = "h**p**/**w**o**n**r**n**c**r**";
+    ASSERT_TRUE(MaskStr(NORMAL_TEST) == NORMAL_TEST_EXPECT);
 }
 
 }
