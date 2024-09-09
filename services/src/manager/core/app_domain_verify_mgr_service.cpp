@@ -40,20 +40,20 @@ AppDomainVerifyMgrService::~AppDomainVerifyMgrService()
 void AppDomainVerifyMgrService::VerifyDomain(const std::string& appIdentifier, const std::string& bundleName,
     const std::string& fingerprint, const std::vector<SkillUri>& skillUris)
 {
-    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s called", __func__);
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "called");
     AppVerifyBaseInfo appVerifyBaseInfo;
     appVerifyBaseInfo.appIdentifier = appIdentifier;
     appVerifyBaseInfo.bundleName = bundleName;
     appVerifyBaseInfo.fingerprint = fingerprint;
     AppDomainVerifyAgentClient::GetInstance()->SingleVerify(appVerifyBaseInfo, skillUris);
-    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s call end", __func__);
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "call end");
 }
 
 bool AppDomainVerifyMgrService::ClearDomainVerifyStatus(const std::string& appIdentifier, const std::string& bundleName)
 {
-    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s called", __func__);
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "called");
     bool res = dataManager_->DeleteVerifyStatus(bundleName);
-    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s call end", __func__);
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "call end");
     return res;
 }
 
@@ -61,7 +61,7 @@ bool AppDomainVerifyMgrService::FilterAbilities(const OHOS::AAFwk::Want& want,
     const std::vector<OHOS::AppExecFwk::AbilityInfo>& originAbilityInfos,
     std::vector<OHOS::AppExecFwk::AbilityInfo>& filtedAbilityInfos)
 {
-    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s called", __func__);
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "called");
     if (!IsWantImplicit(want)) {
         APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "want is not implicit.");
         return false;
@@ -86,14 +86,14 @@ bool AppDomainVerifyMgrService::FilterAbilities(const OHOS::AAFwk::Want& want,
             }
         }
     }
-    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s call end", __func__);
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "call end");
     return true;
 }
 
 bool AppDomainVerifyMgrService::QueryDomainVerifyStatus(
     const std::string& bundleName, DomainVerifyStatus& domainVerificationState)
 {
-    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s called", __func__);
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "called");
     VerifyResultInfo verifyResultInfo;
     bool res = dataManager_->GetVerifyStatus(bundleName, verifyResultInfo);
     domainVerificationState = DomainVerifyStatus::STATE_NONE;
@@ -104,29 +104,34 @@ bool AppDomainVerifyMgrService::QueryDomainVerifyStatus(
             break;
         }
     }
-    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s call end", __func__);
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "call end");
     return res;
 }
 
 bool AppDomainVerifyMgrService::QueryAllDomainVerifyStatus(BundleVerifyStatusInfo& bundleVerifyStatusInfo)
 {
-    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s called", __func__);
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "called");
     bundleVerifyStatusInfo.bundleVerifyStatusInfoMap_ = dataManager_->GetAllVerifyStatus();
-    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s call end", __func__);
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "call end");
     return true;
 }
 
 bool AppDomainVerifyMgrService::SaveDomainVerifyStatus(
     const std::string& bundleName, const VerifyResultInfo& verifyResultInfo)
 {
-    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s called", __func__);
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "called");
     bool res = dataManager_->SaveVerifyStatus(bundleName, verifyResultInfo);
-    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s call end", __func__);
+    if (res) {
+        APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE,
+            "package verify result bundleName:%{public}s\n%{public}s", bundleName.c_str(),
+            verifyResultInfo.Dump().c_str());
+    }
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "call end");
     return res;
 }
 bool AppDomainVerifyMgrService::IsAtomicServiceUrl(const std::string& url)
 {
-    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s called", __func__);
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "called");
     if (!InitConfigMgr()) {
         APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "InitConfigMgr failed.");
         return false;
@@ -135,9 +140,9 @@ bool AppDomainVerifyMgrService::IsAtomicServiceUrl(const std::string& url)
 }
 void AppDomainVerifyMgrService::ConvertToExplicitWant(OHOS::AAFwk::Want& implicitWant, sptr<IConvertCallback>& callback)
 {
-    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s called", __func__);
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "called");
     AppDomainVerifyAgentClient::GetInstance()->ConvertToExplicitWant(implicitWant, callback);
-    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s called", __func__);
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "called");
 }
 bool AppDomainVerifyMgrService::IsWantImplicit(const OHOS::AAFwk::Want& want)
 {
@@ -163,7 +168,7 @@ void AppDomainVerifyMgrService::OnStart()
 
 void AppDomainVerifyMgrService::OnStop()
 {
-    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s called", __func__);
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "called");
 }
 void AppDomainVerifyMgrService::OnDump()
 {

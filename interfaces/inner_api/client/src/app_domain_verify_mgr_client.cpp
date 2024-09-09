@@ -21,6 +21,7 @@
 #include "zidl/convert_callback_stub.h"
 #include "regex.h"
 #include "comm_define.h"
+#include "common_utils.h"
 
 namespace OHOS {
 namespace AppDomainVerify {
@@ -52,23 +53,23 @@ AppDomainVerifyMgrClient::~AppDomainVerifyMgrClient()
 void AppDomainVerifyMgrClient::VerifyDomain(const std::string& appIdentifier, const std::string& bundleName,
     const std::string& fingerprint, const std::vector<SkillUri>& skillUris)
 {
-    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "%s called", __func__);
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "called");
     INSTALL_EVENT(appIdentifier, bundleName);
     if (IsServiceAvailable()) {
         appDomainVerifyMgrServiceProxy_->VerifyDomain(appIdentifier, bundleName, fingerprint, skillUris);
     }
-    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "%s call end", __func__);
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "call end");
 }
 
 bool AppDomainVerifyMgrClient::ClearDomainVerifyStatus(const std::string& appIdentifier, const std::string& bundleName)
 {
-    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "%s called", __func__);
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "called");
     UNINSTALL_EVENT(appIdentifier, bundleName);
     bool clearResult = false;
     if (IsServiceAvailable()) {
         clearResult = appDomainVerifyMgrServiceProxy_->ClearDomainVerifyStatus(appIdentifier, bundleName);
     }
-    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "%s call end", __func__);
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "call end");
     return clearResult;
 }
 
@@ -76,49 +77,50 @@ bool AppDomainVerifyMgrClient::FilterAbilities(const OHOS::AAFwk::Want& want,
     const std::vector<OHOS::AppExecFwk::AbilityInfo>& originAbilityInfos,
     std::vector<OHOS::AppExecFwk::AbilityInfo>& filtedAbilityInfos)
 {
-    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "%s called", __func__);
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "called");
     bool filterSuccess = false;
     if (IsServiceAvailable()) {
         filterSuccess = appDomainVerifyMgrServiceProxy_->FilterAbilities(want, originAbilityInfos, filtedAbilityInfos);
     }
 
-    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "%s call end, filted ability size:%{public}zu",
-        __func__, filtedAbilityInfos.size());
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT,
+        "call end, filted ability size:%{public}zu, origin ability size:%{public}zu", filtedAbilityInfos.size(),
+        originAbilityInfos.size());
     return filterSuccess;
 }
 
 bool AppDomainVerifyMgrClient::QueryDomainVerifyStatus(
     const std::string& bundleName, DomainVerifyStatus& domainVerificationState)
 {
-    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "%s called", __func__);
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "called");
     bool querySuccess = false;
     if (IsServiceAvailable()) {
         querySuccess = appDomainVerifyMgrServiceProxy_->QueryDomainVerifyStatus(bundleName, domainVerificationState);
     }
-    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "%s call end", __func__);
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "call end");
     return querySuccess;
 }
 
 bool AppDomainVerifyMgrClient::QueryAllDomainVerifyStatus(BundleVerifyStatusInfo& bundleVerifyStatusInfo)
 {
-    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "%s called", __func__);
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "called");
     bool querySuccess = false;
     if (IsServiceAvailable()) {
         querySuccess = appDomainVerifyMgrServiceProxy_->QueryAllDomainVerifyStatus(bundleVerifyStatusInfo);
     }
-    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "%s call end", __func__);
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "call end");
     return querySuccess;
 }
 
 bool AppDomainVerifyMgrClient::SaveDomainVerifyStatus(
     const std::string& bundleName, const VerifyResultInfo& verifyResultInfo)
 {
-    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "%s called", __func__);
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "called");
     bool saveSuccess = false;
     if (IsServiceAvailable()) {
         saveSuccess = appDomainVerifyMgrServiceProxy_->SaveDomainVerifyStatus(bundleName, verifyResultInfo);
     }
-    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "%s call end", __func__);
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "call end");
     return saveSuccess;
 }
 
@@ -155,7 +157,7 @@ void AppDomainVerifyMgrClient::ConnectService()
         appDomainVerifyMgrServiceProxy_ = iface_cast<IAppDomainVerifyMgrService>(remoteObject);
         return;
     }
-    APP_DOMAIN_VERIFY_HILOGW(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "Getting AppDomainVerifyMgrServiceProxy failed.");
+    APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "Getting AppDomainVerifyMgrServiceProxy failed.");
 }
 
 void AppDomainVerifyMgrClient::OnRemoteSaDied(const wptr<IRemoteObject>& remote)
@@ -173,16 +175,16 @@ void AppDomainVerifyMgrClient::OnRemoteSaDied(const wptr<IRemoteObject>& remote)
 void AppDomainVerifyMgrClient::ConvertToExplicitWant(AAFwk::Want& implicitWant, sptr<IConvertCallback>& callback)
 {
 #ifdef _CUT_LINK_CONVERT_
-    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "%s not support, will return false.!", __func__);
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "not support, will return false!");
     if (callback) {
         callback->OnConvert(-1, implicitWant);
     }
 #else
-    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "%s called", __func__);
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "called");
     if (IsServiceAvailable()) {
         appDomainVerifyMgrServiceProxy_->ConvertToExplicitWant(implicitWant, callback);
     }
-    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "%s call end", __func__);
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "call end");
 #endif
 }
 #ifndef _CUT_LINK_CONVERT_
@@ -225,8 +227,7 @@ bool AppDomainVerifyMgrClient::IsValidUrl(OHOS::Uri& uri)
     std::vector<std::string> segments;
     uri.GetPathSegments(segments);
     if (segments.size() != 1) {
-        APP_DOMAIN_VERIFY_HILOGE(
-            APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "short path:%{public}s is more than one", uri.GetPath().c_str());
+        APP_DOMAIN_VERIFY_HILOGW(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "short path is more than one");
         return false;
     }
     if (!IsValidPath(segments[0])) {
@@ -234,7 +235,7 @@ bool AppDomainVerifyMgrClient::IsValidUrl(OHOS::Uri& uri)
             "short path:%{public}s must only contains number,alphabet or dash line!", segments[0].c_str());
         return false;
     }
-    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "is valid Url");
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "is valid Url");
     return true;
 }
 
@@ -242,55 +243,54 @@ bool AppDomainVerifyMgrClient::IsValidUrl(OHOS::Uri& uri)
 bool AppDomainVerifyMgrClient::IsAtomicServiceUrl(const std::string& url)
 {
 #ifdef _CUT_LINK_CONVERT_
-    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "%s not support, will return false.!", __func__);
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "not support, will return false!");
     return false;
 #else
-    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "%s called", __func__);
+    APP_DOMAIN_VERIFY_HILOGI(
+        APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "called, url %{public}s", MaskStr(url).c_str());
     Uri uri(url);
     if (!IsValidUrl(uri)) {
-        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "url %{public}s is invalid!", url.c_str());
+        APP_DOMAIN_VERIFY_HILOGW(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "url is invalid!");
         return false;
     }
     bool ret{ false };
     if (IsServiceAvailable()) {
         ret = appDomainVerifyMgrServiceProxy_->IsAtomicServiceUrl(uri.GetScheme() + "://" + uri.GetHost());
     }
-    APP_DOMAIN_VERIFY_HILOGI(
-        APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "%s call end, IsAtomicServiceUrl:%{public}d", __func__, ret);
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "call end, IsAtomicServiceUrl:%{public}d", ret);
     return ret;
 #endif
 }
 void AppDomainVerifyMgrClient::UpdateWhiteListUrls(const std::vector<std::string>& urls)
 {
 #ifdef _CUT_LINK_CONVERT_
-    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "%s not support, will return.!", __func__);
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "not support, will return!");
     return;
 #else
-    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "%s called", __func__);
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "called");
     if (IsServiceAvailable()) {
         appDomainVerifyMgrServiceProxy_->UpdateWhiteListUrls(urls);
     }
-    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "%s call end", __func__);
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "call end");
 #endif
 }
-int AppDomainVerifyMgrClient::QueryAssociatedDomains(
-    const std::string& bundleName, std::vector<std::string>& domains)
+int AppDomainVerifyMgrClient::QueryAssociatedDomains(const std::string& bundleName, std::vector<std::string>& domains)
 {
-    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "%s called", __func__);
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "called");
     if (IsServiceAvailable()) {
         return appDomainVerifyMgrServiceProxy_->QueryAssociatedDomains(bundleName, domains);
     }
-    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "%s call end", __func__);
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "call end");
     return CommonErrorCode::E_INTERNAL_ERR;
 }
 int AppDomainVerifyMgrClient::QueryAssociatedBundleNames(
     const std::string& domain, std::vector<std::string>& bundleNames)
 {
-    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "%s called", __func__);
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "called");
     if (IsServiceAvailable()) {
         return appDomainVerifyMgrServiceProxy_->QueryAssociatedBundleNames(domain, bundleNames);
     }
-    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "%s call end", __func__);
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "call end");
     return CommonErrorCode::E_INTERNAL_ERR;
 }
 AppDomainVerifyMgrSaDeathRecipient::AppDomainVerifyMgrSaDeathRecipient()

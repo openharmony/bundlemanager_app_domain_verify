@@ -17,20 +17,20 @@
 #include "app_domain_verify_parcel_util.h"
 namespace OHOS {
 namespace AppDomainVerify {
-bool VerifyResultInfo::Marshalling(Parcel &parcel) const
+bool VerifyResultInfo::Marshalling(Parcel& parcel) const
 {
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String, parcel, appIdentifier);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Uint32, parcel, hostVerifyStatusMap.size());
-    for (auto &it : hostVerifyStatusMap) {
+    for (auto& it : hostVerifyStatusMap) {
         WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String, parcel, it.first);
         WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, it.second);
     }
     return true;
 }
 
-VerifyResultInfo *VerifyResultInfo::Unmarshalling(Parcel &parcel)
+VerifyResultInfo* VerifyResultInfo::Unmarshalling(Parcel& parcel)
 {
-    VerifyResultInfo *verifyResultInfo = new (std::nothrow) VerifyResultInfo();
+    VerifyResultInfo* verifyResultInfo = new (std::nothrow) VerifyResultInfo();
     if ((verifyResultInfo != nullptr) && (!verifyResultInfo->ReadFromParcel(parcel))) {
         APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MODULE_COMMON, "failed to read from parcel");
         delete verifyResultInfo;
@@ -39,7 +39,7 @@ VerifyResultInfo *VerifyResultInfo::Unmarshalling(Parcel &parcel)
     return verifyResultInfo;
 }
 
-bool VerifyResultInfo::ReadFromParcel(Parcel &parcel)
+bool VerifyResultInfo::ReadFromParcel(Parcel& parcel)
 {
     READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(String, parcel, appIdentifier);
     uint32_t size = 0;
@@ -58,11 +58,20 @@ bool VerifyResultInfo::ReadFromParcel(Parcel &parcel)
     }
     return true;
 }
+std::string VerifyResultInfo::Dump() const
+{
+    std::string dumpStr = "appIdentifier:" + appIdentifier + "\n";
+    for (const auto& hostVerifyStatus : hostVerifyStatusMap) {
+        dumpStr = dumpStr + "    " + "domain:" + hostVerifyStatus.first +
+            " status:" + InnerVerifyStatusMap[hostVerifyStatus.second] + ";\n";
+    }
+    return dumpStr;
+}
 
-bool BundleVerifyStatusInfo::Marshalling(Parcel &parcel) const
+bool BundleVerifyStatusInfo::Marshalling(Parcel& parcel) const
 {
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Uint32, parcel, bundleVerifyStatusInfoMap_.size());
-    for (auto &it : bundleVerifyStatusInfoMap_) {
+    for (auto& it : bundleVerifyStatusInfoMap_) {
         WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String, parcel, it.first);
         WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String, parcel, it.second.appIdentifier);
         if (!WriteHostVerifyStatusMap(it.second.hostVerifyStatusMap, parcel)) {
@@ -74,10 +83,10 @@ bool BundleVerifyStatusInfo::Marshalling(Parcel &parcel) const
 }
 
 bool BundleVerifyStatusInfo::WriteHostVerifyStatusMap(
-    const std::unordered_map<std::string, InnerVerifyStatus> &hostVerifyStatusMap, Parcel &parcel) const
+    const std::unordered_map<std::string, InnerVerifyStatus>& hostVerifyStatusMap, Parcel& parcel) const
 {
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Uint32, parcel, hostVerifyStatusMap.size());
-    for (auto &it : hostVerifyStatusMap) {
+    for (auto& it : hostVerifyStatusMap) {
         WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String, parcel, it.first);
         WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, it.second);
     }
@@ -85,7 +94,7 @@ bool BundleVerifyStatusInfo::WriteHostVerifyStatusMap(
 }
 
 bool BundleVerifyStatusInfo::ReadHostVerifyStatusMap(
-    std::unordered_map<std::string, InnerVerifyStatus> &hostVerifyStatusMap, Parcel &parcel)
+    std::unordered_map<std::string, InnerVerifyStatus>& hostVerifyStatusMap, Parcel& parcel)
 {
     uint32_t size = 0;
     READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(Uint32, parcel, size);
@@ -104,9 +113,9 @@ bool BundleVerifyStatusInfo::ReadHostVerifyStatusMap(
     return true;
 }
 
-BundleVerifyStatusInfo *BundleVerifyStatusInfo::Unmarshalling(Parcel &parcel)
+BundleVerifyStatusInfo* BundleVerifyStatusInfo::Unmarshalling(Parcel& parcel)
 {
-    BundleVerifyStatusInfo *bundleVerifyStatusInfo = new (std::nothrow) BundleVerifyStatusInfo();
+    BundleVerifyStatusInfo* bundleVerifyStatusInfo = new (std::nothrow) BundleVerifyStatusInfo();
     if ((bundleVerifyStatusInfo != nullptr) && (!bundleVerifyStatusInfo->ReadFromParcel(parcel))) {
         APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MODULE_COMMON, "failed to read from parcel");
         delete bundleVerifyStatusInfo;
@@ -115,7 +124,7 @@ BundleVerifyStatusInfo *BundleVerifyStatusInfo::Unmarshalling(Parcel &parcel)
     return bundleVerifyStatusInfo;
 }
 
-bool BundleVerifyStatusInfo::ReadFromParcel(Parcel &parcel)
+bool BundleVerifyStatusInfo::ReadFromParcel(Parcel& parcel)
 {
     uint32_t size = 0;
     READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(Uint32, parcel, size);

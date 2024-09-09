@@ -34,6 +34,7 @@ ohos_shared_library("app_domain_verify_common") {
   sources = [
     "src/app_verify_base_info.cpp",
     "src/bundle_verify_status_info.cpp",
+    "src/common_utils.cpp",
     "src/skill_uri.cpp",
     "src/zidl/convert_callback_proxy.cpp",
     "src/zidl/convert_callback_stub.cpp",

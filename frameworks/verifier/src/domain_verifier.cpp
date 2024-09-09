@@ -22,7 +22,7 @@ namespace AppDomainVerify {
 InnerVerifyStatus DomainVerifier::VerifyHost(OHOS::NetStack::HttpClient::ResponseCode responseCode,
     const std::string &assetJsonsStr, const AppVerifyBaseInfo &appVerifyBaseInfo)
 {
-    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "%s called", __func__);
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "called");
     if (responseCode != OHOS::NetStack::HttpClient::ResponseCode::OK) {
         return GetVerifyStatusFromHttpError(responseCode);
     }
@@ -40,7 +40,7 @@ InnerVerifyStatus DomainVerifier::VerifyHost(OHOS::NetStack::HttpClient::Respons
 
 InnerVerifyStatus DomainVerifier::GetVerifyStatusFromHttpError(OHOS::NetStack::HttpClient::ResponseCode responseCode)
 {
-    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "%s called", __func__);
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "called");
     if (responseCode >= OHOS::NetStack::HttpClient::ResponseCode::MULT_CHOICE &&
         responseCode < OHOS::NetStack::HttpClient::ResponseCode::BAD_REQUEST) {
         // 3xx
@@ -61,7 +61,7 @@ InnerVerifyStatus DomainVerifier::GetVerifyStatusFromHttpError(OHOS::NetStack::H
 InnerVerifyStatus DomainVerifier::VerifyHostWithAppIdentifier(const AssetJsonObj &assetJsonObj,
     const AppVerifyBaseInfo &appVerifyBaseInfo)
 {
-    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "%s called", __func__);
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "called");
     if (appVerifyBaseInfo.appIdentifier.empty()) {
         return InnerVerifyStatus::UNKNOWN;
     }
@@ -92,7 +92,7 @@ InnerVerifyStatus DomainVerifier::VerifyHostWithAppIdentifier(const AssetJsonObj
 InnerVerifyStatus DomainVerifier::VerifyHostWithBundleName(const AssetJsonObj &assetJsonObj,
     const AppVerifyBaseInfo &appVerifyBaseInfo)
 {
-    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "%s called", __func__);
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "called");
     if (appVerifyBaseInfo.bundleName.empty() || appVerifyBaseInfo.fingerprint.empty()) {
         return InnerVerifyStatus::STATE_FAIL;
     }

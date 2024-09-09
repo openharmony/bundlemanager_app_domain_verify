@@ -47,7 +47,7 @@ bool g_enterAgentInvokeOK = false;
 
 int AgentInvokeOK(uint32_t code, MessageParcel& data, MessageParcel& reply, MessageOption& option)
 {
-    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MODULE_BUTT, "%s call end", __func__);
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MODULE_BUTT, "call end");
     g_enterAgentInvokeOK = true;
     return 0;
 }
