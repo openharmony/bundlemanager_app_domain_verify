@@ -45,6 +45,7 @@ ohos_unittest("app_domain_verify_bean_test") {
   sources = [
     "${app_domain_verify_common_path}/src/app_verify_base_info.cpp",
     "${app_domain_verify_common_path}/src/bundle_verify_status_info.cpp",
+    "${app_domain_verify_common_path}/src/common_utils.cpp",
     "${app_domain_verify_common_path}/src/skill_uri.cpp",
     "${app_domain_verify_frameworks_common_path}/src/bms/bundle_info_query.cpp",
     "${app_domain_verify_frameworks_common_path}/src/utils/domain_url_util.cpp",
