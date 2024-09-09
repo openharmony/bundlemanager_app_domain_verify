@@ -95,8 +95,8 @@ bool AppDomainVerifyTaskMgr::Init()
             std::unique_lock<ffrt::mutex> lock(mutex_);
             while (!this->stop_) {
                 if (!tasks_.empty()) {
-                    auto task = std::move(tasks_.back());
-                    tasks_.pop_back();
+                    auto task = std::move(tasks_.front());
+                    tasks_.pop();
                     lock.unlock();
                     task();
                     lock.lock();
@@ -170,7 +170,7 @@ bool AppDomainVerifyTaskMgr::AddTask(const std::shared_ptr<IHttpTask>& task)
     std::function<void()> taskWrapper = GetTaskWrapper(task);
     std::unique_lock<ffrt::mutex> lock(mutex_);
     taskMap_.EnsureInsert(task->GetTaskId(), task);
-    tasks_.push_back(std::move(taskWrapper));
+    tasks_.push(std::move(taskWrapper));
     cond_.notify_one();
     return true;
 }

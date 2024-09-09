@@ -15,7 +15,6 @@
 #ifndef APP_DOMAIN_VERIFY_TASK_H
 #define APP_DOMAIN_VERIFY_TASK_H
 
-#include <deque>
 #include <memory>
 #include <queue>
 #include <shared_mutex>
@@ -49,7 +48,7 @@ private:
     ffrt::mutex mutex_;
     ffrt::condition_variable cond_;
     bool stop_ = false;
-    std::vector<std::function<void()>> tasks_;
+    std::queue<std::function<void()>> tasks_;
     SafeMap<uint32_t, std::shared_ptr<IHttpTask>> taskMap_;
 };
 }
