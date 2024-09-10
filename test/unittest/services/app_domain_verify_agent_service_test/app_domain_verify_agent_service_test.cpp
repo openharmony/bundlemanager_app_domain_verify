@@ -54,6 +54,9 @@ void AgentServiceTest::TearDownTestCase(void)
         GTEST_LOG_(INFO) << "wait task finish";
         std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_TIME));
     }
+    AppDomainVerifyTaskMgr::GetInstance()->DestroyInstance();
+    appDomainVerifyAgentService->unloadHandler_->RemoveTask("unload");
+    appDomainVerifyAgentService = nullptr;
     GTEST_LOG_(INFO) << "TearDownTestCase out";
 }
 
