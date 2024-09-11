@@ -130,7 +130,7 @@ bool WhiteListConfigMgr::IsInWhiteList(const std::string& url)
     } else {
         ret = (whiteListSet_.count(url) != 0) || (url == defaultWhiteUrl_);
     }
-    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "is count %{public}d url %{public}s",
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "is count %{public}d url %{private}s",
         whiteListSet_.count(url) != 0, url.c_str());
     return ret;
 }
