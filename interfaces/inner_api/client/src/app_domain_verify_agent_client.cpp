@@ -16,6 +16,7 @@
 #include "iservice_registry.h"
 #include "system_ability_definition.h"
 #include "app_domain_verify_agent_client.h"
+#include "app_domain_verify_hisysevent.h"
 
 namespace OHOS {
 namespace AppDomainVerify {
@@ -60,6 +61,7 @@ bool AppDomainVerifyAgentClient::IsServiceAvailable()
     }
     if (agentServiceProxy_ == nullptr) {
         APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_AGENT_MODULE_CLIENT, "Service proxy null.");
+        UNIVERSAL_ERROR_EVENT(CONNECT_AGENT_FAULT);
         return false;
     }
     return true;

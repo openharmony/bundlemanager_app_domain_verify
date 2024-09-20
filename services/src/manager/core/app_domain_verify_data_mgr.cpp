@@ -15,6 +15,7 @@
 #include <string>
 #include <utility>
 #include "app_domain_verify_data_mgr.h"
+#include "app_domain_verify_hisysevent.h"
 
 namespace OHOS {
 namespace AppDomainVerify {
@@ -52,6 +53,7 @@ bool AppDomainVerifyDataMgr::VerifyResultInfoToDB(
     const std::string bundleName, const VerifyResultInfo& verifyResultInfo)
 {
     if (!rdbDataManager_->DeleteData(bundleName)) {
+        UNIVERSAL_ERROR_EVENT(DEL_DB_IN_WRITE_BACK_FAULT);
         APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "try delete bundleName failed.");
     }
     for (auto it : verifyResultInfo.hostVerifyStatusMap) {
@@ -60,6 +62,7 @@ bool AppDomainVerifyDataMgr::VerifyResultInfoToDB(
             .domain = it.first,
             .status = it.second };
         if (!rdbDataManager_->InsertData(item)) {
+            UNIVERSAL_ERROR_EVENT(WRITE_DB_IN_WRITE_BACK_FAULT);
             APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "insert to db failed!");
             return false;
         }
@@ -168,12 +171,13 @@ bool AppDomainVerifyDataMgr::LoadAllFromRdb()
     std::unordered_map<std::string, std::vector<RdbDataItem>> dataMap;
     if (!rdbDataManager_->QueryAllData(dataMap)) {
         APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "LoadAllFromRdb failed");
+        UNIVERSAL_ERROR_EVENT(LOAD_DB_FAULT);
         return false;
     }
-    for (auto it = dataMap.begin(); it != dataMap.end(); ++it) {
+    for (auto & it : dataMap) {
         VerifyResultInfo verifyResultInfo;
-        DBToVerifyResultInfo(it->second, verifyResultInfo);
-        verifyMap_->insert(std::make_pair(it->first, verifyResultInfo));
+        DBToVerifyResultInfo(it.second, verifyResultInfo);
+        verifyMap_->insert(std::make_pair(it.first, verifyResultInfo));
     }
     return true;
 }

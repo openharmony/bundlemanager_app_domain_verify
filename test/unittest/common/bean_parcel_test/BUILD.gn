@@ -34,6 +34,7 @@ config("module_private_config") {
     "${app_domain_verify_service_path}/include/manager/core",
     "${app_domain_verify_service_path}/include/manager/constant",
     "${app_domain_verify_service_path}/include/manager/zidl",
+    "${app_domain_verify_frameworks_common_path}/include/dfx",
   ]
   cflags = [ "-fno-exceptions" ]
   cflags_cc = [ "-fno-exceptions" ]
@@ -55,6 +56,7 @@ ohos_unittest("app_domain_verify_bean_parcel_test") {
   external_deps = [
     "c_utils:utils",
     "hilog:libhilog",
+    "hisysevent:libhisysevent",
     "json:nlohmann_json_static",
   ]
 
