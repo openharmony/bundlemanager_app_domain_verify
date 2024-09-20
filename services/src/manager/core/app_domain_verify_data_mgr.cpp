@@ -174,7 +174,7 @@ bool AppDomainVerifyDataMgr::LoadAllFromRdb()
         UNIVERSAL_ERROR_EVENT(LOAD_DB_FAULT);
         return false;
     }
-    for (auto & it : dataMap) {
+    for (auto& it : dataMap) {
         VerifyResultInfo verifyResultInfo;
         DBToVerifyResultInfo(it.second, verifyResultInfo);
         verifyMap_->insert(std::make_pair(it.first, verifyResultInfo));
