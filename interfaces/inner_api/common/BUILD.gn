@@ -20,6 +20,7 @@ config("app_domain_verify_common_config") {
     "include",
     "include/zidl",
     "${app_domain_verify_frameworks_common_path}/include",
+    "${app_domain_verify_frameworks_common_path}/include/dfx",
   ]
   cflags = [
     "-fdata-sections",
@@ -48,6 +49,7 @@ ohos_shared_library("app_domain_verify_common") {
     "ability_base:want",
     "c_utils:utils",
     "hilog:libhilog",
+    "hisysevent:libhisysevent",
     "ipc:ipc_core",
     "json:nlohmann_json_static",
     "safwk:system_ability_fwk",

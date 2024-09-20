@@ -72,7 +72,6 @@ ohos_shared_library("app_domain_verify_mgr_client") {
     "c_utils:utils",
     "hilog:libhilog",
     "hisysevent:libhisysevent",
-    "hisysevent:libhisysevent",
     "ipc:ipc_core",
     "samgr:samgr_proxy",
   ]
@@ -101,7 +100,6 @@ ohos_shared_library("app_domain_verify_agent_client") {
     "bundle_framework:appexecfwk_base",
     "c_utils:utils",
     "hilog:libhilog",
-    "hisysevent:libhisysevent",
     "hisysevent:libhisysevent",
     "ipc:ipc_core",
     "samgr:samgr_proxy",
