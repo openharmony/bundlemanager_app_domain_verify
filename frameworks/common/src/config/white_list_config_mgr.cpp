@@ -17,6 +17,7 @@
 #include "domain_url_util.h"
 #include "white_list_config_mgr.h"
 #include "app_domain_verify_hilog.h"
+#include "app_domain_verify_hisysevent.h"
 
 namespace OHOS::AppDomainVerify {
 const static std::string DYNAMIC_WHITE_LIST_PRE_PATH =
@@ -36,6 +37,7 @@ void WhiteListConfigMgr::LoadDefault()
 {
     preferences_ = GetPreference(DEFAULT_WHITE_LIST_PRE_PATH);
     if (preferences_ == nullptr) {
+        UNIVERSAL_ERROR_EVENT(READ_DEFAULT_WHITE_LIST_FAULT);
         APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MODULE_COMMON, "WhiteListConfigMgr::Load failed.");
         return;
     }
@@ -49,6 +51,7 @@ void WhiteListConfigMgr::LoadDynamic()
 {
     preferences_ = GetPreference(DYNAMIC_WHITE_LIST_PRE_PATH);
     if (preferences_ == nullptr) {
+        UNIVERSAL_ERROR_EVENT(READ_DYNAMIC_WHITE_LIST_FAULT);
         APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MODULE_COMMON, "WhiteListConfigMgr::Load failed.");
         return;
     }
@@ -111,6 +114,11 @@ bool WhiteListConfigMgr::Save()
         strSteam << element << ",";
     }
     auto ret = preferences_->PutString(WHITE_LIST_KEY, strSteam.str());
+    if (ret != 0) {
+        UNIVERSAL_ERROR_EVENT(WRITE_DYNAMIC_WHITE_LIST_FAULT);
+        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MODULE_COMMON, "put dynamic white list error ret:%{public}d.", ret);
+        return false;
+    }
     preferences_->Flush();
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MODULE_COMMON, "WhiteListConfigMgr::Save %{public}s ret%{public}d.",
         strSteam.str().c_str(), ret);

@@ -148,7 +148,9 @@ void AppDomainVerifyAgentService::QueryAndCompleteRefresh(
     BundleVerifyStatusInfo bundleVerifyStatusInfo;
     if (AppDomainVerifyMgrClient::GetInstance()->QueryAllDomainVerifyStatus(bundleVerifyStatusInfo)) {
         CompleteVerifyRefresh(bundleVerifyStatusInfo, statuses, delaySeconds, type);
+        return;
     }
+    UNIVERSAL_ERROR_EVENT(GET_DATE_IN_BOOT_FAULT);
 }
 void AppDomainVerifyAgentService::UpdateWhiteList()
 {

@@ -35,6 +35,7 @@ config("module_private_config") {
     "${app_domain_verify_service_path}/include/manager/zidl",
     "${app_domain_verify_test_path}/mock/include",
     "${app_domain_verify_test_path}/mock/include/mock_http_client",
+    "${app_domain_verify_frameworks_common_path}/include/dfx",
   ]
 }
 

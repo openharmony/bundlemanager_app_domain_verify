@@ -38,6 +38,7 @@ config("module_private_config") {
     "${app_domain_verify_frameworks_verifier_path}/include",
     "${app_domain_verify_frameworks_verifier_path}/include/constant",
     "${app_domain_verify_test_path}/mock/include",
+    "${app_domain_verify_frameworks_common_path}/include/dfx",
   ]
 }
 
