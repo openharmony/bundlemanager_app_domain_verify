@@ -54,6 +54,7 @@ bool AppDomainVerifyExtensionMgr::Init()
         if (*handle == nullptr) {
             APP_DOMAIN_VERIFY_HILOGW(APP_DOMAIN_VERIFY_MODULE_EXTENSION, "failed to open %{public}s, err:%{public}s",
                 EXTENSION_LIB_PATH.c_str(), dlerror());
+            UNIVERSAL_ERROR_EVENT(GET_EXT_FAULT);
             return false;
         }
     }
@@ -75,6 +76,7 @@ ErrorCode AppDomainVerifyExtensionMgr::CompleteVerifyRefresh(const BundleVerifyS
         return std::static_pointer_cast<AppDomainVerifyAgentExt>(appDomainVerifierExt)
             ->CompleteVerifyRefresh(bundleVerifyStatusInfo, statuses, delaySeconds, type);
     }
+    UNIVERSAL_ERROR_EVENT(GET_EXT_FAULT);
     return ErrorCode::E_EXTENSIONS_LIB_NOT_FOUND;
 }
 
@@ -92,6 +94,7 @@ ErrorCode AppDomainVerifyExtensionMgr::SingleVerify(
             APP_DOMAIN_VERIFY_MODULE_EXTENSION, "get verifierExt: %{public}s failed.", verifierExtName.c_str());
         return ErrorCode::E_EXTENSIONS_INTERNAL_ERROR;
     }
+    UNIVERSAL_ERROR_EVENT(GET_EXT_FAULT);
     return ErrorCode::E_EXTENSIONS_LIB_NOT_FOUND;
 }
 std::shared_ptr<AppDomainVerifyAgentExt> AppDomainVerifyExtensionMgr::GetAppDomainVerifyExt(const std::string& extName)
@@ -116,6 +119,7 @@ ErrorCode AppDomainVerifyExtensionMgr::ConvertToExplicitWant(
             APP_DOMAIN_VERIFY_MODULE_EXTENSION, "get verifierExt: %{public}s failed.", verifierExtName.c_str());
         return ErrorCode::E_EXTENSIONS_INTERNAL_ERROR;
     }
+    UNIVERSAL_ERROR_EVENT(GET_EXT_FAULT);
     return ErrorCode::E_EXTENSIONS_LIB_NOT_FOUND;
 }
 ErrorCode AppDomainVerifyExtensionMgr::UpdateWhiteList()
@@ -131,6 +135,7 @@ ErrorCode AppDomainVerifyExtensionMgr::UpdateWhiteList()
             APP_DOMAIN_VERIFY_MODULE_EXTENSION, "get verifierExt: %{public}s failed.", verifierExtName.c_str());
         return ErrorCode::E_EXTENSIONS_INTERNAL_ERROR;
     }
+    UNIVERSAL_ERROR_EVENT(GET_EXT_FAULT);
     return ErrorCode::E_EXTENSIONS_LIB_NOT_FOUND;
 }
 }

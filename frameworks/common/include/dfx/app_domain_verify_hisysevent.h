@@ -24,12 +24,14 @@ namespace EventType {
 const std::string APP_INSTALL_EVENT = "PKG_INSTALL";
 const std::string APP_DELETE_EVENT = "PKG_UNINSTALL";
 const std::string APP_VERIFY_EVENT = "PKG_VERIFY_RESULT";
+const std::string APP_UNIVERSAL_ERROR_EVENT = "UNIVERSAL_ERROR";
 }
 namespace EventParamKey {
 const std::string APP_ID = "APP_ID";
 const std::string BUNDLE_NAME = "BUNDLE_NAME";
 const std::string VERIFY_STATUS = "VERIFY_STATUS";
 const std::string VERIFY_WAY = "VERIFY_WAY";
+const std::string ERROR_CODE = "ERROR_CODE";
 }
 typedef enum EnumTaskType {
     IMMEDIATE_TASK,
@@ -37,6 +39,37 @@ typedef enum EnumTaskType {
     SCHEDULE_REFRESH_TASK,
     UNKNOWN_TASK
 } TaskType;
+enum EventCode : uint32_t {
+    COMMON_FAULT_START = 0x00000,
+    SIGN_FAULT = 0x00001,
+    GET_GATEWAY_FAULT = 0x00002,
+    CONNECT_MGR_FAULT = 0x00003,
+    CONNECT_AGENT_FAULT = 0x00004,
+    CONNECT_OTHER_FAULT = 0x00005,
+    GET_EXT_FAULT = 0x00006,
+    UPDATE_DB_FAULT = 0x00007,
+    COMMON_FAULT_END,
+
+    BASE_LINK_FAULT_START = 0x10000,
+    LOAD_DB_FAULT = 0x10001,
+    GET_DATE_IN_BOOT_FAULT = 0x12001,
+    GET_DATE_IN_LOOP_FAULT = 0x12101,
+    DEL_DB_IN_WRITE_BACK_FAULT = 0x13001,
+    WRITE_DB_IN_WRITE_BACK_FAULT = 0x13002,
+    BASE_LINK_FAULT_END,
+
+    SHORT_LINK_FAULT_START = 0x20000,
+    SYNC_WHITE_LIST_FAULT = 0x20001,
+    WRITE_DYNAMIC_WHITE_LIST_FAULT = 0x20002,
+    READ_DEFAULT_WHITE_LIST_FAULT = 0x20101,
+    READ_DYNAMIC_WHITE_LIST_FAULT = 0x20102,
+    READ_CACHE_FAULT = 0x21001,
+    NET_UNREACHED_FAULT = 0x21101,
+    CONVERT_TO_WANT_FAULT = 0x21102,
+    CALL_BACK_FAULT = 0x21201,
+    UPDATE_CACHE_FAULT = 0x21301,
+    SHORT_LINK_FAULT_END
+};
 
 #define INSTALL_EVENT(appIdentifier, bundleName)                                                      \
     do {                                                                                              \
@@ -59,6 +92,13 @@ typedef enum EnumTaskType {
             EventParamKey::BUNDLE_NAME, (bundleName), EventParamKey::VERIFY_WAY, (type), EventParamKey::VERIFY_STATUS, \
             (status));                                                                                                 \
     } while (0)
+
+#define UNIVERSAL_ERROR_EVENT(errorCode)                                                            \
+    do {                                                                                            \
+        HiSysEventWrite(APP_DOMAIN_VERIFY, EventType::APP_UNIVERSAL_ERROR_EVENT,                    \
+            OHOS::HiviewDFX::HiSysEvent::EventType::FAULT, EventParamKey::ERROR_CODE, (errorCode)); \
+    } while (0)
+
 }
 }
 #endif

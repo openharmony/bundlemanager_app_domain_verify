@@ -38,6 +38,7 @@ config("app_domain_verify_extension_public_config") {
     "include",
     "${app_domain_verify_common_path}/include",
     "${app_domain_verify_common_path}/include/zidl",
+    "${app_domain_verify_frameworks_common_path}/include/dfx",
   ]
 }
 
@@ -56,6 +57,7 @@ ohos_shared_library("app_domain_verify_extension_framework") {
     "ability_base:want",
     "c_utils:utils",
     "hilog:libhilog",
+    "hisysevent:libhisysevent",
     "hisysevent:libhisysevent",
     "ipc:ipc_single",
     "samgr:samgr_proxy",

@@ -26,6 +26,7 @@
     *WhiteListChecker*;
     *WhiteListUpdater*;
     *WhiteListConfigMgr*;
+    *SendFaultEvent*;
   local:
     *;
 };
