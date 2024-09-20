@@ -29,6 +29,7 @@ config("app_domain_verify_service_config") {
     "${app_domain_verify_frameworks_common_path}/include",
     "${app_domain_verify_frameworks_common_path}/include/utils",
     "${app_domain_verify_frameworks_common_path}/include/config",
+    "${app_domain_verify_frameworks_common_path}/include/dfx",
   ]
   configs = [ "//build/config/compiler:exceptions" ]
   ldflags = [ "-Wl,--exclude-libs=ALL" ]
@@ -99,7 +100,6 @@ config("app_domain_verify_agent_service_config") {
   visibility = [ ":*" ]
   include_dirs = [
     "${app_domain_verify_client_path}/include",
-    "include/agent/data_share",
     "include/agent/core",
     "include/agent/zidl",
     "include/manager/core",
@@ -113,6 +113,7 @@ config("app_domain_verify_agent_service_config") {
     "${app_domain_verify_frameworks_common_path}/include/config",
     "${app_domain_verify_frameworks_extension_path}/include",
     "${app_domain_verify_frameworks_verifier_path}/include",
+    "${app_domain_verify_frameworks_common_path}/include/dfx",
   ]
   configs = [ "//build/config/compiler:exceptions" ]
   ldflags = [ "-Wl,--exclude-libs=ALL" ]
@@ -133,7 +134,6 @@ ohos_shared_library("app_domain_verify_agent_service") {
   branch_protector_ret = "pac_ret"
   sources = [
     "src/agent/core/app_domain_verify_agent_service.cpp",
-    "src/agent/data_share/setting_data_share_helper.cpp",
     "src/agent/zidl/app_domain_verify_agent_service_proxy.cpp",
     "src/agent/zidl/app_domain_verify_agent_service_stub.cpp",
   ]
@@ -155,7 +155,6 @@ ohos_shared_library("app_domain_verify_agent_service") {
     "bundle_framework:appexecfwk_core",
     "c_utils:utils",
     "curl:curl_shared",
-    "data_share:datashare_consumer",
     "eventhandler:libeventhandler",
     "ffrt:libffrt",
     "hicollie:libhicollie",

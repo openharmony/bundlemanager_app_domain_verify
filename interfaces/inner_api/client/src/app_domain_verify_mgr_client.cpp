@@ -135,6 +135,7 @@ bool AppDomainVerifyMgrClient::IsServiceAvailable()
 
     if (appDomainVerifyMgrServiceProxy_ == nullptr) {
         APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "Service proxy null.");
+        UNIVERSAL_ERROR_EVENT(CONNECT_MGR_FAULT);
         return false;
     }
     return true;
@@ -158,6 +159,7 @@ void AppDomainVerifyMgrClient::ConnectService()
         appDomainVerifyMgrServiceProxy_ = iface_cast<IAppDomainVerifyMgrService>(remoteObject);
         return;
     }
+
     APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "Getting AppDomainVerifyMgrServiceProxy failed.");
 }
 

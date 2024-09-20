@@ -14,13 +14,11 @@
  */
 
 #include "bms/bundle_info_query.h"
-#include "bundle_mgr_client.h"
-#include "bundle_info.h"
 #include "os_account_manager.h"
 #include "app_domain_verify_hilog.h"
 #include "system_ability_definition.h"
 #include "iservice_registry.h"
-#include "bundlemgr/bundle_mgr_proxy.h"
+#include "app_domain_verify_hisysevent.h"
 
 namespace OHOS {
 namespace AppDomainVerify {
@@ -31,6 +29,7 @@ bool BundleInfoQuery::GetBundleInfo(const std::string &bundleName, std::string &
 
     if (bundleMgrProxy == nullptr) {
         APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "bundleMgrProxy is nullptr.");
+        UNIVERSAL_ERROR_EVENT(CONNECT_OTHER_FAULT);
         return false;
     }
     int32_t userId = GetCurrentAccountId();
