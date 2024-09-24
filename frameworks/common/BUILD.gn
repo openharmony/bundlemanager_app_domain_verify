@@ -34,6 +34,7 @@ config("app_domain_verify_frameworks_common_config") {
 }
 
 ohos_shared_library("app_domain_verify_frameworks_common") {
+  branch_protector_ret = "pac_ret"
   sources = [
     "src/bms/bundle_info_query.cpp",
     "src/config/white_list_config_mgr.cpp",
