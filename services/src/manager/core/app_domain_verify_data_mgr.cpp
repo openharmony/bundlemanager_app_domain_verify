@@ -23,8 +23,9 @@ AppDomainVerifyDataMgr::AppDomainVerifyDataMgr()
 {
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "new instance created.");
     verifyMap_ = std::make_shared<std::unordered_map<std::string, VerifyResultInfo>>();
-    if (InitRdb()) {
-        LoadAllFromRdb();
+    if (!LoadData()) {
+        UNIVERSAL_ERROR_EVENT(LOAD_DB_FAULT);
+        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "load data failed.");
     }
 }
 
@@ -207,6 +208,13 @@ bool AppDomainVerifyDataMgr::QueryAssociatedBundleNames(
     }
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "call end");
     return true;
+}
+bool AppDomainVerifyDataMgr::LoadData()
+{
+    if (InitRdb()) {
+        return LoadAllFromRdb();
+    }
+    return false;
 }
 }  // namespace AppDomainVerify
 }  // namespace OHOS

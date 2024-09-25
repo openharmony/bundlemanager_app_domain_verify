@@ -73,6 +73,7 @@ private:
     bool LoadAllFromRdb();
     bool VerifyResultInfoToDB(const std::string bundleName, const VerifyResultInfo& verifyResultInfo);
     bool DBToVerifyResultInfo(const std::vector<RdbDataItem>& items, VerifyResultInfo& verifyResultInfo);
+    bool LoadData();
 
 private:
     std::shared_ptr<AppDomainVerifyRdbDataManager> rdbDataManager_ = nullptr;
