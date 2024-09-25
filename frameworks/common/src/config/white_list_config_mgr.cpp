@@ -44,6 +44,7 @@ void WhiteListConfigMgr::LoadDefault()
 
     defaultWhiteUrl_ = preferences_->GetString(DEFAULT_URL_KEY, "");
     if (defaultWhiteUrl_.empty()) {
+        UNIVERSAL_ERROR_EVENT(READ_DEFAULT_WHITE_LIST_FAULT);
         APP_DOMAIN_VERIFY_HILOGW(APP_DOMAIN_VERIFY_MODULE_COMMON, "WhiteListConfigMgr::Load defaultWhiteUrl empty.");
     }
 }
@@ -157,7 +158,10 @@ void WhiteListConfigMgr::UpdateWhiteList(const std::unordered_set<std::string>& 
     std::lock_guard<std::mutex> lock(whiteListLock_);
     whiteListSet_ = filtedWhiteList;
     if (!whiteListSet_.empty()) {
-        Save();
+        if (!Save()) {
+            UNIVERSAL_ERROR_EVENT(WRITE_DYNAMIC_WHITE_LIST_FAULT);
+            APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "save white list failed.");
+        }
     }
 }
 
