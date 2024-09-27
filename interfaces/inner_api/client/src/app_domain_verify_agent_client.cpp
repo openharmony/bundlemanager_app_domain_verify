@@ -47,6 +47,7 @@ void AppDomainVerifyAgentClient::SingleVerify(const AppVerifyBaseInfo &appVerify
 {
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_AGENT_MODULE_CLIENT, "called");
     if (IsServiceAvailable()) {
+        std::lock_guard<std::mutex> autoLock(proxyLock_);
         agentServiceProxy_->SingleVerify(appVerifyBaseInfo, skillUris);
     }
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_AGENT_MODULE_CLIENT, "call end");
@@ -109,6 +110,7 @@ void AppDomainVerifyAgentClient::ConvertToExplicitWant(AAFwk::Want& implicitWant
 {
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "called");
     if (IsServiceAvailable()) {
+        std::lock_guard<std::mutex> autoLock(proxyLock_);
         agentServiceProxy_->ConvertToExplicitWant(implicitWant, callback);
     }
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "call end");

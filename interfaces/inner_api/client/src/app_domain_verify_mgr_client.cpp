@@ -57,6 +57,7 @@ void AppDomainVerifyMgrClient::VerifyDomain(const std::string& appIdentifier, co
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "called");
     INSTALL_EVENT(appIdentifier, bundleName);
     if (IsServiceAvailable()) {
+        std::lock_guard<std::mutex> autoLock(proxyLock_);
         appDomainVerifyMgrServiceProxy_->VerifyDomain(appIdentifier, bundleName, fingerprint, skillUris);
     }
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "call end");
@@ -68,6 +69,7 @@ bool AppDomainVerifyMgrClient::ClearDomainVerifyStatus(const std::string& appIde
     UNINSTALL_EVENT(appIdentifier, bundleName);
     bool clearResult = false;
     if (IsServiceAvailable()) {
+        std::lock_guard<std::mutex> autoLock(proxyLock_);
         clearResult = appDomainVerifyMgrServiceProxy_->ClearDomainVerifyStatus(appIdentifier, bundleName);
     }
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "call end");
@@ -81,6 +83,7 @@ bool AppDomainVerifyMgrClient::FilterAbilities(const OHOS::AAFwk::Want& want,
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "called");
     bool filterSuccess = false;
     if (IsServiceAvailable()) {
+        std::lock_guard<std::mutex> autoLock(proxyLock_);
         filterSuccess = appDomainVerifyMgrServiceProxy_->FilterAbilities(want, originAbilityInfos, filtedAbilityInfos);
     }
 
@@ -96,6 +99,7 @@ bool AppDomainVerifyMgrClient::QueryDomainVerifyStatus(
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "called");
     bool querySuccess = false;
     if (IsServiceAvailable()) {
+        std::lock_guard<std::mutex> autoLock(proxyLock_);
         querySuccess = appDomainVerifyMgrServiceProxy_->QueryDomainVerifyStatus(bundleName, domainVerificationState);
     }
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "call end");
@@ -107,6 +111,7 @@ bool AppDomainVerifyMgrClient::QueryAllDomainVerifyStatus(BundleVerifyStatusInfo
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "called");
     bool querySuccess = false;
     if (IsServiceAvailable()) {
+        std::lock_guard<std::mutex> autoLock(proxyLock_);
         querySuccess = appDomainVerifyMgrServiceProxy_->QueryAllDomainVerifyStatus(bundleVerifyStatusInfo);
     }
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "call end");
@@ -119,6 +124,7 @@ bool AppDomainVerifyMgrClient::SaveDomainVerifyStatus(
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "called");
     bool saveSuccess = false;
     if (IsServiceAvailable()) {
+        std::lock_guard<std::mutex> autoLock(proxyLock_);
         saveSuccess = appDomainVerifyMgrServiceProxy_->SaveDomainVerifyStatus(bundleName, verifyResultInfo);
     }
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "call end");
@@ -186,6 +192,7 @@ void AppDomainVerifyMgrClient::ConvertToExplicitWant(AAFwk::Want& implicitWant, 
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "called");
     if (IsServiceAvailable()) {
         std::string identity = IPCSkeleton::ResetCallingIdentity();
+        std::lock_guard<std::mutex> autoLock(proxyLock_);
         appDomainVerifyMgrServiceProxy_->ConvertToExplicitWant(implicitWant, callback);
         IPCSkeleton::SetCallingIdentity(identity);
     }
@@ -261,6 +268,7 @@ bool AppDomainVerifyMgrClient::IsAtomicServiceUrl(const std::string& url)
     bool ret{ false };
     if (IsServiceAvailable()) {
         std::string identity = IPCSkeleton::ResetCallingIdentity();
+        std::lock_guard<std::mutex> autoLock(proxyLock_);
         ret = appDomainVerifyMgrServiceProxy_->IsAtomicServiceUrl(uri.GetScheme() + "://" + uri.GetHost());
         IPCSkeleton::SetCallingIdentity(identity);
     }
@@ -276,6 +284,7 @@ void AppDomainVerifyMgrClient::UpdateWhiteListUrls(const std::vector<std::string
 #else
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "called");
     if (IsServiceAvailable()) {
+        std::lock_guard<std::mutex> autoLock(proxyLock_);
         appDomainVerifyMgrServiceProxy_->UpdateWhiteListUrls(urls);
     }
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "call end");
@@ -285,6 +294,7 @@ int AppDomainVerifyMgrClient::QueryAssociatedDomains(const std::string& bundleNa
 {
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "called");
     if (IsServiceAvailable()) {
+        std::lock_guard<std::mutex> autoLock(proxyLock_);
         return appDomainVerifyMgrServiceProxy_->QueryAssociatedDomains(bundleName, domains);
     }
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "call end");
@@ -295,6 +305,7 @@ int AppDomainVerifyMgrClient::QueryAssociatedBundleNames(
 {
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "called");
     if (IsServiceAvailable()) {
+        std::lock_guard<std::mutex> autoLock(proxyLock_);
         return appDomainVerifyMgrServiceProxy_->QueryAssociatedBundleNames(domain, bundleNames);
     }
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "call end");
