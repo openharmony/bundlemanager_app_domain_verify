@@ -55,6 +55,10 @@ ohos_shared_library("app_domain_verify_common") {
     "safwk:system_ability_fwk",
     "samgr:samgr_proxy",
   ]
+  defines = []
+  if (build_variant == "user") {
+    defines += [ "IS_RELEASE_VERSION" ]
+  }
   sanitize = {
     cfi = true
     cfi_cross_dso = true
