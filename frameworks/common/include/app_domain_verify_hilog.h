@@ -22,8 +22,7 @@ namespace OHOS {
 namespace AppDomainVerify {
 
 // param of log interface.
-enum AppDomainVerifySubModule
-{
+enum AppDomainVerifySubModule {
     APP_DOMAIN_VERIFY_MODULE_EXTENSION = 0,
     APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT,
     APP_DOMAIN_VERIFY_AGENT_MODULE_CLIENT,
