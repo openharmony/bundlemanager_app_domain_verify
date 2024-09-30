@@ -66,6 +66,9 @@ ohos_shared_library("app_domain_verify_mgr_service") {
     "${app_domain_verify_common_path}:app_domain_verify_common",
   ]
   defines = [ "API_EXPORT=__attribute__((visibility (\"default\")))" ]
+  if (build_variant == "user") {
+    defines += [ "IS_RELEASE_VERSION" ]
+  }
   external_deps = [
     "ability_base:base",
     "ability_base:want",
@@ -87,6 +90,7 @@ ohos_shared_library("app_domain_verify_mgr_service") {
     "safwk:system_ability_fwk",
     "samgr:samgr_proxy",
   ]
+
   sanitize = {
     cfi = true
     cfi_cross_dso = true
@@ -139,6 +143,9 @@ ohos_shared_library("app_domain_verify_agent_service") {
   ]
   public_configs = [ ":app_domain_verify_agent_service_config" ]
   defines = [ "API_EXPORT=__attribute__((visibility (\"default\")))" ]
+  if (build_variant == "user") {
+    defines += [ "IS_RELEASE_VERSION" ]
+  }
   deps = [
     "${app_domain_verify_client_path}:app_domain_verify_mgr_client",
     "${app_domain_verify_common_path}:app_domain_verify_common",
@@ -169,6 +176,7 @@ ohos_shared_library("app_domain_verify_agent_service") {
     "safwk:system_ability_fwk",
     "samgr:samgr_proxy",
   ]
+
   sanitize = {
     cfi = true
     cfi_cross_dso = true
