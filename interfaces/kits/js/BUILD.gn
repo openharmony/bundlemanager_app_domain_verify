@@ -49,7 +49,6 @@ ohos_shared_library("appdomainverify_napi") {
     "${app_domain_verify_client_path}:app_domain_verify_mgr_client",
     "${app_domain_verify_common_path}:app_domain_verify_common",
   ]
-  defines = [ "API_EXPORT=__attribute__((visibility (\"default\")))" ]
   external_deps = [
     "ability_base:want",
     "bundle_framework:appexecfwk_base",
@@ -61,6 +60,10 @@ ohos_shared_library("appdomainverify_napi") {
     "safwk:system_ability_fwk",
     "samgr:samgr_proxy",
   ]
+  defines = []
+  if (build_variant == "user") {
+    defines += [ "IS_RELEASE_VERSION" ]
+  }
 
   relative_install_dir = "module/bundle"
   subsystem_name = "bundlemanager"
