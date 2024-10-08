@@ -25,6 +25,9 @@ namespace OHOS {
 namespace AppDomainVerify {
 constexpr const char* GET_DOMAIN_VERIFY_INFO = "ohos.permission.GET_APP_DOMAIN_BUNDLE_INFO";
 const bool REGISTER_RESULT = SystemAbility::MakeAndRegisterAbility(new AppDomainVerifyMgrService());
+const std::string HTTPS = "https";
+const std::set<std::string> SCHEME_WHITE_SET = { HTTPS };
+const std::string FUZZY_HOST_START = "*.";
 
 AppDomainVerifyMgrService::AppDomainVerifyMgrService() : SystemAbility(APP_DOMAIN_VERIFY_MANAGER_SA_ID, true)
 {
@@ -48,7 +51,13 @@ void AppDomainVerifyMgrService::VerifyDomain(const std::string& appIdentifier, c
     appVerifyBaseInfo.appIdentifier = appIdentifier;
     appVerifyBaseInfo.bundleName = bundleName;
     appVerifyBaseInfo.fingerprint = fingerprint;
-    AppDomainVerifyAgentClient::GetInstance()->SingleVerify(appVerifyBaseInfo, skillUris);
+
+    VerifyResultInfo verifyResultInfo;
+    verifyResultInfo.appIdentifier = appIdentifier;
+
+    CollectDomains(skillUris, verifyResultInfo);
+
+    AppDomainVerifyAgentClient::GetInstance()->SingleVerify(appVerifyBaseInfo, verifyResultInfo);
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "call end");
 }
 
@@ -297,6 +306,26 @@ int AppDomainVerifyMgrService::CheckPermission()
     }
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "CheckPermission ok .");
     return CommonErrorCode::E_OK;
+}
+void AppDomainVerifyMgrService::CollectDomains(
+    const std::vector<SkillUri>& skillUris, VerifyResultInfo& verifyResultInfo)
+{
+    for (auto it = skillUris.begin(); it != skillUris.end(); ++it) {
+        if (it->scheme.empty() || it->host.empty() || !UrlUtil::IsValidAppDomainVerifyHost(it->host) ||
+            SCHEME_WHITE_SET.find(it->scheme) == SCHEME_WHITE_SET.end()) {
+            APP_DOMAIN_VERIFY_HILOGW(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "invalid skillUri skip.");
+            continue;
+        }
+
+        std::string host = it->host;
+        if (it->host.substr(0, FUZZY_HOST_START.size()) == FUZZY_HOST_START) {
+            // Hosts with *.
+            host = it->host.substr(FUZZY_HOST_START.size());
+        }
+        // validUris remove duplicates
+        auto uri = it->scheme + "://" + host;
+        verifyResultInfo.hostVerifyStatusMap.insert(make_pair(uri, InnerVerifyStatus::UNKNOWN));
+    }
 }
 }  // namespace AppDomainVerify
 }  // namespace OHOS

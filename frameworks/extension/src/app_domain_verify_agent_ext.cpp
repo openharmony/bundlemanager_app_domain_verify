@@ -23,7 +23,7 @@ ErrorCode AppDomainVerifyAgentExt::CompleteVerifyRefresh(const BundleVerifyStatu
     return ErrorCode::E_EXTENSIONS_LIB_NOT_FOUND;
 }
 ErrorCode AppDomainVerifyAgentExt::SingleVerify(
-    const AppVerifyBaseInfo& appVerifyBaseInfo, const std::vector<SkillUri>& skillUris)
+    const AppVerifyBaseInfo& appVerifyBaseInfo, const VerifyResultInfo& verifyResultInfo)
 {
     return ErrorCode::E_EXTENSIONS_LIB_NOT_FOUND;
 }

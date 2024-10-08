@@ -36,8 +36,8 @@ public:
     const std::unordered_map<std::string, InnerVerifyStatus> &GetUriVerifyMap() override;
 
     VerifyTask(OHOS::AppDomainVerify::TaskType type, const AppVerifyBaseInfo &appVerifyBaseInfo,
-        const std::vector<SkillUri> &skillUris);
-    void InitUriVerifyMap(const std::vector<SkillUri> &skillUris);
+        const VerifyResultInfo& verifyResultInfo);
+    void InitUriUnVerifySetMap(const VerifyResultInfo& verifyResultInfo);
     void Execute();
 
 protected:
@@ -50,6 +50,7 @@ private:
     AppVerifyBaseInfo appVerifyBaseInfo_;
     std::unordered_map<std::string, InnerVerifyStatus> uriVerifyMap_;
     std::unordered_set<std::string> unVerifiedSet_;
+    VerifyResultInfo verifyResultInfo_;
 };
 }
 }

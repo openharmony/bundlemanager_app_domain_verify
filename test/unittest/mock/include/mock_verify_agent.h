@@ -36,7 +36,7 @@ public:
         printf("~AppDomainVerifyAgentRemoteStubMock \n");
     };
     virtual void SingleVerify(
-        const AppVerifyBaseInfo& appVerifyBaseInfo, const std::vector<SkillUri>& skillUris) override
+        const AppVerifyBaseInfo& appVerifyBaseInfo, const VerifyResultInfo &verifyResultInfo) override
     {
     }
     virtual void ConvertToExplicitWant(OHOS::AAFwk::Want& implicitWant, sptr<IConvertCallback>& callback) override
@@ -51,7 +51,7 @@ public:
     AppDomainVerifyAgentStubMock(){};
     virtual ~AppDomainVerifyAgentStubMock(){};
     virtual void SingleVerify(
-        const AppVerifyBaseInfo& appVerifyBaseInfo, const std::vector<SkillUri>& skillUris) override
+        const AppVerifyBaseInfo& appVerifyBaseInfo, const VerifyResultInfo &verifyResultInfo) override
     {
     }
     virtual void ConvertToExplicitWant(OHOS::AAFwk::Want& implicitWant, sptr<IConvertCallback>& callback) override
