@@ -55,21 +55,15 @@ int32_t AppDomainVerifyAgentServiceStub::OnSingleVerify(MessageParcel& data, Mes
         return ERR_INVALID_VALUE;
     }
     AppVerifyBaseInfo appVerifyBaseInfo = *info;
-    int32_t skillUrisSize = data.ReadInt32();
-    if (IsInvalidParcelArraySize(skillUrisSize)) {
-        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "read parcelable size invalid.");
-        return false;
+
+    std::unique_ptr<VerifyResultInfo> result(data.ReadParcelable<VerifyResultInfo>());
+    if (!result) {
+        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "read parcelable VerifyResultInfo failed.");
+        return ERR_INVALID_VALUE;
     }
-    std::vector<SkillUri> skillUris;
-    for (int32_t i = 0; i < skillUrisSize; i++) {
-        std::unique_ptr<SkillUri> skillUri(data.ReadParcelable<SkillUri>());
-        if (!skillUri) {
-            APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "read parcelable skillUri failed.");
-            return ERR_INVALID_VALUE;
-        }
-        skillUris.emplace_back(*skillUri);
-    }
-    SingleVerify(appVerifyBaseInfo, skillUris);
+    VerifyResultInfo verifyBaseInfo = *result;
+
+    SingleVerify(appVerifyBaseInfo, verifyBaseInfo);
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "call end");
     return ERR_OK;
 }

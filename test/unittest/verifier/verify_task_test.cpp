@@ -60,9 +60,8 @@ HWTEST_F(DomainVerifierTaskTest, DomainVerifierTaskTest001, TestSize.Level0)
     appVerifyBaseInfo.fingerprint = "";
     appVerifyBaseInfo.appIdentifier = "";
     SkillUri uri1;
-    const std::vector<SkillUri> skillUris;
     VerifyResultInfo verifyResultInfo;
-    VerifyTask task(TaskType::IMMEDIATE_TASK, appVerifyBaseInfo, skillUris);
+    VerifyTask task(TaskType::IMMEDIATE_TASK, appVerifyBaseInfo, verifyResultInfo);
     task.Execute();
     ASSERT_TRUE(task.GetType() == TaskType::IMMEDIATE_TASK);
     ASSERT_TRUE(task.GetTaskType() == TaskType::IMMEDIATE_TASK);
@@ -124,7 +123,7 @@ HWTEST_F(DomainVerifierTaskTest, DomainVerifierTaskTest002, TestSize.Level0)
     skillUris.push_back(uri8);
 
     VerifyResultInfo verifyResultInfo;
-    VerifyTask task(TaskType::IMMEDIATE_TASK, appVerifyBaseInfo, skillUris);
+    VerifyTask task(TaskType::IMMEDIATE_TASK, appVerifyBaseInfo, verifyResultInfo);
     ASSERT_TRUE(task.GetType() == TaskType::IMMEDIATE_TASK);
 }
 /**
@@ -141,8 +140,8 @@ HWTEST_F(DomainVerifierTaskTest, DomainVerifierTaskTest003, TestSize.Level0)
     SkillUri uri1;
     uri1.scheme = "https";
     uri1.host = "e";
-    const std::vector<SkillUri> skillUris;
-    VerifyTask task(TaskType::IMMEDIATE_TASK, appVerifyBaseInfo, skillUris);
+    VerifyResultInfo verifyResultInfo;
+    VerifyTask task(TaskType::IMMEDIATE_TASK, appVerifyBaseInfo, verifyResultInfo);
     OHOS::NetStack::HttpClient::HttpClientRequest request;
     std::string url = "";
     ASSERT_TRUE(task.OnPreRequest(request, url));
@@ -161,8 +160,8 @@ HWTEST_F(DomainVerifierTaskTest, DomainVerifierTaskTest004, TestSize.Level0)
     SkillUri uri1;
     uri1.scheme = "https";
     uri1.host = "e";
-    const std::vector<SkillUri> skillUris;
-    VerifyTask task(TaskType::IMMEDIATE_TASK, appVerifyBaseInfo, skillUris);
+    VerifyResultInfo verifyResultInfo;
+    VerifyTask task(TaskType::IMMEDIATE_TASK, appVerifyBaseInfo, verifyResultInfo);
     OHOS::NetStack::HttpClient::HttpClientResponse response;
     response.SetResponseCode(OHOS::NetStack::HttpClient::ResponseCode::OK);
     response.SetResult("OK");
@@ -183,8 +182,8 @@ HWTEST_F(DomainVerifierTaskTest, DomainVerifierTaskSaveResultTest001, TestSize.L
     SkillUri uri1;
     uri1.scheme = "https";
     uri1.host = "e";
-    const std::vector<SkillUri> skillUris;
-    MocVerifyTask task(TaskType::IMMEDIATE_TASK, appVerifyBaseInfo, skillUris);
+    VerifyResultInfo verifyResultInfo;
+    MocVerifyTask task(TaskType::IMMEDIATE_TASK, appVerifyBaseInfo, verifyResultInfo);
     OHOS::NetStack::HttpClient::HttpClientResponse response;
     response.SetResponseCode(OHOS::NetStack::HttpClient::ResponseCode::OK);
     response.SetResult("OK");
@@ -208,8 +207,8 @@ HWTEST_F(DomainVerifierTaskTest, DomainVerifierTaskSaveResultTest002, TestSize.L
     SkillUri uri1;
     uri1.scheme = "https";
     uri1.host = "e";
-    const std::vector<SkillUri> skillUris;
-    MocVerifyTask task(TaskType::IMMEDIATE_TASK, appVerifyBaseInfo, skillUris);
+    VerifyResultInfo verifyResultInfo;
+    MocVerifyTask task(TaskType::IMMEDIATE_TASK, appVerifyBaseInfo, verifyResultInfo);
     OHOS::NetStack::HttpClient::HttpClientResponse response;
     response.SetResponseCode(OHOS::NetStack::HttpClient::ResponseCode::OK);
     response.SetResult("OK");
@@ -232,9 +231,9 @@ HWTEST_F(DomainVerifierTaskTest, DomainVerifierHttpTaskTest001, TestSize.Level0)
     SkillUri uri1;
     uri1.scheme = "https";
     uri1.host = "e";
-    const std::vector<SkillUri> skillUris;
+    VerifyResultInfo verifyResultInfo;
     std::shared_ptr<MocVerifyTask> task = std::make_shared<MocVerifyTask>(
-        TaskType::IMMEDIATE_TASK, appVerifyBaseInfo, skillUris);
+        TaskType::IMMEDIATE_TASK, appVerifyBaseInfo, verifyResultInfo);
     std::shared_ptr<VerifyHttpTask> verifyHttpTask = std::make_shared<VerifyHttpTask>("", task);
     OHOS::NetStack::HttpClient::HttpClientRequest request;
     OHOS::NetStack::HttpClient::HttpClientResponse response;

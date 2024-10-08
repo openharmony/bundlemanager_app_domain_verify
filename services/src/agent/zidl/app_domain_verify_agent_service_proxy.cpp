@@ -30,7 +30,7 @@ AppDomainVerifyAgentServiceProxy::~AppDomainVerifyAgentServiceProxy()
 }
 
 void AppDomainVerifyAgentServiceProxy::SingleVerify(
-    const AppVerifyBaseInfo& appVerifyBaseInfo, const std::vector<SkillUri>& skillUris)
+    const AppVerifyBaseInfo& appVerifyBaseInfo, const VerifyResultInfo &verifyResultInfo)
 {
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "called");
     MessageParcel data;
@@ -38,12 +38,7 @@ void AppDomainVerifyAgentServiceProxy::SingleVerify(
     MessageOption option;
     WRITE_PARCEL_AND_RETURN_IF_FAIL(InterfaceToken, data, GetDescriptor());
     WRITE_PARCEL_AND_RETURN_IF_FAIL(Parcelable, data, &appVerifyBaseInfo);
-    uint32_t size = static_cast<uint32_t>(skillUris.size());
-    WRITE_PARCEL_AND_RETURN_IF_FAIL(Uint32, data, size);
-
-    for (uint32_t i = 0; i < skillUris.size(); ++i) {
-        WRITE_PARCEL_AND_RETURN_IF_FAIL(Parcelable, data, &skillUris[i]);
-    }
+    WRITE_PARCEL_AND_RETURN_IF_FAIL(Parcelable, data, &verifyResultInfo);
     int32_t error = Remote()->SendRequest(AgentInterfaceCode::SINGLE_VERIFY, data, reply, option);
     if (error != ERR_NONE) {
         APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "SingleVerify failed, error: %d", error);

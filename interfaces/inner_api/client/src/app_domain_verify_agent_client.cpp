@@ -43,12 +43,12 @@ AppDomainVerifyAgentClient::~AppDomainVerifyAgentClient()
 }
 
 void AppDomainVerifyAgentClient::SingleVerify(const AppVerifyBaseInfo &appVerifyBaseInfo,
-    const std::vector<SkillUri> &skillUris)
+    const VerifyResultInfo &verifyResultInfo)
 {
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_AGENT_MODULE_CLIENT, "called");
     if (IsServiceAvailable()) {
         std::lock_guard<std::mutex> autoLock(proxyLock_);
-        agentServiceProxy_->SingleVerify(appVerifyBaseInfo, skillUris);
+        agentServiceProxy_->SingleVerify(appVerifyBaseInfo, verifyResultInfo);
     }
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_AGENT_MODULE_CLIENT, "call end");
 }
