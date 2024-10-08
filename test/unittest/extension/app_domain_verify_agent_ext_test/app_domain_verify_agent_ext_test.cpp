@@ -71,8 +71,8 @@ HWTEST_F(AppDomainVerifyAgentExtTest, AppDomainVerifyAgentExtTest001, TestSize.L
     AppVerifyBaseInfo appVerifyBaseInfo;
     appVerifyBaseInfo.bundleName = BUNDLE_NAME;
     appVerifyBaseInfo.fingerprint = FINGERPRINT;
-    std::vector<SkillUri> skillUris;
-    ASSERT_TRUE(appDomainVerifyAgentExt.SingleVerify(appVerifyBaseInfo, skillUris) ==
+    VerifyResultInfo verifyResultInfo;
+    ASSERT_TRUE(appDomainVerifyAgentExt.SingleVerify(appVerifyBaseInfo, verifyResultInfo) ==
         ErrorCode::E_EXTENSIONS_LIB_NOT_FOUND);
 }
 /**

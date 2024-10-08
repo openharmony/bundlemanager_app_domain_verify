@@ -34,7 +34,7 @@ public:
      * @param appVerifyBaseInfo appVerifyBaseInfo.
      * @param skillUris skillUris.
      */
-    void SingleVerify(const AppVerifyBaseInfo &appVerifyBaseInfo, const std::vector<SkillUri> &skillUris);
+    void SingleVerify(const AppVerifyBaseInfo &appVerifyBaseInfo, const VerifyResultInfo &verifyResultInfo);
 
     /**
      * ConvertToExplicitWant

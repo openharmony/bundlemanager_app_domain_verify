@@ -89,12 +89,11 @@ HWTEST_F(AppDomainVerifyAgentModuleTest, AppDomainVerifyAgentModuleTest001, Test
     AppVerifyBaseInfo appVerifyBaseInfo;
     appVerifyBaseInfo.bundleName = BUNDLE_NAME;
     appVerifyBaseInfo.fingerprint = FINGERPRINT;
-    std::vector<SkillUri> skillUris;
-    SkillUri skillUri;
-    skillUri.scheme = "https";
-    skillUri.host = HOST;
-    skillUris.emplace_back(skillUri);
-    appDomainVerifyAgentService->SingleVerify(appVerifyBaseInfo, skillUris);
+
+    VerifyResultInfo verifyResultInfo;
+    verifyResultInfo.appIdentifier = APP_IDENTIFIER;
+    verifyResultInfo.hostVerifyStatusMap.insert_or_assign("https://" + HOST, InnerVerifyStatus::UNKNOWN);
+    appDomainVerifyAgentService->SingleVerify(appVerifyBaseInfo, verifyResultInfo);
     Sleep();
     DomainVerifyStatus domainVerificationState;
     auto queryRes = AppDomainVerifyMgrClient::GetInstance()->QueryDomainVerifyStatus(

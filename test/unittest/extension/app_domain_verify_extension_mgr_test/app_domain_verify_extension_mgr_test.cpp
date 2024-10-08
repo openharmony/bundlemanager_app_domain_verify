@@ -74,8 +74,8 @@ HWTEST_F(AppDomainVerifyExtensionMgrTest, AppDomainVerifySingleVerifyTest001, Te
     EXPECT_CALL(appDomainVerifyExtensionMgr, Init()).Times(1).WillOnce(Return(false));
 
     const AppVerifyBaseInfo appVerifyBaseInfo;
-    std::vector<SkillUri> skillUris;
-    ASSERT_TRUE(appDomainVerifyExtensionMgr.SingleVerify(appVerifyBaseInfo, skillUris) ==
+    VerifyResultInfo verifyResultInfo;
+    ASSERT_TRUE(appDomainVerifyExtensionMgr.SingleVerify(appVerifyBaseInfo, verifyResultInfo) ==
         ErrorCode::E_EXTENSIONS_LIB_NOT_FOUND);
 }
 /**
@@ -92,8 +92,8 @@ HWTEST_F(AppDomainVerifyExtensionMgrTest, AppDomainVerifySingleVerifyTest002, Te
         .WillOnce(Return(nullptr));
 
     const AppVerifyBaseInfo appVerifyBaseInfo;
-    std::vector<SkillUri> skillUris;
-    ASSERT_TRUE(appDomainVerifyExtensionMgr.SingleVerify(appVerifyBaseInfo, skillUris) ==
+    VerifyResultInfo verifyResultInfo;
+    ASSERT_TRUE(appDomainVerifyExtensionMgr.SingleVerify(appVerifyBaseInfo, verifyResultInfo) ==
         ErrorCode::E_EXTENSIONS_INTERNAL_ERROR);
 }
 /**
@@ -112,8 +112,8 @@ HWTEST_F(AppDomainVerifyExtensionMgrTest, AppDomainVerifySingleVerifyTest003, Te
         .WillOnce(Return(appDomainVerifyAgentExt));
 
     const AppVerifyBaseInfo appVerifyBaseInfo;
-    std::vector<SkillUri> skillUris;
-    ErrorCode ret = appDomainVerifyExtensionMgr.SingleVerify(appVerifyBaseInfo, skillUris);
+    VerifyResultInfo verifyResultInfo;
+    ErrorCode ret = appDomainVerifyExtensionMgr.SingleVerify(appVerifyBaseInfo, verifyResultInfo);
     APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MODULE_EXTENSION, "ret %d\n", ret);
     printf("ret %d\n", ret);
     ASSERT_TRUE(ret == ErrorCode::E_EXTENSIONS_LIB_NOT_FOUND);
