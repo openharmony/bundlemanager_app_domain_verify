@@ -81,14 +81,14 @@ ErrorCode AppDomainVerifyExtensionMgr::CompleteVerifyRefresh(const BundleVerifyS
 }
 
 ErrorCode AppDomainVerifyExtensionMgr::SingleVerify(
-    const AppVerifyBaseInfo& appVerifyBaseInfo, const std::vector<SkillUri>& skillUris)
+    const AppVerifyBaseInfo& appVerifyBaseInfo, const VerifyResultInfo& verifyResultInfo)
 {
     if (Init()) {
         std::string verifierExtName = APP_DOMAIN_VERIFY_AGENT_EXT_NAME;
         auto appDomainVerifierExt = GetAppDomainVerifyExt(verifierExtName);
         if (appDomainVerifierExt != nullptr) {
             return std::static_pointer_cast<AppDomainVerifyAgentExt>(appDomainVerifierExt)
-                ->SingleVerify(appVerifyBaseInfo, skillUris);
+                ->SingleVerify(appVerifyBaseInfo, verifyResultInfo);
         }
         APP_DOMAIN_VERIFY_HILOGE(
             APP_DOMAIN_VERIFY_MODULE_EXTENSION, "get verifierExt: %{public}s failed.", verifierExtName.c_str());

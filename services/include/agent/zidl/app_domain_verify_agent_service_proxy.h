@@ -27,7 +27,7 @@ public:
     explicit AppDomainVerifyAgentServiceProxy(const sptr<IRemoteObject>& object);
     virtual ~AppDomainVerifyAgentServiceProxy();
     virtual void SingleVerify(
-        const AppVerifyBaseInfo& appVerifyBaseInfo, const std::vector<SkillUri>& skillUris) override;
+        const AppVerifyBaseInfo& appVerifyBaseInfo, const VerifyResultInfo &verifyResultInfo) override;
     virtual void ConvertToExplicitWant(OHOS::AAFwk::Want& implicitWant, sptr<IConvertCallback>& callback) override;
 
 private:

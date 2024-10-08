@@ -90,16 +90,8 @@ void AppDomainVerifyAgentService::CompleteVerifyRefresh(const BundleVerifyStatus
             // todo delete this bundleName or not
             continue;
         }
-        std::vector<SkillUri> skillUris;
-        for (auto itr = it->second.hostVerifyStatusMap.begin(); itr != it->second.hostVerifyStatusMap.end(); itr++) {
-            if (std::find(statuses.begin(), statuses.end(), itr->second) != statuses.end()) {
-                SkillUri skillUri;
-                skillUri.host = UrlUtil::GetHost(itr->first);
-                skillUri.scheme = UrlUtil::GetScheme(itr->first);
-                skillUris.emplace_back(skillUri);
-            }
-        }
-        ExecuteVerifyTask(appVerifyBaseInfo, skillUris, type);
+
+        ExecuteVerifyTask(appVerifyBaseInfo, it->second, type);
     }
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "call end");
 }
@@ -119,22 +111,23 @@ void AppDomainVerifyAgentService::ConvertToExplicitWant(
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "called");
 }
 void AppDomainVerifyAgentService::SingleVerify(
-    const AppVerifyBaseInfo& appVerifyBaseInfo, const std::vector<SkillUri>& skillUris)
+    const AppVerifyBaseInfo& appVerifyBaseInfo, const VerifyResultInfo& verifyResultInfo)
 {
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "called");
-    ExecuteVerifyTask(appVerifyBaseInfo, skillUris, TaskType::IMMEDIATE_TASK);
+    ExecuteVerifyTask(appVerifyBaseInfo, verifyResultInfo, TaskType::IMMEDIATE_TASK);
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "call end");
 }
 
 void AppDomainVerifyAgentService::ExecuteVerifyTask(
-    const AppVerifyBaseInfo& appVerifyBaseInfo, const std::vector<SkillUri>& skillUris, TaskType type)
+    const AppVerifyBaseInfo& appVerifyBaseInfo, const VerifyResultInfo& verifyResultInfo, TaskType type)
 {
-    if (ErrorCode::E_EXTENSIONS_LIB_NOT_FOUND != appDomainVerifyExtMgr_->SingleVerify(appVerifyBaseInfo, skillUris)) {
+    if (ErrorCode::E_EXTENSIONS_LIB_NOT_FOUND !=
+        appDomainVerifyExtMgr_->SingleVerify(appVerifyBaseInfo, verifyResultInfo)) {
         APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "extension call end");
         return;
     }
 
-    auto task = std::make_shared<VerifyTask>(type, appVerifyBaseInfo, skillUris);
+    auto task = std::make_shared<VerifyTask>(type, appVerifyBaseInfo, verifyResultInfo);
     if (task->GetUriVerifyMap().empty()) {
         APP_DOMAIN_VERIFY_HILOGW(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "no valid skillUris");
         return;
