@@ -72,6 +72,10 @@ ohos_shared_library("app_domain_verify_mgr_client") {
     "ipc:ipc_core",
     "samgr:samgr_proxy",
   ]
+  defines = []
+  if (build_variant == "user") {
+    defines += [ "IS_RELEASE_VERSION" ]
+  }
   version_script = "mgr.versionscript"
 
   subsystem_name = "bundlemanager"
@@ -96,7 +100,15 @@ ohos_shared_library("app_domain_verify_agent_client") {
     "ipc:ipc_core",
     "samgr:samgr_proxy",
   ]
-
+  defines = []
+  if (build_variant == "user") {
+    defines += [ "IS_RELEASE_VERSION" ]
+  }
+  sanitize = {
+    cfi = true
+    cfi_cross_dso = true
+    debug = false
+  }
   subsystem_name = "bundlemanager"
   part_name = "app_domain_verify"
 }
