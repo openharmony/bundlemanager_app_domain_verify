@@ -38,7 +38,8 @@ int RdbMigrateMgr::Upgrade(NativeRdb::RdbStore& rdbStore, int currVersion, int t
     } else if (currVersion == RDB_VERSION_2) {
         ret = UpgradeFromV2ToV3(rdbStore);
     } else {
-        APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "current version:%d is not support", currVersion);
+        APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE,
+            "current version:%d is not support", currVersion);
     }
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "called, end");
     return ret;
@@ -124,7 +125,9 @@ int RdbMigrateMgr::UpgradeFromV2ToV3(NativeRdb::RdbStore& rdbStore)
             auto ret = rdbStore.ExecuteSql(sql);
             if (ret != NativeRdb::E_OK) {
                 APP_DOMAIN_VERIFY_HILOGE(
-                    APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "UpgradeFromV2ToV3 executeSql failed, ret: %{public}d, reason: exec %{public}s fail.", ret, sql.c_str());
+                    APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE,
+                    "UpgradeFromV2ToV3 executeSql failed, ret: %{public}d, reason: exec %{public}s fail.",
+                    ret, sql.c_str());
                 return false;
             }
         }
