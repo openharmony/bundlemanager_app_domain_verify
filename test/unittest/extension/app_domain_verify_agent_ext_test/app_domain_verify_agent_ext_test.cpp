@@ -84,9 +84,8 @@ HWTEST_F(AppDomainVerifyAgentExtTest, AppDomainVerifyAgentExtTest002, TestSize.L
 {
     AppDomainVerifyAgentExt appDomainVerifyAgentExt;
     const BundleVerifyStatusInfo bundleVerifyStatusInfo;
-    int delaySeconds = 0;
     TaskType type = IMMEDIATE_TASK;
-    ASSERT_TRUE(appDomainVerifyAgentExt.CompleteVerifyRefresh(bundleVerifyStatusInfo, delaySeconds,
+    ASSERT_TRUE(appDomainVerifyAgentExt.CompleteVerifyRefresh(bundleVerifyStatusInfo,
                     type) == ErrorCode::E_EXTENSIONS_LIB_NOT_FOUND);
 }
 /**

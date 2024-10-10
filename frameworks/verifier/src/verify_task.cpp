@@ -34,8 +34,7 @@ const std::string HTTPS = "https";
 const std::set<std::string> SCHEME_WHITE_SET = { HTTPS };
 const std::string FUZZY_HOST_START = "*.";
 const static int CLIENT_ERR_MAX_RETRY_COUNTS = 5; // 5 times for retry
-// const static int CLIENT_ERR_BASE_RETRY_DURATION_S = 14400; // 4h for base duration
-const static int CLIENT_ERR_BASE_RETRY_DURATION_S = 0; // 4h for base duration
+const static int CLIENT_ERR_BASE_RETRY_DURATION_S = 14400; // 4h for base duration
 void VerifyTask::OnPostVerify(const std::string& uri, const OHOS::NetStack::HttpClient::HttpClientResponse& response)
 {
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "called");
@@ -88,7 +87,11 @@ VerifyTask::VerifyTask(OHOS::AppDomainVerify::TaskType type, const AppVerifyBase
     : type_(type), appVerifyBaseInfo_(appVerifyBaseInfo), verifyResultInfo_(verifyResultInfo)
 {
     InitUriUnVerifySetMap(verifyResultInfo);
+    staHandlerMap[STATE_SUCCESS] = [this](std::string time, int cnt)->bool { return HandleStateSuccess(time, cnt);};;
+    staHandlerMap[FAILURE_CLIENT_ERROR] = [this](std::string time, int cnt)->bool { return HandleFailureClientError(time, cnt);};
+    staHandlerMap[FORBIDDEN_FOREVER] = [this](std::string time, int cnt)->bool { return HandleForbiddenForever(time, cnt);};
 }
+
 OHOS::AppDomainVerify::TaskType& VerifyTask::GetTaskType()
 {
     return type_;
@@ -116,22 +119,40 @@ void VerifyTask::Execute()
 bool VerifyTask::IsNeedRetry(const std::tuple<InnerVerifyStatus, std::string, int>& info)
 {
     auto [status, verifyTime, verifyCnt] = info;
-    if (status == InnerVerifyStatus::STATE_SUCCESS || status == InnerVerifyStatus::FORBIDDEN_FOREVER) {
-        return false;
+    auto iter = staHandlerMap.find(status);
+    if (iter != staHandlerMap.end()) {
+        return iter->second(verifyTime, verifyCnt);
     }
-    if (status == InnerVerifyStatus::FAILURE_CLIENT_ERROR && !verifyTime.empty()) {
+    return true;
+}
+
+bool VerifyTask::HandleFailureClientError(std::string verifyTime, int verifyCnt)
+{
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MODULE_EXTENSION, "called");
+    if (!verifyTime.empty()) {
         int64_t currTs = GetSecondsSince1970ToNow();
         int64_t lastTs = std::stol(verifyTime);
         int64_t duration = currTs - lastTs;
         int64_t currRetryDuration = verifyCnt * CLIENT_ERR_BASE_RETRY_DURATION_S;
         if (duration <= currRetryDuration) {
-            APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MODULE_EXTENSION, "status:%d, last time:%ld, curr time:%ld, duration:%ld is less than max retry duration:%ld, not retry", status, lastTs, currTs, duration, currRetryDuration);
+            APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MODULE_EXTENSION, "last time:%{public}ld, curr time:%{public}ld, duration:%{public}ld is less than max retry duration:%{public}ld, not retry", lastTs, currTs, duration, currRetryDuration);
             return false;
         }
     }
     return true;
 }
 
+bool VerifyTask::HandleStateSuccess(std::string verifyTime, int verifyCnt)
+{
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MODULE_EXTENSION, "called");
+    return false;
+}
+
+bool VerifyTask::HandleForbiddenForever(std::string verifyTime, int verifyCnt)
+{
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MODULE_EXTENSION, "called");
+    return false;
+}
 
 void VerifyTask::UpdateVerifyResultInfo(const std::string& uri, InnerVerifyStatus status)
 {
@@ -142,7 +163,7 @@ void VerifyTask::UpdateVerifyResultInfo(const std::string& uri, InnerVerifyStatu
     auto& hostVerifyStatusMap = verifyResultInfo_.hostVerifyStatusMap;
     auto iter = hostVerifyStatusMap.find(uri);
     if (iter == hostVerifyStatusMap.end()) {
-        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "uri don't exist in hostVerifyStatusMap, uri:%{public}s", uri.c_str());
+        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "uri don't exist in hostVerifyStatusMap, uri:%{private}s", uri.c_str());
         hostVerifyStatusMap.insert_or_assign(uri, std::make_tuple(verifyStatus, verifyTs, verifyCnt));
         return;
     }
@@ -156,7 +177,6 @@ void VerifyTask::UpdateVerifyResultInfo(const std::string& uri, InnerVerifyStatu
     std::get<0>(iter->second) = verifyStatus;
     std::get<1>(iter->second) = verifyTs;
     std::get<2>(iter->second) = verifyCnt;
-    APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "test Update verify result, uri:%{public}s, status:%{public}d, verifyTs:%{public}s, cnt:%{public}d", uri.c_str(), status, verifyTs.c_str(), verifyCnt);
 }
 
 }

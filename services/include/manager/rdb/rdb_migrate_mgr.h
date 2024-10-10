@@ -32,8 +32,8 @@ public:
 private:
     AppDomainVerifyRdbConfig appDomainVerifyRdbConfig_;
     int QueryInnerVersion(NativeRdb::RdbStore& store);
-    void UpgradeFromV1_0(NativeRdb::RdbStore& rdbStore);
-    int UpgradeFromV2_0(NativeRdb::RdbStore& rdbStore);
+    void UpgradeFromV1ToV2(NativeRdb::RdbStore& rdbStore);
+    int UpgradeFromV2ToV3(NativeRdb::RdbStore& rdbStore);
     int ExecSqlWithTrans(NativeRdb::RdbStore& store, const TransFunc& func);
 };
 }

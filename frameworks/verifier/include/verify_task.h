@@ -15,6 +15,8 @@
 
 #ifndef APP_DOMAIN_VERIFY_VERIFY_TASK_H
 #define APP_DOMAIN_VERIFY_VERIFY_TASK_H
+#include <functional>
+#include <unordered_map>
 #include <unordered_set>
 #include "bundle_verify_status_info.h"
 #include "i_verify_task.h"
@@ -28,6 +30,7 @@
 
 namespace OHOS {
 namespace AppDomainVerify {
+using StatusHandleFunc  = std::function<bool(std::string, int)>;
 class VerifyTask : public IVerifyTask {
 public:
     void OnPostVerify(const std::string &uri, const OHOS::NetStack::HttpClient::HttpClientResponse &response) override;
@@ -40,8 +43,10 @@ public:
         const VerifyResultInfo& verifyResultInfo);
     void InitUriUnVerifySetMap(const VerifyResultInfo& verifyResultInfo);
     void Execute();
-
 protected:
+    bool HandleFailureClientError(std::string verifyTime, int verifyCnt);
+    bool HandleStateSuccess(std::string verifyTime, int verifyCnt);
+    bool HandleForbiddenForever(std::string verifyTime, int verifyCnt);
     bool IsNeedRetry(const std::tuple<InnerVerifyStatus, std::string, int>& info);
     OHOS::AppDomainVerify::TaskType& GetTaskType();
     AppVerifyBaseInfo& GetAppVerifyBaseInfo();
@@ -52,6 +57,7 @@ private:
     AppVerifyBaseInfo appVerifyBaseInfo_;
     std::unordered_set<std::string> unVerifiedSet_;
     VerifyResultInfo verifyResultInfo_;
+    std::unordered_map<InnerVerifyStatus, StatusHandleFunc> staHandlerMap;
 };
 }
 }

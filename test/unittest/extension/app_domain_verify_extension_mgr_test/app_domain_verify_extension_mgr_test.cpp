@@ -130,10 +130,9 @@ HWTEST_F(AppDomainVerifyExtensionMgrTest, AppDomainVerifyCompleteVerifyTest001, 
     EXPECT_CALL(appDomainVerifyExtensionMgr, Init()).Times(1).WillOnce(Return(false));
 
     const BundleVerifyStatusInfo bundleVerifyStatusInfo;
-    int delaySeconds = 0;
     TaskType type = IMMEDIATE_TASK;
     ASSERT_TRUE(appDomainVerifyExtensionMgr.CompleteVerifyRefresh(
-                    bundleVerifyStatusInfo, delaySeconds, type) == ErrorCode::E_EXTENSIONS_LIB_NOT_FOUND);
+                    bundleVerifyStatusInfo, type) == ErrorCode::E_EXTENSIONS_LIB_NOT_FOUND);
 }
 
 /**
@@ -153,7 +152,7 @@ HWTEST_F(AppDomainVerifyExtensionMgrTest, AppDomainVerifyCompleteVerifyTest002, 
     int delaySeconds = 0;
     TaskType type = IMMEDIATE_TASK;
     ASSERT_TRUE(appDomainVerifyExtensionMgr.CompleteVerifyRefresh(
-                    bundleVerifyStatusInfo,  delaySeconds, type) == ErrorCode::E_EXTENSIONS_INTERNAL_ERROR);
+                    bundleVerifyStatusInfo, type) == ErrorCode::E_EXTENSIONS_INTERNAL_ERROR);
 }
 
 /**
@@ -229,7 +228,7 @@ HWTEST_F(AppDomainVerifyExtensionMgrTest, AppDomainVerifyConvertTest003, TestSiz
     int delaySeconds = 0;
     TaskType type = IMMEDIATE_TASK;
     ASSERT_TRUE(appDomainVerifyExtensionMgr.CompleteVerifyRefresh(
-                    bundleVerifyStatusInfo, delaySeconds, type) == ErrorCode::E_EXTENSIONS_LIB_NOT_FOUND);
+                    bundleVerifyStatusInfo, type) == ErrorCode::E_EXTENSIONS_LIB_NOT_FOUND);
 }
 /**
  * @tc.name: AppDomainVerifyUpdateWhiteListTest001

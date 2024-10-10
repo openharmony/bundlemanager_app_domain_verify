@@ -59,11 +59,9 @@ bool AppDomainVerifyDataMgr::VerifyResultInfoToDB(
         UNIVERSAL_ERROR_EVENT(DEL_DB_IN_WRITE_BACK_FAULT);
         APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "try delete bundleName failed.");
     }
-    APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "zylDEBUG verify Resultinto to rdb");
     for (auto it : verifyResultInfo.hostVerifyStatusMap) {
         std::string domain = it.first;
         auto [status, verifyTime, cnt] = it.second;
-        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "zylDebug try delete bundleName failed. %{public}d, verifyTime:%{public}s, %{public}d", status, verifyTime.c_str(), cnt);
         RdbDataItem item = { .bundleName = bundleName,
             .appIdentifier = verifyResultInfo.appIdentifier,
             .domain = domain,
@@ -112,7 +110,6 @@ bool AppDomainVerifyDataMgr::SaveVerifyStatus(const std::string& bundleName, con
         APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "InnerVerifyStatus save bundleInfo failed");
         return false;
     }
-    APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "complete result:%{public}s", completeBundleInfo->second.Dump().c_str());
     if (!VerifyResultInfoToDB(key, completeBundleInfo->second)) {
         APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "InnerVerifyStatus save to db failed");
         return false;
@@ -127,7 +124,6 @@ void AppDomainVerifyDataMgr::UpdateVerifyMap(const std::string& bundleName, cons
     auto& hostVerifyStatusMap = verifyResultInfo.hostVerifyStatusMap;
     if (bundleInfo != verifyMap_->end()) {
         auto& hostVerifyStatusMapTarget = bundleInfo->second.hostVerifyStatusMap;
-        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "host verify status Map target:%{public}s", verifyResultInfo.Dump().c_str());
         std::for_each(hostVerifyStatusMap.begin(), hostVerifyStatusMap.end(),
             [&hostVerifyStatusMapTarget](auto iter) {
                 hostVerifyStatusMapTarget.insert_or_assign(iter.first, iter.second);
