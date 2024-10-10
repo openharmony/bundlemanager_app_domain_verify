@@ -52,6 +52,7 @@ static std::unordered_map<InnerVerifyStatus, std::string> InnerVerifyStatusMap =
     { FAILURE_HTTP_UNKNOWN, "http_unknown" },
     { FAILURE_TIMEOUT, "timeout" },
     { FAILURE_CONFIG, "config_error" },
+    { FORBIDDEN_FOREVER, "forbidden_forever" }
 };
 }
 }  // namespace OHOS

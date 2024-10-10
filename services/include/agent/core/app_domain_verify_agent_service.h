@@ -50,8 +50,8 @@ protected:
     int Dump(int fd, const std::vector<std::u16string>& args) override;
 
 private:
-    void QueryAndCompleteRefresh(int delaySeconds, TaskType type);
-    void CompleteVerifyRefresh(const BundleVerifyStatusInfo& bundleVerifyStatusInfo, int delaySeconds, TaskType type);
+    void QueryAndCompleteRefresh(TaskType type);
+    void CompleteVerifyRefresh(const BundleVerifyStatusInfo& bundleVerifyStatusInfo, TaskType type);
     void ExecuteVerifyTask(
         const AppVerifyBaseInfo& appVerifyBaseInfo, const VerifyResultInfo &verifyResultInfo, TaskType type);
     void UpdateWhiteList();

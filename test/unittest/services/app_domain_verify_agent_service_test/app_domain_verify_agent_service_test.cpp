@@ -78,8 +78,7 @@ HWTEST_F(AgentServiceTest, AgentServiceTest001, TestSize.Level0)
     VerifyResultInfo verifyResultInfo;
     verifyResultInfo.hostVerifyStatusMap.insert_or_assign("https://" + HOST, std::make_tuple(InnerVerifyStatus::STATE_FAIL, std::string(), 0));
     bundleVerifyStatusInfo.bundleVerifyStatusInfoMap_.insert_or_assign(BUNDLE_NAME, verifyResultInfo);
-    appDomainVerifyAgentService->CompleteVerifyRefresh(bundleVerifyStatusInfo, 1, TaskType::IMMEDIATE_TASK);
-    appDomainVerifyAgentService->CompleteVerifyRefresh(bundleVerifyStatusInfo, 0, TaskType::IMMEDIATE_TASK);
+    appDomainVerifyAgentService->CompleteVerifyRefresh(bundleVerifyStatusInfo, TaskType::IMMEDIATE_TASK);
 }
 
 /**
