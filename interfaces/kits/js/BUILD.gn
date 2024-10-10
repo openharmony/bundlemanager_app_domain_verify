@@ -51,6 +51,8 @@ ohos_shared_library("appdomainverify_napi") {
   ]
   defines = [ "API_EXPORT=__attribute__((visibility (\"default\")))" ]
   external_deps = [
+    "ability_base:want",
+    "bundle_framework:appexecfwk_base",
     "c_utils:utils",
     "hiappevent:hiappevent_innerapi",
     "hilog:libhilog",
