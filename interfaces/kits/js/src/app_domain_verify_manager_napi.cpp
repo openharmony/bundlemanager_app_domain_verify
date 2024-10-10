@@ -19,13 +19,15 @@
 #include "app_domain_verify_hilog.h"
 #include "app_domain_verify_mgr_client.h"
 #include "comm_define.h"
+#include "api_event_reporter.h"
 namespace OHOS::AppDomainVerify {
+constexpr int32_t API_SUCCESS = 0;
+constexpr int32_t API_FAIL = 1;
 constexpr int32_t MAX_STR_INPUT_SIZE = 256;
 constexpr int32_t STRING_BUF_MAX_SIZE = 4096;
 std::map<CommonErrorCode, const char*> ErrCodeMap = { { CommonErrorCode::E_PERMISSION_DENIED, "Permission denied." },
     { CommonErrorCode::E_IS_NOT_SYS_APP, "System API accessed by non-system app." },
-    { CommonErrorCode::E_PARAM_ERROR, "Parameter error." },
-    { CommonErrorCode::E_INTERNAL_ERR, "Internal error." }};
+    { CommonErrorCode::E_PARAM_ERROR, "Parameter error." }, { CommonErrorCode::E_INTERNAL_ERR, "Internal error." } };
 static std::string GetString(napi_env env, napi_value value)
 {
     std::unique_ptr<char[]> valueBuf = std::make_unique<char[]>(STRING_BUF_MAX_SIZE);
@@ -71,21 +73,26 @@ napi_value QueryAssociatedDomains(napi_env env, napi_callback_info info)
     size_t argc = 1;
     napi_value args[1] = { nullptr };
 
+    Dfx::ApiEventReporter reporter("QueryAssociatedDomains");
     NAPI_CALL_BASE(env, napi_get_cb_info(env, info, &argc, args, nullptr, nullptr), nullptr);
     std::string bundleName = GetString(env, args[0]);
     if (!CheckInput(bundleName)) {
+        reporter.WriteEndEvent(API_FAIL, CommonErrorCode::E_PARAM_ERROR);
         return BuildError(env, CommonErrorCode::E_PARAM_ERROR);
     }
     std::vector<std::string> domains;
     auto ret = AppDomainVerifyMgrClient::GetInstance()->QueryAssociatedDomains(bundleName, domains);
     if (ret != 0) {
         if (ErrCodeMap.count(static_cast<CommonErrorCode>(ret)) != 0) {
+            reporter.WriteEndEvent(API_FAIL, static_cast<CommonErrorCode>(ret));
             return BuildError(env, static_cast<CommonErrorCode>(ret));
         } else {
             APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "unknown error:%{public}d.", ret);
+            reporter.WriteEndEvent(API_FAIL, ret);
             return BuildStringArray(env, domains);
         }
     }
+    reporter.WriteEndEvent(API_SUCCESS, ret);
     return BuildStringArray(env, domains);
 }
 napi_value QueryAssociatedBundleNames(napi_env env, napi_callback_info info)
@@ -93,22 +100,26 @@ napi_value QueryAssociatedBundleNames(napi_env env, napi_callback_info info)
     size_t argc = 1;
     napi_value args[1] = { nullptr };
 
+    Dfx::ApiEventReporter reporter("QueryAssociatedBundleNames");
     NAPI_CALL_BASE(env, napi_get_cb_info(env, info, &argc, args, nullptr, nullptr), nullptr);
     std::string domain = GetString(env, args[0]);
     if (!CheckInput(domain)) {
+        reporter.WriteEndEvent(API_FAIL, CommonErrorCode::E_PARAM_ERROR);
         return BuildError(env, CommonErrorCode::E_PARAM_ERROR);
     }
     std::vector<std::string> bundleNames;
     auto ret = AppDomainVerifyMgrClient::GetInstance()->QueryAssociatedBundleNames(domain, bundleNames);
     if (ret != 0) {
         if (ErrCodeMap.count(static_cast<CommonErrorCode>(ret)) != 0) {
+            reporter.WriteEndEvent(API_FAIL, static_cast<CommonErrorCode>(ret));
             return BuildError(env, static_cast<CommonErrorCode>(ret));
         } else {
             APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "unknown error:%{public}d.", ret);
+            reporter.WriteEndEvent(API_FAIL, ret);
             return BuildStringArray(env, bundleNames);
         }
     }
-
+    reporter.WriteEndEvent(API_SUCCESS, ret);
     return BuildStringArray(env, bundleNames);
 }
 }

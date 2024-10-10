@@ -18,8 +18,6 @@
 #include "domain_url_util.h"
 namespace OHOS {
 namespace AppDomainVerify {
-[[maybe_unused]] const int HOST_PATTERN_MATCH_SIZE = 3;
-[[maybe_unused]] const int SCHEME_PATTERN_MATCH_SIZE = 2;
 static const std::string SCHEMA_HTTPS = "https";
 bool UrlUtil::IsValidAppDomainVerifyHost(const std::string& host)
 {

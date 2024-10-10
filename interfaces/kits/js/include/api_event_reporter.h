@@ -12,26 +12,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-#ifndef APP_DOMAIN_VERIFY_URL_UTIL_H
-#define APP_DOMAIN_VERIFY_URL_UTIL_H
+#ifndef APP_DOMAIN_VERIFY_MANAGER_API_EVENT_REPORTER_H
+#define APP_DOMAIN_VERIFY_MANAGER_API_EVENT_REPORTER_H
 
 #include <string>
-
-namespace OHOS {
-namespace AppDomainVerify {
-class UrlUtil {
+namespace OHOS::AppDomainVerify::Dfx {
+class ApiEventReporter {
 public:
-    static bool IsValidAppDomainVerifyHost(const std::string& host);
-    static bool IsValidUrl(const std::string& url);
-    static std::string GetHost(const std::string& url);
-    static std::string GetScheme(const std::string& url);
+    explicit ApiEventReporter(const std::string& apiName);
+    ~ApiEventReporter() = default;
+    void WriteEndEvent(const int result, const int32_t errCode);
 
 private:
-    UrlUtil(){};
-    ~UrlUtil(){};
+    int64_t AddProcessor();
+
+private:
+    std::string transId_;
+    std::string apiName_;
+    int64_t startTime_;
 };
 }
-}
-
-#endif
+#endif  // APP_DOMAIN_VERIFY_MANAGER_API_EVENT_REPORTER_H

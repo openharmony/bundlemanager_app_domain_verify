@@ -12,26 +12,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+#ifndef APP_DOMAIN_VERIFY_MANAGER_CONFIG_PARSER
+#define APP_DOMAIN_VERIFY_MANAGER_CONFIG_PARSER
 
-#ifndef APP_DOMAIN_VERIFY_URL_UTIL_H
-#define APP_DOMAIN_VERIFY_URL_UTIL_H
-
+#include <map>
 #include <string>
 
-namespace OHOS {
-namespace AppDomainVerify {
-class UrlUtil {
+namespace OHOS::AppDomainVerify::Dfx {
+
+class ConfigParser {
 public:
-    static bool IsValidAppDomainVerifyHost(const std::string& host);
-    static bool IsValidUrl(const std::string& url);
-    static std::string GetHost(const std::string& url);
-    static std::string GetScheme(const std::string& url);
+    bool load(const std::string& filename);
+
+    std::string get(const std::string& key, const std::string& defaultValue = "") const;
 
 private:
-    UrlUtil(){};
-    ~UrlUtil(){};
-};
-}
-}
+    static std::string trim(const std::string& str);
 
-#endif
+    std::map<std::string, std::string> configData;
+};
+
+}
+#endif  // APP_DOMAIN_VERIFY_MANAGER_CONFIG_PARSER

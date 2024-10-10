@@ -16,18 +16,16 @@
 #ifndef APP_DOMAIN_BUNDLE_VERIFY_STATUS_INFO_H
 #define APP_DOMAIN_BUNDLE_VERIFY_STATUS_INFO_H
 #include <string>
-#include "nlohmann/json.hpp"
 #include "parcel.h"
 #include "inner_verify_status.h"
 
 namespace OHOS {
 namespace AppDomainVerify {
-using json = nlohmann::json;
 struct VerifyResultInfo : public Parcelable {
 public:
     bool Marshalling(Parcel &parcel) const override;
     static VerifyResultInfo *Unmarshalling(Parcel &parcel);
-
+    std::string Dump() const;
 private:
     bool ReadFromParcel(Parcel &parcel);
 

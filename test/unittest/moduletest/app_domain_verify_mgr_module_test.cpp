@@ -29,6 +29,7 @@
 #include "app_domain_verify_mgr_service.h"
 #undef private
 #undef protected
+#include "mock_access_token.h"
 
 namespace OHOS::AppDomainVerify {
 using ::testing::_;
@@ -47,7 +48,7 @@ auto appDomainVerifyMgrService_ = std::make_shared<AppDomainVerifyMgrService>();
 auto appDomainVerifyAgentStubMock_ = std::make_shared<AppDomainVerifyAgentRemoteStubMock>();
 int InvokeSingleVerifyOK(uint32_t code, MessageParcel &data, MessageParcel &reply, MessageOption &option)
 {
-    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MODULE_BUTT, "%s call end", __func__);
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MODULE_BUTT, "call end");
     std::string bundleName = BUNDLE_NAME;
     VerifyResultInfo verifyResultInfo;
     verifyResultInfo.hostVerifyStatusMap.insert_or_assign("https://" + HOST, InnerVerifyStatus::STATE_SUCCESS);
@@ -57,7 +58,7 @@ int InvokeSingleVerifyOK(uint32_t code, MessageParcel &data, MessageParcel &repl
 
 int InvokeSingleVerifyFail(uint32_t code, MessageParcel &data, MessageParcel &reply, MessageOption &option)
 {
-    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MODULE_BUTT, "%s call end", __func__);
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MODULE_BUTT, "call end");
     std::string bundleName = BUNDLE_NAME;
     VerifyResultInfo verifyResultInfo;
     verifyResultInfo.hostVerifyStatusMap.insert_or_assign("https://" + HOST, InnerVerifyStatus::STATE_FAIL);
@@ -77,6 +78,7 @@ void AppDomainVerifyMgrModuleTest::TearDownTestCase(void)
 
 void AppDomainVerifyMgrModuleTest::SetUp(void)
 {
+    MockAccessToken::mockSA();
     AppDomainVerifyAgentClient::staticDestoryMonitor_.destoryed_ = true;
 }
 

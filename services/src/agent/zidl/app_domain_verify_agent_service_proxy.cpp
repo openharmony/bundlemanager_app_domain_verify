@@ -32,7 +32,7 @@ AppDomainVerifyAgentServiceProxy::~AppDomainVerifyAgentServiceProxy()
 void AppDomainVerifyAgentServiceProxy::SingleVerify(
     const AppVerifyBaseInfo& appVerifyBaseInfo, const std::vector<SkillUri>& skillUris)
 {
-    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "%s called", __func__);
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "called");
     MessageParcel data;
     MessageParcel reply;
     MessageOption option;
@@ -48,12 +48,12 @@ void AppDomainVerifyAgentServiceProxy::SingleVerify(
     if (error != ERR_NONE) {
         APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "SingleVerify failed, error: %d", error);
     }
-    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "%s call end", __func__);
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "call end");
 }
 void AppDomainVerifyAgentServiceProxy::ConvertToExplicitWant(
     OHOS::AAFwk::Want& implicitWant, sptr<IConvertCallback>& callback)
 {
-    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "%s called", __func__);
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "called");
     MessageParcel data;
     MessageParcel reply;
     MessageOption option;
@@ -66,7 +66,7 @@ void AppDomainVerifyAgentServiceProxy::ConvertToExplicitWant(
         APP_DOMAIN_VERIFY_HILOGE(
             APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "ConvertToExplicitWant failed, error: %d", error);
     }
-    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "%s call end", __func__);
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "call end");
 }
 }  // namespace AppDomainVerify
 }  // namespace OHOS

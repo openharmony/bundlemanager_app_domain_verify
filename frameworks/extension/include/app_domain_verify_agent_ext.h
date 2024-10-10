@@ -22,7 +22,7 @@
 #include "inner_verify_status.h"
 #include "app_verify_base_info.h"
 #include "bundle_verify_status_info.h"
-#include "app_domain_verify_hisysevent.h"
+#include "dfx/app_domain_verify_hisysevent.h"
 #include "want.h"
 #include "zidl/i_convert_callback.h"
 

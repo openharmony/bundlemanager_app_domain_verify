@@ -54,6 +54,7 @@ config("app_domain_verify_agent_client_config") {
 }
 
 ohos_shared_library("app_domain_verify_mgr_client") {
+  branch_protector_ret = "pac_ret"
   sources = [
     "${app_domain_verify_service_path}/src/manager/zidl/app_domain_verify_mgr_service_proxy.cpp",
     "src/app_domain_verify_mgr_client.cpp",
@@ -77,12 +78,17 @@ ohos_shared_library("app_domain_verify_mgr_client") {
     defines += [ "IS_RELEASE_VERSION" ]
   }
   version_script = "mgr.versionscript"
-
+  sanitize = {
+    cfi = true
+    cfi_cross_dso = true
+    debug = false
+  }
   subsystem_name = "bundlemanager"
   part_name = "app_domain_verify"
 }
 
 ohos_shared_library("app_domain_verify_agent_client") {
+  branch_protector_ret = "pac_ret"
   sources = [
     "${app_domain_verify_service_path}/src/agent/zidl/app_domain_verify_agent_service_proxy.cpp",
     "src/app_domain_verify_agent_client.cpp",
