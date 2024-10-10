@@ -112,6 +112,78 @@ HWTEST_F(MgrDataMgrTest, MgrDataMgrTest001, TestSize.Level0)
 }
 
 /**
+ * @tc.name: MgrDataMgrVerifyResultInfoToDBTest001
+ * @tc.desc: DataMgr test insert false
+ * @tc.type: FUNC
+ */
+HWTEST_F(MgrDataMgrTest, MgrDataMgrVerifyResultInfoToDBTest001, TestSize.Level0)
+{
+    MOC::impl = std::make_shared<MocAppDomainVerifyRdbDataManagerImpl>();
+    AppDomainVerifyRdbConfig rdbConfig;
+    std::shared_ptr<AppDomainVerifyRdbDataManager> manager = std::make_shared<AppDomainVerifyRdbDataManager>(rdbConfig);
+    EXPECT_CALL(*MOC::impl, InsertData(_)).Times(1).WillOnce(Return(false));
+    auto appDomainVerifyDataMgr = std::make_shared<AppDomainVerifyDataMgr>();
+    appDomainVerifyDataMgr->rdbDataManager_ = manager;
+    std::string bundleName = "com.openharmony.com";
+    VerifyResultInfo verifyResultInfo;
+    verifyResultInfo.appIdentifier = APP_IDENTIFIER;
+    verifyResultInfo.hostVerifyStatusMap.insert_or_assign("www.openharmony.com", InnerVerifyStatus::STATE_SUCCESS);
+    EXPECT_FALSE(appDomainVerifyDataMgr->VerifyResultInfoToDB(bundleName, verifyResultInfo));
+}
+/**
+ * @tc.name: MgrDataMgrVerifyResultInfoToDBTest002
+ * @tc.desc: DataMgr test ok
+ * @tc.type: FUNC
+ */
+HWTEST_F(MgrDataMgrTest, MgrDataMgrVerifyResultInfoToDBTest002, TestSize.Level0)
+{
+    MOC::impl = std::make_shared<MocAppDomainVerifyRdbDataManagerImpl>();
+    AppDomainVerifyRdbConfig rdbConfig;
+    std::shared_ptr<AppDomainVerifyRdbDataManager> manager = std::make_shared<AppDomainVerifyRdbDataManager>(rdbConfig);
+    EXPECT_CALL(*MOC::impl, InsertData(_)).Times(1).WillOnce(Return(true));
+    auto appDomainVerifyDataMgr = std::make_shared<AppDomainVerifyDataMgr>();
+    appDomainVerifyDataMgr->rdbDataManager_ = manager;
+    std::string bundleName = "com.openharmony.com";
+    VerifyResultInfo verifyResultInfo;
+    verifyResultInfo.appIdentifier = APP_IDENTIFIER;
+    verifyResultInfo.hostVerifyStatusMap.insert_or_assign("www.openharmony.com", InnerVerifyStatus::STATE_SUCCESS);
+    EXPECT_TRUE(appDomainVerifyDataMgr->VerifyResultInfoToDB(bundleName, verifyResultInfo));
+}
+/**
+ * @tc.name: MgrDataMgrDBToVerifyResultInfoTest001
+ * @tc.desc: DataMgr test items null
+ * @tc.type: FUNC
+ */
+HWTEST_F(MgrDataMgrTest, MgrDataMgrDBToVerifyResultInfoTest001, TestSize.Level0)
+{
+    auto appDomainVerifyDataMgr = std::make_shared<AppDomainVerifyDataMgr>();
+    std::vector<RdbDataItem> items;
+    VerifyResultInfo verifyResultInfo;
+    EXPECT_FALSE(appDomainVerifyDataMgr->DBToVerifyResultInfo(items, verifyResultInfo));
+}
+/**
+ * @tc.name: MgrDataMgrDBToVerifyResultInfoTest002
+ * @tc.desc: DataMgr test ok
+ * @tc.type: FUNC
+ */
+HWTEST_F(MgrDataMgrTest, MgrDataMgrDBToVerifyResultInfoTest002, TestSize.Level0)
+{
+    auto appDomainVerifyDataMgr = std::make_shared<AppDomainVerifyDataMgr>();
+    std::vector<RdbDataItem> items;
+    RdbDataItem item1 = { .bundleName = "a",
+        .appIdentifier = APP_IDENTIFIER,
+        .domain = "https://" + HOST,
+        .status = InnerVerifyStatus::STATE_SUCCESS };
+    RdbDataItem item2 = { .bundleName = "a",
+        .appIdentifier = APP_IDENTIFIER,
+        .domain = "https://",
+        .status = InnerVerifyStatus::STATE_FAIL };
+    items.emplace_back(item1);
+    items.emplace_back(item2);
+    VerifyResultInfo verifyResultInfo;
+    EXPECT_TRUE(appDomainVerifyDataMgr->DBToVerifyResultInfo(items, verifyResultInfo));
+}
+/**
  * @tc.name: MgrDataMgrSaveVerifyStatusTest001
  * @tc.desc: DataMgr test manager null
  * @tc.type: FUNC
@@ -221,6 +293,32 @@ HWTEST_F(MgrDataMgrTest, MgrDataMgrDeleteVerifyStatusTest004, TestSize.Level0)
     ASSERT_FALSE(appDomainVerifyDataMgr->DeleteVerifyStatus(bundleName));
 }
 
+/**
+ * @tc.name: MgrDataMgrGetParamKeyTest001
+ * @tc.desc: DataMgr test name empty
+ * @tc.type: FUNC
+ */
+HWTEST_F(MgrDataMgrTest, MgrDataMgrGetParamKeyTest001, TestSize.Level0)
+{
+    auto appDomainVerifyDataMgr = std::make_shared<AppDomainVerifyDataMgr>();
+    appDomainVerifyDataMgr->rdbDataManager_ = nullptr;
+    std::string bundleName = "";
+    std::string paramKey = "";
+    EXPECT_FALSE(appDomainVerifyDataMgr->GetParamKey(bundleName, paramKey));
+}
+/**
+ * @tc.name: MgrDataMgrGetParamKeyTest002
+ * @tc.desc: DataMgr test ok
+ * @tc.type: FUNC
+ */
+HWTEST_F(MgrDataMgrTest, MgrDataMgrGetParamKeyTest002, TestSize.Level0)
+{
+    auto appDomainVerifyDataMgr = std::make_shared<AppDomainVerifyDataMgr>();
+    appDomainVerifyDataMgr->rdbDataManager_ = nullptr;
+    std::string bundleName = "com.openharmony.com";
+    std::string paramKey = "";
+    EXPECT_TRUE(appDomainVerifyDataMgr->GetParamKey(bundleName, paramKey));
+}
 /**
  * @tc.name: MgrDataMgrLoadAllFromRdbTest001
  * @tc.desc: DataMgr test query failed

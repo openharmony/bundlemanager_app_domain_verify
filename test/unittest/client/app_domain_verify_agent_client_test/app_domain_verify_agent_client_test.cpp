@@ -28,6 +28,7 @@
 #include "iservice_registry.h"
 #include "system_ability_definition.h"
 #include "convert_callback_stub.h"
+#include "mock_access_token.h"
 namespace OHOS::AppDomainVerify {
 using ::testing::_;
 using ::testing::Invoke;
@@ -68,6 +69,7 @@ void AppDomainVerifyAgentClientTest::TearDownTestCase(void)
 
 void AppDomainVerifyAgentClientTest::SetUp(void)
 {
+    MockAccessToken::mockSA();
     AppDomainVerifyAgentClient::staticDestoryMonitor_.destoryed_ = true;
 }
 
@@ -215,4 +217,39 @@ HWTEST_F(AppDomainVerifyAgentClientTest, AppDomainVerifyAgentSaDeathRecipientTes
     AppDomainVerifyAgentSaDeathRecipient.OnRemoteDied(nullptr);
     ASSERT_TRUE(AppDomainVerifyAgentClient::agentServiceProxy_ == nullptr);
 }
+/**
+ * @tc.name: IsServiceAvailable_0100
+ * @tc.desc: Test IsServiceAvailable.
+ * @tc.type: FUNC
+ */
+HWTEST_F(AppDomainVerifyAgentClientTest, IsServiceAvailable_0100, TestSize.Level0)
+{
+    AppDomainVerifyMgrClient::appDomainVerifyMgrServiceProxy_ = nullptr;
+    auto res = AppDomainVerifyAgentClient::GetInstance()->IsServiceAvailable();
+    EXPECT_EQ(res, true);
+}
+
+/**
+ * @tc.name: ConnectService_0100
+ * @tc.desc: Test ConnectService.
+ * @tc.type: FUNC
+ */
+HWTEST_F(AppDomainVerifyAgentClientTest, ConnectService_0100, TestSize.Level0)
+{
+    AppDomainVerifyAgentClient::GetInstance()->ConnectService();
+    EXPECT_NE(AppDomainVerifyAgentClient::agentServiceProxy_, nullptr);
+}
+
+/**
+ * @tc.name: OnRemoteSaDied_0100
+ * @tc.desc: Test OnRemoteSaDied.
+ * @tc.type: FUNC
+ */
+HWTEST_F(AppDomainVerifyAgentClientTest, OnRemoteSaDied_0100, TestSize.Level0)
+{
+    wptr<IRemoteObject> object;
+    AppDomainVerifyAgentClient::GetInstance()->OnRemoteSaDied(object);
+    EXPECT_EQ(AppDomainVerifyAgentClient::agentServiceProxy_, nullptr);
+}
+
 }

@@ -86,7 +86,11 @@ ohos_shared_library("app_domain_verify_mgr_service") {
     "safwk:system_ability_fwk",
     "samgr:samgr_proxy",
   ]
-
+  sanitize = {
+    cfi = true
+    cfi_cross_dso = true
+    debug = false
+  }
   subsystem_name = "bundlemanager"
   part_name = "app_domain_verify"
 }
@@ -100,6 +104,7 @@ config("app_domain_verify_agent_service_config") {
     "include/agent/zidl",
     "include/manager/core",
     "include/manager/zidl",
+    "include/manager/rdb",
     "${app_domain_verify_common_path}/include",
     "${app_domain_verify_common_path}/include/zidl",
     "${app_domain_verify_frameworks_common_path}/include",
@@ -153,6 +158,7 @@ ohos_shared_library("app_domain_verify_agent_service") {
     "data_share:datashare_consumer",
     "eventhandler:libeventhandler",
     "ffrt:libffrt",
+    "hicollie:libhicollie",
     "hilog:libhilog",
     "hisysevent:libhisysevent",
     "ipc:ipc_core",
@@ -164,7 +170,11 @@ ohos_shared_library("app_domain_verify_agent_service") {
     "safwk:system_ability_fwk",
     "samgr:samgr_proxy",
   ]
-
+  sanitize = {
+    cfi = true
+    cfi_cross_dso = true
+    debug = false
+  }
   subsystem_name = "bundlemanager"
   part_name = "app_domain_verify"
 }

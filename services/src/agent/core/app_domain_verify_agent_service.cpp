@@ -196,7 +196,6 @@ bool AppDomainVerifyAgentService::IsIdle()
     } else {
         return appDomainVerifyTaskMgr_->IsIdle();
     }
-    return false;
 }
 
 void AppDomainVerifyAgentService::DoSync(const TaskType& type)

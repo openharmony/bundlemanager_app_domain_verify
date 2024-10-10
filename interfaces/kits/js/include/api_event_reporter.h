@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (C) 2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -12,19 +12,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#ifndef APP_DOMAIN_VERIFY_PERMISSION_MANAGER_H
-#define APP_DOMAIN_VERIFY_PERMISSION_MANAGER_H
+#ifndef APP_DOMAIN_VERIFY_MANAGER_API_EVENT_REPORTER_H
+#define APP_DOMAIN_VERIFY_MANAGER_API_EVENT_REPORTER_H
+
 #include <string>
-namespace OHOS {
-namespace AppDomainVerify {
-class PermissionManager {
+namespace OHOS::AppDomainVerify::Dfx {
+class ApiEventReporter {
 public:
-    PermissionManager() = default;
-    ~PermissionManager() = default;
-    static bool CheckPermission(const std::string& permission);
-    static bool IsSystemAppCall();
-    static bool IsSACall() ;
+    explicit ApiEventReporter(const std::string& apiName);
+    ~ApiEventReporter() = default;
+    void WriteEndEvent(const int result, const int32_t errCode);
+
+private:
+    int64_t AddProcessor();
+
+private:
+    std::string transId_;
+    std::string apiName_;
+    int64_t startTime_;
 };
 }
-}
-#endif  // APP_DOMAIN_VERIFY_PERMISSION_MANAGER_H
+#endif  // APP_DOMAIN_VERIFY_MANAGER_API_EVENT_REPORTER_H
