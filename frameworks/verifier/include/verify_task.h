@@ -20,7 +20,7 @@
 #include "http_client_response.h"
 #include "app_verify_base_info.h"
 #include "inner_verify_status.h"
-#include "app_domain_verify_hisysevent.h"
+#include "dfx/app_domain_verify_hisysevent.h"
 #include "skill_uri.h"
 #include "app_domain_verify_mgr_client.h"
 #include "i_http_task.h"

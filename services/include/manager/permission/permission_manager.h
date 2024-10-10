@@ -23,6 +23,7 @@ public:
     ~PermissionManager() = default;
     static bool CheckPermission(const std::string& permission);
     static bool IsSystemAppCall();
+    static bool IsSACall() ;
 };
 }
 }

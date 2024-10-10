@@ -24,7 +24,6 @@
 namespace OHOS {
 namespace AppDomainVerify {
 namespace {
-[[ maybe_unused ]] constexpr int32_t DELAY_TIME = 300000;  // 5min = 5*60*1000
 const std::string TASK_ID = "unload";
 }
 AppDomainVerifyMgrServiceStub::AppDomainVerifyMgrServiceStub()
@@ -43,6 +42,7 @@ int32_t AppDomainVerifyMgrServiceStub::OnRemoteRequest(
         APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "end##descriptor checked fail");
         return IPCObjectStub::OnRemoteRequest(code, data, reply, option);
     }
+
     switch (code) {
         case static_cast<uint32_t>(static_cast<uint32_t>(AppDomainVerifyMgrInterfaceCode::QUERY_VERIFY_STATUS)):
             return OnQueryDomainVerifyStatus(data, reply);
@@ -75,7 +75,7 @@ int32_t AppDomainVerifyMgrServiceStub::OnRemoteRequest(
 
 int32_t AppDomainVerifyMgrServiceStub::OnVerifyDomain(MessageParcel& data, MessageParcel& reply)
 {
-    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s called", __func__);
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "called");
     std::string appIdentifier = data.ReadString();
     std::string bundleName = data.ReadString();
     std::string fingerprint = data.ReadString();
@@ -95,25 +95,25 @@ int32_t AppDomainVerifyMgrServiceStub::OnVerifyDomain(MessageParcel& data, Messa
     }
 
     VerifyDomain(appIdentifier, bundleName, fingerprint, skillUris);
-    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s call end", __func__);
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "call end");
     return ERR_OK;
 }
 
 int32_t AppDomainVerifyMgrServiceStub::OnClearDomainVerifyStatus(MessageParcel& data, MessageParcel& reply)
 {
-    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s called", __func__);
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "called");
     std::string appIdentifier = data.ReadString();
     std::string bundleName = data.ReadString();
     bool status = ClearDomainVerifyStatus(appIdentifier, bundleName);
 
-    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s call end", __func__);
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "call end");
     WRITE_PARCEL_AND_RETURN_INT_IF_FAIL(Bool, reply, status);
     return ERR_OK;
 }
 
 int32_t AppDomainVerifyMgrServiceStub::OnFilterAbilities(MessageParcel& data, MessageParcel& reply)
 {
-    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s called", __func__);
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "called");
     std::unique_ptr<OHOS::AAFwk::Want> w(data.ReadParcelable<OHOS::AAFwk::Want>());
     OHOS::AAFwk::Want want;
     if (!w) {
@@ -142,37 +142,37 @@ int32_t AppDomainVerifyMgrServiceStub::OnFilterAbilities(MessageParcel& data, Me
     for (auto& it : filtedAbilityInfos) {
         WRITE_PARCEL_AND_RETURN_INT_IF_FAIL(Parcelable, reply, &it);
     }
-    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s call end", __func__);
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "call end");
     return ERR_OK;
 }
 
 int32_t AppDomainVerifyMgrServiceStub::OnQueryDomainVerifyStatus(MessageParcel& data, MessageParcel& reply)
 {
-    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s called", __func__);
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "called");
     std::string bundleName = data.ReadString();
     DomainVerifyStatus domainVerificationState;
     bool status = QueryDomainVerifyStatus(bundleName, domainVerificationState);
     WRITE_PARCEL_AND_RETURN_INT_IF_FAIL(Bool, reply, status);
     WRITE_PARCEL_AND_RETURN_INT_IF_FAIL(Int32, reply, domainVerificationState);
-    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s call end", __func__);
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "call end");
     return ERR_OK;
 }
 
 int32_t AppDomainVerifyMgrServiceStub::OnQueryAllDomainVerifyStatus(MessageParcel& data, MessageParcel& reply)
 {
-    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s called", __func__);
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "called");
 
     BundleVerifyStatusInfo bundleVerifyStatusInfo;
     bool status = QueryAllDomainVerifyStatus(bundleVerifyStatusInfo);
     WRITE_PARCEL_AND_RETURN_INT_IF_FAIL(Bool, reply, status);
     WRITE_PARCEL_AND_RETURN_INT_IF_FAIL(Parcelable, reply, &bundleVerifyStatusInfo);
-    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s call end", __func__);
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "call end");
     return ERR_OK;
 }
 
 int32_t AppDomainVerifyMgrServiceStub::OnSaveDomainVerifyStatus(MessageParcel& data, MessageParcel& reply)
 {
-    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s called", __func__);
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "called");
     std::string bundleName = data.ReadString();
     std::unique_ptr<VerifyResultInfo> verifyResultInfo(data.ReadParcelable<VerifyResultInfo>());
     if (verifyResultInfo == nullptr) {
@@ -181,21 +181,21 @@ int32_t AppDomainVerifyMgrServiceStub::OnSaveDomainVerifyStatus(MessageParcel& d
     }
     bool status = SaveDomainVerifyStatus(bundleName, *verifyResultInfo);
     WRITE_PARCEL_AND_RETURN_INT_IF_FAIL(Bool, reply, status);
-    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s call end", __func__);
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "call end");
     return ERR_OK;
 }
 int32_t AppDomainVerifyMgrServiceStub::OnIsAtomicServiceUrl(MessageParcel& data, MessageParcel& reply)
 {
-    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s called", __func__);
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "called");
     std::string url = data.ReadString();
     bool status = IsAtomicServiceUrl(url);
     WRITE_PARCEL_AND_RETURN_INT_IF_FAIL(Bool, reply, status);
-    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s call end", __func__);
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "call end");
     return ERR_OK;
 }
 int32_t AppDomainVerifyMgrServiceStub::OnUpdateWhiteListUrls(MessageParcel& data, MessageParcel& reply)
 {
-    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s called", __func__);
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "called");
     uint32_t size = data.ReadUint32();
     if (IsInvalidParcelArraySize(size)) {
         APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "read parcelable size invalid.");
@@ -207,12 +207,12 @@ int32_t AppDomainVerifyMgrServiceStub::OnUpdateWhiteListUrls(MessageParcel& data
         urls.emplace_back(url);
     }
     UpdateWhiteListUrls(urls);
-    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s call end", __func__);
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "call end");
     return 0;
 }
 int32_t AppDomainVerifyMgrServiceStub::OnConvertToExplicitWant(MessageParcel& data, MessageParcel& reply)
 {
-    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s called", __func__);
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "called");
     OHOS::AAFwk::Want want;
     std::unique_ptr<OHOS::AAFwk::Want> w(data.ReadParcelable<OHOS::AAFwk::Want>());
     if (!w) {
@@ -227,12 +227,12 @@ int32_t AppDomainVerifyMgrServiceStub::OnConvertToExplicitWant(MessageParcel& da
     }
     sptr<IConvertCallback> cleanCacheCallback = iface_cast<IConvertCallback>(object);
     ConvertToExplicitWant(want, cleanCacheCallback);
-    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s call end", __func__);
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "call end");
     return ERR_OK;
 }
 int32_t AppDomainVerifyMgrServiceStub::OnQueryAssociatedDomains(MessageParcel& data, MessageParcel& reply)
 {
-    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s called", __func__);
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "called");
     std::string bundleName;
     READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(String, data, bundleName);
 
@@ -244,12 +244,12 @@ int32_t AppDomainVerifyMgrServiceStub::OnQueryAssociatedDomains(MessageParcel& d
     for (const auto& i : domains) {
         WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String, reply, i);
     }
-    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s call end", __func__);
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "call end");
     return ERR_OK;
 }
 int32_t AppDomainVerifyMgrServiceStub::OnQueryAssociatedBundleNames(MessageParcel& data, MessageParcel& reply)
 {
-    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s called", __func__);
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "called");
     std::string domain;
     READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(String, data, domain);
     std::vector<std::string> bundleNames;
@@ -261,7 +261,7 @@ int32_t AppDomainVerifyMgrServiceStub::OnQueryAssociatedBundleNames(MessageParce
     for (const auto& i : bundleNames) {
         WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String, reply, i);
     }
-    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s call end", __func__);
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "call end");
     return ERR_OK;
 }
 }  // namespace AppDomainVerify

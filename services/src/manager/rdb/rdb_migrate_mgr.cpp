@@ -22,14 +22,14 @@ constexpr int INNER_VERSION_1_0_COL_CNT = 2;
 
 int RdbMigrateMgr::Upgrade(NativeRdb::RdbStore& rdbStore)
 {
-    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s called", __func__);
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "called");
     int innerVersion = QueryInnerVersion(rdbStore);
     if (innerVersion == INNER_VERSION_1_0) {
         UpgradeFromV1_0(rdbStore);
     } else {
-        APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s called, no need upgrade.", __func__);
+        APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "called, no need upgrade.");
     }
-    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s called, end", __func__);
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "called, end");
     return true;
 }
 RdbMigrateMgr::RdbMigrateMgr(const AppDomainVerifyRdbConfig& appDomainVerifyRdbConfig)
@@ -60,7 +60,7 @@ int RdbMigrateMgr::QueryInnerVersion(NativeRdb::RdbStore& rdbStore)
 
 void RdbMigrateMgr::UpgradeFromV1_0(NativeRdb::RdbStore& rdbStore)
 {
-    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s called", __func__);
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "called");
     const std::string migrateSqls[] = { R"(drop table IF EXISTS temp_table;)", R"(drop table IF EXISTS final_table;)",
         R"(CREATE TEMPORARY TABLE temp_table AS
             SELECT
@@ -96,6 +96,6 @@ void RdbMigrateMgr::UpgradeFromV1_0(NativeRdb::RdbStore& rdbStore)
             break;
         }
     }
-    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s called", __func__);
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "called");
 }
 }
