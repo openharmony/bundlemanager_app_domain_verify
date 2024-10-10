@@ -67,7 +67,8 @@ AppDomainVerifyAgentService::~AppDomainVerifyAgentService()
     }
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "instance dead.");
 }
-void AppDomainVerifyAgentService::CompleteVerifyRefresh(const BundleVerifyStatusInfo& bundleVerifyStatusInfo, TaskType type)
+void AppDomainVerifyAgentService::CompleteVerifyRefresh(
+    const BundleVerifyStatusInfo& bundleVerifyStatusInfo, TaskType type)
 {
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "called");
     if (ErrorCode::E_EXTENSIONS_LIB_NOT_FOUND !=

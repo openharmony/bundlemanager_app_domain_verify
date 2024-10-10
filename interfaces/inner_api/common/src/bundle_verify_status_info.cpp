@@ -64,7 +64,8 @@ bool VerifyResultInfo::ReadFromParcel(Parcel& parcel)
         READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, verifyStatus);
         READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(String, parcel, verifyTs);
         READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, count);
-        hostVerifyStatusMap.insert(std::make_pair(url, std::make_tuple(static_cast<InnerVerifyStatus>(verifyStatus), verifyTs, count)));
+        hostVerifyStatusMap.insert(std::make_pair(
+            url, std::make_tuple(static_cast<InnerVerifyStatus>(verifyStatus), verifyTs, count)));
     }
     return true;
 }
@@ -130,7 +131,8 @@ bool BundleVerifyStatusInfo::ReadHostVerifyStatusMap(
         READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, verifyStatus);
         READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(String, parcel, verifyTs);
         READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, verifyCnt);
-        hostVerifyStatusMap.insert(std::make_pair(url, std::make_tuple(static_cast<InnerVerifyStatus>(verifyStatus), verifyTs, verifyCnt)));
+        hostVerifyStatusMap.insert(
+            std::make_pair(url, std::make_tuple(static_cast<InnerVerifyStatus>(verifyStatus), verifyTs, verifyCnt)));
     }
     return true;
 }

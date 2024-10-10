@@ -135,7 +135,8 @@ HWTEST_F(AppDomainVerifyBeanTest, AppDomainVerifyBundleVerifyStatusInfoTest001, 
     ASSERT_TRUE(unmarshalling->bundleVerifyStatusInfoMap_.begin()->second.hostVerifyStatusMap.size() == 1);
     ASSERT_TRUE(unmarshalling->bundleVerifyStatusInfoMap_.begin()->second.hostVerifyStatusMap.begin()->first ==
         "https://" + HOST);
-    auto [status, verifyTime, cnt] = unmarshalling->bundleVerifyStatusInfoMap_.begin()->second.hostVerifyStatusMap.begin()->second;
+    auto [status, verifyTime, cnt] =
+        unmarshalling->bundleVerifyStatusInfoMap_.begin()->second.hostVerifyStatusMap.begin()->second;
     ASSERT_TRUE(status == InnerVerifyStatus::STATE_SUCCESS);
 
     Parcel parcel1;
@@ -187,7 +188,8 @@ HWTEST_F(AppDomainVerifyBeanTest, AppDomainVerifyVerifyResultInfoTest001, TestSi
 {
     VerifyResultInfo verifyResultInfo;
     verifyResultInfo.appIdentifier = APP_IDENTIFIER;
-    verifyResultInfo.hostVerifyStatusMap.insert_or_assign("https://" + HOST, std::make_tuple(InnerVerifyStatus::STATE_SUCCESS, "", 0));
+    verifyResultInfo.hostVerifyStatusMap.insert_or_assign(
+        "https://" + HOST, std::make_tuple(InnerVerifyStatus::STATE_SUCCESS, "", 0));
 
     Parcel parcel;
     verifyResultInfo.Marshalling(parcel);

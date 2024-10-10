@@ -102,7 +102,8 @@ bool AppDomainVerifyMgrService::FilterAbilities(const OHOS::AAFwk::Want& want,
         // get from emory variable, non-IO operation.
         if (dataManager_->GetVerifyStatus(it->bundleName, verifyResultInfo)) {
             auto itr = verifyResultInfo.hostVerifyStatusMap.find(hostVerifyKey);
-            if (itr != verifyResultInfo.hostVerifyStatusMap.end() && std::get<0>(itr->second) == InnerVerifyStatus::STATE_SUCCESS) {
+            if (itr != verifyResultInfo.hostVerifyStatusMap.end() &&
+                std::get<0>(itr->second) == InnerVerifyStatus::STATE_SUCCESS) {
                 filtedAbilityInfos.emplace_back(*it);
             }
         }
@@ -269,7 +270,8 @@ void AppDomainVerifyMgrService::DumpAllVerifyInfos(std::string& dumpString)
         dumpString.append("\n");
         dumpString.append("  domain verify status:\n");
         for (const auto& hostVerifyStatus : verifyResultInfo.hostVerifyStatusMap) {
-            dumpString.append("    " + hostVerifyStatus.first + ":" + InnerVerifyStatusMap[std::get<0>(hostVerifyStatus.second)]);
+            dumpString.append("    " + hostVerifyStatus.first + ":" +
+                InnerVerifyStatusMap[std::get<0>(hostVerifyStatus.second)]);
             dumpString.append("\n");
         }
     }
@@ -320,7 +322,8 @@ void AppDomainVerifyMgrService::CollectDomains(
         }
         // validUris remove duplicates
         auto uri = it->scheme + "://" + host;
-        verifyResultInfo.hostVerifyStatusMap.insert(make_pair(uri, std::make_tuple(InnerVerifyStatus::UNKNOWN, std::string(), 0)));
+        verifyResultInfo.hostVerifyStatusMap.insert(make_pair(
+            uri, std::make_tuple(InnerVerifyStatus::UNKNOWN, std::string(), 0)));
     }
 }
 }  // namespace AppDomainVerify

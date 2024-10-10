@@ -14,7 +14,7 @@
  */
 
 #include <algorithm>
-#include <stdint.h>
+#include <cstdint>
 #include <tuple>
 #include "app_domain_verify_mgr_client.h"
 #include "datetime_ex.h"
@@ -87,9 +87,12 @@ VerifyTask::VerifyTask(OHOS::AppDomainVerify::TaskType type, const AppVerifyBase
     : type_(type), appVerifyBaseInfo_(appVerifyBaseInfo), verifyResultInfo_(verifyResultInfo)
 {
     InitUriUnVerifySetMap(verifyResultInfo);
-    staHandlerMap[STATE_SUCCESS] = [this](std::string time, int cnt)->bool { return HandleStateSuccess(time, cnt);};;
-    staHandlerMap[FAILURE_CLIENT_ERROR] = [this](std::string time, int cnt)->bool { return HandleFailureClientError(time, cnt);};
-    staHandlerMap[FORBIDDEN_FOREVER] = [this](std::string time, int cnt)->bool { return HandleForbiddenForever(time, cnt);};
+    staHandlerMap[STATE_SUCCESS] = [this](std::string time, int cnt)->bool {
+        return HandleStateSuccess(time, cnt); };
+    staHandlerMap[FAILURE_CLIENT_ERROR] = [this](std::string time, int cnt)->bool {
+        return HandleFailureClientError(time, cnt);};
+    staHandlerMap[FORBIDDEN_FOREVER] = [this](std::string time, int cnt)->bool {
+        return HandleForbiddenForever(time, cnt);};
 }
 
 OHOS::AppDomainVerify::TaskType& VerifyTask::GetTaskType()
@@ -131,11 +134,14 @@ bool VerifyTask::HandleFailureClientError(std::string verifyTime, int verifyCnt)
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MODULE_EXTENSION, "called");
     if (!verifyTime.empty()) {
         int64_t currTs = GetSecondsSince1970ToNow();
-        int64_t lastTs = std::stol(verifyTime);
+        int64_t lastTs = static_cast<int64_t>(std::stoll(verifyTime));
         int64_t duration = currTs - lastTs;
         int64_t currRetryDuration = verifyCnt * CLIENT_ERR_BASE_RETRY_DURATION_S;
         if (duration <= currRetryDuration) {
-            APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MODULE_EXTENSION, "last time:%{public}ld, curr time:%{public}ld, duration:%{public}ld is less than max retry duration:%{public}ld, not retry", lastTs, currTs, duration, currRetryDuration);
+            APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MODULE_EXTENSION,
+                "last time:%{public}s, curr time:%{public}s, duration:%{public}s is less than max retry duration:%{public}s, not retry",
+                std::to_string(lastTs).c_str(), std::to_string(currTs).c_str(),
+                std::to_string(duration).c_str(), std::to_string(currRetryDuration).c_str());
             return false;
         }
     }
@@ -163,20 +169,19 @@ void VerifyTask::UpdateVerifyResultInfo(const std::string& uri, InnerVerifyStatu
     auto& hostVerifyStatusMap = verifyResultInfo_.hostVerifyStatusMap;
     auto iter = hostVerifyStatusMap.find(uri);
     if (iter == hostVerifyStatusMap.end()) {
-        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "uri don't exist in hostVerifyStatusMap, uri:%{private}s", uri.c_str());
         hostVerifyStatusMap.insert_or_assign(uri, std::make_tuple(verifyStatus, verifyTs, verifyCnt));
         return;
     }
     if (verifyStatus == InnerVerifyStatus::FAILURE_CLIENT_ERROR) {
-       std::tie (std::ignore, std::ignore, verifyCnt) = iter->second;
-       verifyCnt++;
-       if (verifyCnt >= CLIENT_ERR_MAX_RETRY_COUNTS) {
+        std::tie(std::ignore, std::ignore, verifyCnt) = iter->second;
+        verifyCnt++;
+        if (verifyCnt >= CLIENT_ERR_MAX_RETRY_COUNTS) {
             verifyStatus = InnerVerifyStatus::FORBIDDEN_FOREVER;
-       }
+        }
     }
     std::get<0>(iter->second) = verifyStatus;
     std::get<1>(iter->second) = verifyTs;
-    std::get<2>(iter->second) = verifyCnt;
+    std::get<2>(iter->second) = verifyCnt; // 2 is cnt
 }
 
 }

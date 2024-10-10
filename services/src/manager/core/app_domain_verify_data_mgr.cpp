@@ -85,7 +85,8 @@ bool AppDomainVerifyDataMgr::DBToVerifyResultInfo(
     }
     verifyResultInfo.appIdentifier = items[0].appIdentifier;
     for (auto it : items) {
-        verifyResultInfo.hostVerifyStatusMap.insert(std::make_pair(it.domain, std::make_tuple(InnerVerifyStatus(it.status), it.verifyTs, it.count)));
+        verifyResultInfo.hostVerifyStatusMap.insert(std::make_pair(it.domain,
+            std::make_tuple(InnerVerifyStatus(it.status), it.verifyTs, it.count)));
     }
     return true;
 }

@@ -35,8 +35,8 @@ int32_t AppDomainVerifyRdbOpenCallback::OnUpgrade(NativeRdb::RdbStore& rdbStore,
     RdbMigrateMgr rdbMigrateMgr(appDomainVerifyRdbConfig_);
     int32_t ret = rdbMigrateMgr.Upgrade(rdbStore, currentVersion, targetVersion);
     if (ret != NativeRdb::E_OK) {
-       APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "OnUpgrade fail., ret:%{public}d", ret);
-       return ret;
+        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "OnUpgrade fail., ret:%{public}d", ret);
+        return ret;
     }
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "OnUpgrade End");
     return NativeRdb::E_OK;

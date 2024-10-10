@@ -53,7 +53,8 @@ int InvokeSingleVerifyOK(uint32_t code, MessageParcel& data, MessageParcel& repl
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MODULE_BUTT, "call end");
     std::string bundleName = BUNDLE_NAME;
     VerifyResultInfo verifyResultInfo;
-    verifyResultInfo.hostVerifyStatusMap.insert_or_assign("https://" + HOST, std::make_tuple(InnerVerifyStatus::STATE_SUCCESS, std::string(), 0));
+    verifyResultInfo.hostVerifyStatusMap.insert_or_assign(
+        "https://" + HOST, std::make_tuple(InnerVerifyStatus::STATE_SUCCESS, std::string(), 0));
     appDomainVerifyMgrService->SaveDomainVerifyStatus(bundleName, verifyResultInfo);
     return 0;
 }
@@ -63,7 +64,8 @@ int InvokeSingleVerifyFail(uint32_t code, MessageParcel& data, MessageParcel& re
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MODULE_BUTT, "call end");
     std::string bundleName = BUNDLE_NAME;
     VerifyResultInfo verifyResultInfo;
-    verifyResultInfo.hostVerifyStatusMap.insert_or_assign("https://" + HOST, std::make_tuple(InnerVerifyStatus::STATE_FAIL, std::string(), 0));
+    verifyResultInfo.hostVerifyStatusMap.insert_or_assign(
+        "https://" + HOST, std::make_tuple(InnerVerifyStatus::STATE_FAIL, std::string(), 0));
     appDomainVerifyMgrService->SaveDomainVerifyStatus(bundleName, verifyResultInfo);
     return UNKNOWN_ERROR;
 }
@@ -550,8 +552,10 @@ HWTEST_F(MgrServiceTest, MgrServiceTest029, TestSize.Level0)
     ASSERT_TRUE(appDomainVerifyMgrService->dataManager_);
     std::string bundleName{ "MgrServiceTest029" };
     VerifyResultInfo verifyResultInfo;
-    verifyResultInfo.hostVerifyStatusMap.emplace(bundleName, std::make_tuple(InnerVerifyStatus::STATE_SUCCESS, std::string(), 0));
-    verifyResultInfo.hostVerifyStatusMap.emplace("test", std::make_tuple(InnerVerifyStatus::STATE_SUCCESS, std::string(), 0));
+    verifyResultInfo.hostVerifyStatusMap.emplace(
+        bundleName, std::make_tuple(InnerVerifyStatus::STATE_SUCCESS, std::string(), 0));
+    verifyResultInfo.hostVerifyStatusMap.emplace(
+        "test", std::make_tuple(InnerVerifyStatus::STATE_SUCCESS, std::string(), 0));
     appDomainVerifyMgrService->dataManager_->SaveVerifyStatus(bundleName, verifyResultInfo);
 
     DomainVerifyStatus domainVerificationState = DomainVerifyStatus::STATE_NONE;
@@ -570,9 +574,9 @@ HWTEST_F(MgrServiceTest, MgrServiceTest030, TestSize.Level0)
     ASSERT_TRUE(appDomainVerifyMgrService->dataManager_);
     std::string bundleName{ "MgrServiceTest030" };
     VerifyResultInfo verifyResultInfo;
-    verifyResultInfo.hostVerifyStatusMap.emplace(bundleName, std::make_tuple(InnerVerifyStatus::UNKNOWN, std::string(), 0));
+    verifyResultInfo.hostVerifyStatusMap.emplace(
+        bundleName, std::make_tuple(InnerVerifyStatus::UNKNOWN, std::string(), 0));
     appDomainVerifyMgrService->dataManager_->SaveVerifyStatus(bundleName, verifyResultInfo);
-
     DomainVerifyStatus domainVerificationState = DomainVerifyStatus::STATE_NONE;
     EXPECT_TRUE(appDomainVerifyMgrService->QueryDomainVerifyStatus(bundleName, domainVerificationState));
     EXPECT_TRUE(domainVerificationState != DomainVerifyStatus::STATE_VERIFIED);
@@ -607,11 +611,11 @@ HWTEST_F(MgrServiceTest, MgrServiceTest032, TestSize.Level0)
     ASSERT_TRUE(appDomainVerifyMgrService->dataManager_);
     std::string bundleName{ "MgrServiceTest031" };
     VerifyResultInfo verifyResultInfo;
-    verifyResultInfo.hostVerifyStatusMap.emplace(bundleName, std::make_tuple(InnerVerifyStatus::STATE_FAIL, std::string(), 0));
+    verifyResultInfo.hostVerifyStatusMap.emplace(
+        bundleName, std::make_tuple(InnerVerifyStatus::STATE_FAIL, std::string(), 0));
     appDomainVerifyMgrService->dataManager_->SaveVerifyStatus(bundleName, verifyResultInfo);
 
-    BundleVerifyStatusInfo bundleVerificationState;
-    EXPECT_TRUE(appDomainVerifyMgrService->QueryAllDomainVerifyStatus(bundleVerificationState));
+    BundleVerifyStatusInfo bundleVerificationState;    EXPECT_TRUE(appDomainVerifyMgrService->QueryAllDomainVerifyStatus(bundleVerificationState));
     EXPECT_TRUE(bundleVerificationState.bundleVerifyStatusInfoMap_.size() != 0);
 }
 
