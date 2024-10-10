@@ -76,14 +76,10 @@ HWTEST_F(AgentServiceTest, AgentServiceTest001, TestSize.Level0)
 {
     BundleVerifyStatusInfo bundleVerifyStatusInfo;
     VerifyResultInfo verifyResultInfo;
-    verifyResultInfo.hostVerifyStatusMap.insert_or_assign("https://" + HOST, InnerVerifyStatus::STATE_FAIL);
+    verifyResultInfo.hostVerifyStatusMap.insert_or_assign("https://" + HOST, std::make_tuple(InnerVerifyStatus::STATE_FAIL, std::string(), 0));
     bundleVerifyStatusInfo.bundleVerifyStatusInfoMap_.insert_or_assign(BUNDLE_NAME, verifyResultInfo);
-    std::vector<InnerVerifyStatus> statuses = std::vector<InnerVerifyStatus>{ InnerVerifyStatus::UNKNOWN,
-        InnerVerifyStatus::STATE_FAIL, InnerVerifyStatus::FAILURE_REDIRECT, InnerVerifyStatus::FAILURE_CLIENT_ERROR,
-        InnerVerifyStatus::FAILURE_REJECTED_BY_SERVER, InnerVerifyStatus::FAILURE_HTTP_UNKNOWN,
-        InnerVerifyStatus::FAILURE_TIMEOUT };
-    appDomainVerifyAgentService->CompleteVerifyRefresh(bundleVerifyStatusInfo, statuses, 1, TaskType::IMMEDIATE_TASK);
-    appDomainVerifyAgentService->CompleteVerifyRefresh(bundleVerifyStatusInfo, statuses, 0, TaskType::IMMEDIATE_TASK);
+    appDomainVerifyAgentService->CompleteVerifyRefresh(bundleVerifyStatusInfo, 1, TaskType::IMMEDIATE_TASK);
+    appDomainVerifyAgentService->CompleteVerifyRefresh(bundleVerifyStatusInfo, 0, TaskType::IMMEDIATE_TASK);
 }
 
 /**

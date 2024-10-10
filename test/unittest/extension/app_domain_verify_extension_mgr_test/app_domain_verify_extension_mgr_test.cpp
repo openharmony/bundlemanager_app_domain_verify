@@ -130,11 +130,10 @@ HWTEST_F(AppDomainVerifyExtensionMgrTest, AppDomainVerifyCompleteVerifyTest001, 
     EXPECT_CALL(appDomainVerifyExtensionMgr, Init()).Times(1).WillOnce(Return(false));
 
     const BundleVerifyStatusInfo bundleVerifyStatusInfo;
-    const std::vector<InnerVerifyStatus> statuses;
     int delaySeconds = 0;
     TaskType type = IMMEDIATE_TASK;
     ASSERT_TRUE(appDomainVerifyExtensionMgr.CompleteVerifyRefresh(
-                    bundleVerifyStatusInfo, statuses, delaySeconds, type) == ErrorCode::E_EXTENSIONS_LIB_NOT_FOUND);
+                    bundleVerifyStatusInfo, delaySeconds, type) == ErrorCode::E_EXTENSIONS_LIB_NOT_FOUND);
 }
 
 /**
@@ -151,11 +150,10 @@ HWTEST_F(AppDomainVerifyExtensionMgrTest, AppDomainVerifyCompleteVerifyTest002, 
         .WillOnce(Return(nullptr));
 
     const BundleVerifyStatusInfo bundleVerifyStatusInfo;
-    const std::vector<InnerVerifyStatus> statuses;
     int delaySeconds = 0;
     TaskType type = IMMEDIATE_TASK;
     ASSERT_TRUE(appDomainVerifyExtensionMgr.CompleteVerifyRefresh(
-                    bundleVerifyStatusInfo, statuses, delaySeconds, type) == ErrorCode::E_EXTENSIONS_INTERNAL_ERROR);
+                    bundleVerifyStatusInfo,  delaySeconds, type) == ErrorCode::E_EXTENSIONS_INTERNAL_ERROR);
 }
 
 /**
@@ -228,11 +226,10 @@ HWTEST_F(AppDomainVerifyExtensionMgrTest, AppDomainVerifyConvertTest003, TestSiz
         .WillOnce(Return(appDomainVerifyAgentExt));
 
     const BundleVerifyStatusInfo bundleVerifyStatusInfo;
-    const std::vector<InnerVerifyStatus> statuses;
     int delaySeconds = 0;
     TaskType type = IMMEDIATE_TASK;
     ASSERT_TRUE(appDomainVerifyExtensionMgr.CompleteVerifyRefresh(
-                    bundleVerifyStatusInfo, statuses, delaySeconds, type) == ErrorCode::E_EXTENSIONS_LIB_NOT_FOUND);
+                    bundleVerifyStatusInfo, delaySeconds, type) == ErrorCode::E_EXTENSIONS_LIB_NOT_FOUND);
 }
 /**
  * @tc.name: AppDomainVerifyUpdateWhiteListTest001

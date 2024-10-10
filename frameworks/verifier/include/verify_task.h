@@ -16,6 +16,7 @@
 #ifndef APP_DOMAIN_VERIFY_VERIFY_TASK_H
 #define APP_DOMAIN_VERIFY_VERIFY_TASK_H
 #include <unordered_set>
+#include "bundle_verify_status_info.h"
 #include "i_verify_task.h"
 #include "http_client_response.h"
 #include "app_verify_base_info.h"
@@ -33,7 +34,7 @@ public:
     void OnSaveVerifyResult() override;
     bool OnPreRequest(OHOS::NetStack::HttpClient::HttpClientRequest &request, const std::string &uri) override;
     OHOS::AppDomainVerify::TaskType GetType() override;
-    const std::unordered_map<std::string, InnerVerifyStatus> &GetUriVerifyMap() override;
+    const HostVerifyStatusMap &GetUriVerifyMap() override;
 
     VerifyTask(OHOS::AppDomainVerify::TaskType type, const AppVerifyBaseInfo &appVerifyBaseInfo,
         const VerifyResultInfo& verifyResultInfo);
@@ -41,14 +42,14 @@ public:
     void Execute();
 
 protected:
+    bool IsNeedRetry(const std::tuple<InnerVerifyStatus, std::string, int>& info);
     OHOS::AppDomainVerify::TaskType& GetTaskType();
     AppVerifyBaseInfo& GetAppVerifyBaseInfo();
-    std::unordered_map<std::string, InnerVerifyStatus>& GetInnerUriVerifyMap();
 private:
+    void UpdateVerifyResultInfo(const std::string& uri, InnerVerifyStatus status);
     virtual bool SaveDomainVerifyStatus(const std::string& bundleName, const VerifyResultInfo& verifyResultInfo);
     OHOS::AppDomainVerify::TaskType type_;
     AppVerifyBaseInfo appVerifyBaseInfo_;
-    std::unordered_map<std::string, InnerVerifyStatus> uriVerifyMap_;
     std::unordered_set<std::string> unVerifiedSet_;
     VerifyResultInfo verifyResultInfo_;
 };

@@ -25,10 +25,14 @@ const std::string DB_BUNDLE_NAME = "BUNDLE_NAME";
 const std::string DB_APP_IDENTIFIER = "APP_IDENTIFIER";
 const std::string DB_DOMAIN = "DOMAIN";
 const std::string DB_STATUES = "VERIFY_STATUES";
+const std::string DB_VERIFY_TIME = "VERIFY_TIME";
+const std::string DB_VERIFY_COUNT = "VERIFY_COUNT";
 const int32_t DB_BUNDLE_NAME_INDEX = 1;
 const int32_t DB_APP_IDENTIFIER_INDEX = 2;
 const int32_t DB_DOMAIN_INDEX = 3;
 const int32_t DB_STATUES_INDEX = 4;
+const int32_t DB_VERIFY_TIME_INDEX = 5;
+const int32_t DB_VERIFY_COUNT_INDEX = 6;
 const int32_t CLOSE_TIME = 20;  // delay 20s stop rdbStore
 
 AppDomainVerifyRdbDataManager::AppDomainVerifyRdbDataManager(const AppDomainVerifyRdbConfig& rdbConfig)
@@ -68,9 +72,10 @@ bool AppDomainVerifyRdbDataManager::InsertData(const RdbDataItem& rdbDataItem)
     valuesBucket.PutString(DB_APP_IDENTIFIER, rdbDataItem.appIdentifier);
     valuesBucket.PutString(DB_DOMAIN, rdbDataItem.domain);
     valuesBucket.PutInt(DB_STATUES, rdbDataItem.status);
+    valuesBucket.PutString(DB_VERIFY_TIME, rdbDataItem.verifyTs);
+    valuesBucket.PutInt(DB_VERIFY_COUNT, rdbDataItem.count);
     auto ret = rdbStore->InsertWithConflictResolution(
         rowId, appDomainVerifyRdbConfig_.tableName, valuesBucket, NativeRdb::ConflictResolution::ON_CONFLICT_REPLACE);
-    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "call end");
     return CheckRdbReturnIfOk(ret);
 }
 
@@ -117,7 +122,9 @@ bool AppDomainVerifyRdbDataManager::Query(const NativeRdb::AbsRdbPredicates& pre
             if (!CheckRdbReturnIfOk(absSharedResultSet->GetString(DB_BUNDLE_NAME_INDEX, item.bundleName)) ||
                 !CheckRdbReturnIfOk(absSharedResultSet->GetString(DB_APP_IDENTIFIER_INDEX, item.appIdentifier)) ||
                 !CheckRdbReturnIfOk(absSharedResultSet->GetString(DB_DOMAIN_INDEX, item.domain)) ||
-                !CheckRdbReturnIfOk(absSharedResultSet->GetInt(DB_STATUES_INDEX, item.status))) {
+                !CheckRdbReturnIfOk(absSharedResultSet->GetInt(DB_STATUES_INDEX, item.status)) ||
+                !CheckRdbReturnIfOk(absSharedResultSet->GetString(DB_VERIFY_TIME_INDEX, item.verifyTs)) ||
+                !CheckRdbReturnIfOk(absSharedResultSet->GetInt(DB_VERIFY_COUNT_INDEX, item.count))) {
                 return false;
             }
             items.emplace_back(item);
@@ -179,7 +186,7 @@ bool AppDomainVerifyRdbDataManager::CreateTable()
     if (appDomainVerifyRdbConfig_.createTableSql.empty()) {
         createTableSql = std::string("CREATE TABLE IF NOT EXISTS " + appDomainVerifyRdbConfig_.tableName +
             "(ID INTEGER PRIMARY KEY AUTOINCREMENT, BUNDLE_NAME TEXT NOT NULL, APP_IDENTIFIER TEXT, " +
-            "DOMAIN TEXT NOT NULL, VERIFY_STATUES INTEGER);");
+            "DOMAIN TEXT NOT NULL, VERIFY_STATUES INTEGER, VERIFY_TIME TEXT NOT NULL, VERIFY_COUNT INTEGER);");
     } else {
         createTableSql = appDomainVerifyRdbConfig_.createTableSql;
     }

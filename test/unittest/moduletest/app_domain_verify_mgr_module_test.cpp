@@ -51,7 +51,7 @@ int InvokeSingleVerifyOK(uint32_t code, MessageParcel &data, MessageParcel &repl
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MODULE_BUTT, "call end");
     std::string bundleName = BUNDLE_NAME;
     VerifyResultInfo verifyResultInfo;
-    verifyResultInfo.hostVerifyStatusMap.insert_or_assign("https://" + HOST, InnerVerifyStatus::STATE_SUCCESS);
+    verifyResultInfo.hostVerifyStatusMap.insert_or_assign("https://" + HOST, std::make_tuple(InnerVerifyStatus::STATE_SUCCESS, std::string(), 0));
     appDomainVerifyMgrService_->SaveDomainVerifyStatus(bundleName, verifyResultInfo);
     return 0;
 }
@@ -61,7 +61,7 @@ int InvokeSingleVerifyFail(uint32_t code, MessageParcel &data, MessageParcel &re
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MODULE_BUTT, "call end");
     std::string bundleName = BUNDLE_NAME;
     VerifyResultInfo verifyResultInfo;
-    verifyResultInfo.hostVerifyStatusMap.insert_or_assign("https://" + HOST, InnerVerifyStatus::STATE_FAIL);
+    verifyResultInfo.hostVerifyStatusMap.insert_or_assign("https://" + HOST, std::make_tuple(InnerVerifyStatus::STATE_FAIL, std::string(), 0));
     appDomainVerifyMgrService_->SaveDomainVerifyStatus(bundleName, verifyResultInfo);
     return UNKNOWN_ERROR;
 }

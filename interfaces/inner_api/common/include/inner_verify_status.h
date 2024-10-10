@@ -38,7 +38,10 @@ enum InnerVerifyStatus {
     FAILURE_TIMEOUT = 7,
 
     FAILURE_CONFIG = 8,
+
+    FORBIDDEN_FOREVER = 9
 };
+
 static std::unordered_map<InnerVerifyStatus, std::string> InnerVerifyStatusMap = {
     { UNKNOWN, "unknown" },
     { STATE_SUCCESS, "success" },
