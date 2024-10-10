@@ -17,10 +17,11 @@
 #include "iservice_registry.h"
 #include "app_domain_verify_mgr_client.h"
 #include "system_ability_definition.h"
-#include "app_domain_verify_hisysevent.h"
+#include "dfx/app_domain_verify_hisysevent.h"
 #include "zidl/convert_callback_stub.h"
 #include "regex.h"
 #include "comm_define.h"
+#include "ipc_skeleton.h"
 #include "common_utils.h"
 
 namespace OHOS {
@@ -182,7 +183,9 @@ void AppDomainVerifyMgrClient::ConvertToExplicitWant(AAFwk::Want& implicitWant, 
 #else
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "called");
     if (IsServiceAvailable()) {
+        std::string identity = IPCSkeleton::ResetCallingIdentity();
         appDomainVerifyMgrServiceProxy_->ConvertToExplicitWant(implicitWant, callback);
+        IPCSkeleton::SetCallingIdentity(identity);
     }
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "call end");
 #endif
@@ -198,16 +201,16 @@ bool AppDomainVerifyMgrClient::IsValidPath(const std::string& path)
     regmatch_t pmatch[nm];
     if (regcomp(&reg, PATTEN, REG_EXTENDED) < 0) {
         regerror(errNum, &reg, errbuf, sizeof(errbuf));
-        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "regexec error:%{public}s", errbuf);
+        APP_DOMAIN_VERIFY_HILOGW(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "regexec error:%{public}s", errbuf);
         return false;
     }
     errNum = regexec(&reg, bematch, nm, pmatch, 0);
     if (errNum == REG_NOMATCH) {
-        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "regexec no match");
+        APP_DOMAIN_VERIFY_HILOGW(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "regexec no match");
         return false;
     } else if (errNum) {
         regerror(errNum, &reg, errbuf, sizeof(errbuf));
-        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "regexec error:%{public}s", errbuf);
+        APP_DOMAIN_VERIFY_HILOGW(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "regexec error:%{public}s", errbuf);
         return false;
     }
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "is valid path");
@@ -216,12 +219,12 @@ bool AppDomainVerifyMgrClient::IsValidPath(const std::string& path)
 bool AppDomainVerifyMgrClient::IsValidUrl(OHOS::Uri& uri)
 {
     if (uri.GetScheme() != SCHEME_HTTPS) {
-        APP_DOMAIN_VERIFY_HILOGE(
+        APP_DOMAIN_VERIFY_HILOGW(
             APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "scheme:%{public}s is not https", uri.GetScheme().c_str());
         return false;
     }
     if (uri.GetHost().empty()) {
-        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "host is empty");
+        APP_DOMAIN_VERIFY_HILOGW(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "host is empty");
         return false;
     }
     std::vector<std::string> segments;
@@ -231,7 +234,7 @@ bool AppDomainVerifyMgrClient::IsValidUrl(OHOS::Uri& uri)
         return false;
     }
     if (!IsValidPath(segments[0])) {
-        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT,
+        APP_DOMAIN_VERIFY_HILOGW(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT,
             "short path:%{public}s must only contains number,alphabet or dash line!", segments[0].c_str());
         return false;
     }
@@ -255,7 +258,9 @@ bool AppDomainVerifyMgrClient::IsAtomicServiceUrl(const std::string& url)
     }
     bool ret{ false };
     if (IsServiceAvailable()) {
+        std::string identity = IPCSkeleton::ResetCallingIdentity();
         ret = appDomainVerifyMgrServiceProxy_->IsAtomicServiceUrl(uri.GetScheme() + "://" + uri.GetHost());
+        IPCSkeleton::SetCallingIdentity(identity);
     }
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "call end, IsAtomicServiceUrl:%{public}d", ret);
     return ret;

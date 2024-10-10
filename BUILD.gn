@@ -18,6 +18,7 @@ import("//build/ohos.gni")
 group("app_domain_verify_packages") {
   if (is_standard_system) {
     deps = [
+      "etc:app_domain_verify_api_report_etc",
       "etc/init:app_domain_verify_agent.cfg",
       "frameworks/common:app_domain_verify_frameworks_common",
       "frameworks/extension:app_domain_verify_extension_framework",

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Huawei Device Co., Ltd.
+ * Copyright (C) 2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -12,19 +12,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#ifndef APP_DOMAIN_VERIFY_PERMISSION_MANAGER_H
-#define APP_DOMAIN_VERIFY_PERMISSION_MANAGER_H
-#include <string>
-namespace OHOS {
-namespace AppDomainVerify {
-class PermissionManager {
+
+#ifndef APP_DOMAIN_VERIFY_MOCK_ACCESS_TOKEN_H
+#define APP_DOMAIN_VERIFY_MOCK_ACCESS_TOKEN_H
+namespace OHOS::AppDomainVerify {
+class MockAccessToken {
 public:
-    PermissionManager() = default;
-    ~PermissionManager() = default;
-    static bool CheckPermission(const std::string& permission);
-    static bool IsSystemAppCall();
-    static bool IsSACall() ;
+    static int mockSystemApp();
+    static int mockSA();
 };
 }
-}
-#endif  // APP_DOMAIN_VERIFY_PERMISSION_MANAGER_H
+
+#endif  // APP_DOMAIN_VERIFY_MOCK_ACCESS_TOKEN_H
