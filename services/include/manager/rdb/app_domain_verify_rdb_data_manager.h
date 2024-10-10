@@ -30,8 +30,11 @@ struct RdbDataItem {
     std::string bundleName;
     std::string appIdentifier;
     std::string domain;
-    int status;
+    int status = 0;
+    std::string verifyTs;
+    int count = 0;
 };
+
 class AppDomainVerifyRdbDataManager : public std::enable_shared_from_this<AppDomainVerifyRdbDataManager> {
 public:
     AppDomainVerifyRdbDataManager(const AppDomainVerifyRdbConfig& rdbConfig);

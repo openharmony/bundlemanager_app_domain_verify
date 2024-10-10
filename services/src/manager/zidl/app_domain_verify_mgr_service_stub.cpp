@@ -160,6 +160,7 @@ int32_t AppDomainVerifyMgrServiceStub::OnQueryDomainVerifyStatus(MessageParcel& 
 
 int32_t AppDomainVerifyMgrServiceStub::OnQueryAllDomainVerifyStatus(MessageParcel& data, MessageParcel& reply)
 {
+    APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "zylDebug on query all domain verify status");
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "called");
 
     BundleVerifyStatusInfo bundleVerifyStatusInfo;

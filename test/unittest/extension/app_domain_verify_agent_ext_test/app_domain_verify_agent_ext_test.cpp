@@ -84,10 +84,9 @@ HWTEST_F(AppDomainVerifyAgentExtTest, AppDomainVerifyAgentExtTest002, TestSize.L
 {
     AppDomainVerifyAgentExt appDomainVerifyAgentExt;
     const BundleVerifyStatusInfo bundleVerifyStatusInfo;
-    const std::vector<InnerVerifyStatus> statuses;
     int delaySeconds = 0;
     TaskType type = IMMEDIATE_TASK;
-    ASSERT_TRUE(appDomainVerifyAgentExt.CompleteVerifyRefresh(bundleVerifyStatusInfo, statuses, delaySeconds,
+    ASSERT_TRUE(appDomainVerifyAgentExt.CompleteVerifyRefresh(bundleVerifyStatusInfo, delaySeconds,
                     type) == ErrorCode::E_EXTENSIONS_LIB_NOT_FOUND);
 }
 /**

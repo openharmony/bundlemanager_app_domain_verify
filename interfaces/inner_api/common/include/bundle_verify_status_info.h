@@ -21,6 +21,8 @@
 
 namespace OHOS {
 namespace AppDomainVerify {
+using HostVerifyStatusMap = std::unordered_map<std::string, std::tuple<InnerVerifyStatus, std::string, int>>;
+
 struct VerifyResultInfo : public Parcelable {
 public:
     bool Marshalling(Parcel &parcel) const override;
@@ -31,7 +33,7 @@ private:
 
 public:
     std::string appIdentifier;
-    std::unordered_map<std::string, InnerVerifyStatus> hostVerifyStatusMap;
+    HostVerifyStatusMap hostVerifyStatusMap;
 };
 
 struct BundleVerifyStatusInfo : public Parcelable {
@@ -40,9 +42,9 @@ public:
     static BundleVerifyStatusInfo *Unmarshalling(Parcel &parcel);
 
 private:
-    bool WriteHostVerifyStatusMap(const std::unordered_map<std::string, InnerVerifyStatus> &hostVerifyStatusMap,
+    bool WriteHostVerifyStatusMap(const HostVerifyStatusMap &hostVerifyStatusMap,
         Parcel &parcel) const;
-    bool ReadHostVerifyStatusMap(std::unordered_map<std::string, InnerVerifyStatus> &hostVerifyStatusMap,
+    bool ReadHostVerifyStatusMap(HostVerifyStatusMap &hostVerifyStatusMap,
         Parcel &parcel);
     bool ReadFromParcel(Parcel &parcel);
 
