@@ -46,8 +46,8 @@ void AppDomainVerifyAgentClient::SingleVerify(const AppVerifyBaseInfo &appVerify
     const VerifyResultInfo &verifyResultInfo)
 {
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_AGENT_MODULE_CLIENT, "called");
+    std::lock_guard<std::mutex> autoLock(proxyLock_);
     if (IsServiceAvailable()) {
-        std::lock_guard<std::mutex> autoLock(proxyLock_);
         agentServiceProxy_->SingleVerify(appVerifyBaseInfo, verifyResultInfo);
     }
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_AGENT_MODULE_CLIENT, "call end");
@@ -55,7 +55,6 @@ void AppDomainVerifyAgentClient::SingleVerify(const AppVerifyBaseInfo &appVerify
 
 bool AppDomainVerifyAgentClient::IsServiceAvailable()
 {
-    std::lock_guard<std::mutex> autoLock(proxyLock_);
     if (agentServiceProxy_ == nullptr) {
         APP_DOMAIN_VERIFY_HILOGW(APP_DOMAIN_VERIFY_AGENT_MODULE_CLIENT, "Redo ConnectService");
         ConnectService();
@@ -109,8 +108,8 @@ void AppDomainVerifyAgentClient::OnRemoteSaDied(const wptr<IRemoteObject> &objec
 void AppDomainVerifyAgentClient::ConvertToExplicitWant(AAFwk::Want& implicitWant, sptr<IConvertCallback>& callback)
 {
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "called");
+    std::lock_guard<std::mutex> autoLock(proxyLock_);
     if (IsServiceAvailable()) {
-        std::lock_guard<std::mutex> autoLock(proxyLock_);
         agentServiceProxy_->ConvertToExplicitWant(implicitWant, callback);
     }
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "call end");
