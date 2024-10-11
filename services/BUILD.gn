@@ -37,6 +37,8 @@ config("app_domain_verify_service_config") {
     "-fvisibility=hidden",
     "-fdata-sections",
     "-ffunction-sections",
+    "-fstack-protector-strong",
+    "-D_FORTIFY_SOURCE=2",
     "-Os",
   ]
 
@@ -125,6 +127,8 @@ config("app_domain_verify_agent_service_config") {
     "-fvisibility=hidden",
     "-fdata-sections",
     "-ffunction-sections",
+    "-fstack-protector-strong",
+    "-D_FORTIFY_SOURCE=2",
     "-Os",
   ]
 
