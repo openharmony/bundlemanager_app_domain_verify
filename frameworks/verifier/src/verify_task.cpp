@@ -86,7 +86,6 @@ VerifyTask::VerifyTask(OHOS::AppDomainVerify::TaskType type, const AppVerifyBase
     const VerifyResultInfo& verifyResultInfo)
     : type_(type), appVerifyBaseInfo_(appVerifyBaseInfo), verifyResultInfo_(verifyResultInfo)
 {
-    InitUriUnVerifySetMap(verifyResultInfo);
     staHandlerMap[STATE_SUCCESS] = [this](std::string time, int cnt)->bool {
         return HandleStateSuccess(time, cnt);
     };
@@ -96,6 +95,7 @@ VerifyTask::VerifyTask(OHOS::AppDomainVerify::TaskType type, const AppVerifyBase
     staHandlerMap[FORBIDDEN_FOREVER] = [this](std::string time, int cnt)->bool {
         return HandleForbiddenForever(time, cnt);
     };
+    InitUriUnVerifySetMap(verifyResultInfo);
 }
 
 OHOS::AppDomainVerify::TaskType& VerifyTask::GetTaskType()
