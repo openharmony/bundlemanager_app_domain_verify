@@ -17,8 +17,8 @@
 
 namespace OHOS {
 namespace AppDomainVerify {
-ErrorCode AppDomainVerifyAgentExt::CompleteVerifyRefresh(const BundleVerifyStatusInfo& bundleVerifyStatusInfo,
-    const std::vector<InnerVerifyStatus>& statuses, int delaySeconds, TaskType type)
+ErrorCode AppDomainVerifyAgentExt::CompleteVerifyRefresh(
+    const BundleVerifyStatusInfo& bundleVerifyStatusInfo, TaskType type)
 {
     return ErrorCode::E_EXTENSIONS_LIB_NOT_FOUND;
 }

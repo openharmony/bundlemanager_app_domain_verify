@@ -69,6 +69,7 @@ public:
 
 private:
     bool GetParamKey(const std::string& bundleName, std::string& paramKey);
+    void UpdateVerifyMap(const std::string& bundleName, const VerifyResultInfo& verifyResultInfo);
     bool InitRdb();
     bool LoadAllFromRdb();
     bool VerifyResultInfoToDB(const std::string bundleName, const VerifyResultInfo& verifyResultInfo);

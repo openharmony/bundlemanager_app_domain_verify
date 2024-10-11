@@ -34,8 +34,7 @@ class AppDomainVerifyExtensionMgr {
 public:
     AppDomainVerifyExtensionMgr();
     virtual ~AppDomainVerifyExtensionMgr();
-    ErrorCode CompleteVerifyRefresh(const BundleVerifyStatusInfo& bundleVerifyStatusInfo,
-        const std::vector<InnerVerifyStatus>& statuses, int delaySeconds, TaskType type);
+    ErrorCode CompleteVerifyRefresh(const BundleVerifyStatusInfo& bundleVerifyStatusInfo, TaskType type);
     ErrorCode SingleVerify(const AppVerifyBaseInfo& appVerifyBaseInfo, const VerifyResultInfo& verifyResultInfo);
     ErrorCode ConvertToExplicitWant(OHOS::AAFwk::Want& implicitWant, sptr<IConvertCallback>& callback);
     ErrorCode UpdateWhiteList();
