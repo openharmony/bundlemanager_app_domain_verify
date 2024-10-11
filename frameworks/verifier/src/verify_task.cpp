@@ -88,11 +88,14 @@ VerifyTask::VerifyTask(OHOS::AppDomainVerify::TaskType type, const AppVerifyBase
 {
     InitUriUnVerifySetMap(verifyResultInfo);
     staHandlerMap[STATE_SUCCESS] = [this](std::string time, int cnt)->bool {
-        return HandleStateSuccess(time, cnt); };
+        return HandleStateSuccess(time, cnt);
+    };
     staHandlerMap[FAILURE_CLIENT_ERROR] = [this](std::string time, int cnt)->bool {
-        return HandleFailureClientError(time, cnt);};
+        return HandleFailureClientError(time, cnt);
+    };
     staHandlerMap[FORBIDDEN_FOREVER] = [this](std::string time, int cnt)->bool {
-        return HandleForbiddenForever(time, cnt);};
+        return HandleForbiddenForever(time, cnt);
+    };
 }
 
 OHOS::AppDomainVerify::TaskType& VerifyTask::GetTaskType()
@@ -139,9 +142,13 @@ bool VerifyTask::HandleFailureClientError(std::string verifyTime, int verifyCnt)
         int64_t currRetryDuration = verifyCnt * CLIENT_ERR_BASE_RETRY_DURATION_S;
         if (duration <= currRetryDuration) {
             APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MODULE_EXTENSION,
-                "last time:%{public}s, curr time:%{public}s, duration:%{public}s is less than max retry duration:%{public}s, not retry",
-                std::to_string(lastTs).c_str(), std::to_string(currTs).c_str(),
-                std::to_string(duration).c_str(), std::to_string(currRetryDuration).c_str());
+                "last time:%{public}s, curr time:%{public}s, "
+                "duration:%{public}s "
+                "is less than max retry duration:%{public}s, not retry",
+                std::to_string(lastTs).c_str(),
+                std::to_string(currTs).c_str(),
+                std::to_string(duration).c_str(),
+                std::to_string(currRetryDuration).c_str());
             return false;
         }
     }

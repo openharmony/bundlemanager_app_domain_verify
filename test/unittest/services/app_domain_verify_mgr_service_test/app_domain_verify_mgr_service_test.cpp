@@ -13,6 +13,7 @@
  * limitations under the License.
  */
 
+#include "app_domain_verify_rdb_data_manager.h"
 #include "gtest/gtest.h"
 #include <memory>
 #include <string>
@@ -615,7 +616,8 @@ HWTEST_F(MgrServiceTest, MgrServiceTest032, TestSize.Level0)
         bundleName, std::make_tuple(InnerVerifyStatus::STATE_FAIL, std::string(), 0));
     appDomainVerifyMgrService->dataManager_->SaveVerifyStatus(bundleName, verifyResultInfo);
 
-    BundleVerifyStatusInfo bundleVerificationState;    EXPECT_TRUE(appDomainVerifyMgrService->QueryAllDomainVerifyStatus(bundleVerificationState));
+    BundleVerifyStatusInfo bundleVerificationState;
+    EXPECT_TRUE(appDomainVerifyMgrService->QueryAllDomainVerifyStatus(bundleVerificationState));
     EXPECT_TRUE(bundleVerificationState.bundleVerifyStatusInfoMap_.size() != 0);
 }
 
@@ -630,10 +632,12 @@ HWTEST_F(MgrServiceTest, MgrServiceTest033, TestSize.Level0)
     ASSERT_TRUE(appDomainVerifyMgrService->dataManager_);
     std::string bundleName{ "MgrServiceTest033" };
     VerifyResultInfo verifyResultInfo;
-    verifyResultInfo.hostVerifyStatusMap.emplace(bundleName, std::make_tuple(InnerVerifyStatus::STATE_FAIL, std::string(), 0));
+    verifyResultInfo.hostVerifyStatusMap.emplace(
+        bundleName, std::make_tuple(InnerVerifyStatus::STATE_FAIL, std::string(), 0));
     EXPECT_TRUE(appDomainVerifyMgrService->SaveDomainVerifyStatus(bundleName, verifyResultInfo));
     VerifyResultInfo getVerifyResultInfo;
-    EXPECT_TRUE(appDomainVerifyMgrService->dataManager_->GetVerifyStatus(bundleName, getVerifyResultInfo));
+    auto dataMgr = appDomainVerifyMgrService->dataManager_;
+    EXPECT_TRUE(dataMgr->GetVerifyStatus(bundleName, getVerifyResultInfo));
 }
 
 /**
@@ -647,7 +651,8 @@ HWTEST_F(MgrServiceTest, MgrServiceTest034, TestSize.Level0)
     ASSERT_TRUE(appDomainVerifyMgrService->dataManager_);
     std::string bundleName{ "" };
     VerifyResultInfo verifyResultInfo;
-    verifyResultInfo.hostVerifyStatusMap.emplace(bundleName, std::make_tuple(InnerVerifyStatus::STATE_FAIL, std::string(), 0));
+    verifyResultInfo.hostVerifyStatusMap.emplace(
+        bundleName, std::make_tuple(InnerVerifyStatus::STATE_FAIL, std::string(), 0));
     EXPECT_FALSE(appDomainVerifyMgrService->SaveDomainVerifyStatus(bundleName, verifyResultInfo));
 }
 }
