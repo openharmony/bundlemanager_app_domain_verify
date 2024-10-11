@@ -48,8 +48,10 @@ bool AppDomainVerifyDataMgr::GetVerifyStatus(const std::string& bundleName, Veri
     auto it = verifyMap_->find(key);
     if (it != verifyMap_->end()) {
         verifyResultInfo = it->second;
+        return true;
     }
-    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "call end");
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE,
+        "get verify status fail, verify result can't find");
     return true;
 }
 bool AppDomainVerifyDataMgr::VerifyResultInfoToDB(
