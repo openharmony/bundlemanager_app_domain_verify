@@ -64,7 +64,8 @@ bool AppDomainVerifyExtensionMgr::Init()
     return true;
 }
 
-ErrorCode AppDomainVerifyExtensionMgr::CompleteVerifyRefresh(const BundleVerifyStatusInfo& bundleVerifyStatusInfo, TaskType type)
+ErrorCode AppDomainVerifyExtensionMgr::CompleteVerifyRefresh(
+    const BundleVerifyStatusInfo& bundleVerifyStatusInfo, TaskType type)
 {
     if (Init()) {
         std::string verifierExtName = APP_DOMAIN_VERIFY_AGENT_EXT_NAME;

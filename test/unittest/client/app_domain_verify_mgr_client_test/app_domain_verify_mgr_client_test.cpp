@@ -120,7 +120,8 @@ HWTEST_F(AppDomainVerifyMgrClientTest, AppDomainVerifyMgrClientTest003, TestSize
     AppDomainVerifyMgrClient::GetInstance()->ClearDomainVerifyStatus(APP_IDENTIFIER, BUNDLE_NAME);
     BundleVerifyStatusInfo bundleVerifyStatusInfo;
     VerifyResultInfo verifyResultInfo;
-    verifyResultInfo.hostVerifyStatusMap.insert_or_assign("https://" + HOST, std::make_tuple(InnerVerifyStatus::STATE_SUCCESS, std::string(), 0));
+    verifyResultInfo.hostVerifyStatusMap.insert_or_assign(
+        "https://" + HOST, std::make_tuple(InnerVerifyStatus::STATE_SUCCESS, std::string(), 0));
     bundleVerifyStatusInfo.bundleVerifyStatusInfoMap_.insert_or_assign(BUNDLE_NAME, verifyResultInfo);
     auto queryRes = AppDomainVerifyMgrClient::GetInstance()->QueryAllDomainVerifyStatus(bundleVerifyStatusInfo);
     ASSERT_TRUE(queryRes);

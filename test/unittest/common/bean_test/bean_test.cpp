@@ -123,7 +123,8 @@ HWTEST_F(AppDomainVerifyBeanTest, AppDomainVerifyBundleVerifyStatusInfoTest001, 
 {
     BundleVerifyStatusInfo bundleVerifyStatusInfo;
     VerifyResultInfo verifyResultInfo;
-    verifyResultInfo.hostVerifyStatusMap.insert_or_assign("https://" + HOST, std::make_tuple(InnerVerifyStatus::STATE_SUCCESS, "", 0));
+    verifyResultInfo.hostVerifyStatusMap.insert_or_assign(
+        "https://" + HOST, std::make_tuple(InnerVerifyStatus::STATE_SUCCESS, "", 0));
     bundleVerifyStatusInfo.bundleVerifyStatusInfoMap_.insert_or_assign(BUNDLE_NAME, verifyResultInfo);
 
     Parcel parcel;

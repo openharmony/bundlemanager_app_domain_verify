@@ -233,7 +233,8 @@ HWTEST_F(AppDomainVerifyBeanParcelTest, AppDomainVerifyBeanParcelTest005, TestSi
     printf("AppDomainVerifyBeanParcelTest001 \n");
     BundleVerifyStatusInfo bundleVerifyStatusInfo;
     VerifyResultInfo verifyResultInfo;
-    verifyResultInfo.hostVerifyStatusMap.insert_or_assign("https://" + HOST, std::make_tuple(InnerVerifyStatus::STATE_SUCCESS, std::string(), 0));
+    verifyResultInfo.hostVerifyStatusMap.insert_or_assign(
+        "https://" + HOST, std::make_tuple(InnerVerifyStatus::STATE_SUCCESS, std::string(), 0));
     bundleVerifyStatusInfo.bundleVerifyStatusInfoMap_.insert_or_assign(BUNDLE_NAME, verifyResultInfo);
 
     Parcel parcel;
@@ -296,7 +297,8 @@ HWTEST_F(AppDomainVerifyBeanParcelTest, AppDomainVerifyBeanParcelTest007, TestSi
     printf("AppDomainVerifyBeanParcelTest001 \n");
     BundleVerifyStatusInfo bundleVerifyStatusInfo;
     VerifyResultInfo verifyResultInfo;
-    verifyResultInfo.hostVerifyStatusMap.insert_or_assign("https://" + HOST, std::make_tuple(InnerVerifyStatus::STATE_SUCCESS, std::string(), 0));
+    verifyResultInfo.hostVerifyStatusMap.insert_or_assign(
+        "https://" + HOST, std::make_tuple(InnerVerifyStatus::STATE_SUCCESS, std::string(), 0));
     bundleVerifyStatusInfo.bundleVerifyStatusInfoMap_.insert_or_assign(BUNDLE_NAME, verifyResultInfo);
 
     std::unordered_map<std::string, std::tuple<InnerVerifyStatus, std::string, int>> hostVerifyStatusMap;
@@ -329,10 +331,12 @@ HWTEST_F(AppDomainVerifyBeanParcelTest, AppDomainVerifyBeanParcelTest008, TestSi
     printf("AppDomainVerifyBeanParcelTest001 \n");
     BundleVerifyStatusInfo bundleVerifyStatusInfo;
     VerifyResultInfo verifyResultInfo;
-    verifyResultInfo.hostVerifyStatusMap.insert_or_assign("https://" + HOST, std::make_tuple(InnerVerifyStatus::STATE_SUCCESS, std::string(), 0));
+    verifyResultInfo.hostVerifyStatusMap.insert_or_assign(
+        "https://" + HOST, std::make_tuple(InnerVerifyStatus::STATE_SUCCESS, std::string(), 0));
     bundleVerifyStatusInfo.bundleVerifyStatusInfoMap_.insert_or_assign(BUNDLE_NAME, verifyResultInfo);
     HostVerifyStatusMap hostVerifyStatusMap;
-    hostVerifyStatusMap.insert_or_assign(BUNDLE_NAME, std::make_tuple(InnerVerifyStatus::STATE_SUCCESS, std::string(), 0));
+    hostVerifyStatusMap.insert_or_assign(
+        BUNDLE_NAME, std::make_tuple(InnerVerifyStatus::STATE_SUCCESS, std::string(), 0));
     Parcel parcel;
     MockReadUint32(false);
     ASSERT_FALSE(bundleVerifyStatusInfo.ReadHostVerifyStatusMap(hostVerifyStatusMap, parcel));
@@ -360,7 +364,8 @@ HWTEST_F(AppDomainVerifyBeanParcelTest, AppDomainVerifyBeanParcelTest009, TestSi
     printf("AppDomainVerifyBeanParcelTest001 \n");
     VerifyResultInfo verifyResultInfo;
     verifyResultInfo.appIdentifier = APP_IDENTIFIER;
-    verifyResultInfo.hostVerifyStatusMap.insert_or_assign("https://" + HOST, std::make_tuple(InnerVerifyStatus::STATE_SUCCESS, std::string(), 0));
+    verifyResultInfo.hostVerifyStatusMap.insert_or_assign(
+        "https://" + HOST, std::make_tuple(InnerVerifyStatus::STATE_SUCCESS, std::string(), 0));
 
     Parcel parcel;
     MockWriteString(false, 0);
