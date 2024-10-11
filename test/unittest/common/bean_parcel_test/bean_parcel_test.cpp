@@ -302,7 +302,8 @@ HWTEST_F(AppDomainVerifyBeanParcelTest, AppDomainVerifyBeanParcelTest007, TestSi
     bundleVerifyStatusInfo.bundleVerifyStatusInfoMap_.insert_or_assign(BUNDLE_NAME, verifyResultInfo);
 
     std::unordered_map<std::string, std::tuple<InnerVerifyStatus, std::string, int>> hostVerifyStatusMap;
-    hostVerifyStatusMap.insert_or_assign(BUNDLE_NAME, std::make_tuple(InnerVerifyStatus::STATE_SUCCESS, std::string(), 0));
+    hostVerifyStatusMap.insert_or_assign(
+        BUNDLE_NAME, std::make_tuple(InnerVerifyStatus::STATE_SUCCESS, std::string(), 0));
     Parcel parcel;
     MockWriteUint32(false);
     ASSERT_FALSE(bundleVerifyStatusInfo.WriteHostVerifyStatusMap(hostVerifyStatusMap, parcel));
