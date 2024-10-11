@@ -67,17 +67,14 @@ AppDomainVerifyAgentService::~AppDomainVerifyAgentService()
     }
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "instance dead.");
 }
-void AppDomainVerifyAgentService::CompleteVerifyRefresh(const BundleVerifyStatusInfo& bundleVerifyStatusInfo,
-    const std::vector<InnerVerifyStatus>& statuses, int delaySeconds, TaskType type)
+void AppDomainVerifyAgentService::CompleteVerifyRefresh(
+    const BundleVerifyStatusInfo& bundleVerifyStatusInfo, TaskType type)
 {
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "called");
     if (ErrorCode::E_EXTENSIONS_LIB_NOT_FOUND !=
-        appDomainVerifyExtMgr_->CompleteVerifyRefresh(bundleVerifyStatusInfo, statuses, delaySeconds, type)) {
+        appDomainVerifyExtMgr_->CompleteVerifyRefresh(bundleVerifyStatusInfo, type)) {
         APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "extension call end");
         return;
-    }
-    if (delaySeconds > 0) {
-        std::this_thread::sleep_for(std::chrono::seconds(delaySeconds));
     }
     for (auto it = bundleVerifyStatusInfo.bundleVerifyStatusInfoMap_.begin();
          it != bundleVerifyStatusInfo.bundleVerifyStatusInfoMap_.end(); it++) {
@@ -90,7 +87,6 @@ void AppDomainVerifyAgentService::CompleteVerifyRefresh(const BundleVerifyStatus
             // todo delete this bundleName or not
             continue;
         }
-
         ExecuteVerifyTask(appVerifyBaseInfo, it->second, type);
     }
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "call end");
@@ -135,16 +131,16 @@ void AppDomainVerifyAgentService::ExecuteVerifyTask(
     task->Execute();
 }
 
-void AppDomainVerifyAgentService::QueryAndCompleteRefresh(
-    const std::vector<InnerVerifyStatus>& statuses, int delaySeconds, TaskType type)
+void AppDomainVerifyAgentService::QueryAndCompleteRefresh(TaskType type)
 {
     BundleVerifyStatusInfo bundleVerifyStatusInfo;
     if (AppDomainVerifyMgrClient::GetInstance()->QueryAllDomainVerifyStatus(bundleVerifyStatusInfo)) {
-        CompleteVerifyRefresh(bundleVerifyStatusInfo, statuses, delaySeconds, type);
+        CompleteVerifyRefresh(bundleVerifyStatusInfo, type);
         return;
     }
     UNIVERSAL_ERROR_EVENT(GET_DATE_IN_BOOT_FAULT);
 }
+
 void AppDomainVerifyAgentService::UpdateWhiteList()
 {
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "called");
@@ -196,9 +192,7 @@ bool AppDomainVerifyAgentService::IsIdle()
 
 void AppDomainVerifyAgentService::DoSync(const TaskType& type)
 {
-    QueryAndCompleteRefresh(std::vector<InnerVerifyStatus>{ UNKNOWN, STATE_FAIL, FAILURE_REDIRECT, FAILURE_CLIENT_ERROR,
-                                FAILURE_REJECTED_BY_SERVER, FAILURE_HTTP_UNKNOWN, FAILURE_TIMEOUT, FAILURE_CONFIG },
-        0, type);
+    QueryAndCompleteRefresh(type);
     UpdateWhiteList();
 }
 

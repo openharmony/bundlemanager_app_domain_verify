@@ -13,6 +13,10 @@
  * limitations under the License.
  */
 #include "gtest/gtest.h"
+#include <tuple>
+#include <string>
+#include "inner_verify_status.h"
+#include "datetime_ex.h"
 #include "mock_constant.h"
 #define private public
 #define protected public
@@ -67,7 +71,6 @@ HWTEST_F(DomainVerifierTaskTest, DomainVerifierTaskTest001, TestSize.Level0)
     ASSERT_TRUE(task.GetTaskType() == TaskType::IMMEDIATE_TASK);
     ASSERT_TRUE(task.GetAppVerifyBaseInfo().bundleName == "");
     ASSERT_TRUE(task.GetUriVerifyMap().empty());
-    ASSERT_TRUE(task.GetInnerUriVerifyMap().empty());
     ASSERT_FALSE(task.SaveDomainVerifyStatus("", verifyResultInfo));
 }
 /**
@@ -168,6 +171,84 @@ HWTEST_F(DomainVerifierTaskTest, DomainVerifierTaskTest004, TestSize.Level0)
     std::string url = "";
     task.OnPostVerify(url, response);
 }
+
+/**
+ * @tc.name: DomainVerifierTaskTest005
+ * @tc.desc:
+ * @tc.type: FUNC
+ */
+HWTEST_F(DomainVerifierTaskTest, DomainVerifierTaskTest005, TestSize.Level0)
+{
+    AppVerifyBaseInfo appVerifyBaseInfo;
+    appVerifyBaseInfo.bundleName = "";
+    appVerifyBaseInfo.fingerprint = "";
+    appVerifyBaseInfo.appIdentifier = "";
+    SkillUri uri1;
+    uri1.scheme = "https";
+    uri1.host = "e";
+    VerifyResultInfo verifyResultInfo;
+    VerifyTask task(TaskType::IMMEDIATE_TASK, appVerifyBaseInfo, verifyResultInfo);
+    OHOS::NetStack::HttpClient::HttpClientResponse response;
+    response.SetResponseCode(OHOS::NetStack::HttpClient::ResponseCode::OK);
+    response.SetResult("OK");
+    std::string url = "test1";
+    task.UpdateVerifyResultInfo(url, FAILURE_CLIENT_ERROR);
+    auto hostVerifyStatusMap = task.GetUriVerifyMap();
+    ASSERT_TRUE(hostVerifyStatusMap.find(url) != hostVerifyStatusMap.end());
+    InnerVerifyStatus status;
+    std::string verifyTime;
+    int verifyCnt = 0;
+    std::tie(status, verifyTime, verifyCnt) = hostVerifyStatusMap.at(url);
+    ASSERT_EQ(status, FAILURE_CLIENT_ERROR);
+    ASSERT_EQ(verifyCnt, 0);
+    task.UpdateVerifyResultInfo(url, FAILURE_CLIENT_ERROR);
+    hostVerifyStatusMap = task.GetUriVerifyMap();
+    std::tie(status, verifyTime, verifyCnt) = hostVerifyStatusMap.at(url);
+    ASSERT_EQ(status, FAILURE_CLIENT_ERROR);
+    ASSERT_EQ(verifyCnt, 1);
+    task.UpdateVerifyResultInfo(url, FAILURE_HTTP_UNKNOWN);
+    hostVerifyStatusMap = task.GetUriVerifyMap();
+    std::tie(status, verifyTime, verifyCnt) = hostVerifyStatusMap.at(url);
+    ASSERT_EQ(status, FAILURE_HTTP_UNKNOWN);
+    ASSERT_EQ(verifyCnt, 0);
+}
+
+/**
+ * @tc.name: DomainVerifierTaskTest006
+ * @tc.desc:
+ * @tc.type: FUNC
+ */
+HWTEST_F(DomainVerifierTaskTest, DomainVerifierTaskTest006, TestSize.Level0)
+{
+    AppVerifyBaseInfo appVerifyBaseInfo;
+    appVerifyBaseInfo.bundleName = "";
+    appVerifyBaseInfo.fingerprint = "";
+    appVerifyBaseInfo.appIdentifier = "";
+    SkillUri uri1;
+    uri1.scheme = "https";
+    uri1.host = "e";
+    VerifyResultInfo verifyResultInfo;
+    VerifyTask task(TaskType::IMMEDIATE_TASK, appVerifyBaseInfo, verifyResultInfo);
+    std::tuple<InnerVerifyStatus, std::string, int> info;
+    std::get<0>(info) = FAILURE_CLIENT_ERROR;
+    std::get<1>(info) = std::to_string(GetSecondsSince1970ToNow());
+    std::get<2>(info) = 1;
+    ASSERT_FALSE(task.IsNeedRetry(info));
+    std::get<1>(info) = std::to_string(GetSecondsSince1970ToNow() - 18000);
+    ASSERT_TRUE(task.IsNeedRetry(info));
+    std::get<1>(info) = std::to_string(GetSecondsSince1970ToNow() - 10800);
+    ASSERT_FALSE(task.IsNeedRetry(info));
+    std::get<1>(info) = std::to_string(GetSecondsSince1970ToNow() - 18000);
+    std::get<2>(info) = 2;
+    ASSERT_FALSE(task.IsNeedRetry(info));
+    std::get<0>(info) = FAILURE_HTTP_UNKNOWN;
+    ASSERT_TRUE(task.IsNeedRetry(info));
+    std::get<0>(info) = STATE_SUCCESS;
+    ASSERT_FALSE(task.IsNeedRetry(info));
+    std::get<0>(info) = FORBIDDEN_FOREVER;
+    ASSERT_FALSE(task.IsNeedRetry(info));
+}
+
 /**
  * @tc.name: DomainVerifierTaskSaveResultTest001
  * @tc.desc:
