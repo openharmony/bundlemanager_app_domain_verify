@@ -64,7 +64,7 @@ void AppDomainVerifyMgrService::VerifyDomain(const std::string& appIdentifier, c
 
 bool AppDomainVerifyMgrService::ClearDomainVerifyStatus(const std::string& appIdentifier, const std::string& bundleName)
 {
-    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "called");
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "called, bundlename:%{public}s", bundleName.c_str());
     if (!PermissionManager::IsSACall()) {
         APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "only sa can call");
         return false;
