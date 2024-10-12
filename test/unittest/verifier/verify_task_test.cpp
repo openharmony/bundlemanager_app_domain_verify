@@ -234,11 +234,11 @@ HWTEST_F(DomainVerifierTaskTest, DomainVerifierTaskTest006, TestSize.Level0)
     std::get<1>(info) = std::to_string(GetSecondsSince1970ToNow());
     std::get<2>(info) = 1;
     ASSERT_FALSE(task.IsNeedRetry(info));
-    std::get<1>(info) = std::to_string(GetSecondsSince1970ToNow() - 18000);
+    std::get<1>(info) = std::to_string(GetSecondsSince1970ToNow() - 3600 * 5);
     ASSERT_TRUE(task.IsNeedRetry(info));
-    std::get<1>(info) = std::to_string(GetSecondsSince1970ToNow() - 10800);
+    std::get<1>(info) = std::to_string(GetSecondsSince1970ToNow() - 3600 * 1);
     ASSERT_FALSE(task.IsNeedRetry(info));
-    std::get<1>(info) = std::to_string(GetSecondsSince1970ToNow() - 18000);
+    std::get<1>(info) = std::to_string(GetSecondsSince1970ToNow() - 3600 * 3);
     std::get<2>(info) = 2;
     ASSERT_FALSE(task.IsNeedRetry(info));
     std::get<0>(info) = FAILURE_HTTP_UNKNOWN;
@@ -247,6 +247,28 @@ HWTEST_F(DomainVerifierTaskTest, DomainVerifierTaskTest006, TestSize.Level0)
     ASSERT_FALSE(task.IsNeedRetry(info));
     std::get<0>(info) = FORBIDDEN_FOREVER;
     ASSERT_FALSE(task.IsNeedRetry(info));
+}
+
+/**
+ * @tc.name: DomainVerifierTaskTest007
+ * @tc.desc:
+ * @tc.type: FUNC
+ */
+HWTEST_F(DomainVerifierTaskTest, DomainVerifierTaskTest007, TestSize.Level0)
+{
+    AppVerifyBaseInfo appVerifyBaseInfo;
+    appVerifyBaseInfo.bundleName = "";
+    appVerifyBaseInfo.fingerprint = "";
+    appVerifyBaseInfo.appIdentifier = "";
+    SkillUri uri1;
+    uri1.scheme = "https";
+    uri1.host = "e";
+    VerifyResultInfo verifyResultInfo;
+    VerifyTask task(TaskType::IMMEDIATE_TASK, appVerifyBaseInfo, verifyResultInfo);
+    int64_t time = task.CalcRetryDuration(0);
+    ASSERT_EQ(time, 3600);
+    time = task.CalcRetryDuration(7);
+    ASSERT_EQ(time, 460800);
 }
 
 /**
