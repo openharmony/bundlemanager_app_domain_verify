@@ -44,6 +44,7 @@ public:
     void InitUriUnVerifySetMap(const VerifyResultInfo& verifyResultInfo);
     void Execute();
 protected:
+    int64_t CalcRetryDuration(int verifyCnt);
     bool HandleFailureClientError(std::string verifyTime, int verifyCnt);
     bool HandleStateSuccess(std::string verifyTime, int verifyCnt);
     bool HandleForbiddenForever(std::string verifyTime, int verifyCnt);
