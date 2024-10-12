@@ -45,18 +45,28 @@ static constexpr const char* APP_DOMAIN_VERIFY_MODULE_LABEL[APP_DOMAIN_VERIFY_MO
     "ADVComm",
     "ADVButt",
 };
+#ifdef IS_RELEASE_VERSION
+#ifndef APP_DOMAIN_VERIFY_FUNC_FMT
+#define APP_DOMAIN_VERIFY_FUNC_FMT "[(%{public}s:%{public}d)]"
+#endif
 
+#ifndef APP_DOMAIN_VERIFY_FUNC_INFO
+#define APP_DOMAIN_VERIFY_FUNC_INFO __FUNCTION__, __LINE__
+#endif
+#else  // IS_RELEASE_VERSION
 #ifndef APP_DOMAIN_VERIFY_FUNC_FMT
 #define APP_DOMAIN_VERIFY_FUNC_FMT "[%{public}s(%{public}s:%{public}d)]"
 #endif
 
 #ifndef APP_DOMAIN_VERIFY_FILE_NAME
-#define APP_DOMAIN_VERIFY_FILE_NAME (__builtin_strrchr(__FILE__, '/') ? __builtin_strrchr(__FILE__, '/') + 1 : __FILE__)
+#define APP_DOMAIN_VERIFY_FILE_NAME \
+    (__builtin_strrchr(__FILE_NAME__, '/') ? __builtin_strrchr(__FILE_NAME__, '/') + 1 : __FILE_NAME__)
 #endif
 
 #ifndef APP_DOMAIN_VERIFY_FUNC_INFO
 #define APP_DOMAIN_VERIFY_FUNC_INFO APP_DOMAIN_VERIFY_FILE_NAME, __FUNCTION__, __LINE__
 #endif
+#endif  // IS_RELEASE_VERSION
 
 #define APP_DOMAIN_VERIFY_PRINT_LOG(level, label, fmt, ...)                                                \
     ((void)HILOG_IMPL(LOG_CORE, level, APP_DOMAIN_VERIFY_DOMAIN_ID, APP_DOMAIN_VERIFY_MODULE_LABEL[label], \
@@ -67,6 +77,7 @@ static constexpr const char* APP_DOMAIN_VERIFY_MODULE_LABEL[APP_DOMAIN_VERIFY_MO
 #define APP_DOMAIN_VERIFY_HILOGW(label, fmt, ...) APP_DOMAIN_VERIFY_PRINT_LOG(LOG_WARN, label, fmt, ##__VA_ARGS__)
 #define APP_DOMAIN_VERIFY_HILOGE(label, fmt, ...) APP_DOMAIN_VERIFY_PRINT_LOG(LOG_ERROR, label, fmt, ##__VA_ARGS__)
 #define APP_DOMAIN_VERIFY_HILOGF(label, fmt, ...) APP_DOMAIN_VERIFY_PRINT_LOG(LOG_FATAL, label, fmt, ##__VA_ARGS__)
+
 }  // namespace AppDomainVerify
 }  // namespace OHOS
 
