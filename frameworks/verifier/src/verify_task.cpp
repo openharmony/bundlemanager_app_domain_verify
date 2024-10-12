@@ -33,8 +33,8 @@ namespace AppDomainVerify {
 const std::string HTTPS = "https";
 const std::set<std::string> SCHEME_WHITE_SET = { HTTPS };
 const std::string FUZZY_HOST_START = "*.";
-const static int CLIENT_ERR_MAX_RETRY_COUNTS = 5; // 5 times for retry
-const static int CLIENT_ERR_BASE_RETRY_DURATION_S = 14400; // 4h for base duration
+const static int CLIENT_ERR_MAX_RETRY_COUNTS = 7; // 7 times for max retry count
+const static int CLIENT_ERR_BASE_RETRY_DURATION_S = 3600; // 1h for base duration
 void VerifyTask::OnPostVerify(const std::string& uri, const OHOS::NetStack::HttpClient::HttpClientResponse& response)
 {
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "called");
@@ -132,6 +132,12 @@ bool VerifyTask::IsNeedRetry(const std::tuple<InnerVerifyStatus, std::string, in
     return true;
 }
 
+int64_t VerifyTask::CalcRetryDuration(int verifyCnt)
+{
+    int64_t duration = pow(2, verifyCnt) * CLIENT_ERR_BASE_RETRY_DURATION_S; // base * 2 ^ verifyCnt
+    return duration;
+}
+
 bool VerifyTask::HandleFailureClientError(std::string verifyTime, int verifyCnt)
 {
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MODULE_EXTENSION, "called");
@@ -139,7 +145,7 @@ bool VerifyTask::HandleFailureClientError(std::string verifyTime, int verifyCnt)
         int64_t currTs = GetSecondsSince1970ToNow();
         int64_t lastTs = static_cast<int64_t>(std::stoll(verifyTime));
         int64_t duration = currTs - lastTs;
-        int64_t currRetryDuration = verifyCnt * CLIENT_ERR_BASE_RETRY_DURATION_S;
+        int64_t currRetryDuration = CalcRetryDuration(verifyCnt);
         if (duration <= currRetryDuration) {
             APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MODULE_EXTENSION,
                 "last time:%{public}s, curr time:%{public}s, "
