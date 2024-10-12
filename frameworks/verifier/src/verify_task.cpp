@@ -34,7 +34,7 @@ const std::string HTTPS = "https";
 const std::set<std::string> SCHEME_WHITE_SET = { HTTPS };
 const std::string FUZZY_HOST_START = "*.";
 const static int CLIENT_ERR_MAX_RETRY_COUNTS = 5; // 5 times for retry
-const static int CLIENT_ERR_BASE_RETRY_DURATION_S = 14400; // 4h for base duration
+const static int CLIENT_ERR_BASE_RETRY_DURATION_S = 7200; // 2h for base duration
 void VerifyTask::OnPostVerify(const std::string& uri, const OHOS::NetStack::HttpClient::HttpClientResponse& response)
 {
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "called");
