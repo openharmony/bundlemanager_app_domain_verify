@@ -33,7 +33,7 @@ namespace AppDomainVerify {
 const std::string HTTPS = "https";
 const std::set<std::string> SCHEME_WHITE_SET = { HTTPS };
 const std::string FUZZY_HOST_START = "*.";
-const static int CLIENT_ERR_MAX_RETRY_COUNTS = 5; // 5 times for retry
+const static int CLIENT_ERR_MAX_RETRY_COUNTS = 7; // 7 times for max retry count
 const static int CLIENT_ERR_BASE_RETRY_DURATION_S = 7200; // 2h for base duration
 void VerifyTask::OnPostVerify(const std::string& uri, const OHOS::NetStack::HttpClient::HttpClientResponse& response)
 {
