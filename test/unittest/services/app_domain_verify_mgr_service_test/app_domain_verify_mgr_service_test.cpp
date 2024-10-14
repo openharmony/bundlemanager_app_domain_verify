@@ -557,7 +557,7 @@ HWTEST_F(MgrServiceTest, MgrServiceTest029, TestSize.Level0)
         bundleName, std::make_tuple(InnerVerifyStatus::STATE_SUCCESS, std::string(), 0));
     verifyResultInfo.hostVerifyStatusMap.emplace(
         "test", std::make_tuple(InnerVerifyStatus::STATE_SUCCESS, std::string(), 0));
-    appDomainVerifyMgrService->dataManager_->SaveVerifyStatus(bundleName, verifyResultInfo);
+    appDomainVerifyMgrService->dataManager_->InsertVerifyStatus(bundleName, verifyResultInfo);
 
     DomainVerifyStatus domainVerificationState = DomainVerifyStatus::STATE_NONE;
     EXPECT_TRUE(appDomainVerifyMgrService->QueryDomainVerifyStatus(bundleName, domainVerificationState));
@@ -577,7 +577,7 @@ HWTEST_F(MgrServiceTest, MgrServiceTest030, TestSize.Level0)
     VerifyResultInfo verifyResultInfo;
     verifyResultInfo.hostVerifyStatusMap.emplace(
         bundleName, std::make_tuple(InnerVerifyStatus::UNKNOWN, std::string(), 0));
-    appDomainVerifyMgrService->dataManager_->SaveVerifyStatus(bundleName, verifyResultInfo);
+    appDomainVerifyMgrService->dataManager_->InsertVerifyStatus(bundleName, verifyResultInfo);
     DomainVerifyStatus domainVerificationState = DomainVerifyStatus::STATE_NONE;
     EXPECT_TRUE(appDomainVerifyMgrService->QueryDomainVerifyStatus(bundleName, domainVerificationState));
     EXPECT_TRUE(domainVerificationState != DomainVerifyStatus::STATE_VERIFIED);
@@ -594,7 +594,7 @@ HWTEST_F(MgrServiceTest, MgrServiceTest031, TestSize.Level0)
     ASSERT_TRUE(appDomainVerifyMgrService->dataManager_);
     std::string bundleName{ "MgrServiceTest031" };
     VerifyResultInfo verifyResultInfo;
-    appDomainVerifyMgrService->dataManager_->SaveVerifyStatus(bundleName, verifyResultInfo);
+    appDomainVerifyMgrService->dataManager_->InsertVerifyStatus(bundleName, verifyResultInfo);
 
     DomainVerifyStatus domainVerificationState = DomainVerifyStatus::STATE_NONE;
     EXPECT_TRUE(appDomainVerifyMgrService->QueryDomainVerifyStatus(bundleName, domainVerificationState));
@@ -614,7 +614,7 @@ HWTEST_F(MgrServiceTest, MgrServiceTest032, TestSize.Level0)
     VerifyResultInfo verifyResultInfo;
     verifyResultInfo.hostVerifyStatusMap.emplace(
         bundleName, std::make_tuple(InnerVerifyStatus::STATE_FAIL, std::string(), 0));
-    appDomainVerifyMgrService->dataManager_->SaveVerifyStatus(bundleName, verifyResultInfo);
+    appDomainVerifyMgrService->dataManager_->InsertVerifyStatus(bundleName, verifyResultInfo);
 
     BundleVerifyStatusInfo bundleVerificationState;
     EXPECT_TRUE(appDomainVerifyMgrService->QueryAllDomainVerifyStatus(bundleVerificationState));
@@ -634,6 +634,9 @@ HWTEST_F(MgrServiceTest, MgrServiceTest033, TestSize.Level0)
     VerifyResultInfo verifyResultInfo;
     verifyResultInfo.hostVerifyStatusMap.emplace(
         bundleName, std::make_tuple(InnerVerifyStatus::STATE_FAIL, std::string(), 0));
+    appDomainVerifyMgrService->dataManager_->InsertVerifyStatus(bundleName, verifyResultInfo);
+    verifyResultInfo.hostVerifyStatusMap
+        .insert_or_assign(bundleName, std::make_tuple(InnerVerifyStatus::STATE_SUCCESS, std::string(), 0));
     EXPECT_TRUE(appDomainVerifyMgrService->SaveDomainVerifyStatus(bundleName, verifyResultInfo));
     VerifyResultInfo getVerifyResultInfo;
     auto dataMgr = appDomainVerifyMgrService->dataManager_;

@@ -57,7 +57,7 @@ void AppDomainVerifyMgrService::VerifyDomain(const std::string& appIdentifier, c
     verifyResultInfo.appIdentifier = appIdentifier;
 
     CollectDomains(skillUris, verifyResultInfo);
-
+    dataManager_->InsertVerifyStatus(bundleName, verifyResultInfo);
     AppDomainVerifyAgentClient::GetInstance()->SingleVerify(appVerifyBaseInfo, verifyResultInfo);
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "call end");
 }
@@ -154,7 +154,7 @@ bool AppDomainVerifyMgrService::SaveDomainVerifyStatus(
         APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "only sa can call");
         return false;
     }
-    bool res = dataManager_->SaveVerifyStatus(bundleName, verifyResultInfo);
+    bool res = dataManager_->UpdateVerifyStatus(bundleName, verifyResultInfo);
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "call end");
     return res;
 }
