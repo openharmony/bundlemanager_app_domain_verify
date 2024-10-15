@@ -47,4 +47,4 @@ private:
 }  // namespace AppDomainVerify
 }  // namespace OHOS
 
-#endif  // APP_DOMAIN_VERIFY_SERVICE_STUB_H
+#endif  // APP_DOMAIN_VERIFY_MGR_SERVICE_STUB_H

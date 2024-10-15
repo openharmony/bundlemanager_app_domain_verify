@@ -92,12 +92,12 @@ HWTEST_F(AppDomainVerifyAgentClientTest, AppDomainVerifyAgentClientTest001, Test
     AppVerifyBaseInfo appVerifyBaseInfo;
     appVerifyBaseInfo.bundleName = BUNDLE_NAME;
     appVerifyBaseInfo.fingerprint = FINGERPRINT;
-    std::vector<SkillUri> skillUris;
-    SkillUri skillUri;
-    skillUri.scheme = "https";
-    skillUri.host = HOST;
-    skillUris.emplace_back(skillUri);
-    AppDomainVerifyAgentClient::GetInstance()->SingleVerify(appVerifyBaseInfo, skillUris);
+
+    VerifyResultInfo verifyResultInfo;
+    verifyResultInfo.appIdentifier = APP_IDENTIFIER;
+    verifyResultInfo.hostVerifyStatusMap.insert_or_assign(
+        "https://" + HOST, std::make_tuple(InnerVerifyStatus::UNKNOWN, std::string(), 0));
+    AppDomainVerifyAgentClient::GetInstance()->SingleVerify(appVerifyBaseInfo, verifyResultInfo);
     DomainVerifyStatus domainVerificationState;
     auto queryRes = AppDomainVerifyMgrClient::GetInstance()->QueryDomainVerifyStatus(
         BUNDLE_NAME, domainVerificationState);
@@ -120,12 +120,12 @@ HWTEST_F(AppDomainVerifyAgentClientTest, AppDomainVerifyAgentClientTest002, Test
     AppVerifyBaseInfo appVerifyBaseInfo;
     appVerifyBaseInfo.bundleName = BUNDLE_NAME;
     appVerifyBaseInfo.fingerprint = FINGERPRINT;
-    std::vector<SkillUri> skillUris;
-    SkillUri skillUri;
-    skillUri.scheme = "https";
-    skillUri.host = HOST;
-    skillUris.emplace_back(skillUri);
-    AppDomainVerifyAgentClient::GetInstance()->SingleVerify(appVerifyBaseInfo, skillUris);
+
+    VerifyResultInfo verifyResultInfo;
+    verifyResultInfo.appIdentifier = APP_IDENTIFIER;
+    verifyResultInfo.hostVerifyStatusMap.insert_or_assign(
+        "https://" + HOST, std::make_tuple(InnerVerifyStatus::UNKNOWN, std::string(), 0));
+    AppDomainVerifyAgentClient::GetInstance()->SingleVerify(appVerifyBaseInfo, verifyResultInfo);
     ASSERT_TRUE(g_enterAgentInvokeOK);
     AppDomainVerifyAgentClient::agentServiceProxy_.ForceSetRefPtr(nullptr);
 }
