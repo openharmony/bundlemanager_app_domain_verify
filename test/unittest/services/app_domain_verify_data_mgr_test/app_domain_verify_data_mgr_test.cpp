@@ -127,7 +127,8 @@ HWTEST_F(MgrDataMgrTest, MgrDataMgrVerifyResultInfoToDBTest001, TestSize.Level0)
     std::string bundleName = "com.openharmony.com";
     VerifyResultInfo verifyResultInfo;
     verifyResultInfo.appIdentifier = APP_IDENTIFIER;
-    verifyResultInfo.hostVerifyStatusMap.insert_or_assign("www.openharmony.com", InnerVerifyStatus::STATE_SUCCESS);
+    verifyResultInfo.hostVerifyStatusMap.insert_or_assign(
+        "www.openharmony.com", std::make_tuple(InnerVerifyStatus::STATE_SUCCESS, std::string(), 0));
     EXPECT_FALSE(appDomainVerifyDataMgr->VerifyResultInfoToDB(bundleName, verifyResultInfo));
 }
 /**
@@ -146,7 +147,8 @@ HWTEST_F(MgrDataMgrTest, MgrDataMgrVerifyResultInfoToDBTest002, TestSize.Level0)
     std::string bundleName = "com.openharmony.com";
     VerifyResultInfo verifyResultInfo;
     verifyResultInfo.appIdentifier = APP_IDENTIFIER;
-    verifyResultInfo.hostVerifyStatusMap.insert_or_assign("www.openharmony.com", InnerVerifyStatus::STATE_SUCCESS);
+    verifyResultInfo.hostVerifyStatusMap.insert_or_assign(
+        "www.openharmony.com", std::make_tuple(InnerVerifyStatus::STATE_SUCCESS, std::string(), 0));
     EXPECT_TRUE(appDomainVerifyDataMgr->VerifyResultInfoToDB(bundleName, verifyResultInfo));
 }
 /**
@@ -212,7 +214,8 @@ HWTEST_F(MgrDataMgrTest, MgrDataMgrSaveVerifyStatusTest002, TestSize.Level0)
     std::string bundleName = "com.openharmony.com";
     VerifyResultInfo verifyResultInfo;
     verifyResultInfo.appIdentifier = APP_IDENTIFIER;
-    verifyResultInfo.hostVerifyStatusMap.insert_or_assign("www.openharmony.com", InnerVerifyStatus::STATE_SUCCESS);
+    verifyResultInfo.hostVerifyStatusMap.insert_or_assign(
+        "www.openharmony.com", std::make_tuple(InnerVerifyStatus::STATE_SUCCESS, std::string(), 0));
     ASSERT_FALSE(appDomainVerifyDataMgr->SaveVerifyStatus(bundleName, verifyResultInfo));
 }
 /**
@@ -231,7 +234,8 @@ HWTEST_F(MgrDataMgrTest, MgrDataMgrSaveVerifyStatusTest003, TestSize.Level0)
     std::string bundleName = "com.openharmony.com";
     VerifyResultInfo verifyResultInfo;
     verifyResultInfo.appIdentifier = APP_IDENTIFIER;
-    verifyResultInfo.hostVerifyStatusMap.insert_or_assign("www.openharmony.com", InnerVerifyStatus::STATE_SUCCESS);
+    verifyResultInfo.hostVerifyStatusMap.insert_or_assign(
+        "www.openharmony.com", std::make_tuple(InnerVerifyStatus::STATE_SUCCESS, std::string(), 0));
     ASSERT_TRUE(appDomainVerifyDataMgr->SaveVerifyStatus(bundleName, verifyResultInfo));
 }
 

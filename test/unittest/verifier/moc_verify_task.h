@@ -21,8 +21,8 @@ namespace OHOS::AppDomainVerify {
 class MocVerifyTask : public VerifyTask {
 public:
     MocVerifyTask(OHOS::AppDomainVerify::TaskType type, const AppVerifyBaseInfo& appVerifyBaseInfo,
-        const std::vector<SkillUri>& skillUris)
-        : VerifyTask(type, appVerifyBaseInfo, skillUris)
+        const VerifyResultInfo& verifyResultInfo)
+        : VerifyTask(type, appVerifyBaseInfo, verifyResultInfo)
     {
     }
     MOCK_METHOD(bool, SaveDomainVerifyStatus, (const std::string& bundleName, const VerifyResultInfo& verifyResultInfo),

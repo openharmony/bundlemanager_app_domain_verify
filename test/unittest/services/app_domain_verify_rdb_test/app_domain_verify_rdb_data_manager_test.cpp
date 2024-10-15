@@ -13,6 +13,7 @@
  * limitations under the License.
  */
 
+#include "gmock/gmock.h"
 #include "gtest/gtest.h"
 #include <memory>
 #include "mock_ffrt/ffrt.h"
@@ -380,10 +381,8 @@ HWTEST_F(RdbDataMgrTest, RdbDataMgrQueryDataTest007, TestSize.Level0)
 {
     std::shared_ptr<MockResultSet> mockResultSet = std::make_shared<MockResultSet>();
     EXPECT_CALL(*mockResultSet, GoToFirstRow()).Times(AtLeast(1)).WillRepeatedly(Return(E_OK));
-    EXPECT_CALL(*mockResultSet, GetString(1, _)).Times(AtLeast(1)).WillRepeatedly(Return(E_OK));
-    EXPECT_CALL(*mockResultSet, GetString(2, _)).Times(AtLeast(1)).WillRepeatedly(Return(E_OK));
-    EXPECT_CALL(*mockResultSet, GetString(3, _)).Times(AtLeast(1)).WillRepeatedly(Return(E_OK));
-    EXPECT_CALL(*mockResultSet, GetInt(4, _)).Times(AtLeast(1)).WillRepeatedly(Return(E_OK));
+    EXPECT_CALL(*mockResultSet, GetString(_, _)).Times(AtLeast(1)).WillRepeatedly(Return(E_OK));
+    EXPECT_CALL(*mockResultSet, GetInt(_, _)).Times(AtLeast(1)).WillRepeatedly(Return(E_OK));
     EXPECT_CALL(*mockResultSet, GoToNextRow()).Times(AtLeast(1)).WillRepeatedly(Return(E_ERROR));
     EXPECT_CALL(*mockResultSet, Close()).Times(1).WillOnce(Return(E_OK));
     std::shared_ptr<MockRdbStore> mocRdbStore = std::make_shared<MockRdbStore>();
