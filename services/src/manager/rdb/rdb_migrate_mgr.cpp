@@ -14,7 +14,6 @@
  */
 #include "rdb_migrate_mgr.h"
 #include "app_domain_verify_hilog.h"
-#include "app_domain_verify_hisysevent.h"
 #include "rdb_errno.h"
 #include "rdb_store.h"
 
