@@ -15,6 +15,7 @@
 
 #include <memory>
 #include <string>
+#include <tuple>
 #include <vector>
 #include "app_domain_verify_mgr_service.h"
 #include "system_ability_definition.h"
@@ -25,6 +26,9 @@ namespace OHOS {
 namespace AppDomainVerify {
 constexpr const char* GET_DOMAIN_VERIFY_INFO = "ohos.permission.GET_APP_DOMAIN_BUNDLE_INFO";
 const bool REGISTER_RESULT = SystemAbility::MakeAndRegisterAbility(new AppDomainVerifyMgrService());
+const std::string HTTPS = "https";
+const std::set<std::string> SCHEME_WHITE_SET = { HTTPS };
+const std::string FUZZY_HOST_START = "*.";
 
 AppDomainVerifyMgrService::AppDomainVerifyMgrService() : SystemAbility(APP_DOMAIN_VERIFY_MANAGER_SA_ID, true)
 {
@@ -48,7 +52,13 @@ void AppDomainVerifyMgrService::VerifyDomain(const std::string& appIdentifier, c
     appVerifyBaseInfo.appIdentifier = appIdentifier;
     appVerifyBaseInfo.bundleName = bundleName;
     appVerifyBaseInfo.fingerprint = fingerprint;
-    AppDomainVerifyAgentClient::GetInstance()->SingleVerify(appVerifyBaseInfo, skillUris);
+
+    VerifyResultInfo verifyResultInfo;
+    verifyResultInfo.appIdentifier = appIdentifier;
+
+    CollectDomains(skillUris, verifyResultInfo);
+
+    AppDomainVerifyAgentClient::GetInstance()->SingleVerify(appVerifyBaseInfo, verifyResultInfo);
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "call end");
 }
 
@@ -92,7 +102,8 @@ bool AppDomainVerifyMgrService::FilterAbilities(const OHOS::AAFwk::Want& want,
         // get from emory variable, non-IO operation.
         if (dataManager_->GetVerifyStatus(it->bundleName, verifyResultInfo)) {
             auto itr = verifyResultInfo.hostVerifyStatusMap.find(hostVerifyKey);
-            if (itr != verifyResultInfo.hostVerifyStatusMap.end() && itr->second == InnerVerifyStatus::STATE_SUCCESS) {
+            if (itr != verifyResultInfo.hostVerifyStatusMap.end() &&
+                std::get<0>(itr->second) == InnerVerifyStatus::STATE_SUCCESS) {
                 filtedAbilityInfos.emplace_back(*it);
             }
         }
@@ -114,7 +125,7 @@ bool AppDomainVerifyMgrService::QueryDomainVerifyStatus(
     domainVerificationState = DomainVerifyStatus::STATE_NONE;
     for (auto it = verifyResultInfo.hostVerifyStatusMap.begin();
          res && it != verifyResultInfo.hostVerifyStatusMap.end(); ++it) {
-        if (it->second == InnerVerifyStatus::STATE_SUCCESS) {
+        if (std::get<0>(it->second) == InnerVerifyStatus::STATE_SUCCESS) {
             domainVerificationState = DomainVerifyStatus::STATE_VERIFIED;
             break;
         }
@@ -144,11 +155,6 @@ bool AppDomainVerifyMgrService::SaveDomainVerifyStatus(
         return false;
     }
     bool res = dataManager_->SaveVerifyStatus(bundleName, verifyResultInfo);
-    if (res) {
-        APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE,
-            "package verify result bundleName:%{public}s\n%{public}s", bundleName.c_str(),
-            verifyResultInfo.Dump().c_str());
-    }
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "call end");
     return res;
 }
@@ -264,7 +270,8 @@ void AppDomainVerifyMgrService::DumpAllVerifyInfos(std::string& dumpString)
         dumpString.append("\n");
         dumpString.append("  domain verify status:\n");
         for (const auto& hostVerifyStatus : verifyResultInfo.hostVerifyStatusMap) {
-            dumpString.append("    " + hostVerifyStatus.first + ":" + InnerVerifyStatusMap[hostVerifyStatus.second]);
+            dumpString.append("    " + hostVerifyStatus.first + ":" +
+                InnerVerifyStatusMap[std::get<0>(hostVerifyStatus.second)]);
             dumpString.append("\n");
         }
     }
@@ -297,6 +304,27 @@ int AppDomainVerifyMgrService::CheckPermission()
     }
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "CheckPermission ok .");
     return CommonErrorCode::E_OK;
+}
+void AppDomainVerifyMgrService::CollectDomains(
+    const std::vector<SkillUri>& skillUris, VerifyResultInfo& verifyResultInfo)
+{
+    for (auto it = skillUris.begin(); it != skillUris.end(); ++it) {
+        if (it->scheme.empty() || it->host.empty() || !UrlUtil::IsValidAppDomainVerifyHost(it->host) ||
+            SCHEME_WHITE_SET.find(it->scheme) == SCHEME_WHITE_SET.end()) {
+            APP_DOMAIN_VERIFY_HILOGW(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "invalid skillUri skip.");
+            continue;
+        }
+
+        std::string host = it->host;
+        if (it->host.substr(0, FUZZY_HOST_START.size()) == FUZZY_HOST_START) {
+            // Hosts with *.
+            host = it->host.substr(FUZZY_HOST_START.size());
+        }
+        // validUris remove duplicates
+        auto uri = it->scheme + "://" + host;
+        verifyResultInfo.hostVerifyStatusMap.insert(make_pair(
+            uri, std::make_tuple(InnerVerifyStatus::UNKNOWN, std::string(), 0)));
+    }
 }
 }  // namespace AppDomainVerify
 }  // namespace OHOS

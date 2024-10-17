@@ -61,7 +61,8 @@ protected:
 private:
     void DumpAllVerifyInfos(std::string& dumpString);
     bool IsWantImplicit(const OHOS::AAFwk::Want& want);
-    int CheckPermission();
+    static int CheckPermission();
+    static void CollectDomains(const std::vector<SkillUri>& skillUris, VerifyResultInfo& verifyResultInfo);
 
 private:
     std::shared_ptr<AppDomainVerifyDataMgr> dataManager_ = nullptr;
@@ -71,4 +72,4 @@ private:
 };
 }  // namespace AppDomainVerify
 }  // namespace OHOS
-#endif  // APP_DOMAIN_VERIFY_SERVICE_H
+#endif  // APP_DOMAIN_VERIFY_MGR_SERVICE_H

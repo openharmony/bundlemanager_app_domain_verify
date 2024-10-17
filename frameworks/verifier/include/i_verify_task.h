@@ -15,6 +15,7 @@
 
 #ifndef APP_DOMAIN_VERIFY_I_VERIFY_TASK_H
 #define APP_DOMAIN_VERIFY_I_VERIFY_TASK_H
+#include "bundle_verify_status_info.h"
 #include "http_client_response.h"
 #include "http_client.h"
 #include "dfx/app_domain_verify_hisysevent.h"
@@ -30,7 +31,7 @@ public:
         const std::string& uri, const OHOS::NetStack::HttpClient::HttpClientResponse& response) = 0;
     virtual void OnSaveVerifyResult() = 0;
     virtual bool OnPreRequest(OHOS::NetStack::HttpClient::HttpClientRequest& request, const std::string& uri) = 0;
-    virtual const std::unordered_map<std::string, InnerVerifyStatus>& GetUriVerifyMap() = 0;
+    virtual const HostVerifyStatusMap& GetUriVerifyMap() = 0;
     virtual OHOS::AppDomainVerify::TaskType GetType() = 0;
 };
 }

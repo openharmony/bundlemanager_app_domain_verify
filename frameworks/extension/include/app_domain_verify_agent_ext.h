@@ -33,9 +33,9 @@ namespace AppDomainVerify {
 using OnWhiteListUpdate = std::function<void(std::unordered_set<std::string>)>;
 class AppDomainVerifyAgentExt : public AppDomainVerifyExtBase {
 public:
-    virtual ErrorCode CompleteVerifyRefresh(const BundleVerifyStatusInfo& bundleVerifyStatusInfo,
-        const std::vector<InnerVerifyStatus>& statuses, int delaySeconds, TaskType type);
-    virtual ErrorCode SingleVerify(const AppVerifyBaseInfo& appVerifyBaseInfo, const std::vector<SkillUri>& skillUris);
+    virtual ErrorCode CompleteVerifyRefresh(const BundleVerifyStatusInfo& bundleVerifyStatusInfo, TaskType type);
+    virtual ErrorCode SingleVerify(
+        const AppVerifyBaseInfo& appVerifyBaseInfo, const VerifyResultInfo& verifyResultInfo);
     virtual ErrorCode ConvertToExplicitWant(OHOS::AAFwk::Want& implicitWant, sptr<IConvertCallback>& callback);
     virtual ErrorCode UpdateWhiteList();
 };

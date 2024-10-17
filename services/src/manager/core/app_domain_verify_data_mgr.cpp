@@ -12,9 +12,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+#include <algorithm>
 #include <string>
 #include <utility>
 #include "app_domain_verify_data_mgr.h"
+#include "inner_verify_status.h"
 
 namespace OHOS {
 namespace AppDomainVerify {
@@ -44,8 +46,10 @@ bool AppDomainVerifyDataMgr::GetVerifyStatus(const std::string& bundleName, Veri
     auto it = verifyMap_->find(key);
     if (it != verifyMap_->end()) {
         verifyResultInfo = it->second;
+        return true;
     }
-    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "call end");
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE,
+        "get verify status fail, verify result can't find");
     return true;
 }
 bool AppDomainVerifyDataMgr::VerifyResultInfoToDB(
@@ -55,10 +59,14 @@ bool AppDomainVerifyDataMgr::VerifyResultInfoToDB(
         APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "try delete bundleName failed.");
     }
     for (auto it : verifyResultInfo.hostVerifyStatusMap) {
+        std::string domain = it.first;
+        auto [status, verifyTime, cnt] = it.second;
         RdbDataItem item = { .bundleName = bundleName,
             .appIdentifier = verifyResultInfo.appIdentifier,
-            .domain = it.first,
-            .status = it.second };
+            .domain = domain,
+            .status = status,
+            .verifyTs = verifyTime,
+            .count = cnt };
         if (!rdbDataManager_->InsertData(item)) {
             APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "insert to db failed!");
             return false;
@@ -75,10 +83,12 @@ bool AppDomainVerifyDataMgr::DBToVerifyResultInfo(
     }
     verifyResultInfo.appIdentifier = items[0].appIdentifier;
     for (auto it : items) {
-        verifyResultInfo.hostVerifyStatusMap.insert(std::make_pair(it.domain, InnerVerifyStatus(it.status)));
+        verifyResultInfo.hostVerifyStatusMap.insert(std::make_pair(it.domain,
+            std::make_tuple(InnerVerifyStatus(it.status), it.verifyTs, it.count)));
     }
     return true;
 }
+
 bool AppDomainVerifyDataMgr::SaveVerifyStatus(const std::string& bundleName, const VerifyResultInfo& verifyResultInfo)
 {
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "called");
@@ -93,16 +103,7 @@ bool AppDomainVerifyDataMgr::SaveVerifyStatus(const std::string& bundleName, con
     }
 
     std::lock_guard<std::mutex> lock(verifyMapMutex_);
-
-    auto bundleInfo = verifyMap_->find(key);
-    if (bundleInfo != verifyMap_->end()) {
-        std::for_each(verifyResultInfo.hostVerifyStatusMap.begin(), verifyResultInfo.hostVerifyStatusMap.end(),
-            [&bundleInfo](auto iter) {
-                bundleInfo->second.hostVerifyStatusMap.insert_or_assign(iter.first, iter.second);
-            });
-    } else {
-        verifyMap_->insert_or_assign(key, verifyResultInfo);
-    }
+    UpdateVerifyMap(key, verifyResultInfo);
     auto completeBundleInfo = verifyMap_->find(key);
     if (completeBundleInfo == verifyMap_->end()) {
         APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "InnerVerifyStatus save bundleInfo failed");
@@ -114,6 +115,21 @@ bool AppDomainVerifyDataMgr::SaveVerifyStatus(const std::string& bundleName, con
     }
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "call end");
     return true;
+}
+
+void AppDomainVerifyDataMgr::UpdateVerifyMap(const std::string& bundleName, const VerifyResultInfo& verifyResultInfo)
+{
+    auto bundleInfo = verifyMap_->find(bundleName);
+    auto& hostVerifyStatusMap = verifyResultInfo.hostVerifyStatusMap;
+    if (bundleInfo != verifyMap_->end()) {
+        auto& hostVerifyStatusMapTarget = bundleInfo->second.hostVerifyStatusMap;
+        std::for_each(hostVerifyStatusMap.begin(), hostVerifyStatusMap.end(),
+            [&hostVerifyStatusMapTarget](auto iter) {
+                hostVerifyStatusMapTarget.insert_or_assign(iter.first, iter.second);
+            });
+    } else {
+        verifyMap_->insert_or_assign(bundleName, verifyResultInfo);
+    }
 }
 
 bool AppDomainVerifyDataMgr::DeleteVerifyStatus(const std::string& bundleName)
