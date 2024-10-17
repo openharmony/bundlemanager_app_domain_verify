@@ -67,38 +67,27 @@ AppDomainVerifyAgentService::~AppDomainVerifyAgentService()
     }
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "instance dead.");
 }
-void AppDomainVerifyAgentService::CompleteVerifyRefresh(const BundleVerifyStatusInfo& bundleVerifyStatusInfo,
-    const std::vector<InnerVerifyStatus>& statuses, int delaySeconds, TaskType type)
+void AppDomainVerifyAgentService::CompleteVerifyRefresh(
+    const BundleVerifyStatusInfo& bundleVerifyStatusInfo, TaskType type)
 {
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "%s called", __func__);
     if (ErrorCode::E_EXTENSIONS_LIB_NOT_FOUND !=
-        appDomainVerifyExtMgr_->CompleteVerifyRefresh(bundleVerifyStatusInfo, statuses, delaySeconds, type)) {
+        appDomainVerifyExtMgr_->CompleteVerifyRefresh(bundleVerifyStatusInfo, type)) {
         APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "extension call end");
         return;
     }
-    if (delaySeconds > 0) {
-        std::this_thread::sleep_for(std::chrono::seconds(delaySeconds));
-    }
     for (auto it = bundleVerifyStatusInfo.bundleVerifyStatusInfoMap_.begin();
          it != bundleVerifyStatusInfo.bundleVerifyStatusInfoMap_.end(); it++) {
-        std::vector<SkillUri> skillUris;
-        for (auto itr = it->second.hostVerifyStatusMap.begin(); itr != it->second.hostVerifyStatusMap.end(); itr++) {
-            if (std::find(statuses.begin(), statuses.end(), itr->second) != statuses.end()) {
-                SkillUri skillUri;
-                skillUri.host = UrlUtil::GetHost(itr->first);
-                skillUri.scheme = UrlUtil::GetScheme(itr->first);
-                skillUris.emplace_back(skillUri);
-            }
-        }
         AppVerifyBaseInfo appVerifyBaseInfo;
         appVerifyBaseInfo.bundleName = it->first;
-        if (!BundleInfoQuery::GetBundleInfo(
+        if (appVerifyBaseInfo.appIdentifier.empty() &&
+            !BundleInfoQuery::GetBundleInfo(
                 appVerifyBaseInfo.bundleName, appVerifyBaseInfo.appIdentifier, appVerifyBaseInfo.fingerprint)) {
             APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "GetBundleInfo failed.");
             // todo delete this bundleName or not
             continue;
         }
-        ExecuteVerifyTask(appVerifyBaseInfo, skillUris, type);
+        ExecuteVerifyTask(appVerifyBaseInfo, it->second, type);
     }
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "%s call end", __func__);
 }
@@ -118,22 +107,23 @@ void AppDomainVerifyAgentService::ConvertToExplicitWant(
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s called", __func__);
 }
 void AppDomainVerifyAgentService::SingleVerify(
-    const AppVerifyBaseInfo& appVerifyBaseInfo, const std::vector<SkillUri>& skillUris)
+    const AppVerifyBaseInfo& appVerifyBaseInfo, const VerifyResultInfo& verifyResultInfo)
 {
-    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "%s called", __func__);
-    ExecuteVerifyTask(appVerifyBaseInfo, skillUris, TaskType::IMMEDIATE_TASK);
-    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "%s call end", __func__);
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "called");
+    ExecuteVerifyTask(appVerifyBaseInfo, verifyResultInfo, TaskType::IMMEDIATE_TASK);
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "call end");
 }
 
 void AppDomainVerifyAgentService::ExecuteVerifyTask(
-    const AppVerifyBaseInfo& appVerifyBaseInfo, const std::vector<SkillUri>& skillUris, TaskType type)
+    const AppVerifyBaseInfo& appVerifyBaseInfo, const VerifyResultInfo& verifyResultInfo, TaskType type)
 {
-    if (ErrorCode::E_EXTENSIONS_LIB_NOT_FOUND != appDomainVerifyExtMgr_->SingleVerify(appVerifyBaseInfo, skillUris)) {
+    if (ErrorCode::E_EXTENSIONS_LIB_NOT_FOUND !=
+        appDomainVerifyExtMgr_->SingleVerify(appVerifyBaseInfo, verifyResultInfo)) {
         APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "extension call end");
         return;
     }
 
-    auto task = std::make_shared<VerifyTask>(type, appVerifyBaseInfo, skillUris);
+    auto task = std::make_shared<VerifyTask>(type, appVerifyBaseInfo, verifyResultInfo);
     if (task->GetUriVerifyMap().empty()) {
         APP_DOMAIN_VERIFY_HILOGW(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "no valid skillUris");
         return;
@@ -141,14 +131,15 @@ void AppDomainVerifyAgentService::ExecuteVerifyTask(
     task->Execute();
 }
 
-void AppDomainVerifyAgentService::QueryAndCompleteRefresh(
-    const std::vector<InnerVerifyStatus>& statuses, int delaySeconds, TaskType type)
+void AppDomainVerifyAgentService::QueryAndCompleteRefresh(TaskType type)
 {
     BundleVerifyStatusInfo bundleVerifyStatusInfo;
     if (AppDomainVerifyMgrClient::GetInstance()->QueryAllDomainVerifyStatus(bundleVerifyStatusInfo)) {
-        CompleteVerifyRefresh(bundleVerifyStatusInfo, statuses, delaySeconds, type);
+        CompleteVerifyRefresh(bundleVerifyStatusInfo, type);
+        return;
     }
 }
+
 void AppDomainVerifyAgentService::UpdateWhiteList()
 {
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "called");
@@ -200,9 +191,7 @@ bool AppDomainVerifyAgentService::IsIdle()
 
 void AppDomainVerifyAgentService::DoSync(const TaskType& type)
 {
-    QueryAndCompleteRefresh(std::vector<InnerVerifyStatus>{ UNKNOWN, STATE_FAIL, FAILURE_REDIRECT, FAILURE_CLIENT_ERROR,
-                                FAILURE_REJECTED_BY_SERVER, FAILURE_HTTP_UNKNOWN, FAILURE_TIMEOUT, FAILURE_CONFIG },
-        0, type);
+    QueryAndCompleteRefresh(type);
     UpdateWhiteList();
 }
 

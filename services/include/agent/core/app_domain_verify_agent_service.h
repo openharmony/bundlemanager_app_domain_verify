@@ -40,7 +40,7 @@ public:
     API_EXPORT AppDomainVerifyAgentService();
     API_EXPORT ~AppDomainVerifyAgentService() override;
     API_EXPORT void SingleVerify(
-        const AppVerifyBaseInfo& appVerifyBaseInfo, const std::vector<SkillUri>& skillUris) override;
+        const AppVerifyBaseInfo& appVerifyBaseInfo, const VerifyResultInfo &verifyResultInfo) override;
     API_EXPORT void ConvertToExplicitWant(OHOS::AAFwk::Want& implicitWant, sptr<IConvertCallback>& callback) override;
 
 protected:
@@ -50,11 +50,10 @@ protected:
     int Dump(int fd, const std::vector<std::u16string>& args) override;
 
 private:
-    void QueryAndCompleteRefresh(const std::vector<InnerVerifyStatus>& statuses, int delaySeconds, TaskType type);
-    void CompleteVerifyRefresh(const BundleVerifyStatusInfo& bundleVerifyStatusInfo,
-        const std::vector<InnerVerifyStatus>& statuses, int delaySeconds, TaskType type);
+    void QueryAndCompleteRefresh(TaskType type);
+    void CompleteVerifyRefresh(const BundleVerifyStatusInfo& bundleVerifyStatusInfo, TaskType type);
     void ExecuteVerifyTask(
-        const AppVerifyBaseInfo& appVerifyBaseInfo, const std::vector<SkillUri>& skillUris, TaskType type);
+        const AppVerifyBaseInfo& appVerifyBaseInfo, const VerifyResultInfo &verifyResultInfo, TaskType type);
     void UpdateWhiteList();
     void OnDelayUnloadSA();
     void PostDelayUnloadTask();

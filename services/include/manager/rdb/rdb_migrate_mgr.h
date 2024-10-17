@@ -20,16 +20,21 @@
 #include "rdb_open_callback.h"
 #include "app_domain_verify_rdb_data_manager.h"
 #include "bundle_verify_status_info.h"
+#include "rdb_store.h"
+#include <functional>
 namespace OHOS::AppDomainVerify {
+using TransFunc = std::function<bool(NativeRdb::RdbStore& rdb)>;
 class RdbMigrateMgr {
 public:
     RdbMigrateMgr(const AppDomainVerifyRdbConfig& appDomainVerifyRdbConfig);
-    int Upgrade(NativeRdb::RdbStore& rdbStore);
+    int Upgrade(NativeRdb::RdbStore& rdbStore, int currVersion, int targetVersion);
 
 private:
     AppDomainVerifyRdbConfig appDomainVerifyRdbConfig_;
     int QueryInnerVersion(NativeRdb::RdbStore& store);
-    void UpgradeFromV1_0(NativeRdb::RdbStore& rdbStore);
+    void UpgradeFromV1ToV2(NativeRdb::RdbStore& rdbStore);
+    int UpgradeFromV2ToV3(NativeRdb::RdbStore& rdbStore);
+    int ExecSqlWithTrans(NativeRdb::RdbStore& store, const TransFunc& func);
 };
 }
 #endif  // APP_DOMAIN_VERIFY_RDB_MIGRATE_MGR_H
