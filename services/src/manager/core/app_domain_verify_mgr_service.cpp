@@ -17,11 +17,13 @@
 #include <string>
 #include <tuple>
 #include <vector>
+#include "ipc_skeleton.h"
 #include "app_domain_verify_mgr_service.h"
 #include "system_ability_definition.h"
 #include "domain_url_util.h"
 #include "app_domain_verify_agent_client.h"
 #include "comm_define.h"
+#include "bundle_info_query.h"
 namespace OHOS {
 namespace AppDomainVerify {
 constexpr const char* GET_DOMAIN_VERIFY_INFO = "ohos.permission.GET_APP_DOMAIN_BUNDLE_INFO";
@@ -76,7 +78,7 @@ bool AppDomainVerifyMgrService::ClearDomainVerifyStatus(const std::string& appId
 
 bool AppDomainVerifyMgrService::FilterAbilities(const OHOS::AAFwk::Want& want,
     const std::vector<OHOS::AppExecFwk::AbilityInfo>& originAbilityInfos,
-    std::vector<OHOS::AppExecFwk::AbilityInfo>& filtedAbilityInfos)
+    std::vector<OHOS::AppExecFwk::AbilityInfo>& filteredAbilityInfos)
 {
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "called");
     if (!PermissionManager::IsSACall()) {
@@ -104,9 +106,13 @@ bool AppDomainVerifyMgrService::FilterAbilities(const OHOS::AAFwk::Want& want,
             auto itr = verifyResultInfo.hostVerifyStatusMap.find(hostVerifyKey);
             if (itr != verifyResultInfo.hostVerifyStatusMap.end() &&
                 std::get<0>(itr->second) == InnerVerifyStatus::STATE_SUCCESS) {
-                filtedAbilityInfos.emplace_back(*it);
+                filteredAbilityInfos.emplace_back(*it);
             }
         }
+    }
+    if (filteredAbilityInfos.empty()) {
+        deferredLinkMgr_->PutDeferredLink(
+            { .domain = hostVerifyKey, .url = uriString, .timeStamp = GetSecondsSince1970ToNow() });
     }
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "call end");
     return true;
@@ -270,8 +276,8 @@ void AppDomainVerifyMgrService::DumpAllVerifyInfos(std::string& dumpString)
         dumpString.append("\n");
         dumpString.append("  domain verify status:\n");
         for (const auto& hostVerifyStatus : verifyResultInfo.hostVerifyStatusMap) {
-            dumpString.append("    " + hostVerifyStatus.first + ":" +
-                InnerVerifyStatusMap[std::get<0>(hostVerifyStatus.second)]);
+            dumpString.append(
+                "    " + hostVerifyStatus.first + ":" + InnerVerifyStatusMap[std::get<0>(hostVerifyStatus.second)]);
             dumpString.append("\n");
         }
     }
@@ -322,8 +328,28 @@ void AppDomainVerifyMgrService::CollectDomains(
         }
         // validUris remove duplicates
         auto uri = it->scheme + "://" + host;
-        verifyResultInfo.hostVerifyStatusMap.insert(make_pair(
-            uri, std::make_tuple(InnerVerifyStatus::UNKNOWN, std::string(), 0)));
+        verifyResultInfo.hostVerifyStatusMap.insert(
+            make_pair(uri, std::make_tuple(InnerVerifyStatus::UNKNOWN, std::string(), 0)));
+    }
+}
+int AppDomainVerifyMgrService::GetDeferredLink(std::string& link)
+{
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "called");
+    std::string bundleName;
+    BundleInfoQuery::GetBundleNameForUid(IPCSkeleton::GetCallingUid(), bundleName);
+    if (!bundleName.empty()) {
+        std::vector<std::string> domains;
+        if (dataManager_->QueryAssociatedDomains(bundleName, domains) && !domains.empty()) {
+            link = deferredLinkMgr_->GetDeferredLink(bundleName, domains);
+            APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "get link, %{private}s.", link.c_str());
+            return CommonErrorCode::E_OK;
+        } else {
+            APP_DOMAIN_VERIFY_HILOGW(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "can not get associate domains");
+            return CommonErrorCode::E_INTERNAL_ERR;
+        }
+    } else {
+        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "can not get bundleName.");
+        return CommonErrorCode::E_PERMISSION_DENIED;
     }
 }
 }  // namespace AppDomainVerify

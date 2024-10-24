@@ -73,6 +73,10 @@ public:
     {
         return true;
     }
+    virtual int GetDeferredLink(std::string& link) override
+    {
+        return true;
+    }
     MOCK_METHOD4(SendRequest, int(uint32_t, MessageParcel&, MessageParcel&, MessageOption&));
     MOCK_METHOD(sptr<IRemoteObject>, AsObject, (), (override));
 };
@@ -127,6 +131,10 @@ public:
         return true;
     }
     virtual int QueryAssociatedBundleNames(const std::string& domain, std::vector<std::string>& bundleNames) override
+    {
+        return true;
+    }
+    virtual int GetDeferredLink(std::string& link) override
     {
         return true;
     }
