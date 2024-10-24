@@ -34,6 +34,7 @@ group("app_domain_verify_unit_test") {
     "services/app_domain_verify_data_mgr_test:app_domain_verify_data_mgr_test",
     "services/app_domain_verify_mgr_service_test:app_domain_verify_mgr_service_test",
     "services/app_domain_verify_rdb_test:app_domain_verify_rdb_test",
+    "services/deferred_link_test:deferred_link_test",
     "verifier:app_domain_verify_agent_verifier_test",
   ]
 }
