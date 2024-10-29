@@ -64,7 +64,7 @@ private:
     void PostAgeCacheTask();
     void AgeCacheProcess();
     void CheckStartTimerUnlocked();
-    void CheckFullUnlocked(const DeferredLinkInfo& info);
+    void CheckFullUnlocked();
     void CheckRemoveExistedUnlocked(const DeferredLinkInfo& info);
     /**
      * cache list
