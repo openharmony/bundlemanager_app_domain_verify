@@ -31,6 +31,6 @@ public:
 };
 std::shared_ptr<AbilityFilter> AbilityFilter::Create()
 {
-    return std::shared_ptr<AbilityFilterImpl>();
+    return std::make_shared<AbilityFilterImpl>();
 }
 }

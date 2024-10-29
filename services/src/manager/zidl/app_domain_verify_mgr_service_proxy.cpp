@@ -334,7 +334,7 @@ int AppDomainVerifyMgrServiceProxy::GetDeferredLink(std::string& link)
         AppDomainVerifyMgrInterfaceCode::GET_DEFERRED_LINK, data, reply, option);
     if (error != ERR_NONE) {
         APP_DOMAIN_VERIFY_HILOGE(
-            APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "QueryAssociatedBundleNames failed, error: %d", error);
+            APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "GetDeferredLink failed, error: %d", error);
     }
     int32_t result = reply.ReadInt32();
     if (result != 0) {
