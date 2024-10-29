@@ -29,7 +29,7 @@ void DeferredLinkMgr::PutDeferredLink(const DeferredLinkInfo& info)
     CheckRemoveExistedUnlocked(info);
     CheckFullUnlocked(info);
 
-    caches.push_front(info);
+    caches_.push_front(info);
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "info domain:%{private}s, url:%{private}s.",
         info.domain.c_str(), info.url.c_str());
 }
@@ -42,7 +42,7 @@ std::string DeferredLinkMgr::GetDeferredLink(const std::string& bundleName, cons
     std::unique_lock<std::mutex> lock(cachesMutex_);
     std::list<DeferredLinkInfo> destination;
     // find links in bundle's domain and can match bundle's ability, then remove all of them.
-    caches.remove_if([this, &bundleName, &domainSet, &destination](const DeferredLinkInfo& linkInfo) {
+    caches_.remove_if([this, &bundleName, &domainSet, &destination](const DeferredLinkInfo& linkInfo) {
         if (domainSet.count(linkInfo.domain) != 0 && CanMatchAbility(bundleName, linkInfo.url)) {
             // keep newly in front
             destination.push_back(linkInfo);
@@ -73,14 +73,14 @@ void DeferredLinkMgr::AgeCacheProcess()
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "age func in.");
     std::unique_lock<std::mutex> lock(cachesMutex_);
     int64_t now = GetSecondsSince1970ToNow();
-    caches.remove_if([now](const DeferredLinkInfo& linkInfo) {
+    caches_.remove_if([now](const DeferredLinkInfo& linkInfo) {
         APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE,
             "url:%{public}s, now:%{public}lld, timestamp%{public}lld.", linkInfo.url.c_str(), now, linkInfo.timeStamp);
         return now - linkInfo.timeStamp >= MAX_CACHE_TIME;
     });
-    if (!caches.empty()) {
+    if (!caches_.empty()) {
         APP_DOMAIN_VERIFY_HILOGD(
-            APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "post continue age task, remain size:%{public}zu.", caches.size());
+            APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "post continue age task, remain size:%{public}zu.", caches_.size());
         PostAgeCacheTask();
     } else {
         APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "age task end.");
@@ -88,19 +88,19 @@ void DeferredLinkMgr::AgeCacheProcess()
 }
 void DeferredLinkMgr::CheckStartTimerUnlocked()
 {
-    if (caches.empty()) {
+    if (caches_.empty()) {
         PostAgeCacheTask();
     }
 }
 void DeferredLinkMgr::CheckFullUnlocked(const DeferredLinkInfo& info)
 {
-    if (caches.size() == MAX_CACHE_SIZE) {
-        caches.pop_back();
+    if (caches_.size() == MAX_CACHE_SIZE) {
+        caches_.pop_back();
     }
 }
 void DeferredLinkMgr::CheckRemoveExistedUnlocked(const DeferredLinkInfo& info)
 {
-    caches.remove_if([&info](const DeferredLinkInfo& curInfo) {
+    caches_.remove_if([&info](const DeferredLinkInfo& curInfo) {
         if (curInfo.url == info.url && curInfo.domain == info.domain) {
             return true;
         }

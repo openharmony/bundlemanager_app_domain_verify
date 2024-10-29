@@ -12,15 +12,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#ifndef APP_DOMAIN_VERIFY_COMM_DEFINE_H
-#define APP_DOMAIN_VERIFY_COMM_DEFINE_H
+
+#include "napi_async_utils.h"
 namespace OHOS::AppDomainVerify {
-enum CommonErrorCode: uint32_t {
-    E_OK = 0,
-    E_PERMISSION_DENIED = 201,
-    E_IS_NOT_SYS_APP = 202,
-    E_PARAM_ERROR = 401,
-    E_INTERNAL_ERR = 29900001,
-};
+
+AsyncWorkData::~AsyncWorkData()
+{
+    if (callback) {
+        APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "AsyncWorkData::~AsyncWorkData delete callback");
+        napi_delete_reference(env, callback);
+        callback = nullptr;
+    }
+    if (asyncWork) {
+        APP_DOMAIN_VERIFY_HILOGD(
+            APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "AsyncWorkData::~AsyncWorkData delete asyncWork");
+        napi_delete_async_work(env, asyncWork);
+        asyncWork = nullptr;
+    }
 }
-#endif  // APP_DOMAIN_VERIFY_COMM_DEFINE_H
+}

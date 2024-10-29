@@ -20,55 +20,14 @@
 #include "app_domain_verify_mgr_client.h"
 #include "comm_define.h"
 #include "api_event_reporter.h"
+#include "napi_value_utils.h"
 
 namespace OHOS::AppDomainVerify {
-constexpr int32_t API_SUCCESS = 0;
-constexpr int32_t API_FAIL = 1;
-constexpr int32_t MAX_STR_INPUT_SIZE = 256;
-constexpr int32_t STRING_BUF_MAX_SIZE = 4096;
+using namespace Dfx;
 std::map<CommonErrorCode, const char*> ErrCodeMap = { { CommonErrorCode::E_PERMISSION_DENIED, "Permission denied." },
     { CommonErrorCode::E_IS_NOT_SYS_APP, "System API accessed by non-system app." },
     { CommonErrorCode::E_PARAM_ERROR, "Parameter error." }, { CommonErrorCode::E_INTERNAL_ERR, "Internal error." } };
-static std::string GetString(napi_env env, napi_value value)
-{
-    std::unique_ptr<char[]> valueBuf = std::make_unique<char[]>(STRING_BUF_MAX_SIZE);
-    size_t size = 0;
-    NAPI_CALL_BASE(env, napi_get_value_string_utf8(env, value, valueBuf.get(), STRING_BUF_MAX_SIZE, &size), "");
-    std::string result = std::string(valueBuf.get(), size);
-    return result;
-}
-static napi_value BuildString(const napi_env& env, const std::string& data)
-{
-    napi_value result;
-    NAPI_CALL_BASE(env, napi_create_string_utf8(env, data.c_str(), NAPI_AUTO_LENGTH, &result), nullptr);
-    return result;
-}
-static napi_value BuildStringArray(const napi_env& env, const std::vector<std::string>& data)
-{
-    napi_value arr;
-    NAPI_CALL_BASE(env, napi_create_array(env, &arr), nullptr);
-    size_t index = 0;
-    for (auto&& str : data) {
-        napi_value value = BuildString(env, str);
-        NAPI_CALL_BASE(env, napi_set_element(env, arr, index++, value), nullptr);
-    }
-    return arr;
-}
-static bool CheckInput(const std::string& input)
-{
-    if (input.empty() || input.size() > MAX_STR_INPUT_SIZE) {
-        return false;
-    }
-    return true;
-}
-static napi_value BuildError(const napi_env& env, CommonErrorCode errorCode)
-{
-    auto ret = napi_throw_error(env, std::to_string(errorCode).c_str(), ErrCodeMap[errorCode]);
-    if (ret != napi_status::napi_ok) {
-        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "throw err failed.");
-    }
-    return nullptr;
-}
+
 napi_value QueryAssociatedDomains(napi_env env, napi_callback_info info)
 {
     size_t argc = 1;
@@ -79,14 +38,14 @@ napi_value QueryAssociatedDomains(napi_env env, napi_callback_info info)
     std::string bundleName = GetString(env, args[0]);
     if (!CheckInput(bundleName)) {
         reporter.WriteEndEvent(API_FAIL, CommonErrorCode::E_PARAM_ERROR);
-        return BuildError(env, CommonErrorCode::E_PARAM_ERROR);
+        return BuildError(env, CommonErrorCode::E_PARAM_ERROR, ErrCodeMap[CommonErrorCode::E_PARAM_ERROR]);
     }
     std::vector<std::string> domains;
     auto ret = AppDomainVerifyMgrClient::GetInstance()->QueryAssociatedDomains(bundleName, domains);
     if (ret != 0) {
         if (ErrCodeMap.count(static_cast<CommonErrorCode>(ret)) != 0) {
             reporter.WriteEndEvent(API_FAIL, static_cast<CommonErrorCode>(ret));
-            return BuildError(env, static_cast<CommonErrorCode>(ret));
+            return BuildError(env, static_cast<CommonErrorCode>(ret), ErrCodeMap[static_cast<CommonErrorCode>(ret)]);
         } else {
             APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "unknown error:%{public}d.", ret);
             reporter.WriteEndEvent(API_FAIL, ret);
@@ -106,14 +65,14 @@ napi_value QueryAssociatedBundleNames(napi_env env, napi_callback_info info)
     std::string domain = GetString(env, args[0]);
     if (!CheckInput(domain)) {
         reporter.WriteEndEvent(API_FAIL, CommonErrorCode::E_PARAM_ERROR);
-        return BuildError(env, CommonErrorCode::E_PARAM_ERROR);
+        return BuildError(env, CommonErrorCode::E_PARAM_ERROR, ErrCodeMap[CommonErrorCode::E_PARAM_ERROR]);
     }
     std::vector<std::string> bundleNames;
     auto ret = AppDomainVerifyMgrClient::GetInstance()->QueryAssociatedBundleNames(domain, bundleNames);
     if (ret != 0) {
         if (ErrCodeMap.count(static_cast<CommonErrorCode>(ret)) != 0) {
             reporter.WriteEndEvent(API_FAIL, static_cast<CommonErrorCode>(ret));
-            return BuildError(env, static_cast<CommonErrorCode>(ret));
+            return BuildError(env, static_cast<CommonErrorCode>(ret), ErrCodeMap[static_cast<CommonErrorCode>(ret)]);
         } else {
             APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "unknown error:%{public}d.", ret);
             reporter.WriteEndEvent(API_FAIL, ret);

@@ -30,8 +30,6 @@ constexpr const char* BUNDLE_DOMAIN_WRONG = "https://www.openharmony_wrong.cn";
 constexpr const char* BUNDLE_URL = "https://www.openharmony.cn/100";
 constexpr const char* BUNDLE_URL_NEW = "https://www.openharmony.cn/new";
 constexpr const char* TASK_ID = "age";
-constexpr int32_t DELAY_TIME = 120000;       // 2min
-constexpr int64_t MAX_CACHE_TIME = 1200000;  // 10min
 constexpr int MAX_CACHE_SIZE = 50;
 class DeferredLinkMgrTest : public testing::Test {
 public:
@@ -70,9 +68,9 @@ HWTEST_F(DeferredLinkMgrTest, DeferredLinkPutTest001, TestSize.Level0)
     deferredLinkMgr.PutDeferredLink(
         { .domain = BUNDLE_DOMAIN, .url = BUNDLE_URL, .timeStamp = GetSecondsSince1970ToNow() });
 
-    EXPECT_TRUE(deferredLinkMgr.caches.size() == 1);
-    EXPECT_TRUE(deferredLinkMgr.caches.front().domain == BUNDLE_DOMAIN);
-    EXPECT_TRUE(deferredLinkMgr.caches.front().url == BUNDLE_URL);
+    EXPECT_TRUE(deferredLinkMgr.caches_.size() == 1);
+    EXPECT_TRUE(deferredLinkMgr.caches_.front().domain == BUNDLE_DOMAIN);
+    EXPECT_TRUE(deferredLinkMgr.caches_.front().url == BUNDLE_URL);
 }
 
 /**
@@ -91,9 +89,9 @@ HWTEST_F(DeferredLinkMgrTest, DeferredLinkPutTest002, TestSize.Level0)
             .timeStamp = GetSecondsSince1970ToNow() });
     }
 
-    EXPECT_TRUE(deferredLinkMgr.caches.size() == MAX_CACHE_SIZE);
-    EXPECT_EQ(deferredLinkMgr.caches.back().domain, BUNDLE_DOMAIN + std::to_string(1));
-    EXPECT_EQ(deferredLinkMgr.caches.front().domain, BUNDLE_DOMAIN + std::to_string(MAX_CACHE_SIZE));
+    EXPECT_TRUE(deferredLinkMgr.caches_.size() == MAX_CACHE_SIZE);
+    EXPECT_EQ(deferredLinkMgr.caches_.back().domain, BUNDLE_DOMAIN + std::to_string(1));
+    EXPECT_EQ(deferredLinkMgr.caches_.front().domain, BUNDLE_DOMAIN + std::to_string(MAX_CACHE_SIZE));
 }
 
 /**
@@ -113,9 +111,9 @@ HWTEST_F(DeferredLinkMgrTest, DeferredLinkPutTest003, TestSize.Level0)
     deferredLinkMgr.PutDeferredLink(
         { .domain = BUNDLE_DOMAIN, .url = BUNDLE_URL, .timeStamp = GetSecondsSince1970ToNow() });
 
-    EXPECT_TRUE(deferredLinkMgr.caches.size() == 2);
-    EXPECT_EQ(deferredLinkMgr.caches.back().domain, BUNDLE_DOMAIN + std::to_string(1));
-    EXPECT_EQ(deferredLinkMgr.caches.front().domain, BUNDLE_DOMAIN);
+    EXPECT_TRUE(deferredLinkMgr.caches_.size() == 2);
+    EXPECT_EQ(deferredLinkMgr.caches_.back().domain, BUNDLE_DOMAIN + std::to_string(1));
+    EXPECT_EQ(deferredLinkMgr.caches_.front().domain, BUNDLE_DOMAIN);
 }
 
 /**
@@ -132,7 +130,7 @@ HWTEST_F(DeferredLinkMgrTest, DeferredLinkGetTest001, TestSize.Level0)
     deferredLinkMgr.abilityFilter_ = filter;
     deferredLinkMgr.PutDeferredLink(
         { .domain = BUNDLE_DOMAIN, .url = BUNDLE_URL, .timeStamp = GetSecondsSince1970ToNow() });
-    EXPECT_TRUE(deferredLinkMgr.caches.size() == 1);
+    EXPECT_TRUE(deferredLinkMgr.caches_.size() == 1);
 
     std::vector<std::string> domains;
     domains.emplace_back(BUNDLE_DOMAIN);
@@ -140,7 +138,10 @@ HWTEST_F(DeferredLinkMgrTest, DeferredLinkGetTest001, TestSize.Level0)
 
     EXPECT_FALSE(link.empty());
     EXPECT_EQ(link, BUNDLE_URL);
-    EXPECT_TRUE(deferredLinkMgr.caches.empty());
+    EXPECT_TRUE(deferredLinkMgr.caches_.empty());
+
+    auto link1 = deferredLinkMgr.GetDeferredLink(BUNDLE_NAME, domains);
+    EXPECT_TRUE(link1.empty());
 }
 
 /**
@@ -157,14 +158,14 @@ HWTEST_F(DeferredLinkMgrTest, DeferredLinkGetTest002, TestSize.Level0)
     deferredLinkMgr.abilityFilter_ = filter;
     deferredLinkMgr.PutDeferredLink(
         { .domain = BUNDLE_DOMAIN, .url = BUNDLE_URL, .timeStamp = GetSecondsSince1970ToNow() });
-    EXPECT_TRUE(deferredLinkMgr.caches.size() == 1);
+    EXPECT_TRUE(deferredLinkMgr.caches_.size() == 1);
 
     std::vector<std::string> domains;
     domains.emplace_back(BUNDLE_DOMAIN_WRONG);
     auto link = deferredLinkMgr.GetDeferredLink(BUNDLE_NAME, domains);
 
     EXPECT_TRUE(link.empty());
-    EXPECT_TRUE(deferredLinkMgr.caches.size() == 1);
+    EXPECT_TRUE(deferredLinkMgr.caches_.size() == 1);
 }
 
 /**
@@ -181,14 +182,14 @@ HWTEST_F(DeferredLinkMgrTest, DeferredLinkGetTest003, TestSize.Level0)
     deferredLinkMgr.abilityFilter_ = filter;
     deferredLinkMgr.PutDeferredLink(
         { .domain = BUNDLE_DOMAIN, .url = BUNDLE_URL, .timeStamp = GetSecondsSince1970ToNow() });
-    EXPECT_TRUE(deferredLinkMgr.caches.size() == 1);
+    EXPECT_TRUE(deferredLinkMgr.caches_.size() == 1);
 
     std::vector<std::string> domains;
     domains.emplace_back(BUNDLE_DOMAIN_WRONG);
     auto link = deferredLinkMgr.GetDeferredLink(BUNDLE_NAME, domains);
 
     EXPECT_TRUE(link.empty());
-    EXPECT_TRUE(deferredLinkMgr.caches.size() == 1);
+    EXPECT_TRUE(deferredLinkMgr.caches_.size() == 1);
 }
 
 /**
@@ -205,14 +206,14 @@ HWTEST_F(DeferredLinkMgrTest, DeferredLinkGetTest004, TestSize.Level0)
     deferredLinkMgr.abilityFilter_ = filter;
     deferredLinkMgr.PutDeferredLink(
         { .domain = BUNDLE_DOMAIN, .url = BUNDLE_URL, .timeStamp = GetSecondsSince1970ToNow() });
-    EXPECT_TRUE(deferredLinkMgr.caches.size() == 1);
+    EXPECT_TRUE(deferredLinkMgr.caches_.size() == 1);
 
     std::vector<std::string> domains;
     domains.emplace_back(BUNDLE_DOMAIN);
     auto link = deferredLinkMgr.GetDeferredLink(BUNDLE_NAME_WRONG, domains);
 
     EXPECT_TRUE(link.empty());
-    EXPECT_TRUE(deferredLinkMgr.caches.size() == 1);
+    EXPECT_TRUE(deferredLinkMgr.caches_.size() == 1);
 }
 
 /**
@@ -231,7 +232,7 @@ HWTEST_F(DeferredLinkMgrTest, DeferredLinkGetTest005, TestSize.Level0)
         { .domain = BUNDLE_DOMAIN, .url = BUNDLE_URL, .timeStamp = GetSecondsSince1970ToNow() });
     deferredLinkMgr.PutDeferredLink(
         { .domain = BUNDLE_DOMAIN, .url = BUNDLE_URL_NEW, .timeStamp = GetSecondsSince1970ToNow() });
-    EXPECT_TRUE(deferredLinkMgr.caches.size() == 2);
+    EXPECT_TRUE(deferredLinkMgr.caches_.size() == 2);
 
     std::vector<std::string> domains;
     domains.emplace_back(BUNDLE_DOMAIN);
@@ -239,7 +240,10 @@ HWTEST_F(DeferredLinkMgrTest, DeferredLinkGetTest005, TestSize.Level0)
 
     EXPECT_FALSE(link.empty());
     EXPECT_EQ(link, BUNDLE_URL_NEW);
-    EXPECT_TRUE(deferredLinkMgr.caches.empty());
+    EXPECT_TRUE(deferredLinkMgr.caches_.empty());
+
+    auto link1 = deferredLinkMgr.GetDeferredLink(BUNDLE_NAME, domains);
+    EXPECT_TRUE(link1.empty());
 }
 
 /**

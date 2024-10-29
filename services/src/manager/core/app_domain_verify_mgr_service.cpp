@@ -345,7 +345,7 @@ int AppDomainVerifyMgrService::GetDeferredLink(std::string& link)
             return CommonErrorCode::E_OK;
         } else {
             APP_DOMAIN_VERIFY_HILOGW(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "can not get associate domains");
-            return CommonErrorCode::E_INTERNAL_ERR;
+            return CommonErrorCode::E_OK;
         }
     } else {
         APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "can not get bundleName.");
