@@ -74,8 +74,6 @@ void DeferredLinkMgr::AgeCacheProcess()
     std::unique_lock<std::mutex> lock(cachesMutex_);
     int64_t now = GetSecondsSince1970ToNow();
     caches_.remove_if([now](const DeferredLinkInfo& linkInfo) {
-        APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE,
-            "url:%{public}s, now:%{public}lld, timestamp%{public}lld.", linkInfo.url.c_str(), now, linkInfo.timeStamp);
         return now - linkInfo.timeStamp >= MAX_CACHE_TIME;
     });
     if (!caches_.empty()) {

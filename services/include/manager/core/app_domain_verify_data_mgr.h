@@ -33,7 +33,7 @@ public:
     virtual ~AppDomainVerifyDataMgr();
 
     /**
-     * @brief GetDeferredLink AppDomainVerify status.
+     * @brief Get AppDomainVerify status.
      * @param bundleName Indicates the bundleName.
      * @param verifyResultInfo output value.
      * @return Returns true if this function is successfully called; returns false
@@ -68,7 +68,7 @@ public:
     bool DeleteVerifyStatus(const std::string& bundleName);
 
     /**
-     * @brief GetDeferredLink all AppDomainVerify status.
+     * @brief Get all AppDomainVerify status.
      * @return Returns verifyMap_ const ref
      * otherwise.
      */
