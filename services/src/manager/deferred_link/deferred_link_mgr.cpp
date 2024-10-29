@@ -90,7 +90,7 @@ void DeferredLinkMgr::CheckStartTimerUnlocked()
         PostAgeCacheTask();
     }
 }
-void DeferredLinkMgr::CheckFullUnlocked(const DeferredLinkInfo& info)
+void DeferredLinkMgr::CheckFullUnlocked()
 {
     if (caches_.size() == MAX_CACHE_SIZE) {
         caches_.pop_back();
