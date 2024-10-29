@@ -12,15 +12,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#ifndef APP_DOMAIN_VERIFY_COMM_DEFINE_H
-#define APP_DOMAIN_VERIFY_COMM_DEFINE_H
+
+#ifndef APP_DOMAIN_VERIFY_NAPI_VALUE_UTIL_H
+#define APP_DOMAIN_VERIFY_NAPI_VALUE_UTIL_H
+#include <memory>
+#include "napi/native_api.h"
+#include "napi/native_node_api.h"
+#include "app_domain_verify_hilog.h"
+#include "comm_define.h"
 namespace OHOS::AppDomainVerify {
-enum CommonErrorCode: uint32_t {
-    E_OK = 0,
-    E_PERMISSION_DENIED = 201,
-    E_IS_NOT_SYS_APP = 202,
-    E_PARAM_ERROR = 401,
-    E_INTERNAL_ERR = 29900001,
-};
+std::string GetString(napi_env env, napi_value value);
+napi_value BuildString(const napi_env& env, const std::string& data);
+napi_value BuildStringArray(const napi_env& env, const std::vector<std::string>& data);
+bool CheckInput(const std::string& input);
+napi_value BuildError(const napi_env& env, uint32_t errorCode, const char* errorMsg);
 }
-#endif  // APP_DOMAIN_VERIFY_COMM_DEFINE_H
+#endif  // APP_DOMAIN_VERIFY_NAPI_VALUE_UTIL_H

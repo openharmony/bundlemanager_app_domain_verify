@@ -12,15 +12,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#ifndef APP_DOMAIN_VERIFY_COMM_DEFINE_H
-#define APP_DOMAIN_VERIFY_COMM_DEFINE_H
+
+#ifndef APP_DOMAIN_VERIFY_DEFERRED_LINK_NAPI_H
+#define APP_DOMAIN_VERIFY_DEFERRED_LINK_NAPI_H
+#include "napi/native_api.h"
+#include "napi/native_node_api.h"
 namespace OHOS::AppDomainVerify {
-enum CommonErrorCode: uint32_t {
-    E_OK = 0,
-    E_PERMISSION_DENIED = 201,
-    E_IS_NOT_SYS_APP = 202,
-    E_PARAM_ERROR = 401,
-    E_INTERNAL_ERR = 29900001,
-};
+napi_value GetDeferredLink(napi_env env, napi_callback_info info);
 }
-#endif  // APP_DOMAIN_VERIFY_COMM_DEFINE_H
+#endif  // APP_DOMAIN_VERIFY_DEFERRED_LINK_NAPI_H

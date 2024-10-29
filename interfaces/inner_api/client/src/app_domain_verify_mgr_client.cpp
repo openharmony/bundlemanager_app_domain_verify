@@ -320,13 +320,6 @@ int AppDomainVerifyMgrClient::QueryAssociatedBundleNames(
 int AppDomainVerifyMgrClient::GetDeferredLink(std::string& link)
 {
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "called");
-    std::string bundleName;
-
-    if(!BundleInfoQuery::GetBundleNameSelf(bundleName)){
-        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "can not get bundleName");
-        return CommonErrorCode::E_INTERNAL_ERR;
-    }
-    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "bundleInfo %{public}s", bundleName.c_str());
     std::lock_guard<std::mutex> autoLock(proxyLock_);
     if (IsServiceAvailable()) {
         return appDomainVerifyMgrServiceProxy_->GetDeferredLink(link);

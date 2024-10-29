@@ -44,14 +44,14 @@ public:
     /**
      * PutDeferredLink
      * @descrition put deferred link info
-     * @param domain the domain of url.
-     * @param url the url to open.
+     * @param info the link.
      */
     void PutDeferredLink(const DeferredLinkInfo& info);
 
     /**
      * GetDeferredLink
      * @descrition get deferred link within domains and bundleName
+     * @param bundleName the bundleName to filter link info.
      * @param domains the domains to filter link info.
      * @return url the deferred url to open.
      */
@@ -70,7 +70,7 @@ private:
      * cache list
      * @descrition list contains deferred link info, newly in front, older in back.
      */
-    std::list<DeferredLinkInfo> caches;
+    std::list<DeferredLinkInfo> caches_;
     std::mutex cachesMutex_;
     std::shared_ptr<AppExecFwk::EventHandler> ageHandler_;
     std::shared_ptr<AppExecFwk::EventRunner> ageRunner_;
