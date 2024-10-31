@@ -33,6 +33,7 @@ public:
      * @return bool return true if can match abilities else false.
      */
     virtual bool Filter(const FilterInfo& info) = 0;
+    virtual void SetBundleName(const std::string& bundleName);
     virtual ~AbilityFilter() = default;
     static std::shared_ptr<AbilityFilter> Create();
 };

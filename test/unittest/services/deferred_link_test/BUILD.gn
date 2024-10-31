@@ -43,6 +43,7 @@ ohos_unittest("deferred_link_test") {
   module_out_path = module_output_path
 
   sources = [
+    "${app_domain_verify_frameworks_common_path}/src/bms/bundle_info_query.cpp",
     "${app_domain_verify_service_path}/src/manager/deferred_link/ability_filter.cpp",
     "${app_domain_verify_service_path}/src/manager/deferred_link/deferred_link_mgr.cpp",
     "${app_domain_verify_test_path}/mock/src/mock_bundle_manager.cpp",
