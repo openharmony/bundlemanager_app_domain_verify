@@ -24,13 +24,10 @@ using AbilityInfo = OHOS::AppExecFwk::AbilityInfo;
 constexpr const char* ACTION_VIEW_DATA = "ohos.want.action.viewData";
 constexpr const char* ENTITY_BROWSER = "entity.system.browsable";
 class BundleInfoQuery {
-
 public:
     static bool GetBundleInfo(const std::string& bundleName, std::string& appIdentifier, std::string& fingerprint);
-    static bool GetBundleNameForUid(const int uid, std::string& bundleName);
-    static bool QueryAbilityInfosByUrl(
-        const std::string& bundleName, const std::string& url, std::vector<AbilityInfo>& abilityInfos);
-    static bool GetBundleInfosV9(const std::string& bundleName, std::vector<AbilityInfo>& abilityInfos);
+    static bool GetBundleNameForUid(int uid, std::string& bundleName);
+    static bool GetBundleAbilityInfos(const std::string& bundleName, std::vector<AbilityInfo>& abilityInfos);
 
 private:
     static sptr<AppExecFwk::IBundleMgr> GetBundleMgrProxy();

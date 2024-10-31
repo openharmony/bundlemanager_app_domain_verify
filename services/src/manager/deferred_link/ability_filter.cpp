@@ -13,72 +13,47 @@
  * limitations under the License.
  */
 #include <string>
+#include <utility>
 #include "ability_filter.h"
 #include "bundle_info_query.h"
 #include "app_domain_verify_hilog.h"
 
 namespace OHOS::AppDomainVerify {
 using Skill = OHOS::AppExecFwk::Skill;
-class AbilityFilterImpl : public AbilityFilter {
-public:
-    void SetBundleName(const std::string& bundleName) override
-    {
-        AbilityFilter::SetBundleName(bundleName);
-    }
-    bool Filter(const FilterInfo& info) override
-    {
-        bool result{ false };
-        std::vector<AbilityInfo> abilityInfos;
-        if (BundleInfoQuery::QueryAbilityInfosByUrl(info.bundleName, info.url, abilityInfos)) {
-            result = !abilityInfos.empty();
-        }
-        return result;
-    }
-};
 
 class BundleAbilityFilterImpl : public AbilityFilter {
 public:
-    void SetBundleName(const std::string& bundleName) override
+    explicit BundleAbilityFilterImpl(std::string bundleName) : bundleName_(std::move(bundleName))
     {
-        this->bundleName_ = bundleName;
         Init();
     }
     bool Filter(const FilterInfo& info) override
     {
-        Want want;
-        want.SetUri(info.url);
-        want.AddEntity(ENTITY_BROWSER);
-        want.SetAction(ACTION_VIEW_DATA);
+        Want urlWant;
+        urlWant.SetUri(info.url);
+        urlWant.AddEntity(ENTITY_BROWSER);
+        urlWant.SetAction(ACTION_VIEW_DATA);
 
         auto matchedAbility = std::find_if(
-            abilityInfos_.begin(), abilityInfos_.end(), [&want](const AbilityInfo& abilityInfo) {
+            abilityInfos_.cbegin(), abilityInfos_.cend(), [&urlWant](const AbilityInfo& abilityInfo) {
                 APP_DOMAIN_VERIFY_HILOGD(
                     APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "abilityInfo:%{private}s", abilityInfo.name.c_str());
                 auto skills = abilityInfo.skills;
-                auto matchedSkill = std::find_if(skills.begin(), skills.end(), [&want](const Skill& skill) {
-                    APP_DOMAIN_VERIFY_HILOGD(
-                        APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "domainVerify:%{private}d", skill.domainVerify);
-                    if (skill.domainVerify && skill.Match(want)) {
+                auto matchedSkill = std::find_if(skills.cbegin(), skills.cend(), [&urlWant](const Skill& skill) {
+                    if (skill.domainVerify && skill.Match(urlWant)) {
                         APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "skill matched");
                         return true;
                     }
                     return false;
                 });
-                if (matchedSkill != skills.end()) {
-                    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "skill matched");
-                    return true;
-                }
-                return true;
+                return matchedSkill != skills.cend();
             });
-        if (matchedAbility != abilityInfos_.end()) {
-            APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "ability matched");
-            return true;
-        }
-        return false;
+
+        return matchedAbility != abilityInfos_.cend();
     }
     void Init()
     {
-        BundleInfoQuery::GetBundleInfosV9(bundleName_, abilityInfos_);
+        BundleInfoQuery::GetBundleAbilityInfos(bundleName_, abilityInfos_);
         APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "abilityInfos size:%zu", abilityInfos_.size());
     }
 
@@ -86,8 +61,8 @@ private:
     std::vector<AbilityInfo> abilityInfos_;
     std::string bundleName_;
 };
-std::shared_ptr<AbilityFilter> AbilityFilter::Create()
+std::shared_ptr<AbilityFilter> AbilityFilter::Create(const std::string& bundleName)
 {
-    return std::make_shared<BundleAbilityFilterImpl>();
+    return std::make_shared<BundleAbilityFilterImpl>(bundleName);
 }
 }

@@ -177,4 +177,19 @@ HWTEST_F(BundleInfoQueryTest, BundleInfoQueryTest008, TestSize.Level0)
     std::string fingerprint = FINGERPRINT;
     ASSERT_FALSE(BundleInfoQuery::GetBundleInfo(bundleName, appIdentifier, fingerprint));
 }
+
+/**
+ * @tc.name: BundleGetBundleNameForUidTest001
+ * @tc.desc: GetBundleName success.
+ * @tc.type: FUNC
+ */
+HWTEST_F(BundleInfoQueryTest, BundleGetBundleNameForUidTest001, TestSize.Level0)
+{
+    auto mocBundleMgrService = std::make_shared<OHOS::AppExecFwk::MocBundleMgrService>();
+    EXPECT_CALL(*mocBundleMgrService, GetBundleNameForUid(_, _)).WillOnce(Return(true));
+    g_mockBundleMgrService->impl = mocBundleMgrService;
+    int id = 0;
+    std::string bundleName;
+    ASSERT_TRUE(BundleInfoQuery::GetBundleNameForUid(id, bundleName));
+}
 }

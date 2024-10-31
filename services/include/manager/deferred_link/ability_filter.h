@@ -21,7 +21,6 @@
 
 namespace OHOS::AppDomainVerify {
 struct FilterInfo {
-    std::string bundleName;
     std::string url;
 };
 class AbilityFilter {
@@ -33,9 +32,8 @@ public:
      * @return bool return true if can match abilities else false.
      */
     virtual bool Filter(const FilterInfo& info) = 0;
-    virtual void SetBundleName(const std::string& bundleName);
     virtual ~AbilityFilter() = default;
-    static std::shared_ptr<AbilityFilter> Create();
+    static std::shared_ptr<AbilityFilter> Create(const std::string& bundleName);
 };
 }
 #endif  // APP_DOMAIN_VERIFY_ABILITY_FILTER_H

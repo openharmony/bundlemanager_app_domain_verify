@@ -60,7 +60,6 @@ public:
     ~DeferredLinkMgr();
 
 private:
-    bool CanMatchAbility(const std::string& bundleName, const std::string& url);
     void PostAgeCacheTask();
     void AgeCacheProcess();
     void CheckStartTimerUnlocked();
@@ -74,7 +73,6 @@ private:
     std::mutex cachesMutex_;
     std::shared_ptr<AppExecFwk::EventHandler> ageHandler_;
     std::shared_ptr<AppExecFwk::EventRunner> ageRunner_;
-    std::shared_ptr<AbilityFilter> abilityFilter_ = AbilityFilter::Create();
 };
 }
 #endif  // APP_DOMAIN_VERIFY_DEFERRED_LINK_MGR_H
