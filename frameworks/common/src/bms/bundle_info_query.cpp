@@ -23,8 +23,6 @@
 
 namespace OHOS {
 namespace AppDomainVerify {
-constexpr const char* ACTION_VIEW_DATA = "ohos.want.action.viewData";
-constexpr const char* ENTITY_BROWSER = "entity.system.browsable";
 constexpr int USER_ID_DEFAULT = 100;
 bool BundleInfoQuery::GetBundleInfo(const std::string& bundleName, std::string& appIdentifier, std::string& fingerprint)
 {
@@ -117,27 +115,7 @@ bool BundleInfoQuery::GetBundleNameForUid(const int uid, std::string& bundleName
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MODULE_COMMON, "call end");
     return true;
 }
-bool BundleInfoQuery::GetBundleNameSelf(std::string& bundleName)
-{
-    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MODULE_COMMON, "called");
-    sptr<AppExecFwk::IBundleMgr> bundleMgrProxy = GetBundleMgrProxy();
 
-    if (bundleMgrProxy == nullptr) {
-        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MODULE_COMMON, "bundleMgrProxy is nullptr.");
-        UNIVERSAL_ERROR_EVENT(CONNECT_OTHER_FAULT);
-        return false;
-    }
-
-    OHOS::AppExecFwk::BundleInfo bundleInfo;
-    auto ret = bundleMgrProxy->GetBundleInfoForSelf(0, bundleInfo);
-    if (ret != ERR_OK) {
-        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MODULE_COMMON, "GetBundleInfo failed, ret: %{public}d.", ret);
-        return false;
-    }
-    bundleName = bundleInfo.name;
-    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MODULE_COMMON, "call end");
-    return true;
-}
 bool BundleInfoQuery::QueryAbilityInfosByUrl(
     const std::string& bundleName, const std::string& url, std::vector<AbilityInfo>& abilityInfos)
 {
@@ -150,7 +128,7 @@ bool BundleInfoQuery::QueryAbilityInfosByUrl(
         return false;
     }
     Want want;
-    want.SetBundle(bundleName);
+    //    want.SetBundle(bundleName);
     want.SetUri(url);
     want.AddEntity(ENTITY_BROWSER);
     want.SetAction(ACTION_VIEW_DATA);
@@ -167,6 +145,29 @@ bool BundleInfoQuery::QueryAbilityInfosByUrl(
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MODULE_COMMON, "call end");
     return true;
 }
+bool BundleInfoQuery::GetBundleInfosV9(const std::string& bundleName, std::vector<AbilityInfo>& abilityInfos)
+{
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MODULE_COMMON, "called");
+    sptr<AppExecFwk::IBundleMgr> bundleMgrProxy = GetBundleMgrProxy();
 
+    if (bundleMgrProxy == nullptr) {
+        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MODULE_COMMON, "bundleMgrProxy is nullptr.");
+        UNIVERSAL_ERROR_EVENT(CONNECT_OTHER_FAULT);
+        return false;
+    }
+
+    AppExecFwk::BundleInfo bundleInfo;
+    // use sa identity
+    std::string identity = IPCSkeleton::ResetCallingIdentity();
+    auto ret = bundleMgrProxy->GetBundleInfoV9(
+        bundleName, AppExecFwk::AbilityInfoFlag::GET_ABILITY_INFO_DEFAULT, bundleInfo, USER_ID_DEFAULT);
+    IPCSkeleton::SetCallingIdentity(identity);
+    if (ret != ERR_OK) {
+        APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MODULE_COMMON, "GetBundleInfo failed, ret: %{public}d.", ret);
+        return false;
+    }
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MODULE_COMMON, "call end");
+    return true;
+};
 }
 }

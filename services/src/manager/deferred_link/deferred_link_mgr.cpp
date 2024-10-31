@@ -27,7 +27,7 @@ void DeferredLinkMgr::PutDeferredLink(const DeferredLinkInfo& info)
     std::unique_lock<std::mutex> lock(cachesMutex_);
     CheckStartTimerUnlocked();
     CheckRemoveExistedUnlocked(info);
-    CheckFullUnlocked(info);
+    CheckFullUnlocked();
 
     caches_.push_front(info);
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "info domain:%{private}s, url:%{private}s.",
@@ -59,6 +59,7 @@ std::string DeferredLinkMgr::GetDeferredLink(const std::string& bundleName, cons
 
 bool DeferredLinkMgr::CanMatchAbility(const std::string& bundleName, const std::string& url)
 {
+    abilityFilter_->SetBundleName(bundleName);
     return abilityFilter_->Filter({ .bundleName = bundleName, .url = url });
 }
 void DeferredLinkMgr::PostAgeCacheTask()
