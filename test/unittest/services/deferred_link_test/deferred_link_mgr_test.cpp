@@ -127,7 +127,7 @@ HWTEST_F(DeferredLinkMgrTest, DeferredLinkGetTest001, TestSize.Level0)
     deferredLinkMgr.ageHandler_ = nullptr;
     std::shared_ptr<MocAbilityFilter> filter = std::make_shared<MocAbilityFilter>();
     EXPECT_CALL(*filter, Filter(_)).Times(1).WillOnce(Return(true));
-    deferredLinkMgr.abilityFilter_ = filter;
+    MockAbilityFilter(filter);
     deferredLinkMgr.PutDeferredLink(
         { .domain = BUNDLE_DOMAIN, .url = BUNDLE_URL, .timeStamp = GetSecondsSince1970ToNow() });
     EXPECT_TRUE(deferredLinkMgr.caches_.size() == 1);
@@ -155,7 +155,7 @@ HWTEST_F(DeferredLinkMgrTest, DeferredLinkGetTest002, TestSize.Level0)
     deferredLinkMgr.ageHandler_ = nullptr;
     std::shared_ptr<MocAbilityFilter> filter = std::make_shared<MocAbilityFilter>();
     EXPECT_CALL(*filter, Filter(_)).Times(0);
-    deferredLinkMgr.abilityFilter_ = filter;
+    MockAbilityFilter(filter);
     deferredLinkMgr.PutDeferredLink(
         { .domain = BUNDLE_DOMAIN, .url = BUNDLE_URL, .timeStamp = GetSecondsSince1970ToNow() });
     EXPECT_TRUE(deferredLinkMgr.caches_.size() == 1);
@@ -179,7 +179,7 @@ HWTEST_F(DeferredLinkMgrTest, DeferredLinkGetTest003, TestSize.Level0)
     deferredLinkMgr.ageHandler_ = nullptr;
     std::shared_ptr<MocAbilityFilter> filter = std::make_shared<MocAbilityFilter>();
     EXPECT_CALL(*filter, Filter(_)).Times(0);
-    deferredLinkMgr.abilityFilter_ = filter;
+    MockAbilityFilter(filter);
     deferredLinkMgr.PutDeferredLink(
         { .domain = BUNDLE_DOMAIN, .url = BUNDLE_URL, .timeStamp = GetSecondsSince1970ToNow() });
     EXPECT_TRUE(deferredLinkMgr.caches_.size() == 1);
@@ -203,7 +203,7 @@ HWTEST_F(DeferredLinkMgrTest, DeferredLinkGetTest004, TestSize.Level0)
     deferredLinkMgr.ageHandler_ = nullptr;
     std::shared_ptr<MocAbilityFilter> filter = std::make_shared<MocAbilityFilter>();
     EXPECT_CALL(*filter, Filter(_)).Times(1).WillOnce(Return(false));
-    deferredLinkMgr.abilityFilter_ = filter;
+    MockAbilityFilter(filter);
     deferredLinkMgr.PutDeferredLink(
         { .domain = BUNDLE_DOMAIN, .url = BUNDLE_URL, .timeStamp = GetSecondsSince1970ToNow() });
     EXPECT_TRUE(deferredLinkMgr.caches_.size() == 1);
@@ -227,7 +227,7 @@ HWTEST_F(DeferredLinkMgrTest, DeferredLinkGetTest005, TestSize.Level0)
     deferredLinkMgr.ageHandler_ = nullptr;
     std::shared_ptr<MocAbilityFilter> filter = std::make_shared<MocAbilityFilter>();
     EXPECT_CALL(*filter, Filter(_)).Times(2).WillRepeatedly(Return(true));
-    deferredLinkMgr.abilityFilter_ = filter;
+    MockAbilityFilter(filter);
     deferredLinkMgr.PutDeferredLink(
         { .domain = BUNDLE_DOMAIN, .url = BUNDLE_URL, .timeStamp = GetSecondsSince1970ToNow() });
     deferredLinkMgr.PutDeferredLink(
@@ -256,7 +256,7 @@ HWTEST_F(DeferredLinkMgrTest, DeferredLinkGetTest006, TestSize.Level0)
     DeferredLinkMgr deferredLinkMgr;
     deferredLinkMgr.ageHandler_ = nullptr;
     std::shared_ptr<MocAbilityFilter> filter = std::make_shared<MocAbilityFilter>();
-    deferredLinkMgr.abilityFilter_ = filter;
+    MockAbilityFilter(filter);
 
     std::vector<std::string> domains;
     domains.emplace_back(BUNDLE_DOMAIN);

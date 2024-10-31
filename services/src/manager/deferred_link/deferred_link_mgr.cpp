@@ -17,7 +17,7 @@
 namespace OHOS::AppDomainVerify {
 namespace {
 constexpr const char* TASK_ID = "age";
-constexpr int32_t DELAY_TIME = 60000;        // 1min
+constexpr int32_t DELAY_TIME = 60000;    // 1min
 constexpr int64_t MAX_CACHE_TIME = 600;  // 10min
 constexpr int MAX_CACHE_SIZE = 50;
 }
@@ -39,29 +39,29 @@ std::string DeferredLinkMgr::GetDeferredLink(const std::string& bundleName, cons
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "called.");
 
     std::set<std::string> domainSet(domains.begin(), domains.end());
-    std::unique_lock<std::mutex> lock(cachesMutex_);
+    auto filter = AbilityFilter::Create(bundleName);
     std::list<DeferredLinkInfo> destination;
-    // find links in bundle's domain and can match bundle's ability, then remove all of them.
-    caches_.remove_if([this, &bundleName, &domainSet, &destination](const DeferredLinkInfo& linkInfo) {
-        if (domainSet.count(linkInfo.domain) != 0 && CanMatchAbility(bundleName, linkInfo.url)) {
-            // keep newly in front
-            destination.push_back(linkInfo);
-            APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "matched.");
-            return true;
-        }
-        return false;
-    });
+
+    {
+        std::unique_lock<std::mutex> lock(cachesMutex_);
+
+        // find links in bundle's domain and can match bundle's ability, then remove all of them.
+        caches_.remove_if([filter, &domainSet, &destination](const DeferredLinkInfo& linkInfo) {
+            if (domainSet.count(linkInfo.domain) != 0 && filter->Filter({ .url = linkInfo.url })) {
+                // keep newly in front
+                destination.push_back(linkInfo);
+                APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "matched.");
+                return true;
+            }
+            return false;
+        });
+    }
 
     std::string result = destination.empty() ? "" : destination.front().url;
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "get deferred url:%{private}s", result.c_str());
     return result;
 }
 
-bool DeferredLinkMgr::CanMatchAbility(const std::string& bundleName, const std::string& url)
-{
-    abilityFilter_->SetBundleName(bundleName);
-    return abilityFilter_->Filter({ .bundleName = bundleName, .url = url });
-}
 void DeferredLinkMgr::PostAgeCacheTask()
 {
     if (ageHandler_) {
@@ -74,9 +74,7 @@ void DeferredLinkMgr::AgeCacheProcess()
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "age func in.");
     std::unique_lock<std::mutex> lock(cachesMutex_);
     int64_t now = GetSecondsSince1970ToNow();
-    caches_.remove_if([now](const DeferredLinkInfo& linkInfo) {
-        return now - linkInfo.timeStamp >= MAX_CACHE_TIME;
-    });
+    caches_.remove_if([now](const DeferredLinkInfo& linkInfo) { return now - linkInfo.timeStamp >= MAX_CACHE_TIME; });
     if (!caches_.empty()) {
         APP_DOMAIN_VERIFY_HILOGD(
             APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "post continue age task, remain size:%{public}zu.", caches_.size());

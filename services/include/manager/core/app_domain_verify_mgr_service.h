@@ -65,7 +65,7 @@ private:
     bool IsWantImplicit(const OHOS::AAFwk::Want& want);
     static int CheckPermission();
     static void CollectDomains(const std::vector<SkillUri>& skillUris, VerifyResultInfo& verifyResultInfo);
-
+    bool IsUrlInBlackList(const std::string& url);
 private:
     std::shared_ptr<AppDomainVerifyDataMgr> dataManager_ = nullptr;
     bool InitConfigMgr();

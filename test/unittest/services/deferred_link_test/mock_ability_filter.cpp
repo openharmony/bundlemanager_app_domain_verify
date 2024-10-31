@@ -13,15 +13,18 @@
  * limitations under the License.
  */
 
-#ifndef APP_DOMAIN_VERIFY_MOCK_ABILITY_FILTER_H
-#define APP_DOMAIN_VERIFY_MOCK_ABILITY_FILTER_H
-#include "ability_filter.h"
-#include <gmock/gmock.h>
+#include "mock_ability_filter.h"
+
+#include <utility>
+
 namespace OHOS::AppDomainVerify {
-void MockAbilityFilter(std::shared_ptr<AbilityFilter> mockAbilityFilter);
-class MocAbilityFilter : public AbilityFilter {
-public:
-    MOCK_METHOD(bool, Filter, (const FilterInfo& info), (override));
-};
+std::shared_ptr<AbilityFilter> g_mockAbilityFilter = nullptr;
+void MockAbilityFilter(std::shared_ptr<AbilityFilter> mockAbilityFilter)
+{
+    g_mockAbilityFilter = std::move(mockAbilityFilter);
 }
-#endif  // APP_DOMAIN_VERIFY_MOCK_ABILITY_FILTER_H
+std::shared_ptr<AbilityFilter> AbilityFilter::Create(const std::string& bundleName)
+{
+    return g_mockAbilityFilter;
+}
+}

@@ -39,15 +39,18 @@ config("module_private_config") {
 }
 
 module_output_path = "app_domain_verify/app_domain_verify"
-ohos_unittest("deferred_link_test") {
+ohos_unittest("ability_filter_test") {
   module_out_path = module_output_path
 
   sources = [
     "${app_domain_verify_frameworks_common_path}/src/bms/bundle_info_query.cpp",
-    "${app_domain_verify_service_path}/src/manager/deferred_link/deferred_link_mgr.cpp",
+    "${app_domain_verify_service_path}/src/manager/deferred_link/ability_filter.cpp",
     "${app_domain_verify_test_path}/mock/src/mock_bundle_manager.cpp",
-    "deferred_link_mgr_test.cpp",
-    "mock_ability_filter.cpp",
+    "${app_domain_verify_test_path}/mock/src/mock_os_account_manager.cpp",
+    "${app_domain_verify_test_path}/mock/src/mock_service_registry.cpp",
+    "${app_domain_verify_test_path}/mock/src/mock_system_ability.cpp",
+    "${app_domain_verify_test_path}/mock/src/mock_system_ability_ondemand_reason.cpp",
+    "ability_filter_test.cpp",
   ]
   configs = [ ":module_private_config" ]
   external_deps = [

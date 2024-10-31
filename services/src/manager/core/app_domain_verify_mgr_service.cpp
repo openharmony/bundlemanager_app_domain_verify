@@ -110,7 +110,7 @@ bool AppDomainVerifyMgrService::FilterAbilities(const OHOS::AAFwk::Want& want,
             }
         }
     }
-    if (filteredAbilityInfos.empty()) {
+    if (filteredAbilityInfos.empty() && !IsUrlInBlackList(uriString)) {
         deferredLinkMgr_->PutDeferredLink(
             { .domain = hostVerifyKey, .url = uriString, .timeStamp = GetSecondsSince1970ToNow() });
     }
@@ -351,6 +351,10 @@ int AppDomainVerifyMgrService::GetDeferredLink(std::string& link)
         APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "can not get bundleName.");
         return CommonErrorCode::E_PERMISSION_DENIED;
     }
+}
+bool AppDomainVerifyMgrService::IsUrlInBlackList(const std::string& url)
+{
+    return IsAtomicServiceUrl(url);
 }
 }  // namespace AppDomainVerify
 }  // namespace OHOS
