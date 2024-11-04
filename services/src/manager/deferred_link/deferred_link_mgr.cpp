@@ -30,13 +30,20 @@ void DeferredLinkMgr::PutDeferredLink(const DeferredLinkInfo& info)
     CheckFullUnlocked();
 
     caches_.push_front(info);
-    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "info domain:%{private}s, url:%{private}s.",
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "info domain:%{private}s, link:%{private}s.",
         info.domain.c_str(), info.url.c_str());
 }
 
 std::string DeferredLinkMgr::GetDeferredLink(const std::string& bundleName, const std::vector<std::string>& domains)
 {
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "called.");
+    {
+        std::unique_lock<std::mutex> lock(cachesMutex_);
+        if (caches_.empty() || domains.empty() || bundleName.empty()) {
+            APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "empty to match return.");
+            return "";
+        }
+    }
 
     std::set<std::string> domainSet(domains.begin(), domains.end());
     auto filter = AbilityFilter::Create(bundleName);
@@ -44,7 +51,6 @@ std::string DeferredLinkMgr::GetDeferredLink(const std::string& bundleName, cons
 
     {
         std::unique_lock<std::mutex> lock(cachesMutex_);
-
         // find links in bundle's domain and can match bundle's ability, then remove all of them.
         caches_.remove_if([filter, &domainSet, &destination](const DeferredLinkInfo& linkInfo) {
             if (domainSet.count(linkInfo.domain) != 0 && filter->Filter({ .url = linkInfo.url })) {
@@ -58,7 +64,7 @@ std::string DeferredLinkMgr::GetDeferredLink(const std::string& bundleName, cons
     }
 
     std::string result = destination.empty() ? "" : destination.front().url;
-    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "get deferred url:%{private}s", result.c_str());
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "get deferred link:%{private}s", result.c_str());
     return result;
 }
 

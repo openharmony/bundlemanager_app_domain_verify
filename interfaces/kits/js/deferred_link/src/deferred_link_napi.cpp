@@ -28,7 +28,7 @@ using namespace Dfx;
 namespace {
 constexpr const char* GET_DEFERRED_LINK = "GetDeferredLink";
 }
-std::map<CommonErrorCode, const char*> ErrCodeMap = { { CommonErrorCode::E_INTERNAL_ERR, "Internal error." } };
+std::map<CommonErrorCode, const char*> g_ErrCodeMap = { { CommonErrorCode::E_INTERNAL_ERR, "Internal error." } };
 
 struct GetDeferredLinkCallbackInfo : public BaseCallbackInfo {
     GetDeferredLinkCallbackInfo(napi_env napiEnv, std::unique_ptr<Dfx::ApiEventReporter> reporter)
@@ -68,7 +68,7 @@ void GetDeferredLinkComplete(napi_env env, napi_status status, void* data)
         NAPI_CALL_RETURN_VOID(env, napi_get_null(env, &result[0]));
         result[ARGS_SIZE_ONE] = BuildString(env, asyncCallbackInfo->deferred_link);
     } else {
-        result[0] = BuildError(env, CommonErrorCode::E_INTERNAL_ERR, "internal error.");
+        result[0] = BuildError(env, CommonErrorCode::E_INTERNAL_ERR, g_ErrCodeMap[CommonErrorCode::E_INTERNAL_ERR]);
     }
     if (asyncCallbackInfo->deferred) {
         APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "is deferred");
