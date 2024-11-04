@@ -129,7 +129,9 @@ bool BundleInfoQuery::GetBundleAbilityInfos(const std::string& bundleName, std::
     AppExecFwk::BundleInfo bundleInfo;
     // use sa identity
     std::string identity = IPCSkeleton::ResetCallingIdentity();
-    auto ret = bundleMgrProxy->GetBundleInfo(bundleName, AppExecFwk::BundleFlag::GET_BUNDLE_WITH_ABILITIES, bundleInfo);
+    auto ret = bundleMgrProxy->GetBundleInfo(bundleName,
+        AppExecFwk::BundleFlag::GET_BUNDLE_WITH_ABILITIES | AppExecFwk::BundleFlag::GET_BUNDLE_WITH_SKILL, bundleInfo,
+        AppExecFwk::Constants::START_USERID);
     IPCSkeleton::SetCallingIdentity(identity);
     if (!ret) {
         APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MODULE_COMMON, "GetBundleInfo failed, ret: %{public}d.", ret);

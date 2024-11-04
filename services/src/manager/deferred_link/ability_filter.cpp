@@ -39,13 +39,9 @@ public:
                 APP_DOMAIN_VERIFY_HILOGD(
                     APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "abilityInfo:%{private}s", abilityInfo.name.c_str());
                 auto skills = abilityInfo.skills;
-                auto matchedSkill = std::find_if(skills.cbegin(), skills.cend(), [&urlWant](const Skill& skill) {
-                    if (skill.domainVerify && skill.Match(urlWant)) {
-                        APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "skill matched");
-                        return true;
-                    }
-                    return false;
-                });
+                auto matchedSkill = std::find_if(skills.cbegin(), skills.cend(),
+                    [&urlWant](const Skill& skill) { return skill.domainVerify && skill.Match(urlWant); });
+
                 return matchedSkill != skills.cend();
             });
 

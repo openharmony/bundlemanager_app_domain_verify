@@ -303,12 +303,6 @@ int AppDomainVerifyMgrClient::QueryAssociatedDomains(const std::string& bundleNa
 int AppDomainVerifyMgrClient::QueryAssociatedBundleNames(
     const std::string& domain, std::vector<std::string>& bundleNames)
 {
-
-
-    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "GetDeferredLink start");
-    std::string link;
-    GetDeferredLink(link);
-    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "GetDeferredLink end, link %{public}s", link.c_str());
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "called");
     std::lock_guard<std::mutex> autoLock(proxyLock_);
     if (IsServiceAvailable()) {
