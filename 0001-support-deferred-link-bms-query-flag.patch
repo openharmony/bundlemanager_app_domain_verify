@@ -1,0 +1,135 @@
+From 64ea47933a5572f42e6e399f778757b9b043712f Mon Sep 17 00:00:00 2001
+From: woohoa <wanghuan36@huawei.com>
+Date: Mon, 4 Nov 2024 16:36:40 +0800
+Subject: [PATCH] support deferred link bms query flag
+
+Change-Id: If3e6258e962e0b66a4e1555c3d8a3cca94f8345f
+---
+ frameworks/common/src/bms/bundle_info_query.cpp      |  4 +++-
+ .../client/src/app_domain_verify_mgr_client.cpp      |  6 ------
+ .../kits/js/deferred_link/src/deferred_link_napi.cpp |  4 ++--
+ .../src/manager/deferred_link/ability_filter.cpp     | 10 +++-------
+ .../src/manager/deferred_link/deferred_link_mgr.cpp  | 12 +++++++++---
+ 5 files changed, 17 insertions(+), 19 deletions(-)
+
+diff --git a/frameworks/common/src/bms/bundle_info_query.cpp b/frameworks/common/src/bms/bundle_info_query.cpp
+index daefb9d..1d63a6b 100644
+--- a/frameworks/common/src/bms/bundle_info_query.cpp
++++ b/frameworks/common/src/bms/bundle_info_query.cpp
+@@ -129,7 +129,9 @@ bool BundleInfoQuery::GetBundleAbilityInfos(const std::string& bundleName, std::
+     AppExecFwk::BundleInfo bundleInfo;
+     // use sa identity
+     std::string identity = IPCSkeleton::ResetCallingIdentity();
+-    auto ret = bundleMgrProxy->GetBundleInfo(bundleName, AppExecFwk::BundleFlag::GET_BUNDLE_WITH_ABILITIES, bundleInfo);
++    auto ret = bundleMgrProxy->GetBundleInfo(bundleName,
++        AppExecFwk::BundleFlag::GET_BUNDLE_WITH_ABILITIES | AppExecFwk::BundleFlag::GET_BUNDLE_WITH_SKILL, bundleInfo,
++        AppExecFwk::Constants::START_USERID);
+     IPCSkeleton::SetCallingIdentity(identity);
+     if (!ret) {
+         APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MODULE_COMMON, "GetBundleInfo failed, ret: %{public}d.", ret);
+diff --git a/interfaces/inner_api/client/src/app_domain_verify_mgr_client.cpp b/interfaces/inner_api/client/src/app_domain_verify_mgr_client.cpp
+index e794673..415371a 100644
+--- a/interfaces/inner_api/client/src/app_domain_verify_mgr_client.cpp
++++ b/interfaces/inner_api/client/src/app_domain_verify_mgr_client.cpp
+@@ -303,12 +303,6 @@ int AppDomainVerifyMgrClient::QueryAssociatedDomains(const std::string& bundleNa
+ int AppDomainVerifyMgrClient::QueryAssociatedBundleNames(
+     const std::string& domain, std::vector<std::string>& bundleNames)
+ {
+-
+-
+-    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "GetDeferredLink start");
+-    std::string link;
+-    GetDeferredLink(link);
+-    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "GetDeferredLink end, link %{public}s", link.c_str());
+     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "called");
+     std::lock_guard<std::mutex> autoLock(proxyLock_);
+     if (IsServiceAvailable()) {
+diff --git a/interfaces/kits/js/deferred_link/src/deferred_link_napi.cpp b/interfaces/kits/js/deferred_link/src/deferred_link_napi.cpp
+index 2d12832..ad79f60 100644
+--- a/interfaces/kits/js/deferred_link/src/deferred_link_napi.cpp
++++ b/interfaces/kits/js/deferred_link/src/deferred_link_napi.cpp
+@@ -28,7 +28,7 @@ using namespace Dfx;
+ namespace {
+ constexpr const char* GET_DEFERRED_LINK = "GetDeferredLink";
+ }
+-std::map<CommonErrorCode, const char*> ErrCodeMap = { { CommonErrorCode::E_INTERNAL_ERR, "Internal error." } };
++std::map<CommonErrorCode, const char*> g_ErrCodeMap = { { CommonErrorCode::E_INTERNAL_ERR, "Internal error." } };
+ 
+ struct GetDeferredLinkCallbackInfo : public BaseCallbackInfo {
+     GetDeferredLinkCallbackInfo(napi_env napiEnv, std::unique_ptr<Dfx::ApiEventReporter> reporter)
+@@ -68,7 +68,7 @@ void GetDeferredLinkComplete(napi_env env, napi_status status, void* data)
+         NAPI_CALL_RETURN_VOID(env, napi_get_null(env, &result[0]));
+         result[ARGS_SIZE_ONE] = BuildString(env, asyncCallbackInfo->deferred_link);
+     } else {
+-        result[0] = BuildError(env, CommonErrorCode::E_INTERNAL_ERR, "internal error.");
++        result[0] = BuildError(env, CommonErrorCode::E_INTERNAL_ERR, g_ErrCodeMap[CommonErrorCode::E_INTERNAL_ERR]);
+     }
+     if (asyncCallbackInfo->deferred) {
+         APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "is deferred");
+diff --git a/services/src/manager/deferred_link/ability_filter.cpp b/services/src/manager/deferred_link/ability_filter.cpp
+index e918806..5711b15 100644
+--- a/services/src/manager/deferred_link/ability_filter.cpp
++++ b/services/src/manager/deferred_link/ability_filter.cpp
+@@ -39,13 +39,9 @@ public:
+                 APP_DOMAIN_VERIFY_HILOGD(
+                     APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "abilityInfo:%{private}s", abilityInfo.name.c_str());
+                 auto skills = abilityInfo.skills;
+-                auto matchedSkill = std::find_if(skills.cbegin(), skills.cend(), [&urlWant](const Skill& skill) {
+-                    if (skill.domainVerify && skill.Match(urlWant)) {
+-                        APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "skill matched");
+-                        return true;
+-                    }
+-                    return false;
+-                });
++                auto matchedSkill = std::find_if(skills.cbegin(), skills.cend(),
++                    [&urlWant](const Skill& skill) { return skill.domainVerify && skill.Match(urlWant); });
++
+                 return matchedSkill != skills.cend();
+             });
+ 
+diff --git a/services/src/manager/deferred_link/deferred_link_mgr.cpp b/services/src/manager/deferred_link/deferred_link_mgr.cpp
+index d982508..3868a81 100644
+--- a/services/src/manager/deferred_link/deferred_link_mgr.cpp
++++ b/services/src/manager/deferred_link/deferred_link_mgr.cpp
+@@ -30,13 +30,20 @@ void DeferredLinkMgr::PutDeferredLink(const DeferredLinkInfo& info)
+     CheckFullUnlocked();
+ 
+     caches_.push_front(info);
+-    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "info domain:%{private}s, url:%{private}s.",
++    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "info domain:%{private}s, link:%{private}s.",
+         info.domain.c_str(), info.url.c_str());
+ }
+ 
+ std::string DeferredLinkMgr::GetDeferredLink(const std::string& bundleName, const std::vector<std::string>& domains)
+ {
+     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "called.");
++    {
++        std::unique_lock<std::mutex> lock(cachesMutex_);
++        if (caches_.empty() || domains.empty() || bundleName.empty()) {
++            APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "empty to match return.");
++            return "";
++        }
++    }
+ 
+     std::set<std::string> domainSet(domains.begin(), domains.end());
+     auto filter = AbilityFilter::Create(bundleName);
+@@ -44,7 +51,6 @@ std::string DeferredLinkMgr::GetDeferredLink(const std::string& bundleName, cons
+ 
+     {
+         std::unique_lock<std::mutex> lock(cachesMutex_);
+-
+         // find links in bundle's domain and can match bundle's ability, then remove all of them.
+         caches_.remove_if([filter, &domainSet, &destination](const DeferredLinkInfo& linkInfo) {
+             if (domainSet.count(linkInfo.domain) != 0 && filter->Filter({ .url = linkInfo.url })) {
+@@ -58,7 +64,7 @@ std::string DeferredLinkMgr::GetDeferredLink(const std::string& bundleName, cons
+     }
+ 
+     std::string result = destination.empty() ? "" : destination.front().url;
+-    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "get deferred url:%{private}s", result.c_str());
++    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "get deferred link:%{private}s", result.c_str());
+     return result;
+ }
+ 
+-- 
+2.25.1
+

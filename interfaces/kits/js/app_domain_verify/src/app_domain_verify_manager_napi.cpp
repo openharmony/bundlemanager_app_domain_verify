@@ -37,22 +37,22 @@ napi_value QueryAssociatedDomains(napi_env env, napi_callback_info info)
     NAPI_CALL_BASE(env, napi_get_cb_info(env, info, &argc, args, nullptr, nullptr), nullptr);
     std::string bundleName = GetString(env, args[0]);
     if (!CheckInput(bundleName)) {
-        reporter.WriteEndEvent(API_FAIL, CommonErrorCode::E_PARAM_ERROR);
+        reporter.SetEvent(API_FAIL, CommonErrorCode::E_PARAM_ERROR);
         return BuildError(env, CommonErrorCode::E_PARAM_ERROR, ErrCodeMap[CommonErrorCode::E_PARAM_ERROR]);
     }
     std::vector<std::string> domains;
     auto ret = AppDomainVerifyMgrClient::GetInstance()->QueryAssociatedDomains(bundleName, domains);
     if (ret != 0) {
         if (ErrCodeMap.count(static_cast<CommonErrorCode>(ret)) != 0) {
-            reporter.WriteEndEvent(API_FAIL, static_cast<CommonErrorCode>(ret));
+            reporter.SetEvent(API_FAIL, static_cast<CommonErrorCode>(ret));
             return BuildError(env, static_cast<CommonErrorCode>(ret), ErrCodeMap[static_cast<CommonErrorCode>(ret)]);
         } else {
             APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "unknown error:%{public}d.", ret);
-            reporter.WriteEndEvent(API_FAIL, ret);
+            reporter.SetEvent(API_FAIL, ret);
             return BuildStringArray(env, domains);
         }
     }
-    reporter.WriteEndEvent(API_SUCCESS, ret);
+    reporter.SetEvent(API_SUCCESS, ret);
     return BuildStringArray(env, domains);
 }
 napi_value QueryAssociatedBundleNames(napi_env env, napi_callback_info info)
@@ -64,22 +64,22 @@ napi_value QueryAssociatedBundleNames(napi_env env, napi_callback_info info)
     NAPI_CALL_BASE(env, napi_get_cb_info(env, info, &argc, args, nullptr, nullptr), nullptr);
     std::string domain = GetString(env, args[0]);
     if (!CheckInput(domain)) {
-        reporter.WriteEndEvent(API_FAIL, CommonErrorCode::E_PARAM_ERROR);
+        reporter.SetEvent(API_FAIL, CommonErrorCode::E_PARAM_ERROR);
         return BuildError(env, CommonErrorCode::E_PARAM_ERROR, ErrCodeMap[CommonErrorCode::E_PARAM_ERROR]);
     }
     std::vector<std::string> bundleNames;
     auto ret = AppDomainVerifyMgrClient::GetInstance()->QueryAssociatedBundleNames(domain, bundleNames);
     if (ret != 0) {
         if (ErrCodeMap.count(static_cast<CommonErrorCode>(ret)) != 0) {
-            reporter.WriteEndEvent(API_FAIL, static_cast<CommonErrorCode>(ret));
+            reporter.SetEvent(API_FAIL, static_cast<CommonErrorCode>(ret));
             return BuildError(env, static_cast<CommonErrorCode>(ret), ErrCodeMap[static_cast<CommonErrorCode>(ret)]);
         } else {
             APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "unknown error:%{public}d.", ret);
-            reporter.WriteEndEvent(API_FAIL, ret);
+            reporter.SetEvent(API_FAIL, ret);
             return BuildStringArray(env, bundleNames);
         }
     }
-    reporter.WriteEndEvent(API_SUCCESS, ret);
+    reporter.SetEvent(API_SUCCESS, ret);
     return BuildStringArray(env, bundleNames);
 }
 }

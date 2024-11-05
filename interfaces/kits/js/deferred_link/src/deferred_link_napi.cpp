@@ -68,6 +68,7 @@ void GetDeferredLinkComplete(napi_env env, napi_status status, void* data)
         NAPI_CALL_RETURN_VOID(env, napi_get_null(env, &result[0]));
         result[ARGS_SIZE_ONE] = BuildString(env, asyncCallbackInfo->deferred_link);
     } else {
+        asyncCallbackInfo->apiReporter->SetEvent(API_FAIL, CommonErrorCode::E_INTERNAL_ERR);
         result[0] = BuildError(env, CommonErrorCode::E_INTERNAL_ERR, g_ErrCodeMap[CommonErrorCode::E_INTERNAL_ERR]);
     }
     if (asyncCallbackInfo->deferred) {
@@ -85,7 +86,7 @@ void GetDeferredLinkComplete(napi_env env, napi_status status, void* data)
         NAPI_CALL_RETURN_VOID(
             env, napi_call_function(env, nullptr, callback, sizeof(result) / sizeof(result[0]), result, &placeHolder));
     }
-    callbackPtr->apiReporter->WriteEndEvent(API_SUCCESS, asyncCallbackInfo->err);
+    callbackPtr->apiReporter->SetEvent(API_SUCCESS, asyncCallbackInfo->err);
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "called end");
 }
 

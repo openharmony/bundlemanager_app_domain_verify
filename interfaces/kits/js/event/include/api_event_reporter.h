@@ -22,16 +22,19 @@ constexpr int32_t API_FAIL = 1;
 class ApiEventReporter {
 public:
     explicit ApiEventReporter(const std::string& apiName);
-    ~ApiEventReporter() = default;
-    void WriteEndEvent(const int result, const int32_t errCode);
+    ~ApiEventReporter();
+    void SetEvent(const int result, const int32_t errCode);
 
 private:
+    void WriteEndEvent(const int result, const int32_t errCode);
     int64_t AddProcessor();
 
 private:
     std::string transId_;
     std::string apiName_;
     int64_t startTime_;
+    int result_{ API_FAIL };
+    int32_t errCode_{ -1 };
 };
 }
 #endif  // APP_DOMAIN_VERIFY_MANAGER_API_EVENT_REPORTER_H
