@@ -104,13 +104,4 @@ void ApiEventReporter::WriteEndEvent(const int result, const int32_t errCode)
         "errCode:%{public}d, ret:%{public}d",
         transId_.c_str(), apiName_.c_str(), SDK_NAME.c_str(), result, errCode, ret);
 }
-void ApiEventReporter::SetEvent(const int result, const int errCode)
-{
-    result_ = result;
-    errCode_ = errCode;
-}
-ApiEventReporter::~ApiEventReporter()
-{
-    WriteEndEvent(result_, errCode_);
-}
 }
