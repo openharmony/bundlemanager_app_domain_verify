@@ -13,12 +13,10 @@
 
 import("//build/ohos.gni")
 import("//foundation/bundlemanager/app_domain_verify/app_domain_verify.gni")
-config("app_domain_verify_deferred_link_config") {
+config("app_domain_verify_mgr_napi_config") {
   visibility = [ ":*" ]
   include_dirs = [
     "include",
-    "${app_domain_verify_kits_path}/event/include",
-    "${app_domain_verify_kits_path}/napi_utils/include",
     "${app_domain_verify_client_path}/include",
     "${app_domain_verify_common_path}/include",
     "${app_domain_verify_common_path}/include/zidl",
@@ -40,17 +38,15 @@ config("app_domain_verify_deferred_link_config") {
   ]
 }
 
-ohos_shared_library("deferredlink_napi") {
+ohos_shared_library("appdomainverify_napi") {
   branch_protector_ret = "pac_ret"
   sources = [
-    "${app_domain_verify_kits_path}/event/src/api_event_reporter.cpp",
-    "${app_domain_verify_kits_path}/event/src/config_parser.cpp",
-    "${app_domain_verify_kits_path}/napi_utils/src/napi_async_utils.cpp",
-    "${app_domain_verify_kits_path}/napi_utils/src/napi_value_utils.cpp",
-    "src/deferred_link_napi.cpp",
+    "src/api_event_reporter.cpp",
+    "src/app_domain_verify_manager_napi.cpp",
+    "src/config_parser.cpp",
     "src/native_module.cpp",
   ]
-  public_configs = [ ":app_domain_verify_deferred_link_config" ]
+  public_configs = [ ":app_domain_verify_mgr_napi_config" ]
   deps = [
     "${app_domain_verify_client_path}:app_domain_verify_mgr_client",
     "${app_domain_verify_common_path}:app_domain_verify_common",
