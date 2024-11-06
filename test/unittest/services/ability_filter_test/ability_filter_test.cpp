@@ -99,108 +99,108 @@ HWTEST_F(AbilityFilterTest, AbilityFilterTest001, TestSize.Level0)
     auto filter = AbilityFilter::Create(BUNDLE_NAME);
     EXPECT_TRUE(filter->Filter({ .url = BUNDLE_URL }));
 }
-//
-///**
-// * @tc.name: DeferredLinkPutTest002
-// * @tc.desc: filter with bms error.
-// * @tc.type: FUNC
-// */
-//HWTEST_F(AbilityFilterTest, AbilityFilterTest002, TestSize.Level0)
-//{
-//    auto mocBundleMgrService = std::make_shared<OHOS::AppExecFwk::MocBundleMgrService>();
-//    EXPECT_CALL(*mocBundleMgrService, GetBundleInfo(_, _, _, _)).WillOnce(Return(false));
-//    g_mockBundleMgrService->impl = mocBundleMgrService;
-//
-//    auto filter = AbilityFilter::Create(BUNDLE_NAME);
-//    EXPECT_FALSE(filter->Filter({ .url = BUNDLE_URL }));
-//}
-//
-///**
-// * @tc.name: DeferredLinkPutTest003
-// * @tc.desc: filter with no abilities.
-// * @tc.type: FUNC
-// */
-//HWTEST_F(AbilityFilterTest, DeferredLinkPutTest003, TestSize.Level0)
-//{
-//
-//    auto mocBundleMgrService = std::make_shared<OHOS::AppExecFwk::MocBundleMgrService>();
-//    EXPECT_CALL(*mocBundleMgrService, GetBundleInfo(_, _, _, _)).WillOnce(Return(true));
-//    g_mockBundleMgrService->impl = mocBundleMgrService;
-//
-//    auto filter = AbilityFilter::Create(BUNDLE_NAME);
-//    EXPECT_FALSE(filter->Filter({ .url = BUNDLE_URL }));
-//}
-//
-///**
-// * @tc.name: DeferredLinkPutTest004
-// * @tc.desc: filter with no skill.
-// * @tc.type: FUNC
-// */
-//HWTEST_F(AbilityFilterTest, DeferredLinkPutTest004, TestSize.Level0)
-//{
-//    std::vector<Skill> skills;
-//    AbilityInfo abilityInfo;
-//    abilityInfo.skills = skills;
-//    g_mockAbilityInfos.push_back(abilityInfo);
-//    auto mocBundleMgrService = std::make_shared<OHOS::AppExecFwk::MocBundleMgrService>();
-//    EXPECT_CALL(*mocBundleMgrService, GetBundleInfo(_, _, _, _)).WillOnce(Return(true));
-//    g_mockBundleMgrService->impl = mocBundleMgrService;
-//
-//    auto filter = AbilityFilter::Create(BUNDLE_NAME);
-//    EXPECT_FALSE(filter->Filter({ .url = BUNDLE_URL }));
-//}
-//
-///**
-// * @tc.name: DeferredLinkPutTest005
-// * @tc.desc: filter with no domainVerify skill.
-// * @tc.type: FUNC
-// */
-//HWTEST_F(AbilityFilterTest, DeferredLinkPutTest005, TestSize.Level0)
-//{
-//    std::vector<std::string> actions = { ACTION_VIEW_DATA };
-//    std::vector<std::string> entities = { ENTITY_BROWSER };
-//    std::vector<SkillUri> uris = { { .scheme = "https", .host = "www.openharmony.cn" } };
-//    Skill skill;
-//    skill.domainVerify = false;
-//    skill.actions = actions;
-//    skill.entities = entities;
-//    skill.uris = uris;
-//    std::vector<Skill> skills = { skill };
-//    AbilityInfo abilityInfo;
-//    abilityInfo.skills = skills;
-//    g_mockAbilityInfos.push_back(abilityInfo);
-//    auto mocBundleMgrService = std::make_shared<OHOS::AppExecFwk::MocBundleMgrService>();
-//    EXPECT_CALL(*mocBundleMgrService, GetBundleInfo(_, _, _, _)).WillOnce(Return(true));
-//    g_mockBundleMgrService->impl = mocBundleMgrService;
-//
-//    auto filter = AbilityFilter::Create(BUNDLE_NAME);
-//    EXPECT_FALSE(filter->Filter({ .url = BUNDLE_URL }));
-//}
-//
-///**
-// * @tc.name: DeferredLinkPutTest006
-// * @tc.desc: filter with no matched skill.
-// * @tc.type: FUNC
-// */
-//HWTEST_F(AbilityFilterTest, DeferredLinkPutTest006, TestSize.Level0)
-//{
-//    std::vector<std::string> actions = { ACTION_VIEW_DATA };
-//    std::vector<std::string> entities = { ENTITY_BROWSER };
-//    std::vector<SkillUri> uris = { { .scheme = "https", .host = "www.openharmony1.cn" } };
-//    Skill skill;
-//    skill.domainVerify = true;
-//    skill.actions = actions;
-//    skill.entities = entities;
-//    skill.uris = uris;
-//    std::vector<Skill> skills = { skill };
-//    AbilityInfo abilityInfo;
-//    abilityInfo.skills = skills;
-//    g_mockAbilityInfos.push_back(abilityInfo);
-//    auto mocBundleMgrService = std::make_shared<OHOS::AppExecFwk::MocBundleMgrService>();
-//    EXPECT_CALL(*mocBundleMgrService, GetBundleInfo(_, _, _, _)).WillOnce(Return(true));
-//    g_mockBundleMgrService->impl = mocBundleMgrService;
-//
-//    auto filter = AbilityFilter::Create(BUNDLE_NAME);
-//    EXPECT_FALSE(filter->Filter({ .url = BUNDLE_URL }));
-//}
+
+/**
+* @tc.name: DeferredLinkPutTest002
+* @tc.desc: filter with bms error.
+* @tc.type: FUNC
+*/
+HWTEST_F(AbilityFilterTest, AbilityFilterTest002, TestSize.Level0)
+{
+   auto mocBundleMgrService = std::make_shared<OHOS::AppExecFwk::MocBundleMgrService>();
+   EXPECT_CALL(*mocBundleMgrService, GetBundleInfo(_, _, _, _)).WillOnce(Return(false));
+   g_mockBundleMgrService->impl = mocBundleMgrService;
+
+   auto filter = AbilityFilter::Create(BUNDLE_NAME);
+   EXPECT_FALSE(filter->Filter({ .url = BUNDLE_URL }));
+}
+
+/**
+* @tc.name: DeferredLinkPutTest003
+* @tc.desc: filter with no abilities.
+* @tc.type: FUNC
+*/
+HWTEST_F(AbilityFilterTest, DeferredLinkPutTest003, TestSize.Level0)
+{
+
+   auto mocBundleMgrService = std::make_shared<OHOS::AppExecFwk::MocBundleMgrService>();
+   EXPECT_CALL(*mocBundleMgrService, GetBundleInfo(_, _, _, _)).WillOnce(Return(true));
+   g_mockBundleMgrService->impl = mocBundleMgrService;
+
+   auto filter = AbilityFilter::Create(BUNDLE_NAME);
+   EXPECT_FALSE(filter->Filter({ .url = BUNDLE_URL }));
+}
+
+/**
+* @tc.name: DeferredLinkPutTest004
+* @tc.desc: filter with no skill.
+* @tc.type: FUNC
+*/
+HWTEST_F(AbilityFilterTest, DeferredLinkPutTest004, TestSize.Level0)
+{
+   std::vector<Skill> skills;
+   AbilityInfo abilityInfo;
+   abilityInfo.skills = skills;
+   g_mockAbilityInfos.push_back(abilityInfo);
+   auto mocBundleMgrService = std::make_shared<OHOS::AppExecFwk::MocBundleMgrService>();
+   EXPECT_CALL(*mocBundleMgrService, GetBundleInfo(_, _, _, _)).WillOnce(Return(true));
+   g_mockBundleMgrService->impl = mocBundleMgrService;
+
+   auto filter = AbilityFilter::Create(BUNDLE_NAME);
+   EXPECT_FALSE(filter->Filter({ .url = BUNDLE_URL }));
+}
+
+/**
+* @tc.name: DeferredLinkPutTest005
+* @tc.desc: filter with no domainVerify skill.
+* @tc.type: FUNC
+*/
+HWTEST_F(AbilityFilterTest, DeferredLinkPutTest005, TestSize.Level0)
+{
+   std::vector<std::string> actions = { ACTION_VIEW_DATA };
+   std::vector<std::string> entities = { ENTITY_BROWSER };
+   std::vector<SkillUri> uris = { { .scheme = "https", .host = "www.openharmony.cn" } };
+   Skill skill;
+   skill.domainVerify = false;
+   skill.actions = actions;
+   skill.entities = entities;
+   skill.uris = uris;
+   std::vector<Skill> skills = { skill };
+   AbilityInfo abilityInfo;
+   abilityInfo.skills = skills;
+   g_mockAbilityInfos.push_back(abilityInfo);
+   auto mocBundleMgrService = std::make_shared<OHOS::AppExecFwk::MocBundleMgrService>();
+   EXPECT_CALL(*mocBundleMgrService, GetBundleInfo(_, _, _, _)).WillOnce(Return(true));
+   g_mockBundleMgrService->impl = mocBundleMgrService;
+
+   auto filter = AbilityFilter::Create(BUNDLE_NAME);
+   EXPECT_FALSE(filter->Filter({ .url = BUNDLE_URL }));
+}
+
+/**
+* @tc.name: DeferredLinkPutTest006
+* @tc.desc: filter with no matched skill.
+* @tc.type: FUNC
+*/
+HWTEST_F(AbilityFilterTest, DeferredLinkPutTest006, TestSize.Level0)
+{
+   std::vector<std::string> actions = { ACTION_VIEW_DATA };
+   std::vector<std::string> entities = { ENTITY_BROWSER };
+   std::vector<SkillUri> uris = { { .scheme = "https", .host = "www.openharmony1.cn" } };
+   Skill skill;
+   skill.domainVerify = true;
+   skill.actions = actions;
+   skill.entities = entities;
+   skill.uris = uris;
+   std::vector<Skill> skills = { skill };
+   AbilityInfo abilityInfo;
+   abilityInfo.skills = skills;
+   g_mockAbilityInfos.push_back(abilityInfo);
+   auto mocBundleMgrService = std::make_shared<OHOS::AppExecFwk::MocBundleMgrService>();
+   EXPECT_CALL(*mocBundleMgrService, GetBundleInfo(_, _, _, _)).WillOnce(Return(true));
+   g_mockBundleMgrService->impl = mocBundleMgrService;
+
+   auto filter = AbilityFilter::Create(BUNDLE_NAME);
+   EXPECT_FALSE(filter->Filter({ .url = BUNDLE_URL }));
+}
 }
