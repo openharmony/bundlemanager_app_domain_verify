@@ -12,15 +12,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#ifndef APP_DOMAIN_VERIFY_COMM_DEFINE_H
-#define APP_DOMAIN_VERIFY_COMM_DEFINE_H
+
+#ifndef APP_DOMAIN_VERIFY_MOCK_ABILITY_FILTER_H
+#define APP_DOMAIN_VERIFY_MOCK_ABILITY_FILTER_H
+#include "ability_filter.h"
+#include <gmock/gmock.h>
 namespace OHOS::AppDomainVerify {
-enum CommonErrorCode: uint32_t {
-    E_OK = 0,
-    E_PERMISSION_DENIED = 201,
-    E_IS_NOT_SYS_APP = 202,
-    E_PARAM_ERROR = 401,
-    E_INTERNAL_ERR = 29900001,
+void MockAbilityFilter(std::shared_ptr<AbilityFilter> mockAbilityFilter);
+class MocAbilityFilter : public AbilityFilter {
+public:
+    MOCK_METHOD(bool, Filter, (const FilterInfo& info), (override));
 };
 }
-#endif  // APP_DOMAIN_VERIFY_COMM_DEFINE_H
+#endif  // APP_DOMAIN_VERIFY_MOCK_ABILITY_FILTER_H

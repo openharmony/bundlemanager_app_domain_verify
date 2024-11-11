@@ -1,4 +1,4 @@
-# Copyright (C) 2023 Huawei Device Co., Ltd.
+# Copyright (C) 2024 Huawei Device Co., Ltd.
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -22,31 +22,32 @@ config("module_private_config") {
     "${app_domain_verify_service_path}/include",
     "${app_domain_verify_service_path}/include/agent/core",
     "${app_domain_verify_service_path}/include/agent/zidl",
-    "${app_domain_verify_service_path}/include/agent/bms",
     "${app_domain_verify_service_path}/include/manager/rdb",
     "${app_domain_verify_service_path}/include/manager/core",
     "${app_domain_verify_service_path}/include/manager/constant",
     "${app_domain_verify_service_path}/include/manager/zidl",
+    "${app_domain_verify_service_path}/include/manager/permission",
     "${app_domain_verify_service_path}/include/manager/deferred_link",
     "${app_domain_verify_common_path}/include",
     "${app_domain_verify_frameworks_common_path}/include",
     "${app_domain_verify_frameworks_common_path}/include/utils",
+    "${app_domain_verify_frameworks_common_path}/include/bms",
     "${app_domain_verify_frameworks_extension_path}/include",
     "${app_domain_verify_test_path}/mock/include",
-    "${app_domain_verify_test_path}/mock/include/mock_http_client",
     "${app_domain_verify_frameworks_common_path}/include/dfx",
   ]
 }
 
 module_output_path = "app_domain_verify/app_domain_verify"
-
-ohos_unittest("app_domain_verify_module_test") {
+ohos_unittest("deferred_link_test") {
   module_out_path = module_output_path
 
   sources = [
-    "${app_domain_verify_test_path}/mock/src/mock_access_token.cpp",
-    "app_domain_verify_agent_module_test.cpp",
-    "app_domain_verify_mgr_module_test.cpp",
+    "${app_domain_verify_frameworks_common_path}/src/bms/bundle_info_query.cpp",
+    "${app_domain_verify_service_path}/src/manager/deferred_link/deferred_link_mgr.cpp",
+    "${app_domain_verify_test_path}/mock/src/mock_bundle_manager.cpp",
+    "deferred_link_mgr_test.cpp",
+    "mock_ability_filter.cpp",
   ]
   configs = [ ":module_private_config" ]
   external_deps = [
@@ -61,28 +62,19 @@ ohos_unittest("app_domain_verify_module_test") {
     "c_utils:utils",
     "eventhandler:libeventhandler",
     "ffrt:libffrt",
-    "hicollie:libhicollie",
     "hilog:libhilog",
     "hisysevent:libhisysevent",
     "image_framework:image_native",
+    "init:libbegetutil",
     "ipc:ipc_core",
-    "netmanager_base:net_conn_manager_if",
+    "netstack:http_client",
     "os_account:os_account_innerkits",
     "relational_store:native_rdb",
-    "safwk:system_ability_fwk",
     "samgr:samgr_proxy",
   ]
 
   defines = [ "API_EXPORT=__attribute__((visibility (\"default\")))" ]
   deps = [
-    "${app_domain_verify_client_path}:app_domain_verify_agent_client",
-    "${app_domain_verify_client_path}:app_domain_verify_mgr_client",
-    "${app_domain_verify_common_path}:app_domain_verify_common",
-    "${app_domain_verify_frameworks_common_path}:app_domain_verify_frameworks_common",
-    "${app_domain_verify_frameworks_extension_path}:app_domain_verify_extension_framework",
-    "${app_domain_verify_frameworks_verifier_path}:app_domain_verify_agent_verifier",
-    "${app_domain_verify_service_path}:app_domain_verify_agent_service",
-    "${app_domain_verify_service_path}:app_domain_verify_mgr_service",
     "//third_party/googletest:gmock_main",
     "//third_party/googletest:gtest_main",
   ]

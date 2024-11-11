@@ -72,7 +72,7 @@ void AppDomainVerifyAgentClient::ConnectService()
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_AGENT_MODULE_CLIENT, "ConnectService start.");
     sptr<ISystemAbilityManager> samgrProxy = SystemAbilityManagerClient::GetInstance().GetSystemAbilityManager();
     if (samgrProxy == nullptr) {
-        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_AGENT_MODULE_CLIENT, "Get SystemAbilityManager failed.");
+        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_AGENT_MODULE_CLIENT, "GetDeferredLink SystemAbilityManager failed.");
         agentServiceProxy_ = nullptr;
         return;
     }
@@ -81,7 +81,7 @@ void AppDomainVerifyAgentClient::ConnectService()
         remoteObject = samgrProxy->LoadSystemAbility(APP_DOMAIN_VERIFY_AGENT_SA_ID, LOADSA_TIMEOUT_MS);
     }
     if (remoteObject != nullptr) {
-        APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_CLIENT, "Get AgentServiceProxy succeed.");
+        APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_CLIENT, "GetDeferredLink AgentServiceProxy succeed.");
         if (deathRecipient_ == nullptr) {
             deathRecipient_ = sptr<IRemoteObject::DeathRecipient>(new AgentSaDeathRecipient());
         }

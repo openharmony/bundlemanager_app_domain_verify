@@ -20,6 +20,7 @@
 #include "app_domain_verify_mgr_client.h"
 #include "comm_define.h"
 #include "api_event_reporter.h"
+
 namespace OHOS::AppDomainVerify {
 constexpr int32_t API_SUCCESS = 0;
 constexpr int32_t API_FAIL = 1;

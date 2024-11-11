@@ -131,6 +131,14 @@ public:
     int QueryAssociatedBundleNames(const std::string& domain, std::vector<std::string>& bundleNames);
 
     /**
+     * GetDeferredLink
+     * @descrition get deferred link for app.
+     * @param link link to get.
+     * @return result status.
+     */
+    int GetDeferredLink(std::string& link);
+
+    /**
      * OnRemoteSaDied
      * @descrition
      * @param object systemAbility proxy object
