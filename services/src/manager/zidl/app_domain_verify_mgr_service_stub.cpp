@@ -66,6 +66,8 @@ int32_t AppDomainVerifyMgrServiceStub::OnRemoteRequest(
             return OnQueryAssociatedDomains(data, reply);
         case static_cast<uint32_t>(AppDomainVerifyMgrInterfaceCode::QUERY_ASSOCIATED_BUNDLE_NAMES):
             return OnQueryAssociatedBundleNames(data, reply);
+        case static_cast<uint32_t>(AppDomainVerifyMgrInterfaceCode::GET_DEFERRED_LINK):
+            return OnGetDeferredLink(data, reply);
         default:
             APP_DOMAIN_VERIFY_HILOGW(
                 APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "receive unknown code, code = %{public}d", code);
@@ -260,6 +262,17 @@ int32_t AppDomainVerifyMgrServiceStub::OnQueryAssociatedBundleNames(MessageParce
     for (const auto& i : bundleNames) {
         WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String, reply, i);
     }
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "call end");
+    return ERR_OK;
+}
+int32_t AppDomainVerifyMgrServiceStub::OnGetDeferredLink(MessageParcel& data, MessageParcel& reply)
+{
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "called");
+    std::string link;
+    int ret = GetDeferredLink(link);
+
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, reply, ret);
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String, reply, link);
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "call end");
     return ERR_OK;
 }
