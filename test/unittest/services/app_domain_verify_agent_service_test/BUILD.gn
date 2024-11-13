@@ -72,6 +72,9 @@ ohos_unittest("app_domain_verify_agent_service_test") {
     "os_account:os_account_innerkits",
     "os_account:os_account_innerkits",
     "relational_store:native_rdb",
+    "safwk:system_ability_fwk",
+    "samgr:dynamic_cache",
+    "samgr:samgr_common",
     "samgr:samgr_proxy",
   ]
 
