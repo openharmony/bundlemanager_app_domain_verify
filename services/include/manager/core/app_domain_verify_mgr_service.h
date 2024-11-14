@@ -66,6 +66,9 @@ private:
     static int CheckPermission();
     static void CollectDomains(const std::vector<SkillUri>& skillUris, VerifyResultInfo& verifyResultInfo);
     bool IsUrlInBlackList(const std::string& url);
+    // with check caller's bundleName and appIdentifier
+    int QueryVerifiedBundleWithDomains(std::string& bundleName, std::vector<std::string>& domains);
+
 private:
     std::shared_ptr<AppDomainVerifyDataMgr> dataManager_ = nullptr;
     bool InitConfigMgr();
