@@ -27,7 +27,7 @@
 namespace OHOS {
 namespace AppDomainVerify {
 constexpr const char* GET_DOMAIN_VERIFY_INFO = "ohos.permission.GET_APP_DOMAIN_BUNDLE_INFO";
-const bool REGISTER_RESULT = SystemAbility::MakeAndRegisterAbility(new AppDomainVerifyMgrService());
+const bool REGISTER_RESULT = SystemAbility::MakeAndRegisterAbility(new (std::nothrow) AppDomainVerifyMgrService());
 const std::string HTTPS = "https";
 const std::set<std::string> SCHEME_WHITE_SET = { HTTPS };
 const std::string FUZZY_HOST_START = "*.";
@@ -332,26 +332,65 @@ void AppDomainVerifyMgrService::CollectDomains(
             make_pair(uri, std::make_tuple(InnerVerifyStatus::UNKNOWN, std::string(), 0)));
     }
 }
+int AppDomainVerifyMgrService::QueryVerifiedBundleWithDomains(
+    std::string& bundleName, std::vector<std::string>& domains)
+{
+    if (!BundleInfoQuery::GetBundleNameForUid(IPCSkeleton::GetCallingUid(), bundleName)) {
+        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "get caller's bundleName error");
+        return CommonErrorCode::E_INTERNAL_ERR;
+    }
+    if (bundleName.empty()) {
+        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "can not get caller's bundleName");
+        return CommonErrorCode::E_PARAM_ERROR;
+    }
+    std::string appIdentifier;
+    std::string fingerPrint;
+    if (!BundleInfoQuery::GetBundleInfo(bundleName, appIdentifier, fingerPrint)) {
+        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "get appIdentifier error");
+        return CommonErrorCode::E_INTERNAL_ERR;
+    }
+    if (appIdentifier.empty()) {
+        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "can not get caller's appIdentifier");
+        return CommonErrorCode::E_PARAM_ERROR;
+    }
+    VerifyResultInfo verifyResultInfo;
+    if (!dataManager_->GetVerifyStatus(bundleName, verifyResultInfo)) {
+        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "can not get verifyResultInfo");
+        return CommonErrorCode::E_INTERNAL_ERR;
+    }
+    if (verifyResultInfo.appIdentifier != appIdentifier) {
+        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "bundle's appIdentifier not match");
+        return CommonErrorCode::E_PARAM_ERROR;
+    }
+    std::for_each(std::begin(verifyResultInfo.hostVerifyStatusMap), std::end(verifyResultInfo.hostVerifyStatusMap),
+        [&domains](const auto& item) {
+            if (std::get<0>(item.second) == InnerVerifyStatus::STATE_SUCCESS) {
+                domains.push_back(item.first);
+            }
+        });
+    return CommonErrorCode::E_OK;
+}
+
 int AppDomainVerifyMgrService::GetDeferredLink(std::string& link)
 {
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "called");
     std::string bundleName;
-    BundleInfoQuery::GetBundleNameForUid(IPCSkeleton::GetCallingUid(), bundleName);
-    if (!bundleName.empty()) {
-        std::vector<std::string> domains;
-        if (dataManager_->QueryAssociatedDomains(bundleName, domains) && !domains.empty()) {
-            link = deferredLinkMgr_->GetDeferredLink(bundleName, domains);
-            APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "get link, %{private}s.", link.c_str());
-            return CommonErrorCode::E_OK;
-        } else {
-            APP_DOMAIN_VERIFY_HILOGW(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "can not get associate domains");
-            return CommonErrorCode::E_OK;
-        }
-    } else {
-        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "can not get bundleName.");
-        return CommonErrorCode::E_PERMISSION_DENIED;
+    std::vector<std::string> domains;
+    auto ret = QueryVerifiedBundleWithDomains(bundleName, domains);
+    if (ret != CommonErrorCode::E_OK) {
+        APP_DOMAIN_VERIFY_HILOGE(
+            APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "QueryVerifiedBundleWithDomains error:%{public}d.", ret);
+        return ret;
     }
+    if (domains.empty()) {
+        APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "domains empty, will return.");
+        return CommonErrorCode::E_OK;
+    }
+    link = deferredLinkMgr_->GetDeferredLink(bundleName, domains);
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "get link, %{private}s.", link.c_str());
+    return CommonErrorCode::E_OK;
 }
+
 bool AppDomainVerifyMgrService::IsUrlInBlackList(const std::string& url)
 {
     return IsAtomicServiceUrl(url);
