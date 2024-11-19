@@ -63,10 +63,8 @@ void WhiteListConfigMgr::LoadDynamic()
 void WhiteListConfigMgr::Load()
 {
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MODULE_COMMON, "called");
-    std::lock_guard<std::mutex> lock(initLock);
     LoadDefault();
     LoadDynamic();
-    init = true;
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MODULE_COMMON, "called end");
 }
 void WhiteListConfigMgr::Split(std::string src)
@@ -129,9 +127,6 @@ bool WhiteListConfigMgr::Save()
 bool WhiteListConfigMgr::IsInWhiteList(const std::string& url)
 {
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "called");
-    if (!init) {
-        Load();
-    }
     std::lock_guard<std::mutex> lock(whiteListLock_);
     bool ret;
     if (whiteListSet_.empty()) {
@@ -146,9 +141,6 @@ bool WhiteListConfigMgr::IsInWhiteList(const std::string& url)
 void WhiteListConfigMgr::UpdateWhiteList(const std::unordered_set<std::string>& whiteList)
 {
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "called");
-    if (!init) {
-        Load();
-    }
     std::unordered_set<std::string> filtedWhiteList;
     std::for_each(whiteList.begin(), whiteList.end(), [&filtedWhiteList](const std::string& element) {
         if (UrlUtil::IsValidUrl(element)) {
