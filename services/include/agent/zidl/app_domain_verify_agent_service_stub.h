@@ -27,7 +27,8 @@ class AppDomainVerifyAgentServiceStub : public IRemoteStub<IAppDomainVerifyAgent
 public:
     API_EXPORT AppDomainVerifyAgentServiceStub() = default;
     API_EXPORT ~AppDomainVerifyAgentServiceStub() override = default;
-    API_EXPORT int32_t OnRemoteRequest(uint32_t code, MessageParcel& data, MessageParcel& reply, MessageOption& option) override;
+    API_EXPORT int32_t OnRemoteRequest(
+        uint32_t code, MessageParcel& data, MessageParcel& reply, MessageOption& option) override;
 
 private:
     int32_t OnSingleVerify(MessageParcel& data, MessageParcel& reply);
