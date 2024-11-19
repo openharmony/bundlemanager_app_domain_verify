@@ -61,7 +61,7 @@
 
 #define MAX_PARCEL_ARRAY_SIZE (99)
 namespace OHOS::AppDomainVerify {
-template <class T>
+template <typename T>
 inline bool IsInvalidParcelArraySize(T size)
 {
     if (size > MAX_PARCEL_ARRAY_SIZE) {
