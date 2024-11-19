@@ -136,7 +136,8 @@
         }
       ],
       "test": [
-        "//foundation/bundlemanager/app_domain_verify/test/unittest:app_domain_verify_unit_test"
+        "//foundation/bundlemanager/app_domain_verify/test/unittest:app_domain_verify_unit_test",
+        "//foundation/bundlemanager/app_domain_verify/test/fuzztest:app_domain_verify_fuzz_test"
       ]
     }
   }
