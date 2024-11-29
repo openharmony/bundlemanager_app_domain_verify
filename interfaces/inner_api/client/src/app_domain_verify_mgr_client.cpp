@@ -23,6 +23,7 @@
 #include "comm_define.h"
 #include "ipc_skeleton.h"
 #include "common_utils.h"
+#include "bundle_info_query.h"
 
 namespace OHOS {
 namespace AppDomainVerify {
@@ -150,13 +151,14 @@ void AppDomainVerifyMgrClient::ConnectService()
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "ConnectService start.");
     sptr<ISystemAbilityManager> samgrProxy = SystemAbilityManagerClient::GetInstance().GetSystemAbilityManager();
     if (samgrProxy == nullptr) {
-        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "Get SystemAbilityManager failed.");
+        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "ConnectService SystemAbilityManager failed.");
         appDomainVerifyMgrServiceProxy_ = nullptr;
         return;
     }
     sptr<IRemoteObject> remoteObject = samgrProxy->CheckSystemAbility(APP_DOMAIN_VERIFY_MANAGER_SA_ID);
     if (remoteObject != nullptr) {
-        APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "Get AppDomainVerifyMgrServiceProxy succeed.");
+        APP_DOMAIN_VERIFY_HILOGI(
+            APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "ConnectService AppDomainVerifyMgrServiceProxy succeed.");
         if (deathRecipient_ == nullptr) {
             deathRecipient_ = sptr<IRemoteObject::DeathRecipient>(new AppDomainVerifyMgrSaDeathRecipient());
         }
@@ -257,8 +259,7 @@ bool AppDomainVerifyMgrClient::IsAtomicServiceUrl(const std::string& url)
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "not support, will return false!");
     return false;
 #else
-    APP_DOMAIN_VERIFY_HILOGI(
-        APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "called, url %{public}s", MaskStr(url).c_str());
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "called, url %{public}s", MaskStr(url).c_str());
     Uri uri(url);
     if (!IsValidUrl(uri)) {
         APP_DOMAIN_VERIFY_HILOGW(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "url is invalid!");
@@ -306,6 +307,16 @@ int AppDomainVerifyMgrClient::QueryAssociatedBundleNames(
     std::lock_guard<std::mutex> autoLock(proxyLock_);
     if (IsServiceAvailable()) {
         return appDomainVerifyMgrServiceProxy_->QueryAssociatedBundleNames(domain, bundleNames);
+    }
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "call end");
+    return CommonErrorCode::E_INTERNAL_ERR;
+}
+int AppDomainVerifyMgrClient::GetDeferredLink(std::string& link)
+{
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "called");
+    std::lock_guard<std::mutex> autoLock(proxyLock_);
+    if (IsServiceAvailable()) {
+        return appDomainVerifyMgrServiceProxy_->GetDeferredLink(link);
     }
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "call end");
     return CommonErrorCode::E_INTERNAL_ERR;

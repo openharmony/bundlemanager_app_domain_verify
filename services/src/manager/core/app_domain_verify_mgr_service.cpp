@@ -17,15 +17,17 @@
 #include <string>
 #include <tuple>
 #include <vector>
+#include "ipc_skeleton.h"
 #include "app_domain_verify_mgr_service.h"
 #include "system_ability_definition.h"
 #include "domain_url_util.h"
 #include "app_domain_verify_agent_client.h"
 #include "comm_define.h"
+#include "bundle_info_query.h"
 namespace OHOS {
 namespace AppDomainVerify {
 constexpr const char* GET_DOMAIN_VERIFY_INFO = "ohos.permission.GET_APP_DOMAIN_BUNDLE_INFO";
-const bool REGISTER_RESULT = SystemAbility::MakeAndRegisterAbility(new AppDomainVerifyMgrService());
+const bool REGISTER_RESULT = SystemAbility::MakeAndRegisterAbility(new (std::nothrow) AppDomainVerifyMgrService());
 const std::string HTTPS = "https";
 const std::set<std::string> SCHEME_WHITE_SET = { HTTPS };
 const std::string FUZZY_HOST_START = "*.";
@@ -57,7 +59,7 @@ void AppDomainVerifyMgrService::VerifyDomain(const std::string& appIdentifier, c
     verifyResultInfo.appIdentifier = appIdentifier;
 
     CollectDomains(skillUris, verifyResultInfo);
-
+    dataManager_->InsertVerifyStatus(bundleName, verifyResultInfo);
     AppDomainVerifyAgentClient::GetInstance()->SingleVerify(appVerifyBaseInfo, verifyResultInfo);
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "call end");
 }
@@ -76,7 +78,7 @@ bool AppDomainVerifyMgrService::ClearDomainVerifyStatus(const std::string& appId
 
 bool AppDomainVerifyMgrService::FilterAbilities(const OHOS::AAFwk::Want& want,
     const std::vector<OHOS::AppExecFwk::AbilityInfo>& originAbilityInfos,
-    std::vector<OHOS::AppExecFwk::AbilityInfo>& filtedAbilityInfos)
+    std::vector<OHOS::AppExecFwk::AbilityInfo>& filteredAbilityInfos)
 {
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "called");
     if (!PermissionManager::IsSACall()) {
@@ -104,9 +106,13 @@ bool AppDomainVerifyMgrService::FilterAbilities(const OHOS::AAFwk::Want& want,
             auto itr = verifyResultInfo.hostVerifyStatusMap.find(hostVerifyKey);
             if (itr != verifyResultInfo.hostVerifyStatusMap.end() &&
                 std::get<0>(itr->second) == InnerVerifyStatus::STATE_SUCCESS) {
-                filtedAbilityInfos.emplace_back(*it);
+                filteredAbilityInfos.emplace_back(*it);
             }
         }
+    }
+    if (filteredAbilityInfos.empty() && !IsUrlInBlackList(uriString)) {
+        deferredLinkMgr_->PutDeferredLink(
+            { .domain = hostVerifyKey, .url = uriString, .timeStamp = GetSecondsSince1970ToNow() });
     }
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "call end");
     return true;
@@ -154,7 +160,7 @@ bool AppDomainVerifyMgrService::SaveDomainVerifyStatus(
         APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "only sa can call");
         return false;
     }
-    bool res = dataManager_->SaveVerifyStatus(bundleName, verifyResultInfo);
+    bool res = dataManager_->UpdateVerifyStatus(bundleName, verifyResultInfo);
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "call end");
     return res;
 }
@@ -270,8 +276,8 @@ void AppDomainVerifyMgrService::DumpAllVerifyInfos(std::string& dumpString)
         dumpString.append("\n");
         dumpString.append("  domain verify status:\n");
         for (const auto& hostVerifyStatus : verifyResultInfo.hostVerifyStatusMap) {
-            dumpString.append("    " + hostVerifyStatus.first + ":" +
-                InnerVerifyStatusMap[std::get<0>(hostVerifyStatus.second)]);
+            dumpString.append(
+                "    " + hostVerifyStatus.first + ":" + InnerVerifyStatusMap[std::get<0>(hostVerifyStatus.second)]);
             dumpString.append("\n");
         }
     }
@@ -322,9 +328,72 @@ void AppDomainVerifyMgrService::CollectDomains(
         }
         // validUris remove duplicates
         auto uri = it->scheme + "://" + host;
-        verifyResultInfo.hostVerifyStatusMap.insert(make_pair(
-            uri, std::make_tuple(InnerVerifyStatus::UNKNOWN, std::string(), 0)));
+        verifyResultInfo.hostVerifyStatusMap.insert(
+            make_pair(uri, std::make_tuple(InnerVerifyStatus::UNKNOWN, std::string(), 0)));
     }
+}
+int AppDomainVerifyMgrService::QueryVerifiedBundleWithDomains(
+    std::string& bundleName, std::vector<std::string>& domains)
+{
+    if (!BundleInfoQuery::GetBundleNameForUid(IPCSkeleton::GetCallingUid(), bundleName)) {
+        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "get caller's bundleName error");
+        return CommonErrorCode::E_INTERNAL_ERR;
+    }
+    if (bundleName.empty()) {
+        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "can not get caller's bundleName");
+        return CommonErrorCode::E_PARAM_ERROR;
+    }
+    std::string appIdentifier;
+    std::string fingerPrint;
+    if (!BundleInfoQuery::GetBundleInfo(bundleName, appIdentifier, fingerPrint)) {
+        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "get appIdentifier error");
+        return CommonErrorCode::E_INTERNAL_ERR;
+    }
+    if (appIdentifier.empty()) {
+        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "can not get caller's appIdentifier");
+        return CommonErrorCode::E_PARAM_ERROR;
+    }
+    VerifyResultInfo verifyResultInfo;
+    if (!dataManager_->GetVerifyStatus(bundleName, verifyResultInfo)) {
+        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "can not get verifyResultInfo");
+        return CommonErrorCode::E_INTERNAL_ERR;
+    }
+    if (verifyResultInfo.appIdentifier != appIdentifier) {
+        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "bundle's appIdentifier not match");
+        return CommonErrorCode::E_PARAM_ERROR;
+    }
+    std::for_each(std::begin(verifyResultInfo.hostVerifyStatusMap), std::end(verifyResultInfo.hostVerifyStatusMap),
+        [&domains](const auto& item) {
+            if (std::get<0>(item.second) == InnerVerifyStatus::STATE_SUCCESS) {
+                domains.push_back(item.first);
+            }
+        });
+    return CommonErrorCode::E_OK;
+}
+
+int AppDomainVerifyMgrService::GetDeferredLink(std::string& link)
+{
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "called");
+    std::string bundleName;
+    std::vector<std::string> domains;
+    auto ret = QueryVerifiedBundleWithDomains(bundleName, domains);
+    if (ret != CommonErrorCode::E_OK) {
+        APP_DOMAIN_VERIFY_HILOGE(
+            APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "QueryVerifiedBundleWithDomains error:%{public}d.", ret);
+        return ret;
+    }
+    if (domains.empty()) {
+        APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "domains empty, will return.");
+        return CommonErrorCode::E_OK;
+    }
+    link = deferredLinkMgr_->GetDeferredLink(bundleName, domains);
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "get link, %{private}s.", link.c_str());
+    return CommonErrorCode::E_OK;
+}
+
+bool AppDomainVerifyMgrService::IsUrlInBlackList(const std::string& url)
+{
+    return IsAtomicServiceUrl(url);
 }
 }  // namespace AppDomainVerify
 }  // namespace OHOS

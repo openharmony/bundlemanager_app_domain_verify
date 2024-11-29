@@ -23,11 +23,13 @@ config("app_domain_verify_service_config") {
     "include/manager/rdb",
     "include/manager/zidl",
     "include/manager/permission",
+    "include/manager/deferred_link",
     "include/agent/core",
     "${app_domain_verify_common_path}/include",
     "${app_domain_verify_common_path}/include/zidl",
     "${app_domain_verify_frameworks_common_path}/include",
     "${app_domain_verify_frameworks_common_path}/include/utils",
+    "${app_domain_verify_frameworks_common_path}/include/bms",
     "${app_domain_verify_frameworks_common_path}/include/config",
     "${app_domain_verify_frameworks_common_path}/include/dfx",
   ]
@@ -51,10 +53,13 @@ config("app_domain_verify_service_config") {
 ohos_shared_library("app_domain_verify_mgr_service") {
   branch_protector_ret = "pac_ret"
   sources = [
+    "${app_domain_verify_frameworks_common_path}/src/bms/bundle_info_query.cpp",
     "${app_domain_verify_frameworks_common_path}/src/config/white_list_config_mgr.cpp",
     "${app_domain_verify_frameworks_common_path}/src/utils/domain_url_util.cpp",
     "src/manager/core/app_domain_verify_data_mgr.cpp",
     "src/manager/core/app_domain_verify_mgr_service.cpp",
+    "src/manager/deferred_link/ability_filter.cpp",
+    "src/manager/deferred_link/deferred_link_mgr.cpp",
     "src/manager/permission/permission_manager.cpp",
     "src/manager/rdb/app_domain_verify_rdb_data_manager.cpp",
     "src/manager/rdb/app_domain_verify_rdb_open_callback.cpp",
@@ -87,6 +92,7 @@ ohos_shared_library("app_domain_verify_mgr_service") {
     "hisysevent:libhisysevent",
     "ipc:ipc_core",
     "json:nlohmann_json_static",
+    "os_account:os_account_innerkits",
     "preferences:native_preferences",
     "relational_store:native_rdb",
     "safwk:system_ability_fwk",

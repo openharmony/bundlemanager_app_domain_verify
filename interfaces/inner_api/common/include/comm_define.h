@@ -15,7 +15,7 @@
 #ifndef APP_DOMAIN_VERIFY_COMM_DEFINE_H
 #define APP_DOMAIN_VERIFY_COMM_DEFINE_H
 namespace OHOS::AppDomainVerify {
-enum CommonErrorCode {
+enum CommonErrorCode: uint32_t {
     E_OK = 0,
     E_PERMISSION_DENIED = 201,
     E_IS_NOT_SYS_APP = 202,

@@ -25,6 +25,7 @@
 #include "app_domain_verify_data_mgr.h"
 #include "white_list_config_mgr.h"
 #include "permission_manager.h"
+#include "deferred_link_mgr.h"
 
 namespace OHOS {
 namespace AppDomainVerify {
@@ -33,13 +34,13 @@ class AppDomainVerifyMgrService : public SystemAbility, public AppDomainVerifyMg
 
 public:
     API_EXPORT AppDomainVerifyMgrService();
-    API_EXPORT virtual ~AppDomainVerifyMgrService();
+    API_EXPORT ~AppDomainVerifyMgrService() override;
     API_EXPORT void VerifyDomain(const std::string& appIdentifier, const std::string& bundleName,
         const std::string& fingerprint, const std::vector<SkillUri>& skillUris) override;
     API_EXPORT bool ClearDomainVerifyStatus(const std::string& appIdentifier, const std::string& bundleName) override;
     API_EXPORT bool FilterAbilities(const OHOS::AAFwk::Want& want,
         const std::vector<OHOS::AppExecFwk::AbilityInfo>& originAbilityInfos,
-        std::vector<OHOS::AppExecFwk::AbilityInfo>& filtedAbilityInfos) override;
+        std::vector<OHOS::AppExecFwk::AbilityInfo>& filteredAbilityInfos) override;
     API_EXPORT bool QueryDomainVerifyStatus(
         const std::string& bundleName, DomainVerifyStatus& domainVerificationState) override;
     API_EXPORT bool QueryAllDomainVerifyStatus(BundleVerifyStatusInfo& bundleVerifyStatusInfo) override;
@@ -51,6 +52,7 @@ public:
     API_EXPORT int QueryAssociatedDomains(const std::string& bundleName, std::vector<std::string>& domains) override;
     API_EXPORT int QueryAssociatedBundleNames(
         const std::string& domain, std::vector<std::string>& bundleNames) override;
+    API_EXPORT int GetDeferredLink(std::string& link) override;
 
 protected:
     void OnDump() override;
@@ -63,12 +65,16 @@ private:
     bool IsWantImplicit(const OHOS::AAFwk::Want& want);
     static int CheckPermission();
     static void CollectDomains(const std::vector<SkillUri>& skillUris, VerifyResultInfo& verifyResultInfo);
+    bool IsUrlInBlackList(const std::string& url);
+    // with check caller's bundleName and appIdentifier
+    int QueryVerifiedBundleWithDomains(std::string& bundleName, std::vector<std::string>& domains);
 
 private:
     std::shared_ptr<AppDomainVerifyDataMgr> dataManager_ = nullptr;
     bool InitConfigMgr();
     std::shared_ptr<WhiteListConfigMgr> whiteListConfigMgr_;
     std::mutex initConfigMutex_;
+    std::shared_ptr<DeferredLinkMgr> deferredLinkMgr_ = std::make_shared<DeferredLinkMgr>();
 };
 }  // namespace AppDomainVerify
 }  // namespace OHOS

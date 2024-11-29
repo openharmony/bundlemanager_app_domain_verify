@@ -143,7 +143,13 @@ bool VerifyTask::HandleFailureClientError(std::string verifyTime, int verifyCnt)
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MODULE_EXTENSION, "called");
     if (!verifyTime.empty()) {
         int64_t currTs = GetSecondsSince1970ToNow();
-        int64_t lastTs = static_cast<int64_t>(std::stoll(verifyTime));
+        int64_t lastTs{};
+        try {
+            lastTs = static_cast<int64_t>(std::stoll(verifyTime));
+        } catch (...) {
+            APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MODULE_EXTENSION, "get verifyTime error");
+            return false;
+        }
         int64_t duration = currTs - lastTs;
         int64_t currRetryDuration = CalcRetryDuration(verifyCnt);
         if (duration <= currRetryDuration) {

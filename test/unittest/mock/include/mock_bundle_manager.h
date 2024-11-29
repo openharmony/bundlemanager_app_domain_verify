@@ -35,6 +35,9 @@ public:
     }
     ErrCode GetBundleInfoV9(
         const std::string& bundleName, int32_t flags, BundleInfo& bundleInfo, int32_t userId) override;
+    bool GetBundleInfo(const std::string& bundleName, const BundleFlag flag, BundleInfo& bundleInfo,
+        int32_t userId = Constants::UNSPECIFIED_USERID) override;
+    bool GetBundleNameForUid(const int uid, std::string& bundleName) override;
 };
 
 class BundleMgrStub : public IRemoteStub<IBundleMgr> {
@@ -50,6 +53,9 @@ public:
 
     MOCK_METHOD(ErrCode, GetBundleInfoV9,
         (const std::string& bundleName, int32_t flags, BundleInfo& bundleInfo, int32_t userId), (override));
+    MOCK_METHOD(bool, GetBundleInfo,
+        (const std::string& bundleName, const BundleFlag flag, BundleInfo& bundleInfo, int32_t userId), (override));
+    MOCK_METHOD(bool, GetBundleNameForUid, (const int uid, std::string& bundleName), (override));
 };
 
 class BundleMgrService : public BundleMgrStub {
@@ -59,6 +65,9 @@ public:
 
     ErrCode GetBundleInfoV9(
         const std::string& bundleName, int32_t flags, BundleInfo& bundleInfo, int32_t userId) override;
+    bool GetBundleInfo(const std::string& bundleName, const BundleFlag flag, BundleInfo& bundleInfo,
+        int32_t userId = Constants::UNSPECIFIED_USERID) override;
+    bool GetBundleNameForUid(const int uid, std::string& bundleName) override;
     std::shared_ptr<MocBundleMgrService> impl = nullptr;
 };
 

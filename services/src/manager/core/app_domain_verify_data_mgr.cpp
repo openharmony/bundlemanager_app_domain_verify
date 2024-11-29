@@ -50,8 +50,7 @@ bool AppDomainVerifyDataMgr::GetVerifyStatus(const std::string& bundleName, Veri
         verifyResultInfo = it->second;
         return true;
     }
-    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE,
-        "get verify status fail, verify result can't find");
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "get verify status fail, verify result can't find");
     return true;
 }
 bool AppDomainVerifyDataMgr::VerifyResultInfoToDB(
@@ -87,13 +86,12 @@ bool AppDomainVerifyDataMgr::DBToVerifyResultInfo(
     }
     verifyResultInfo.appIdentifier = items[0].appIdentifier;
     for (auto it : items) {
-        verifyResultInfo.hostVerifyStatusMap.insert(std::make_pair(it.domain,
-            std::make_tuple(InnerVerifyStatus(it.status), it.verifyTs, it.count)));
+        verifyResultInfo.hostVerifyStatusMap.insert(
+            std::make_pair(it.domain, std::make_tuple(InnerVerifyStatus(it.status), it.verifyTs, it.count)));
     }
     return true;
 }
-
-bool AppDomainVerifyDataMgr::SaveVerifyStatus(const std::string& bundleName, const VerifyResultInfo& verifyResultInfo)
+bool AppDomainVerifyDataMgr::InsertVerifyStatus(const std::string& bundleName, const VerifyResultInfo& verifyResultInfo)
 {
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "called");
     std::string key;
@@ -107,13 +105,8 @@ bool AppDomainVerifyDataMgr::SaveVerifyStatus(const std::string& bundleName, con
     }
 
     std::lock_guard<std::mutex> lock(verifyMapMutex_);
-    UpdateVerifyMap(key, verifyResultInfo);
-    auto completeBundleInfo = verifyMap_->find(key);
-    if (completeBundleInfo == verifyMap_->end()) {
-        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "InnerVerifyStatus save bundleInfo failed");
-        return false;
-    }
-    if (!VerifyResultInfoToDB(key, completeBundleInfo->second)) {
+    verifyMap_->insert_or_assign(bundleName, verifyResultInfo);
+    if (!VerifyResultInfoToDB(key, verifyResultInfo)) {
         APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "InnerVerifyStatus save to db failed");
         return false;
     }
@@ -121,18 +114,52 @@ bool AppDomainVerifyDataMgr::SaveVerifyStatus(const std::string& bundleName, con
     return true;
 }
 
+bool AppDomainVerifyDataMgr::UpdateVerifyStatus(const std::string& bundleName, const VerifyResultInfo& verifyResultInfo)
+{
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "called");
+    std::string key;
+    if (!GetParamKey(bundleName, key)) {
+        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "key is empty!");
+        return false;
+    }
+    if (rdbDataManager_ == nullptr) {
+        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "rdbDataManager is null");
+        return false;
+    }
+
+    std::lock_guard<std::mutex> lock(verifyMapMutex_);
+    auto oldBundle = verifyMap_->find(key);
+    if (oldBundle == verifyMap_->end()) {
+        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "update but no bundle, discard");
+        return false;
+    }
+
+    UpdateVerifyMap(key, verifyResultInfo);
+    auto newBundleInfo = verifyMap_->find(key);
+    if (newBundleInfo == verifyMap_->end()) {
+        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "InnerVerifyStatus save bundleInfo failed");
+        return false;
+    }
+    if (!VerifyResultInfoToDB(key, newBundleInfo->second)) {
+        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "InnerVerifyStatus save to db failed");
+        return false;
+    }
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "call end");
+    return true;
+}
+
+// update only item in old data.
 void AppDomainVerifyDataMgr::UpdateVerifyMap(const std::string& bundleName, const VerifyResultInfo& verifyResultInfo)
 {
-    auto bundleInfo = verifyMap_->find(bundleName);
-    auto& hostVerifyStatusMap = verifyResultInfo.hostVerifyStatusMap;
-    if (bundleInfo != verifyMap_->end()) {
-        auto& hostVerifyStatusMapTarget = bundleInfo->second.hostVerifyStatusMap;
-        std::for_each(hostVerifyStatusMap.begin(), hostVerifyStatusMap.end(),
-            [&hostVerifyStatusMapTarget](auto iter) {
-                hostVerifyStatusMapTarget.insert_or_assign(iter.first, iter.second);
-            });
-    } else {
-        verifyMap_->insert_or_assign(bundleName, verifyResultInfo);
+    auto bundleInfoTarget = verifyMap_->find(bundleName);
+    auto& updateHostVerifyStatusMap = verifyResultInfo.hostVerifyStatusMap;
+    if (bundleInfoTarget != verifyMap_->end()) {
+        auto& hostVerifyStatusMapTarget = bundleInfoTarget->second.hostVerifyStatusMap;
+        for (const auto& updateVerifyStatus : updateHostVerifyStatusMap) {
+            if (hostVerifyStatusMapTarget.count(updateVerifyStatus.first) != 0) {
+                hostVerifyStatusMapTarget.insert_or_assign(updateVerifyStatus.first, updateVerifyStatus.second);
+            }
+        }
     }
 }
 

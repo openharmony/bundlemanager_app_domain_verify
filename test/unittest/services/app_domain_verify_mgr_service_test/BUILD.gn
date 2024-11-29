@@ -28,6 +28,7 @@ config("module_private_config") {
     "${app_domain_verify_service_path}/include/manager/constant",
     "${app_domain_verify_service_path}/include/manager/zidl",
     "${app_domain_verify_service_path}/include/manager/permission",
+    "${app_domain_verify_service_path}/include/manager/deferred_link",
     "${app_domain_verify_common_path}/include",
     "${app_domain_verify_frameworks_common_path}/include",
     "${app_domain_verify_frameworks_common_path}/include/utils",
@@ -44,6 +45,8 @@ ohos_unittest("app_domain_verify_mgr_service_test") {
   sources = [
     "${app_domain_verify_service_path}/src/manager/core/app_domain_verify_data_mgr.cpp",
     "${app_domain_verify_service_path}/src/manager/core/app_domain_verify_mgr_service.cpp",
+    "${app_domain_verify_service_path}/src/manager/deferred_link/ability_filter.cpp",
+    "${app_domain_verify_service_path}/src/manager/deferred_link/deferred_link_mgr.cpp",
     "${app_domain_verify_service_path}/src/manager/permission/permission_manager.cpp",
     "${app_domain_verify_service_path}/src/manager/rdb/app_domain_verify_rdb_data_manager.cpp",
     "${app_domain_verify_service_path}/src/manager/rdb/app_domain_verify_rdb_open_callback.cpp",
@@ -78,7 +81,11 @@ ohos_unittest("app_domain_verify_mgr_service_test") {
     "ipc:ipc_core",
     "netstack:http_client",
     "os_account:os_account_innerkits",
+    "preferences:native_preferences",
     "relational_store:native_rdb",
+    "safwk:system_ability_fwk",
+    "samgr:dynamic_cache",
+    "samgr:samgr_common",
     "samgr:samgr_proxy",
   ]
 
