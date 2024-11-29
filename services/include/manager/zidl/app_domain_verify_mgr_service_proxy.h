@@ -24,23 +24,24 @@ namespace AppDomainVerify {
 class AppDomainVerifyMgrServiceProxy : public IRemoteProxy<IAppDomainVerifyMgrService> {
 public:
     explicit AppDomainVerifyMgrServiceProxy(const sptr<IRemoteObject>& object);
-    virtual ~AppDomainVerifyMgrServiceProxy();
-    virtual void VerifyDomain(const std::string& appIdentifier, const std::string& bundleName,
+    ~AppDomainVerifyMgrServiceProxy() override;
+    void VerifyDomain(const std::string& appIdentifier, const std::string& bundleName,
         const std::string& fingerprint, const std::vector<SkillUri>& skillUris) override;
-    virtual bool ClearDomainVerifyStatus(const std::string& appIdentifier, const std::string& bundleName) override;
-    virtual bool FilterAbilities(const OHOS::AAFwk::Want& want,
+    bool ClearDomainVerifyStatus(const std::string& appIdentifier, const std::string& bundleName) override;
+    bool FilterAbilities(const OHOS::AAFwk::Want& want,
         const std::vector<OHOS::AppExecFwk::AbilityInfo>& originAbilityInfos,
-        std::vector<OHOS::AppExecFwk::AbilityInfo>& filtedAbilityInfos) override;
-    virtual bool QueryDomainVerifyStatus(
+        std::vector<OHOS::AppExecFwk::AbilityInfo>& filteredAbilityInfos) override;
+    bool QueryDomainVerifyStatus(
         const std::string& bundleName, DomainVerifyStatus& domainVerificationState) override;
-    virtual bool QueryAllDomainVerifyStatus(BundleVerifyStatusInfo& bundleVerifyStatusInfo) override;
-    virtual bool SaveDomainVerifyStatus(
+    bool QueryAllDomainVerifyStatus(BundleVerifyStatusInfo& bundleVerifyStatusInfo) override;
+    bool SaveDomainVerifyStatus(
         const std::string& bundleName, const VerifyResultInfo& verifyResultInfo) override;
-    virtual bool IsAtomicServiceUrl(const std::string& url) override;
-    virtual void ConvertToExplicitWant(OHOS::AAFwk::Want& implicitWant, sptr<IConvertCallback>& callback) override;
-    virtual void UpdateWhiteListUrls(const std::vector<std::string>& urls) override;
-    virtual int QueryAssociatedDomains(const std::string& bundleName, std::vector<std::string>& domains) override;
-    virtual int QueryAssociatedBundleNames(const std::string& domain, std::vector<std::string>& bundleNames) override;
+    bool IsAtomicServiceUrl(const std::string& url) override;
+    void ConvertToExplicitWant(OHOS::AAFwk::Want& implicitWant, sptr<IConvertCallback>& callback) override;
+    void UpdateWhiteListUrls(const std::vector<std::string>& urls) override;
+    int QueryAssociatedDomains(const std::string& bundleName, std::vector<std::string>& domains) override;
+    int QueryAssociatedBundleNames(const std::string& domain, std::vector<std::string>& bundleNames) override;
+    int GetDeferredLink(std::string& link) override;
 private:
     static inline BrokerDelegator<AppDomainVerifyMgrServiceProxy> delegator_;
 };

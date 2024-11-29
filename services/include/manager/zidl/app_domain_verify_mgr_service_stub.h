@@ -27,7 +27,7 @@ namespace AppDomainVerify {
 class AppDomainVerifyMgrServiceStub : public IRemoteStub<IAppDomainVerifyMgrService> {
 public:
     API_EXPORT AppDomainVerifyMgrServiceStub();
-    API_EXPORT virtual ~AppDomainVerifyMgrServiceStub();
+    API_EXPORT ~AppDomainVerifyMgrServiceStub() override;
     API_EXPORT int32_t OnRemoteRequest(
         uint32_t code, MessageParcel& data, MessageParcel& reply, MessageOption& option) override;
 
@@ -43,6 +43,7 @@ private:
     int32_t OnUpdateWhiteListUrls(MessageParcel& data, MessageParcel& reply);
     int32_t OnQueryAssociatedDomains(MessageParcel& data, MessageParcel& reply);
     int32_t OnQueryAssociatedBundleNames(MessageParcel& data, MessageParcel& reply);
+    int32_t OnGetDeferredLink(MessageParcel& data, MessageParcel& reply);
 };
 }  // namespace AppDomainVerify
 }  // namespace OHOS
