@@ -286,4 +286,12 @@ void SystemAbility::OnDeviceLevelChanged(int32_t type, int32_t level, std::strin
     (void)level;
     (void)action;
 }
+
+int32_t SystemAbility::OnSvcCmd(int32_t fd, const std::vector<std::u16string>& args)
+{
+    GTEST_LOG_(INFO) << "MOCK SystemAbility OnSvcCmd";
+    (void)fd;
+    (void)args;
+    return 0;
+}
 }
