@@ -487,4 +487,29 @@ HWTEST_F(MgrDataMgrTest, MgrDataMgrLoadAllFromRdbTest005, TestSize.Level0)
     ASSERT_TRUE(appDomainVerifyDataMgr->LoadAllFromRdb());
 }
 
+/**
+ * @tc.name: QueryAssociatedDomainsTest006
+ * @tc.desc: QueryAssociatedDomains
+ * @tc.type: FUNC
+ */
+HWTEST_F(MgrDataMgrTest, QueryAssociatedDomainsTest006, TestSize.Level0)
+{
+    auto appDomainVerifyDataMgr = std::make_shared<AppDomainVerifyDataMgr>();
+    std::string bundleName;
+    std::vector<std::string> domains;
+    ASSERT_FALSE(appDomainVerifyDataMgr->QueryAssociatedDomains(bundleName, domains));
+}
+
+/**
+ * @tc.name: QueryAssociatedBundleNamesTest007
+ * @tc.desc: QueryAssociatedBundleNames
+ * @tc.type: FUNC
+ */
+HWTEST_F(MgrDataMgrTest, QueryAssociatedBundleNamesTest007, TestSize.Level0)
+{
+    auto appDomainVerifyDataMgr = std::make_shared<AppDomainVerifyDataMgr>();
+    std::string domain;
+    std::vector<std::string> bundleNames;
+    ASSERT_FALSE(appDomainVerifyDataMgr->QueryAssociatedBundleNames(domain, bundleNames));
+}
 }
