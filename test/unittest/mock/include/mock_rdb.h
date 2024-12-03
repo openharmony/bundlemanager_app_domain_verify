@@ -112,7 +112,8 @@ public:
     {
         return nullptr;
     };
-    std::shared_ptr<ResultSet> QueryByStep(const std::string& sql, const std::vector<ValueObject>& bindArgs) override
+    std::shared_ptr<ResultSet> QueryByStep(const std::string& sql, const std::vector<ValueObject>& bindArgs,
+        bool preCount) override
     {
         return nullptr;
     };
@@ -152,7 +153,7 @@ public:
     };
 
     std::shared_ptr<ResultSet> QueryByStep(
-        const AbsRdbPredicates& predicates, const std::vector<std::string>& columns) override
+        const AbsRdbPredicates& predicates, const std::vector<std::string>& columns, bool preCount) override
     {
         return nullptr;
     };
