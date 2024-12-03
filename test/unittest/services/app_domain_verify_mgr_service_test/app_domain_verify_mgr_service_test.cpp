@@ -35,6 +35,7 @@
 #include "system_ability_definition.h"
 #include "app_domain_verify_parcel_util.h"
 #include "mock_convert_callback.h"
+#include "permission_manager.h"
 
 namespace OHOS::AppDomainVerify {
 using namespace testing;
@@ -657,5 +658,90 @@ HWTEST_F(MgrServiceTest, MgrServiceTest034, TestSize.Level0)
     verifyResultInfo.hostVerifyStatusMap.emplace(
         bundleName, std::make_tuple(InnerVerifyStatus::STATE_FAIL, std::string(), 0));
     EXPECT_FALSE(appDomainVerifyMgrService->SaveDomainVerifyStatus(bundleName, verifyResultInfo));
+}
+
+/**
+ * @tc.name: CheckPermission035
+ * @tc.desc: CheckPermission
+ * @tc.type: FUNC
+ */
+HWTEST_F(MgrServiceTest, CheckPermission035, TestSize.Level0)
+{
+    std::string permission;
+    EXPECT_FALSE(PermissionManager::CheckPermission(permission));
+}
+
+/**
+ * @tc.name: IsSystemAppCall036
+ * @tc.desc: IsSystemAppCall
+ * @tc.type: FUNC
+ */
+HWTEST_F(MgrServiceTest, IsSystemAppCall036, TestSize.Level0)
+{
+    EXPECT_TRUE(PermissionManager::IsSystemAppCall());
+}
+
+/**
+ * @tc.name: MgrServiceTest037
+ * @tc.desc: QueryAssociatedDomains
+ * @tc.type: FUNC
+ */
+HWTEST_F(MgrServiceTest, MgrServiceTest037, TestSize.Level0)
+{
+    ASSERT_TRUE(appDomainVerifyMgrService);
+    ASSERT_TRUE(appDomainVerifyMgrService->dataManager_);
+    std::string bundleName;
+    std::vector<std::string> domains;
+    EXPECT_EQ(appDomainVerifyMgrService->QueryAssociatedDomains(bundleName, domains), 201);
+}
+
+/**
+ * @tc.name: MgrServiceTest038
+ * @tc.desc: QueryAssociatedBundleNames
+ * @tc.type: FUNC
+ */
+HWTEST_F(MgrServiceTest, MgrServiceTest038, TestSize.Level0)
+{
+    ASSERT_TRUE(appDomainVerifyMgrService);
+    ASSERT_TRUE(appDomainVerifyMgrService->dataManager_);
+    std::string domain;
+    std::vector<std::string> bundleNames;
+    EXPECT_EQ(appDomainVerifyMgrService->QueryAssociatedBundleNames(domain, bundleNames), 201);
+}
+
+/**
+ * @tc.name: MgrServiceVerifyDomainTest039
+ * @tc.desc: OnUpdateWhiteListUrls
+ * @tc.type: FUNC
+ */
+HWTEST_F(MgrServiceTest, MgrServiceVerifyDomainTest039, TestSize.Level0)
+{
+    std::string appIdentifier = "appIdentifier";
+    std::string bundleName = "bundleName";
+    std::string fingerprint = "fingerprint";
+
+    std::vector<SkillUri> skillUris;
+    SkillUri skillUri;
+    skillUris.push_back(skillUri);
+    MessageParcel data;
+    MessageParcel reply;
+    MessageOption option;
+    WRITE_PARCEL_AND_RETURN_IF_FAIL(InterfaceToken, data, std::u16string(u"abc"));
+    WRITE_PARCEL_AND_RETURN_IF_FAIL(String, data, appIdentifier);
+    WRITE_PARCEL_AND_RETURN_IF_FAIL(String, data, bundleName);
+    WRITE_PARCEL_AND_RETURN_IF_FAIL(String, data, fingerprint);
+
+    uint32_t size = static_cast<uint32_t>(skillUris.size());
+    WRITE_PARCEL_AND_RETURN_IF_FAIL(Uint32, data, size);
+
+    int32_t error = appDomainVerifyMgrService->OnRemoteRequest(
+        AppDomainVerifyMgrInterfaceCode::UPDATE_WHITE_LIST_URLS, data, reply, option);
+    ASSERT_TRUE(error != ERR_OK);
+    error = appDomainVerifyMgrService->OnRemoteRequest(
+        AppDomainVerifyMgrInterfaceCode::QUERY_ASSOCIATED_DOMAINS, data, reply, option);
+    ASSERT_TRUE(error != ERR_OK);
+    error = appDomainVerifyMgrService->OnRemoteRequest(
+        AppDomainVerifyMgrInterfaceCode::QUERY_ASSOCIATED_BUNDLE_NAMES, data, reply, option);
+    ASSERT_TRUE(error != ERR_OK);
 }
 }
