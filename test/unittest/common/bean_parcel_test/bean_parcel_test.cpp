@@ -423,4 +423,17 @@ HWTEST_F(AppDomainVerifyBeanParcelTest, AppDomainVerifyBeanParcelTest0010, TestS
     APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MODULE_COMMON, "AppDomainVerifyBeanParcelTest002 end");
     printf("AppDomainVerifyBeanParcelTest001 end\n");
 }
+
+/**
+ * @tc.name: AppDomainVerifyBeanParcelTest0011
+ * @tc.desc: Dump test.
+ * @tc.type: FUNC
+ */
+HWTEST_F(AppDomainVerifyBeanParcelTest, AppDomainVerifyBeanParcelTest0011, TestSize.Level0)
+{
+    VerifyResultInfo verifyResultInfo;
+    verifyResultInfo.appIdentifier = APP_IDENTIFIER;
+    std::string result = verifyResultInfo.Dump();
+    ASSERT_TRUE(result == "appIdentifier:appIdentifier\n");
+}
 }
