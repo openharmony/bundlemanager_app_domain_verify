@@ -149,6 +149,16 @@ void AppDomainVerifyAgentService::UpdateWhiteList()
         return;
     }
 }
+
+void AppDomainVerifyAgentService::UpdateAppDetails()
+{
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "called");
+    if (ErrorCode::E_EXTENSIONS_LIB_NOT_FOUND != appDomainVerifyExtMgr_->UpdateAppDetails()) {
+        APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "extension call end");
+        return;
+    }
+}
+
 // sa_main进程统一调用
 void AppDomainVerifyAgentService::OnStart(const SystemAbilityOnDemandReason& startReason)
 {
@@ -194,6 +204,7 @@ void AppDomainVerifyAgentService::DoSync(const TaskType& type)
 {
     QueryAndCompleteRefresh(type);
     UpdateWhiteList();
+    UpdateAppDetails();
 }
 
 bool AppDomainVerifyAgentService::IsNetAvailable()
@@ -288,6 +299,5 @@ int AppDomainVerifyAgentService::Dump(int fd, const std::vector<std::u16string>&
     (void)write(fd, dumpString.c_str(), dumpString.size());
     return 0;
 }
-
 }  // namespace AppDomainVerify
 }  // namespace OHOS

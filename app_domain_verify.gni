@@ -39,4 +39,7 @@ app_domain_verify_frameworks_common_path =
 app_domain_verify_frameworks_verifier_path =
     "${app_domain_verify_root_path}/frameworks/verifier"
 
+app_domain_verify_frameworks_app_details_rdb_path =
+    "${app_domain_verify_root_path}/frameworks/app_details_rdb"
+
 app_domain_verify_test_path = "${app_domain_verify_root_path}/test/unittest"

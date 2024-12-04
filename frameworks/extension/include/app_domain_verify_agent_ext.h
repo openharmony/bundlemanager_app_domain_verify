@@ -38,6 +38,7 @@ public:
         const AppVerifyBaseInfo& appVerifyBaseInfo, const VerifyResultInfo& verifyResultInfo);
     virtual ErrorCode ConvertToExplicitWant(OHOS::AAFwk::Want& implicitWant, sptr<IConvertCallback>& callback);
     virtual ErrorCode UpdateWhiteList();
+    virtual ErrorCode UpdateAppDetails();
 };
 }
 }

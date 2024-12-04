@@ -1,0 +1,72 @@
+# Copyright (C) 2023 Huawei Device Co., Ltd.
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+import("//build/test.gni")
+import("//foundation/bundlemanager/app_domain_verify/app_domain_verify.gni")
+
+config("module_private_config") {
+  visibility = [ ":*" ]
+  configs = [ "//build/config/compiler:exceptions" ]
+  include_dirs = [
+    "${app_domain_verify_frameworks_app_details_rdb_path}/include/",
+    "${app_domain_verify_service_path}/include/manager/core/",
+    "${app_domain_verify_service_path}/include/manager/filter"
+  ]
+}
+
+module_output_path = "app_domain_verify/app_domain_verify"
+ohos_unittest("app_details_rdb_data_manager_test") {
+  module_out_path = module_output_path
+
+  sources = [
+    "${app_domain_verify_frameworks_app_details_rdb_path}/src/app_details_meta_item.cpp",
+    "${app_domain_verify_frameworks_app_details_rdb_path}/src/app_details_rdb_item.cpp",
+    "${app_domain_verify_frameworks_app_details_rdb_path}/src/app_details_rdb_data_manager.cpp",
+    "${app_domain_verify_frameworks_app_details_rdb_path}/src/app_details_rdb_open_callback.cpp",
+    "${app_domain_verify_service_path}/src/manager/core/app_details_data_mgr.cpp",
+    "${app_domain_verify_service_path}/src/manager/filter/app_details_filter.cpp",
+    "app_details_rdb_data_manager_test.cpp",
+  ]
+
+  configs = [ ":module_private_config" ]
+  external_deps = [
+    "ability_base:want",
+    "ability_base:zuri",
+    "bundle_framework:appexecfwk_base",
+    "c_utils:utils",
+    "eventhandler:libeventhandler",
+    "hilog:libhilog",
+    "hisysevent:libhisysevent",
+    "image_framework:image_native",
+    "init:libbegetutil",
+    "ipc:ipc_core",
+    "netstack:http_client",
+    "os_account:os_account_innerkits",
+    "relational_store:native_rdb",
+    "samgr:samgr_proxy",
+    "ffrt:libffrt",
+  ]
+
+  defines = [ "API_EXPORT=__attribute__((visibility (\"default\")))" ]
+  deps = [
+    "${app_domain_verify_client_path}:app_domain_verify_agent_client",
+    "${app_domain_verify_client_path}:app_domain_verify_mgr_client",
+    "${app_domain_verify_common_path}:app_domain_verify_common",
+    "${app_domain_verify_frameworks_common_path}:app_domain_verify_frameworks_common",
+    "${app_domain_verify_frameworks_common_path}:app_domain_verify_frameworks_common",
+    "${app_domain_verify_frameworks_extension_path}:app_domain_verify_extension_framework",
+    "${app_domain_verify_frameworks_verifier_path}:app_domain_verify_agent_verifier",
+    "//third_party/googletest:gmock_main",
+    "//third_party/googletest:gtest_main",
+  ]
+}

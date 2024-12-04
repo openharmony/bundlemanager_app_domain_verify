@@ -23,6 +23,7 @@ group("app_domain_verify_packages") {
       "frameworks/common:app_domain_verify_frameworks_common",
       "frameworks/extension:app_domain_verify_extension_framework",
       "frameworks/verifier:app_domain_verify_agent_verifier",
+      "frameworks/app_details_rdb:app_domain_verify_app_details_rdb",
       "interfaces/inner_api/client:app_domain_verify_agent_client",
       "interfaces/inner_api/client:app_domain_verify_mgr_client",
       "interfaces/inner_api/common:app_domain_verify_common",

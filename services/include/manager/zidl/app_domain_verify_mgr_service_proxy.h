@@ -18,6 +18,7 @@
 
 #include "i_app_domain_verify_mgr_service.h"
 #include "iremote_proxy.h"
+#include "want.h"
 
 namespace OHOS {
 namespace AppDomainVerify {
@@ -42,6 +43,7 @@ public:
     int QueryAssociatedDomains(const std::string& bundleName, std::vector<std::string>& domains) override;
     int QueryAssociatedBundleNames(const std::string& domain, std::vector<std::string>& bundleNames) override;
     int GetDeferredLink(std::string& link) override;
+    int QueryAppDetailsWant(const std::string& link, AAFwk::Want& want) override;
 private:
     static inline BrokerDelegator<AppDomainVerifyMgrServiceProxy> delegator_;
 };

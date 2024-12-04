@@ -1,4 +1,4 @@
-# Copyright (C) 2024 Huawei Device Co., Ltd.
+# Copyright (C) 2023 Huawei Device Co., Ltd.
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -13,18 +13,16 @@
 
 import("//build/ohos.gni")
 import("//foundation/bundlemanager/app_domain_verify/app_domain_verify.gni")
-config("app_domain_verify_mgr_napi_config") {
+
+config("app_domain_verify_app_details_rdb_config") {
   visibility = [ ":*" ]
   include_dirs = [
     "include",
-    "${app_domain_verify_client_path}/include",
-    "${app_domain_verify_common_path}/include",
-    "${app_domain_verify_common_path}/include/zidl"
+    "${app_domain_verify_frameworks_common_path}/include"
   ]
   configs = [ "//build/config/compiler:exceptions" ]
   ldflags = [ "-Wl,--exclude-libs=ALL" ]
   cflags = [
-    "-fvisibility=hidden",
     "-fdata-sections",
     "-ffunction-sections",
     "-fstack-protector-strong",
@@ -32,34 +30,35 @@ config("app_domain_verify_mgr_napi_config") {
     "-Os",
   ]
 
-  cflags_cc = [
-    "-fvisibility-inlines-hidden",
-    "-Os",
-  ]
+  cflags_cc = [ "-Os" ]
 }
 
-ohos_shared_library("appdomainverify_napi") {
+ohos_shared_library("app_domain_verify_app_details_rdb") {
   branch_protector_ret = "pac_ret"
   sources = [
-    "src/api_event_reporter.cpp",
-    "src/app_domain_verify_manager_napi.cpp",
-    "src/config_parser.cpp",
-    "src/native_module.cpp",
+    "src/app_details_rdb_data_manager.cpp",
+    "src/app_details_rdb_open_callback.cpp",
+    "src/app_details_meta_item.cpp",
+    "src/app_details_rdb_item.cpp"
   ]
-  public_configs = [ ":app_domain_verify_mgr_napi_config" ]
-  deps = [
-    "${app_domain_verify_client_path}:app_domain_verify_mgr_client",
-    "${app_domain_verify_common_path}:app_domain_verify_common",
-  ]
+  public_configs = [ ":app_domain_verify_app_details_rdb_config" ]
+
   external_deps = [
+    "ability_base:base",
     "ability_base:want",
-    "ability_runtime:napi_common",
+    "ability_runtime:ability_manager",
     "bundle_framework:appexecfwk_base",
+    "bundle_framework:appexecfwk_core",
     "c_utils:utils",
-    "hiappevent:hiappevent_innerapi",
+    "curl:curl_shared",
+    "eventhandler:libeventhandler",
+    "ffrt:libffrt",
     "hilog:libhilog",
+    "hisysevent:libhisysevent",
     "ipc:ipc_core",
-    "napi:ace_napi",
+    "json:nlohmann_json_static",
+    "netstack:http_client",
+    "os_account:os_account_innerkits",
     "safwk:system_ability_fwk",
     "samgr:samgr_proxy",
   ]
@@ -67,8 +66,11 @@ ohos_shared_library("appdomainverify_napi") {
   if (build_variant == "user") {
     defines += [ "IS_RELEASE_VERSION" ]
   }
-
-  relative_install_dir = "module/bundle"
+  sanitize = {
+    cfi = true
+    cfi_cross_dso = true
+    debug = false
+  }
   subsystem_name = "bundlemanager"
   part_name = "app_domain_verify"
 }

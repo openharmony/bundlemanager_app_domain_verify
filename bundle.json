@@ -133,6 +133,17 @@
             ],
             "header_base": "//foundation/bundlemanager/app_domain_verify/frameworks/verifier/include"
           }
+        },
+        {
+          "name": "//foundation/bundlemanager/app_domain_verify/frameworks/app_details_rdb:app_domain_verify_app_details_rdb",
+          "header": {
+            "header_files": [
+              "app_details_rdb_data_define.h",
+              "app_details_rdb_data_manager.h",
+              "app_details_rdb_open_callback.h"
+            ],
+            "header_base": "//foundation/bundlemanager/app_domain_verify/frameworks/app_details_rdb/include"
+          }
         }
       ],
       "test": [
