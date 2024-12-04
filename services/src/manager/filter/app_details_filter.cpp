@@ -23,7 +23,7 @@ constexpr const static char *ENTITY_SYSTEM_BROWSABLE = "entity.system.browsable"
 constexpr const static char *WANT_ACTION_VIEWDATA = "ohos.want.action.viewData";
 bool AppDetailsFilter::Filter(const std::vector<AppDetailInfo>& input, std::vector<AppDetailInfo>& dest, const std::string& url)
 {
-    APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "start filer");
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "call.");
     AAFwk::Want want;
     want.SetAction(WANT_ACTION_VIEWDATA);
     want.SetEntities({ENTITY_SYSTEM_BROWSABLE});
