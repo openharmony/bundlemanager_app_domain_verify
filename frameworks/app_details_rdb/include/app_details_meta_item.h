@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2023 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -12,15 +12,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#ifndef APP_DOMAIN_VERIFY_AGENT_INTERFACE_CODE_H
-#define APP_DOMAIN_VERIFY_AGENT_INTERFACE_CODE_H
+
+#ifndef APP_DOMAIN_VERIFY_SERVICE_APP_DETAILS_META_ITEM_H
+#define APP_DOMAIN_VERIFY_SERVICE_APP_DETAILS_META_ITEM_H
+#include "app_details_base_item.h"
 namespace OHOS {
 namespace AppDomainVerify {
-enum AgentInterfaceCode {
-    SINGLE_VERIFY = 0,
-    CONVERT_TO_EXPLICIT_WANT = 1
+class MetaItem : public AppDetailsBaseItem  {
+public:
+    bool GetRdbItem(std::shared_ptr<AbsSharedResultSet>& retSet) override;
+    void AddRdbItemToBucket(NativeRdb::ValuesBucket& bucket) override;
+public:
+    std::string tableName;
+    std::string tableVersion;
+    std::string tableExtInfo;
+    std::string updateTime;
 };
 }
-}  // namespace OHOS
+}
+
 
 #endif
