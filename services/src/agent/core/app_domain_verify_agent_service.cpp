@@ -23,6 +23,7 @@
 #include "domain_url_util.h"
 #include "bms/bundle_info_query.h"
 #include "app_domain_verify_mgr_client.h"
+#include "system_ability_ondemand_reason.h"
 #include "verify_task.h"
 #include "iservice_registry.h"
 
@@ -42,6 +43,7 @@ constexpr int32_t DUMP_SYSTEM_START_YEAR = 1900;
 constexpr int32_t FORMAT_BLANK_SIZE = 32;
 }
 static const std::string TASK_ID = "unload";
+static const std::string UPDATE_DETAILS_TASK_ID = "udpateDetails";
 using namespace NetManagerStandard;
 const bool REGISTER_RESULT = SystemAbility::MakeAndRegisterAbility(new AppDomainVerifyAgentService());
 
@@ -153,10 +155,11 @@ void AppDomainVerifyAgentService::UpdateWhiteList()
 void AppDomainVerifyAgentService::UpdateAppDetails()
 {
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "called");
+    isUpdateRunning_ = true;
     if (ErrorCode::E_EXTENSIONS_LIB_NOT_FOUND != appDomainVerifyExtMgr_->UpdateAppDetails()) {
         APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "extension call end");
-        return;
     }
+    isUpdateRunning_ = false;
 }
 
 // sa_main进程统一调用
@@ -164,6 +167,9 @@ void AppDomainVerifyAgentService::OnStart(const SystemAbilityOnDemandReason& sta
 {
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "OnStart reason %{public}s, reasonId_:%{public}d",
         startReason.GetName().c_str(), startReason.GetId());
+    if (startReason.GetId() == OnDemandReasonId::TIMED_EVENT) {
+        PostUpdateAppDetailsTask();
+    }
     PostDelayUnloadTask();
     bool res = Publish(this);
     if (!res) {
@@ -193,11 +199,10 @@ void AppDomainVerifyAgentService::UnloadSa()
 
 bool AppDomainVerifyAgentService::IsIdle()
 {
-    if (appDomainVerifyTaskMgr_ == nullptr) {
-        return true;
-    } else {
-        return appDomainVerifyTaskMgr_->IsIdle();
+    if (!appDomainVerifyTaskMgr_->IsIdle()) {
+        return false;
     }
+    return !isUpdateRunning_;
 }
 
 void AppDomainVerifyAgentService::DoSync(const TaskType& type)
@@ -254,6 +259,13 @@ void AppDomainVerifyAgentService::PostDelayUnloadTask()
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "called");
     unloadHandler_->RemoveTask(TASK_ID);
     unloadHandler_->PostTask([this] { OnDelayUnloadSA(); }, TASK_ID, DELAY_TIME);
+}
+
+void AppDomainVerifyAgentService::PostDelayUnloadTask()
+{
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "called");
+    unloadHandler_->RemoveTask(UPDATE_DETAILS_TASK_ID);
+    unloadHandler_->PostTask([this] { UpdateAppDetails(); }, UPDATE_DETAILS_TASK_ID, DELAY_TIME);
 }
 
 void AppDomainVerifyAgentService::OnDump()
