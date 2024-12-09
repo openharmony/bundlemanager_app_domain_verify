@@ -263,7 +263,7 @@ HWTEST_F(AppDetailsRdbMgrTest, AppDetailsRdbMgrTest006, TestSize.Level0)
     ret = rdbMgr->QueryDataByDomain("app_details", item.domain, result);
     ASSERT_TRUE(ret);
     ASSERT_TRUE(result.size() != 0);
-    auto task = [&sem, &checkFlag]() {
+    auto task = [&sem, &checkFlag, rdbMgr]() {
         rdbMgr->ExecWithTrans([&sem, &checkFlag]()->bool {
             sem.acquire();
             checkFlag = true;
