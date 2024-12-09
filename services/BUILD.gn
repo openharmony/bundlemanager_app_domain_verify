@@ -33,7 +33,7 @@ config("app_domain_verify_service_config") {
     "${app_domain_verify_frameworks_common_path}/include/bms",
     "${app_domain_verify_frameworks_common_path}/include/config",
     "${app_domain_verify_frameworks_common_path}/include/dfx",
-    "//foundation/bundlemanager/app_domain_verify/frameworks/app_details_rdb/include"
+    "${app_domain_verify_frameworks_app_details_rdb_path}/include"
   ]
   configs = [ "//build/config/compiler:exceptions" ]
   ldflags = [ "-Wl,--exclude-libs=ALL" ]
