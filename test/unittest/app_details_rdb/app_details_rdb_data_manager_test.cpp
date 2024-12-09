@@ -128,7 +128,7 @@ HWTEST_F(AppDetailsRdbMgrTest, AppDetailsRdbMgrTest002, TestSize.Level0)
     item.domain = "www.test.com";
     item.pathType = "path";
     item.path = "test";
-    item.bundleName = "com.huawei.bundleNameTest";
+    item.bundleName = "com.test.bundleNameTest";
     itemVec.push_back(item);
     ret = rdbMgr->InsertDataBatch("app_details", itemVec);
     ASSERT_TRUE(ret);
@@ -192,7 +192,7 @@ HWTEST_F(AppDetailsRdbMgrTest, AppDetailsRdbMgrTest004, TestSize.Level0)
     item.domain = "www.test.com";
     item.pathType = "path";
     item.path = "test";
-    item.bundleName = "com.huawei.bundleNameTest";
+    item.bundleName = "com.test.bundleNameTest";
     itemVec.push_back(item);
     ret = rdbMgr->InsertDataBatch("app_details", itemVec);
     ASSERT_TRUE(ret);
@@ -276,10 +276,9 @@ HWTEST_F(AppDetailsRdbMgrTest, AppDetailsRdbMgrTest006, TestSize.Level0)
     bool flag = rdbMgr->rdbStore_->IsInTransaction();
     ASSERT_TRUE(flag);
     ASSERT_FALSE(checkFlag);
-    APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "sart query test");
     result.clear();
     ASSERT_TRUE(result.size() == 0);
-    ret = rdbMgr->QueryDataByDomain("app_details", "www.baidu.com", result);
+    ret = rdbMgr->QueryDataByDomain("app_details", "www.test.com", result);
     ASSERT_TRUE(result.size() != 0);
     sem.release();
     std::this_thread::sleep_for(std::chrono::milliseconds(10));
