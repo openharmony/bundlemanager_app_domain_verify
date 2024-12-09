@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Huawei Device Co., Ltd.
+ * Copyright (C) 2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,7 +13,11 @@
  * limitations under the License.
  */
 
-#include "app_details_data_mgr.h"
+#include <memory>
+#include <new>
+#include <cstdint>
+#include "skill.h"
+#include "want.h"
 #include "app_details_filter.h"
 #include "app_details_meta_item.h"
 #include "app_details_rdb_data_define.h"
@@ -24,11 +28,9 @@
 #include "app_domain_verify_hilog.h"
 #include "filter_define.h"
 #include "lru_cache_util.h"
-#include "skill.h"
-#include "want.h"
-#include <memory>
-#include <new>
-#include <cstdint>
+#include "app_details_data_mgr.h"
+
+
 namespace OHOS {
 namespace AppDomainVerify {
 const static std::string OHOS_WANT_ACTION_APPDETAILS = "ohos.want.action.appdetails";

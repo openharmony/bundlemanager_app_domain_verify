@@ -15,15 +15,15 @@
 #ifndef APP_DOMAIN_VERIFY_APP_DETAILS_DATA_MGR_H
 #define APP_DOMAIN_VERIFY_APP_DETAILS_DATA_MGR_H
 
+#include <cstdint>
+#include <string>
+#include <unordered_map>
 #include "cpp/mutex.h"
+#include "want.h"
 #include "lru_cache_util.h"
 #include "filter_define.h"
 #include "app_details_filter.h"
 #include "app_details_rdb_data_manager.h"
-#include "want.h"
-#include <stdint.h>
-#include <string>
-#include <unordered_map>
 
 namespace OHOS {
 namespace AppDomainVerify {
