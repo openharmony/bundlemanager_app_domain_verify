@@ -45,7 +45,7 @@ AppDetailsDataMgr::~AppDetailsDataMgr()
 
 int AppDetailsDataMgr::QueryAppDetailsWant(const std::string &url, AAFwk::Want& want)
 {
-    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "call, url:%{public}s", url.c_str());
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "call, url:%{private}s", url.c_str());
     if (QueryAppDetailsWantByCache(url, want)) {
         APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "query success from cache");
         return QUERY_SUCC;
