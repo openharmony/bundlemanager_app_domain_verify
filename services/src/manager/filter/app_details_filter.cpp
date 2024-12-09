@@ -38,7 +38,7 @@ bool AppDetailsFilter::Filter(
     size_t index = 0;
     bool ret = skill.Match(want, index);
     if (!ret) {
-        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "skill match fail.");
+        APP_DOMAIN_VERIFY_HILOGW(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "skill match fail.");
         return false;
     }
     dest.clear();
