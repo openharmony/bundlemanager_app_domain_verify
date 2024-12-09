@@ -326,8 +326,9 @@ bool AppDetailsRdbDataMgr::Query(const NativeRdb::AbsRdbPredicates& predicates,
         APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "rdbStore query absSharedResultSet failed");
         return false;
     }
-    auto guard = std::unique_ptr<void, std::function<void(void*)>>(
-        nullptr, [&](void*) {
+    auto guard = std::unique_ptr<void, std::function<void(void*)>>(nullptr,
+        [&](void*)
+        {
             absSharedResultSet->Close();
         }
     );
