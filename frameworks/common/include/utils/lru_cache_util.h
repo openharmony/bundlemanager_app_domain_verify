@@ -29,19 +29,19 @@ class LruCacheUtil {
 public:
     LruCacheUtil<K, V>() = default;
     LruCacheUtil<K, V>(size_t maxCap):maxCap_(maxCap){};
-    bool SetMaxCap(int cap);
+    bool SetMaxCap(size_t cap);
     bool Get(const K& key, V& value);
     void Put(const K& key, const V& value);
     void Clear();
     bool IsEmpty();
 private:
     std::atomic<size_t> maxCap_ = 10;
-    std::list<std::pair<K, V>> m_cache;
+    std::list<std::pair<K, V>> cache_;
     std::unordered_map<K, typename std::list<std::pair<K, V>>::iterator> lruMap_;
 };
 
 template<typename K, typename V>
-bool LruCacheUtil<K, V>::SetMaxCap(int cap) {
+bool LruCacheUtil<K, V>::SetMaxCap(size_t cap) {
     maxCap_ = cap;
 };
 
@@ -51,9 +51,9 @@ bool LruCacheUtil<K, V>::Get(const K& key, V& value) {
         return false;
     }
     value = lruMap_[key]->second;
-    m_cache.erase(lruMap_[key]);
-    m_cache.push_front({key, value});
-    lruMap_[key] = m_cache.begin();
+    cache_.erase(lruMap_[key]);
+    cache_.push_front({key, value});
+    lruMap_[key] = cache_.begin();
     return true;
 };
 
@@ -62,23 +62,23 @@ void LruCacheUtil<K, V>::Put(const K& key, const V& value) {
     auto iter = lruMap_.find(key);
     if (iter != lruMap_.end()) {
         V val = lruMap_[key]->second;
-        m_cache.erase(iter->second);
-        m_cache.push_front({key, val});
-        lruMap_[key] = m_cache.begin();
+        cache_.erase(iter->second);
+        cache_.push_front({key, val});
+        lruMap_[key] = cache_.begin();
         return;
     }
     if (lruMap_.size() == maxCap_) {
-        lruMap_.erase(m_cache.back().first);
-        m_cache.pop_back();
+        lruMap_.erase(cache_.back().first);
+        cache_.pop_back();
     }
-    m_cache.push_front({key, value});
-    lruMap_[key] = m_cache.begin();
+    cache_.push_front({key, value});
+    lruMap_[key] = cache_.begin();
     return;
 };
 
 template<typename K, typename V>
 void LruCacheUtil<K, V>::Clear() {
-    m_cache.clear();
+    cache_.clear();
     lruMap_.clear();
 };
 
