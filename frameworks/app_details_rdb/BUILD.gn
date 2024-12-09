@@ -18,7 +18,7 @@ config("app_domain_verify_app_details_rdb_config") {
   visibility = [ ":*" ]
   include_dirs = [
     "include",
-    "${app_domain_verify_frameworks_common_path}/include"
+    "${app_domain_verify_frameworks_common_path}/include",
   ]
   configs = [ "//build/config/compiler:exceptions" ]
   ldflags = [ "-Wl,--exclude-libs=ALL" ]
@@ -36,10 +36,10 @@ config("app_domain_verify_app_details_rdb_config") {
 ohos_shared_library("app_domain_verify_app_details_rdb") {
   branch_protector_ret = "pac_ret"
   sources = [
-    "src/app_details_rdb_data_manager.cpp",
-    "src/app_details_rdb_open_callback.cpp",
     "src/app_details_meta_item.cpp",
-    "src/app_details_rdb_item.cpp"
+    "src/app_details_rdb_data_manager.cpp",
+    "src/app_details_rdb_item.cpp",
+    "src/app_details_rdb_open_callback.cpp",
   ]
   public_configs = [ ":app_domain_verify_app_details_rdb_config" ]
 

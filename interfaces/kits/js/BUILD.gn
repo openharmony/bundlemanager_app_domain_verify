@@ -19,7 +19,7 @@ config("app_domain_verify_mgr_napi_config") {
     "include",
     "${app_domain_verify_client_path}/include",
     "${app_domain_verify_common_path}/include",
-    "${app_domain_verify_common_path}/include/zidl"
+    "${app_domain_verify_common_path}/include/zidl",
   ]
   configs = [ "//build/config/compiler:exceptions" ]
   ldflags = [ "-Wl,--exclude-libs=ALL" ]
