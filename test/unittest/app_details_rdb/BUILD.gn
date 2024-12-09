@@ -20,7 +20,7 @@ config("module_private_config") {
   include_dirs = [
     "${app_domain_verify_frameworks_app_details_rdb_path}/include/",
     "${app_domain_verify_service_path}/include/manager/core/",
-    "${app_domain_verify_service_path}/include/manager/filter"
+    "${app_domain_verify_service_path}/include/manager/filter",
   ]
 }
 
@@ -30,8 +30,8 @@ ohos_unittest("app_details_rdb_data_manager_test") {
 
   sources = [
     "${app_domain_verify_frameworks_app_details_rdb_path}/src/app_details_meta_item.cpp",
-    "${app_domain_verify_frameworks_app_details_rdb_path}/src/app_details_rdb_item.cpp",
     "${app_domain_verify_frameworks_app_details_rdb_path}/src/app_details_rdb_data_manager.cpp",
+    "${app_domain_verify_frameworks_app_details_rdb_path}/src/app_details_rdb_item.cpp",
     "${app_domain_verify_frameworks_app_details_rdb_path}/src/app_details_rdb_open_callback.cpp",
     "${app_domain_verify_service_path}/src/manager/core/app_details_data_mgr.cpp",
     "${app_domain_verify_service_path}/src/manager/filter/app_details_filter.cpp",
@@ -45,6 +45,9 @@ ohos_unittest("app_details_rdb_data_manager_test") {
     "bundle_framework:appexecfwk_base",
     "c_utils:utils",
     "eventhandler:libeventhandler",
+    "ffrt:libffrt",
+    "googletest:gmock_main",
+    "googletest:gtest_main",
     "hilog:libhilog",
     "hisysevent:libhisysevent",
     "image_framework:image_native",
@@ -54,9 +57,6 @@ ohos_unittest("app_details_rdb_data_manager_test") {
     "os_account:os_account_innerkits",
     "relational_store:native_rdb",
     "samgr:samgr_proxy",
-    "ffrt:libffrt",
-    "googletest:gmock_main",
-    "googletest:gtest_main"
   ]
 
   defines = [ "API_EXPORT=__attribute__((visibility (\"default\")))" ]
@@ -67,6 +67,6 @@ ohos_unittest("app_details_rdb_data_manager_test") {
     "${app_domain_verify_frameworks_common_path}:app_domain_verify_frameworks_common",
     "${app_domain_verify_frameworks_common_path}:app_domain_verify_frameworks_common",
     "${app_domain_verify_frameworks_extension_path}:app_domain_verify_extension_framework",
-    "${app_domain_verify_frameworks_verifier_path}:app_domain_verify_agent_verifier"
+    "${app_domain_verify_frameworks_verifier_path}:app_domain_verify_agent_verifier",
   ]
 }
