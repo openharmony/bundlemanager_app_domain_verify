@@ -261,7 +261,7 @@ void AppDomainVerifyAgentService::PostDelayUnloadTask()
     unloadHandler_->PostTask([this] { OnDelayUnloadSA(); }, TASK_ID, DELAY_TIME);
 }
 
-void AppDomainVerifyAgentService::PostDelayUnloadTask()
+void AppDomainVerifyAgentService::PostUpdateAppDetailsTask()
 {
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "called");
     unloadHandler_->RemoveTask(UPDATE_DETAILS_TASK_ID);
