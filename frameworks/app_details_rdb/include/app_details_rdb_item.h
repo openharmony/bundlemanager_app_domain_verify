@@ -19,7 +19,7 @@
 #include "app_details_base_item.h"
 namespace OHOS {
 namespace AppDomainVerify {
-class AppDetailsRdbItem :public AppDetailsBaseItem {
+class AppDetailsRdbItem : public AppDetailsBaseItem {
 public:
     bool GetRdbItem(std::shared_ptr<AbsSharedResultSet>& retSet) override;
     void AddRdbItemToBucket(NativeRdb::ValuesBucket& bucket) override;

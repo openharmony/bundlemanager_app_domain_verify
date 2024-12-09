@@ -72,7 +72,7 @@ private:
     std::shared_ptr<AppExecFwk::EventHandler> unloadHandler_;
     std::shared_ptr<AppExecFwk::EventRunner> runner_;
     std::chrono::system_clock::time_point now;
-    std::atomic<bool> isUpdateRunning_ =false;
+    std::atomic<bool> isUpdateRunning_ = false;
 };
 
 }  // namespace AppDomainVerify

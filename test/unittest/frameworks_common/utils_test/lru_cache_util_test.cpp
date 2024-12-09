@@ -56,7 +56,7 @@ void LruCacheUtilTest::TearDown(void)
 HWTEST_F(LruCacheUtilTest, LruCacheUtilTest001, TestSize.Level0)
 {
     auto lruCache = LruCacheUtil<std::string, std::string>();
-    for (int i = 0; i < 11; i ++) {
+    for (int i = 0; i < 11; i++) {
         lruCache.Put(std::to_string(i), std::to_string(i));
     }
     std::string value;

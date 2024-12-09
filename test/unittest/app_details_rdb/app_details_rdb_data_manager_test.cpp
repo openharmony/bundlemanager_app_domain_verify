@@ -254,18 +254,17 @@ HWTEST_F(AppDetailsRdbMgrTest, AppDetailsRdbMgrTest006, TestSize.Level0)
     item.domain = "www.test.com";
     item.pathType = "path";
     item.path = "test";
-    item.bundleName = "com.huawei.bundleNameTest";
+    item.bundleName = "com.test.bundleNameTest";
     itemVec.push_back(item);
     ret = rdbMgr->InsertDataBatch("app_details", itemVec);
     std::vector<AppDetailsRdbItem> result;
     std::atomic_bool checkFlag = false;
     std::binary_semaphore sem(0);
-    ffrt::mutex mtx;
     ret = rdbMgr->QueryDataByDomain("app_details", item.domain, result);
     ASSERT_TRUE(ret);
     ASSERT_TRUE(result.size() != 0);
-    auto task = [&](){
-        rdbMgr->ExecWithTrans([&]()->bool {
+    auto task = [&sem, &checkFlag]() {
+        rdbMgr->ExecWithTrans([&sem, &checkFlag]()->bool {
             sem.acquire();
             checkFlag = true;
             return true;

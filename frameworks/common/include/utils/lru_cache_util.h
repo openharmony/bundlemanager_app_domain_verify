@@ -41,12 +41,14 @@ private:
 };
 
 template<typename K, typename V>
-bool LruCacheUtil<K, V>::SetMaxCap(size_t cap) {
+bool LruCacheUtil<K, V>::SetMaxCap(size_t cap)
+{
     maxCap_ = cap;
 };
 
 template<typename K, typename V>
-bool LruCacheUtil<K, V>::Get(const K& key, V& value) {
+bool LruCacheUtil<K, V>::Get(const K& key, V& value)
+{
     if (lruMap_.find(key) == lruMap_.end()) {
         return false;
     }
@@ -58,7 +60,8 @@ bool LruCacheUtil<K, V>::Get(const K& key, V& value) {
 };
 
 template<typename K, typename V>
-void LruCacheUtil<K, V>::Put(const K& key, const V& value) {
+void LruCacheUtil<K, V>::Put(const K& key, const V& value)
+{
     auto iter = lruMap_.find(key);
     if (iter != lruMap_.end()) {
         V val = lruMap_[key]->second;
@@ -77,16 +80,17 @@ void LruCacheUtil<K, V>::Put(const K& key, const V& value) {
 };
 
 template<typename K, typename V>
-void LruCacheUtil<K, V>::Clear() {
+void LruCacheUtil<K, V>::Clear()
+{
     cache_.clear();
     lruMap_.clear();
 };
 
 template<typename K, typename V>
-bool LruCacheUtil<K, V>::IsEmpty() {
+bool LruCacheUtil<K, V>::IsEmpty()
+{
     return lruMap_.empty();
 };
-
 }
 }
 

@@ -48,8 +48,5 @@ void MetaItem::AddRdbItemToBucket(NativeRdb::ValuesBucket &bucket)
     bucket.PutString(META_TABLE_EXT_INFO, tableExtInfo);
     bucket.PutString(META_UPDATE_TIME, updateTime);
 };
-
-
-
 }
 }

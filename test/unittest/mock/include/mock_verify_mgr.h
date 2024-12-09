@@ -146,7 +146,6 @@ public:
     {
         return true;
     }
-
 };
 }  // namespace AppDomainVerify
 }  // namespace OHOS
