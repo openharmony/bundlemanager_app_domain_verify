@@ -28,7 +28,7 @@ template <typename K, typename V>
 class LruCacheUtil {
 public:
     LruCacheUtil<K, V>() = default;
-    LruCacheUtil<K, V>(int maxCap):maxCap_(maxCap){};
+    LruCacheUtil<K, V>(size_t maxCap):maxCap_(maxCap){};
     bool SetMaxCap(int cap);
     bool Get(const K& key, V& value);
     void Put(const K& key, const V& value);

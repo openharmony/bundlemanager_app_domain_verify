@@ -367,7 +367,7 @@ int AppDomainVerifyMgrServiceProxy::QueryAppDetailsWant(const std::string &url, 
         APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "result failed, result: %d", result);
         return result;
     }
-    AppExecFwk::Want* wantPtr = reply.ReadParcelable<AppExecFwk::Want>();
+    AAFwk::Want* wantPtr = reply.ReadParcelable<AAFwk::Want>();
     if (wantPtr == nullptr) {
         APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "recv want fail");
         return result;

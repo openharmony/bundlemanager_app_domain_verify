@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Huawei Device Co., Ltd.
+ * Copyright (C) 2024 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -61,18 +61,18 @@ HWTEST_F(AppDetailsFilterTest, AppDetailsFilterTest001, TestSize.Level0)
     AppDetailsFilter filter;
     std::vector<AppDetailInfo> filterVec;
     AppDetailInfo info;
-    info.m_skillUri.scheme = "https";
-    info.m_skillUri.host = "www.example.com";
-    info.m_skillUri.path = "test";
-    info.m_bundleName = "com.example.bundleName";
+    info.skillUri.scheme = "https";
+    info.skillUri.host = "www.example.com";
+    info.skillUri.path = "test";
+    info.bundleName = "com.example.bundleName";
     filterVec.emplace_back(std::move(info));
     std::vector<AppDetailInfo> resultVec;
     auto ret = filter.Filter(filterVec, resultVec, "https://www.example.com/test");
     ASSERT_TRUE(ret);
     ASSERT_TRUE(resultVec.size() == 1);
-    ASSERT_TRUE(resultVec[0].m_bundleName.compare("com.example.bundleName") == 0);
+    ASSERT_TRUE(resultVec[0].bundleName.compare("com.example.bundleName") == 0);
     resultVec.clear();
-    filterVec[0].m_skillUri.path = "111";
+    filterVec[0].skillUri.path = "111";
     ret = filter.Filter(filterVec, resultVec, "https://www.example.com/test");
     ASSERT_FALSE(ret);
 }
@@ -87,18 +87,18 @@ HWTEST_F(AppDetailsFilterTest, AppDetailsFilterTest002, TestSize.Level0)
     AppDetailsFilter filter;
     std::vector<AppDetailInfo> filterVec;
     AppDetailInfo info;
-    info.m_skillUri.scheme = "https";
-    info.m_skillUri.host = "www.example.com";
-    info.m_skillUri.pathStartWith = "test";
-    info.m_bundleName = "com.example.bundleName";
+    info.skillUri.scheme = "https";
+    info.skillUri.host = "www.example.com";
+    info.skillUri.pathStartWith = "test";
+    info.bundleName = "com.example.bundleName";
     filterVec.emplace_back(std::move(info));
     std::vector<AppDetailInfo> resultVec;
     auto ret = filter.Filter(filterVec, resultVec, "https://www.example.com/testhappy");
     ASSERT_TRUE(ret);
     ASSERT_TRUE(resultVec.size() == 1);
-    ASSERT_EQ(resultVec[0].m_bundleName.compare("com.example.bundleName"), 0);
+    ASSERT_EQ(resultVec[0].bundleName.compare("com.example.bundleName"), 0);
     resultVec.clear();
-    filterVec[0].m_skillUri.path = "111";
+    filterVec[0].skillUri.path = "111";
     ret = filter.Filter(filterVec, resultVec, "https://www.example.com/tes");
     ASSERT_FALSE(ret);
 }
@@ -113,16 +113,16 @@ HWTEST_F(AppDetailsFilterTest, AppDetailsFilterTest003, TestSize.Level0)
     AppDetailsFilter filter;
     std::vector<AppDetailInfo> filterVec;
     AppDetailInfo info;
-    info.m_skillUri.scheme = "https";
-    info.m_skillUri.host = "www.example.com";
-    info.m_skillUri.pathRegex = "[0-9]*";
-    info.m_bundleName = "com.example.bundleName";
+    info.skillUri.scheme = "https";
+    info.skillUri.host = "www.example.com";
+    info.skillUri.pathRegex = "[0-9]*";
+    info.bundleName = "com.example.bundleName";
     filterVec.emplace_back(std::move(info));
     std::vector<AppDetailInfo> resultVec;
     auto ret = filter.Filter(filterVec, resultVec, "https://www.example.com/1223");
     ASSERT_TRUE(ret);
     ASSERT_TRUE(resultVec.size() == 1);
-    ASSERT_EQ(resultVec[0].m_bundleName.compare("com.example.bundleName"), 0);
+    ASSERT_EQ(resultVec[0].bundleName.compare("com.example.bundleName"), 0);
     ret = filter.Filter(filterVec, resultVec, "https://www.example.com/xxx");
     ASSERT_FALSE(ret);
 }

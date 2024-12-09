@@ -88,25 +88,25 @@ bool AppDetailsDataMgr::QueryAppDetailsWantByRdb(const std::string& url, AAFwk::
     std::vector<AppDetailInfo> appDetailsRet;
     for (auto& detail : rdbDetails) {
         AppDetailInfo info;
-        info.m_bundleName = detail.bundleName;
-        info.m_skillUri.host = detail.domain;
-        info.m_skillUri.scheme = detail.scheme;
+        info.bundleName = detail.bundleName;
+        info.skillUri.host = detail.domain;
+        info.skillUri.scheme = detail.scheme;
         if (detail.pathType == PATH) {
-            info.m_skillUri.path = detail.path;
+            info.skillUri.path = detail.path;
         }
         if (detail.pathType == PATH_START_WITH) {
-            info.m_skillUri.pathStartWith = detail.path;
+            info.skillUri.pathStartWith = detail.path;
         }
         if (detail.pathType == PATH_REGEX) {
-            info.m_skillUri.pathRegex = detail.path;
+            info.skillUri.pathRegex = detail.path;
         }
         appDetails.emplace_back(info);
     }
     if (!detailsFilter_->Filter(appDetails, appDetailsRet, url)) {
         return false;
     }
-    AddInfoToWant(want, appDetailsRet.front().m_bundleName);
-    lruCache_->Put(url, appDetailsRet.front().m_bundleName);
+    AddInfoToWant(want, appDetailsRet.front().bundleName);
+    lruCache_->Put(url, appDetailsRet.front().bundleName);
     return true;
 };
 

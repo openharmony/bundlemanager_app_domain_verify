@@ -1,4 +1,4 @@
-# Copyright (C) 2023 Huawei Device Co., Ltd.
+# Copyright (C) 2024 Huawei Device Co., Ltd.
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -12,7 +12,7 @@
 # limitations under the License.
 
 import("//build/test.gni")
-import("//foundation/bundlemanager/app_domain_verify/app_domain_verify.gni")
+import("../../../../app_domain_verify.gni")
 
 config("module_private_config") {
   visibility = [ ":*" ]
@@ -47,6 +47,8 @@ ohos_unittest("app_domain_verify_filter_test") {
     "os_account:os_account_innerkits",
     "relational_store:native_rdb",
     "samgr:samgr_proxy",
+    "googletest:gmock_main",
+    "googletest:gtest_main"
   ]
 
   defines = [ "API_EXPORT=__attribute__((visibility (\"default\")))" ]
@@ -57,8 +59,6 @@ ohos_unittest("app_domain_verify_filter_test") {
     "${app_domain_verify_frameworks_common_path}:app_domain_verify_frameworks_common",
     "${app_domain_verify_frameworks_common_path}:app_domain_verify_frameworks_common",
     "${app_domain_verify_frameworks_extension_path}:app_domain_verify_extension_framework",
-    "${app_domain_verify_frameworks_verifier_path}:app_domain_verify_agent_verifier",
-    "//third_party/googletest:gmock_main",
-    "//third_party/googletest:gtest_main",
+    "${app_domain_verify_frameworks_verifier_path}:app_domain_verify_agent_verifier"
   ]
 }
