@@ -12,7 +12,7 @@
 # limitations under the License.
 
 import("//build/test.gni")
-import("//foundation/bundlemanager/app_domain_verify/app_domain_verify.gni")
+import("../../../app_domain_verify.gni")
 
 config("module_private_config") {
   visibility = [ ":*" ]
@@ -55,6 +55,8 @@ ohos_unittest("app_details_rdb_data_manager_test") {
     "relational_store:native_rdb",
     "samgr:samgr_proxy",
     "ffrt:libffrt",
+    "googletest:gmock_main",
+    "googletest:gtest_main"
   ]
 
   defines = [ "API_EXPORT=__attribute__((visibility (\"default\")))" ]
@@ -65,8 +67,6 @@ ohos_unittest("app_details_rdb_data_manager_test") {
     "${app_domain_verify_frameworks_common_path}:app_domain_verify_frameworks_common",
     "${app_domain_verify_frameworks_common_path}:app_domain_verify_frameworks_common",
     "${app_domain_verify_frameworks_extension_path}:app_domain_verify_extension_framework",
-    "${app_domain_verify_frameworks_verifier_path}:app_domain_verify_agent_verifier",
-    "//third_party/googletest:gmock_main",
-    "//third_party/googletest:gtest_main",
+    "${app_domain_verify_frameworks_verifier_path}:app_domain_verify_agent_verifier"
   ]
 }
