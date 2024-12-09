@@ -28,7 +28,7 @@
 #include "want.h"
 #include <memory>
 #include <new>
-#include <stdint.h>
+#include <cstdint>
 namespace OHOS {
 namespace AppDomainVerify {
 const static std::string OHOS_WANT_ACTION_APPDETAILS = "ohos.want.action.appdetails";

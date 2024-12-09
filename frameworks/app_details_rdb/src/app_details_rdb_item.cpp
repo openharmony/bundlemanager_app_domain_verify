@@ -58,7 +58,5 @@ void AppDetailsRdbItem::AddRdbItemToBucket(NativeRdb::ValuesBucket &bucket)
     bucket.PutString(DETAILS_PATH, path);
     bucket.PutString(DETAILS_BUNDLE_NAME, bundleName);
 }
-
-
 }
 }

@@ -34,8 +34,6 @@ struct RdbConfigInfo {
     int version = 0;
     bool fileCreated = true;
 };
-
-
 }
 }
 

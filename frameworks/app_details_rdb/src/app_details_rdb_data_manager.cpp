@@ -74,7 +74,8 @@ bool AppDetailsRdbDataMgr::ExecWithTrans(TransCallback cb)
     return false;
 }
 
-bool AppDetailsRdbDataMgr::QueryDataByDomain(const std::string& tableName, const std::string &domain, std::vector<AppDetailsRdbItem> &itemVec)
+bool AppDetailsRdbDataMgr::QueryDataByDomain(
+    const std::string& tableName, const std::string &domain, std::vector<AppDetailsRdbItem> &itemVec)
 {
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "call.");
     NativeRdb::AbsRdbPredicates absRdbPred(tableName);
@@ -166,13 +167,12 @@ bool AppDetailsRdbDataMgr::UpdateMetaData(std::vector<MetaItem> &itemVec)
         APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "get rdbStore fail.");
         return false;
     }
-    for (auto&item : itemVec) {
+    for (auto& item : itemVec) {
         NativeRdb::ValuesBucket valuesBucket;
         item.AddRdbItemToBucket(valuesBucket);
         int64_t rowId = 0;
-        auto ret = rdbStore->InsertWithConflictResolution(
-        rowId, META_DATA, valuesBucket,
-        NativeRdb::ConflictResolution::ON_CONFLICT_REPLACE);
+        auto ret = rdbStore->InsertWithConflictResolution(rowId, META_DATA, valuesBucket,
+            NativeRdb::ConflictResolution::ON_CONFLICT_REPLACE);
         if (ret != NativeRdb::E_OK) {
             return CheckRdbReturnIfOk(ret);
         }
@@ -200,8 +200,7 @@ bool AppDetailsRdbDataMgr::QueryMetaData(const std::string &tableName, MetaItem 
         itemVec.emplace_back(item);
         return true;
     };
-
-    if(Query(absRdbPred, columns, eachCb)) {
+    if (Query(absRdbPred, columns, eachCb)) {
         info = itemVec.front();
         return true;
     };
@@ -328,7 +327,9 @@ bool AppDetailsRdbDataMgr::Query(const NativeRdb::AbsRdbPredicates& predicates,
         return false;
     }
     auto guard = std::unique_ptr<void, std::function<void(void*)>>(
-        nullptr, [&](void*){ absSharedResultSet->Close(); }
+        nullptr, [&](void*) {
+            absSharedResultSet->Close();
+        }
     );
     if (!absSharedResultSet->HasBlock()) {
         APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "absSharedResultSet has no block");
@@ -336,7 +337,7 @@ bool AppDetailsRdbDataMgr::Query(const NativeRdb::AbsRdbPredicates& predicates,
     }
     if (CheckRdbReturnIfOk(absSharedResultSet->GoToFirstRow())) {
         do {
-            if(!cb(absSharedResultSet)) {
+            if (!cb(absSharedResultSet)) {
                 return false;
             }
         } while (absSharedResultSet->GoToNextRow() == NativeRdb::E_OK);

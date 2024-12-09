@@ -21,7 +21,8 @@ namespace OHOS {
 namespace AppDomainVerify {
 constexpr const static char *ENTITY_SYSTEM_BROWSABLE = "entity.system.browsable";
 constexpr const static char *WANT_ACTION_VIEWDATA = "ohos.want.action.viewData";
-bool AppDetailsFilter::Filter(const std::vector<AppDetailInfo>& input, std::vector<AppDetailInfo>& dest, const std::string& url)
+bool AppDetailsFilter::Filter(
+    const std::vector<AppDetailInfo>& input, std::vector<AppDetailInfo>& dest, const std::string& url)
 {
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "call.");
     AAFwk::Want want;
@@ -31,7 +32,7 @@ bool AppDetailsFilter::Filter(const std::vector<AppDetailInfo>& input, std::vect
     AppExecFwk::Skill skill;
     skill.actions.push_back(WANT_ACTION_VIEWDATA);
     skill.entities.push_back(ENTITY_SYSTEM_BROWSABLE);
-    for (auto&info : input) {
+    for (auto& info : input) {
         skill.uris.push_back(info.skillUri);
     }
     size_t index = 0;
