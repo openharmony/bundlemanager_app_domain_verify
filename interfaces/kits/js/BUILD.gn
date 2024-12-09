@@ -53,7 +53,6 @@ ohos_shared_library("appdomainverify_napi") {
   ]
   external_deps = [
     "ability_base:want",
-    "ability_runtime:napi_common",
     "bundle_framework:appexecfwk_base",
     "c_utils:utils",
     "hiappevent:hiappevent_innerapi",

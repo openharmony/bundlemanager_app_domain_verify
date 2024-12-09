@@ -32,7 +32,7 @@ bool AppDetailsFilter::Filter(const std::vector<AppDetailInfo>& input, std::vect
     skill.actions.push_back(WANT_ACTION_VIEWDATA);
     skill.entities.push_back(ENTITY_SYSTEM_BROWSABLE);
     for (auto&info : input) {
-        skill.uris.push_back(info.m_skillUri);
+        skill.uris.push_back(info.skillUri);
     }
     size_t index = 0;
     bool ret = skill.Match(want, index);
