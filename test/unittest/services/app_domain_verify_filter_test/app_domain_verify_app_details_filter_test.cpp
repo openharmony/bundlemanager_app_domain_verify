@@ -126,6 +126,4 @@ HWTEST_F(AppDetailsFilterTest, AppDetailsFilterTest003, TestSize.Level0)
     ret = filter.Filter(filterVec, resultVec, "https://www.example.com/xxx");
     ASSERT_FALSE(ret);
 }
-
-
 }
