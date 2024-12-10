@@ -298,8 +298,9 @@ std::shared_ptr<NativeRdb::RdbStore> AppDetailsRdbDataMgr::GetRdbStore()
     if (errCode == NativeRdb::E_OK) {
         APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "get rdbStore success.");
         PostDelayCloseTask(CLOSE_DELAY_TIME_S);
+    } else {
+        APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "get rdbStore fail, err:%{public}d", errCode);
     }
-    APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "end, errCode:%{public}d", errCode);
     return rdbStore_;
 };
 
@@ -315,7 +316,7 @@ bool AppDetailsRdbDataMgr::CheckRdbReturnIfOk(int errcode)
 bool AppDetailsRdbDataMgr::Query(const NativeRdb::AbsRdbPredicates& predicates,
     const std::vector<std::string>& columns, RdbForEachRetCb cb)
 {
-    APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "called");
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "called");
     auto rdbStore = GetRdbStore();
     if (!rdbStore) {
         APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "rdb store is null");

@@ -57,7 +57,6 @@ private:
     void UpdateAppDetails();
     void OnDelayUnloadSA();
     void PostDelayUnloadTask();
-    void PostUpdateAppDetailsTask();
     void DoSync(const TaskType& type);
     void DoSync();
     bool IsIdle();
@@ -72,7 +71,6 @@ private:
     std::shared_ptr<AppExecFwk::EventHandler> unloadHandler_;
     std::shared_ptr<AppExecFwk::EventRunner> runner_;
     std::chrono::system_clock::time_point now;
-    std::atomic<bool> isUpdateRunning_ = false;
 };
 
 }  // namespace AppDomainVerify

@@ -33,6 +33,10 @@ bool AppDetailsFilter::Filter(
     skill.actions.push_back(WANT_ACTION_VIEWDATA);
     skill.entities.push_back(ENTITY_SYSTEM_BROWSABLE);
     for (auto& info : input) {
+        if (info.skillUri.pathRegex.compare("*") == 0) {
+            dest.push_back(info);
+            return true;
+        }
         skill.uris.push_back(info.skillUri);
     }
     size_t index = 0;
