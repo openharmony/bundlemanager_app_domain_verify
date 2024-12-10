@@ -34,7 +34,7 @@
 namespace OHOS {
 namespace AppDomainVerify {
 const static std::string OHOS_WANT_ACTION_APPDETAILS = "ohos.want.action.appdetails";
-const static int64_t CACHE_TIME_S = 3000;
+const static int64_t CACHE_TIME_S = 300;
 const static int MAX_CACHE_CNT = 10;
 AppDetailsDataMgr::AppDetailsDataMgr()
 {
