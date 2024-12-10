@@ -17,6 +17,7 @@
 #include <string>
 #include <tuple>
 #include <vector>
+#include "app_details_data_mgr.h"
 #include "ipc_skeleton.h"
 #include "app_domain_verify_mgr_service.h"
 #include "system_ability_definition.h"
@@ -36,7 +37,9 @@ AppDomainVerifyMgrService::AppDomainVerifyMgrService() : SystemAbility(APP_DOMAI
 {
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "new instance create.");
     dataManager_ = std::make_shared<AppDomainVerifyDataMgr>();
+    appDetailsDataMgr_ = std::make_shared<AppDetailsDataMgr>();
 }
+
 AppDomainVerifyMgrService::~AppDomainVerifyMgrService()
 {
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "instance dead.");
@@ -223,6 +226,12 @@ int AppDomainVerifyMgrService::QueryAssociatedBundleNames(
         return ret;
     }
     return dataManager_->QueryAssociatedBundleNames(domain, bundleNames) ? E_OK : E_INTERNAL_ERR;
+}
+
+int AppDomainVerifyMgrService::QueryAppDetailsWant(const std::string& url, AAFwk::Want& want)
+{
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "called");
+    return appDetailsDataMgr_->QueryAppDetailsWant(url, want);
 }
 
 bool AppDomainVerifyMgrService::IsWantImplicit(const OHOS::AAFwk::Want& want)

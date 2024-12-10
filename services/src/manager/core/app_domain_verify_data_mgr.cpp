@@ -12,12 +12,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include <algorithm>
 #include <string>
 #include <utility>
-#include "app_domain_verify_data_mgr.h"
-#include "app_domain_verify_hisysevent.h"
+#include <algorithm>
 #include "inner_verify_status.h"
+#include "app_domain_verify_hisysevent.h"
+#include "app_domain_verify_data_mgr.h"
 
 namespace OHOS {
 namespace AppDomainVerify {
