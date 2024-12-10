@@ -12,7 +12,7 @@
 # limitations under the License.
 
 import("//build/ohos.gni")
-import("//foundation/bundlemanager/app_domain_verify/app_domain_verify.gni")
+import("../../app_domain_verify.gni")
 
 config("app_domain_verify_extension_config") {
   defines = []

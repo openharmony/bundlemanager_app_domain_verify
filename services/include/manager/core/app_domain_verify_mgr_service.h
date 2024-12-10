@@ -16,6 +16,7 @@
 #ifndef APP_DOMAIN_VERIFY_MGR_SERVICE_H
 #define APP_DOMAIN_VERIFY_MGR_SERVICE_H
 
+#include "app_details_data_mgr.h"
 #include "app_domain_verify_mgr_service_stub.h"
 #include "inner_verify_status.h"
 #include "skill_uri.h"
@@ -53,6 +54,7 @@ public:
     API_EXPORT int QueryAssociatedBundleNames(
         const std::string& domain, std::vector<std::string>& bundleNames) override;
     API_EXPORT int GetDeferredLink(std::string& link) override;
+    API_EXPORT int QueryAppDetailsWant(const std::string& link, AAFwk::Want& want) override;
 
 protected:
     void OnDump() override;
@@ -71,6 +73,7 @@ private:
 
 private:
     std::shared_ptr<AppDomainVerifyDataMgr> dataManager_ = nullptr;
+    std::shared_ptr<AppDetailsDataMgr> appDetailsDataMgr_ = nullptr;
     bool InitConfigMgr();
     std::shared_ptr<WhiteListConfigMgr> whiteListConfigMgr_;
     std::mutex initConfigMutex_;

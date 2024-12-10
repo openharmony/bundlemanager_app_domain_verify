@@ -77,6 +77,10 @@ public:
     {
         return true;
     }
+    virtual int QueryAppDetailsWant(const std::string& link, AAFwk::Want& want) override
+    {
+        return true;
+    }
     MOCK_METHOD4(SendRequest, int(uint32_t, MessageParcel&, MessageParcel&, MessageOption&));
     MOCK_METHOD(sptr<IRemoteObject>, AsObject, (), (override));
 };
@@ -135,6 +139,10 @@ public:
         return true;
     }
     virtual int GetDeferredLink(std::string& link) override
+    {
+        return true;
+    }
+    virtual int QueryAppDetailsWant(const std::string& link, AAFwk::Want& want) override
     {
         return true;
     }

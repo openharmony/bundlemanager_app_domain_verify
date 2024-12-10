@@ -18,7 +18,7 @@
 #include "app_domain_verify_hilog.h"
 #include "comm_define.h"
 #include "string_ex.h"
-
+namespace OHOS::AppDomainVerify {
 #define WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(type, parcel, data)                                              \
     do {                                                                                                       \
         if (!(parcel).Write##type(data)) {                                                                     \
@@ -58,7 +58,7 @@
             return false;                                                                                     \
         }                                                                                                     \
     } while (0)
-
+}
 #define MAX_PARCEL_ARRAY_SIZE (99)
 namespace OHOS::AppDomainVerify {
 template <typename T>
