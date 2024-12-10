@@ -59,6 +59,7 @@ ohos_shared_library("app_domain_verify_app_details_rdb") {
     "json:nlohmann_json_static",
     "netstack:http_client",
     "os_account:os_account_innerkits",
+    "relational_store:native_rdb",
     "safwk:system_ability_fwk",
     "samgr:samgr_proxy",
   ]
