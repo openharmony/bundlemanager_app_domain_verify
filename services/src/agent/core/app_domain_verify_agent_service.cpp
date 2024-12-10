@@ -209,7 +209,6 @@ void AppDomainVerifyAgentService::DoSync(const TaskType& type)
 {
     QueryAndCompleteRefresh(type);
     UpdateWhiteList();
-    UpdateAppDetails();
 }
 
 bool AppDomainVerifyAgentService::IsNetAvailable()

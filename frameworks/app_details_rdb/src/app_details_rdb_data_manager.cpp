@@ -327,11 +327,9 @@ bool AppDetailsRdbDataMgr::Query(const NativeRdb::AbsRdbPredicates& predicates,
         return false;
     }
     auto guard = std::unique_ptr<void, std::function<void(void*)>>(nullptr,
-        [&](void*)
-        {
+        [&](void*) {
             absSharedResultSet->Close();
-        }
-    );
+        });
     if (!absSharedResultSet->HasBlock()) {
         APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "absSharedResultSet has no block");
         return false;
