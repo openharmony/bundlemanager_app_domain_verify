@@ -231,7 +231,16 @@ int AppDomainVerifyMgrService::QueryAssociatedBundleNames(
 int AppDomainVerifyMgrService::QueryAppDetailsWant(const std::string& url, AAFwk::Want& want)
 {
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "called");
-    return appDetailsDataMgr_->QueryAppDetailsWant(url, want);
+    std::string bundleName;
+    auto ret = appDetailsDataMgr_->QueryAppDetailsWant(url, want, bundleName);
+    if (ret == AppDetailsCode::QUERY_SUCC) {
+        VerifyResultInfo info;
+        if (dataManager_->GetVerifyStatus(bundleName, info)) {
+            return AppDetailsCode::QUERY_FAIL;
+        }
+        return AppDetailsCode::QUERY_SUCC;
+    }
+    return AppDetailsCode::QUERY_FAIL;
 }
 
 bool AppDomainVerifyMgrService::IsWantImplicit(const OHOS::AAFwk::Want& want)
