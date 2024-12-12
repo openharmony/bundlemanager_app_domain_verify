@@ -33,7 +33,7 @@
 
 namespace OHOS {
 namespace AppDomainVerify {
-const static std::string OHOS_WANT_ACTION_APPDETAILS = "ohos.want.action.appdetails";
+const static std::string OHOS_WANT_ACTION_APPDETAILS = "ohos.want.action.appdetail";
 const static int64_t CACHE_TIME_S = 300;
 const static int MAX_CACHE_CNT = 10;
 AppDetailsDataMgr::AppDetailsDataMgr()
@@ -45,22 +45,28 @@ AppDetailsDataMgr::AppDetailsDataMgr()
 AppDetailsDataMgr::~AppDetailsDataMgr()
 {};
 
-int AppDetailsDataMgr::QueryAppDetailsWant(const std::string &url, AAFwk::Want& want)
+int AppDetailsDataMgr::QueryAppDetailsWant(const std::string &url, AAFwk::Want& want, std::string& bundleName)
 {
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "call, url:%{private}s", url.c_str());
-    if (QueryAppDetailsWantByCache(url, want)) {
-        APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "query success from cache");
-        return QUERY_SUCC;
-    }
-    if (QueryAppDetailsWantByRdb(url, want)) {
-        APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "query success from rdb");
-        return QUERY_SUCC;
-    }
-    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "query fail.");
-    return QUERY_FAIL;
+    std::string bundleNameQuery;
+    do {
+        if (QueryAppDetailsWantByCache(url, bundleNameQuery)) {
+            APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "query success from cache");
+            break;
+        }
+        if (QueryAppDetailsWantByRdb(url, bundleNameQuery)) {
+            APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "query success from rdb");
+            break;
+        }
+        APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "query fail.");
+        return QUERY_FAIL;
+    } while (false);
+    AddInfoToWant(want, bundleNameQuery);
+    bundleName = bundleNameQuery;
+    return QUERY_SUCC;
 };
 
-bool AppDetailsDataMgr::QueryAppDetailsWantByCache(const std::string& url, AAFwk::Want& want)
+bool AppDetailsDataMgr::QueryAppDetailsWantByCache(const std::string& url, std::string& bundleName)
 {
     int64_t currTime = std::chrono::time_point_cast<std::chrono::seconds>(std::chrono::system_clock::now())
                           .time_since_epoch()
@@ -72,13 +78,13 @@ bool AppDetailsDataMgr::QueryAppDetailsWantByCache(const std::string& url, AAFwk
     }
     std::string value;
     if (lruCache_->Get(url, value)) {
-        AddInfoToWant(want, value);
+        bundleName = value;
         return true;
     }
     return false;
 };
 
-bool AppDetailsDataMgr::QueryAppDetailsWantByRdb(const std::string& url, AAFwk::Want& want)
+bool AppDetailsDataMgr::QueryAppDetailsWantByRdb(const std::string& url, std::string& bundleName)
 {
     std::vector<AppDetailsRdbItem> rdbDetails;
     std::string domain = UrlUtil::GetHost(url);
@@ -107,7 +113,7 @@ bool AppDetailsDataMgr::QueryAppDetailsWantByRdb(const std::string& url, AAFwk::
     if (!detailsFilter_->Filter(appDetails, appDetailsRet, url)) {
         return false;
     }
-    AddInfoToWant(want, appDetailsRet.front().bundleName);
+    bundleName = appDetailsRet.front().bundleName;
     lruCache_->Put(url, appDetailsRet.front().bundleName);
     return true;
 };

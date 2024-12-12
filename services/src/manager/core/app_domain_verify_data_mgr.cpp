@@ -51,7 +51,7 @@ bool AppDomainVerifyDataMgr::GetVerifyStatus(const std::string& bundleName, Veri
         return true;
     }
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "get verify status fail, verify result can't find");
-    return true;
+    return false;
 }
 bool AppDomainVerifyDataMgr::VerifyResultInfoToDB(
     const std::string bundleName, const VerifyResultInfo& verifyResultInfo)

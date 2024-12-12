@@ -36,10 +36,10 @@ class AppDetailsDataMgr {
 public:
     AppDetailsDataMgr();
     virtual ~AppDetailsDataMgr();
-    int QueryAppDetailsWant(const std::string& url, AAFwk::Want& want);
+    int QueryAppDetailsWant(const std::string& url, AAFwk::Want& want, std::string& bundleName);
 private:
-    bool QueryAppDetailsWantByCache(const std::string& url, AAFwk::Want& want);
-    bool QueryAppDetailsWantByRdb(const std::string& url, AAFwk::Want& want);
+    bool QueryAppDetailsWantByCache(const std::string& url, std::string& bundleName);
+    bool QueryAppDetailsWantByRdb(const std::string& url, std::string& bundleName);
     void AddInfoToWant(AAFwk::Want& want, const std::string& bundleName);
     std::shared_ptr<LruCacheUtil<std::string, std::string>> lruCache_;
     std::shared_ptr<AppDetailsRdbDataMgr> rdbMgr_;
