@@ -33,7 +33,7 @@ const int32_t DB_DOMAIN_INDEX = 3;
 const int32_t DB_STATUES_INDEX = 4;
 const int32_t DB_VERIFY_TIME_INDEX = 5;
 const int32_t DB_VERIFY_COUNT_INDEX = 6;
-const int32_t CLOSE_TIME = 20;  // delay 20s stop rdbStore
+const int32_t CLOSE_TIME = 20 * 1000;  // delay 20s stop rdbStore
 
 AppDomainVerifyRdbDataManager::AppDomainVerifyRdbDataManager(const AppDomainVerifyRdbConfig& rdbConfig)
     : appDomainVerifyRdbConfig_(rdbConfig)
@@ -206,7 +206,6 @@ void AppDomainVerifyRdbDataManager::DelayCloseRdbStore()
     std::weak_ptr<AppDomainVerifyRdbDataManager> weakPtr = shared_from_this();
     auto func = [weakPtr]() {
         APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "DelayCloseRdbStore thread begin");
-        std::this_thread::sleep_for(std::chrono::seconds(CLOSE_TIME));
         auto sharedPtr = weakPtr.lock();
         if (sharedPtr == nullptr) {
             return;
@@ -215,7 +214,7 @@ void AppDomainVerifyRdbDataManager::DelayCloseRdbStore()
         sharedPtr->rdbStore_ = nullptr;
         APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "DelayCloseRdbStore thread end");
     };
-    continuationHandler_->submit(func);
+    continuationHandler_->submit(func, ffrt::task_attr().delay(CLOSE_TIME));
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "call end");
 }
 
