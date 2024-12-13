@@ -14,6 +14,7 @@
  */
 
 #include "app_domain_verify_agent_ext.h"
+#include "app_domain_verify_error.h"
 
 namespace OHOS {
 namespace AppDomainVerify {
@@ -32,6 +33,10 @@ ErrorCode AppDomainVerifyAgentExt::ConvertToExplicitWant(AAFwk::Want& implicitWa
     return ErrorCode::E_EXTENSIONS_LIB_NOT_FOUND;
 }
 ErrorCode AppDomainVerifyAgentExt::UpdateWhiteList()
+{
+    return ErrorCode::E_EXTENSIONS_LIB_NOT_FOUND;
+}
+ErrorCode AppDomainVerifyAgentExt::UpdateAppDetails()
 {
     return ErrorCode::E_EXTENSIONS_LIB_NOT_FOUND;
 }
