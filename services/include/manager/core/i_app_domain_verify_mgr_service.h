@@ -44,6 +44,7 @@ public:
     virtual int QueryAssociatedDomains(const std::string& bundleName, std::vector<std::string>& domains) = 0;
     virtual int QueryAssociatedBundleNames(const std::string& domain, std::vector<std::string>& bundleNames) = 0;
     virtual int GetDeferredLink(std::string& link) = 0;
+    virtual int QueryAppDetailsWant(const std::string& link, AAFwk::Want& want) = 0;
     DECLARE_INTERFACE_DESCRIPTOR(u"ohos.appDomainVerify.IAppDomainVerifyMgrService");
 };
 }  // namespace AppDomainVerify

@@ -13,6 +13,7 @@
  * limitations under the License.
  */
 
+#include "app_domain_verify_hilog.h"
 #include "if_system_ability_manager.h"
 #include "iservice_registry.h"
 #include "app_domain_verify_mgr_client.h"
@@ -290,6 +291,17 @@ void AppDomainVerifyMgrClient::UpdateWhiteListUrls(const std::vector<std::string
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "call end");
 #endif
 }
+
+int AppDomainVerifyMgrClient::QueryAppDetailsWant(const std::string &link, AAFwk::Want &want)
+{
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "called");
+    std::lock_guard<std::mutex> autoLock(proxyLock_);
+    if (IsServiceAvailable()) {
+        return appDomainVerifyMgrServiceProxy_->QueryAppDetailsWant(link, want);
+    }
+    return CommonErrorCode::E_INTERNAL_ERR;
+}
+
 int AppDomainVerifyMgrClient::QueryAssociatedDomains(const std::string& bundleName, std::vector<std::string>& domains)
 {
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "called");

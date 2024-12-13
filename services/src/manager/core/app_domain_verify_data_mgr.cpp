@@ -12,12 +12,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include <algorithm>
 #include <string>
 #include <utility>
-#include "app_domain_verify_data_mgr.h"
-#include "app_domain_verify_hisysevent.h"
+#include <algorithm>
 #include "inner_verify_status.h"
+#include "app_domain_verify_hisysevent.h"
+#include "app_domain_verify_data_mgr.h"
 
 namespace OHOS {
 namespace AppDomainVerify {
@@ -51,7 +51,7 @@ bool AppDomainVerifyDataMgr::GetVerifyStatus(const std::string& bundleName, Veri
         return true;
     }
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "get verify status fail, verify result can't find");
-    return true;
+    return false;
 }
 bool AppDomainVerifyDataMgr::VerifyResultInfoToDB(
     const std::string bundleName, const VerifyResultInfo& verifyResultInfo)
