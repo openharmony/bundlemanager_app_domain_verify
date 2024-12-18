@@ -55,6 +55,8 @@ ohos_unittest("app_domain_verify_data_mgr_test") {
     "c_utils:utils",
     "eventhandler:libeventhandler",
     "ffrt:libffrt",
+    "googletest:gmock_main",
+    "googletest:gtest_main",
     "hilog:libhilog",
     "hisysevent:libhisysevent",
     "image_framework:image_native",
@@ -75,7 +77,5 @@ ohos_unittest("app_domain_verify_data_mgr_test") {
     "${app_domain_verify_frameworks_common_path}:app_domain_verify_frameworks_common",
     "${app_domain_verify_frameworks_extension_path}:app_domain_verify_extension_framework",
     "${app_domain_verify_frameworks_verifier_path}:app_domain_verify_agent_verifier",
-    "//third_party/googletest:gmock_main",
-    "//third_party/googletest:gtest_main",
   ]
 }
