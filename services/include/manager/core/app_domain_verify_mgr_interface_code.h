@@ -28,7 +28,8 @@ enum AppDomainVerifyMgrInterfaceCode {
     UPDATE_WHITE_LIST_URLS = 8,
     QUERY_ASSOCIATED_DOMAINS = 9,
     QUERY_ASSOCIATED_BUNDLE_NAMES = 10,
-    GET_DEFERRED_LINK = 11
+    GET_DEFERRED_LINK = 11,
+    QUERY_APP_DETAILS_WANT = 12
 };
 }
 }  // namespace OHOS

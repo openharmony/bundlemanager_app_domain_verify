@@ -20,6 +20,7 @@ group("app_domain_verify_packages") {
     deps = [
       "etc:app_domain_verify_api_report_etc",
       "etc/init:app_domain_verify_agent.cfg",
+      "frameworks/app_details_rdb:app_domain_verify_app_details_rdb",
       "frameworks/common:app_domain_verify_frameworks_common",
       "frameworks/extension:app_domain_verify_extension_framework",
       "frameworks/verifier:app_domain_verify_agent_verifier",

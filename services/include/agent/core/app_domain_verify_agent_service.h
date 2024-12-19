@@ -42,7 +42,6 @@ public:
     API_EXPORT void SingleVerify(
         const AppVerifyBaseInfo& appVerifyBaseInfo, const VerifyResultInfo &verifyResultInfo) override;
     API_EXPORT void ConvertToExplicitWant(OHOS::AAFwk::Want& implicitWant, sptr<IConvertCallback>& callback) override;
-
 protected:
     void OnStart(const SystemAbilityOnDemandReason& startReason) override;
     void OnStop() override;
@@ -55,6 +54,7 @@ private:
     void ExecuteVerifyTask(
         const AppVerifyBaseInfo& appVerifyBaseInfo, const VerifyResultInfo &verifyResultInfo, TaskType type);
     void UpdateWhiteList();
+    void UpdateAppDetails();
     void OnDelayUnloadSA();
     void PostDelayUnloadTask();
     void DoSync(const TaskType& type);
