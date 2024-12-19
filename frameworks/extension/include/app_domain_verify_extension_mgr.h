@@ -38,6 +38,7 @@ public:
     ErrorCode SingleVerify(const AppVerifyBaseInfo& appVerifyBaseInfo, const VerifyResultInfo& verifyResultInfo);
     ErrorCode ConvertToExplicitWant(OHOS::AAFwk::Want& implicitWant, sptr<IConvertCallback>& callback);
     ErrorCode UpdateWhiteList();
+    ErrorCode UpdateAppDetails();
 
 protected:
     virtual bool Init();

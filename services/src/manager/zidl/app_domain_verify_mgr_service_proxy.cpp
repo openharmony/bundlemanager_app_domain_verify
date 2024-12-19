@@ -16,6 +16,7 @@
 #include "app_domain_verify_mgr_interface_code.h"
 #include "system_ability_definition.h"
 #include "app_domain_verify_parcel_util.h"
+#include "want.h"
 
 namespace OHOS {
 namespace AppDomainVerify {
@@ -342,6 +343,36 @@ int AppDomainVerifyMgrServiceProxy::GetDeferredLink(std::string& link)
         return result;
     }
     READ_PARCEL_AND_RETURN_INT_IF_FAIL(String, reply, link);
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "call end");
+    return result;
+}
+
+int AppDomainVerifyMgrServiceProxy::QueryAppDetailsWant(const std::string &url, AAFwk::Want& want)
+{
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "called");
+    MessageParcel data;
+    MessageParcel reply;
+    MessageOption option;
+    WRITE_PARCEL_AND_RETURN_INT_IF_FAIL(InterfaceToken, data, GetDescriptor());
+    WRITE_PARCEL_AND_RETURN_INT_IF_FAIL(String, data, url);
+    WRITE_PARCEL_AND_RETURN_INT_IF_FAIL(Parcelable, data, &want);
+    int32_t error = Remote()->SendRequest(
+        AppDomainVerifyMgrInterfaceCode::QUERY_APP_DETAILS_WANT, data, reply, option);
+    if (error != ERR_NONE) {
+        APP_DOMAIN_VERIFY_HILOGE(
+            APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "QueryAppDetailsWant failed, error: %d", error);
+    }
+    int32_t result = reply.ReadInt32();
+    if (result != 0) {
+        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "result failed, result: %d", result);
+        return result;
+    }
+    AAFwk::Want* wantPtr = reply.ReadParcelable<AAFwk::Want>();
+    if (wantPtr == nullptr) {
+        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "recv want fail");
+        return result;
+    }
+    want = *wantPtr;
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "call end");
     return result;
 }

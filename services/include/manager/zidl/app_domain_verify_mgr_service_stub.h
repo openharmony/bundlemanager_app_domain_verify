@@ -21,6 +21,7 @@
 #include "iremote_stub.h"
 #include "event_handler.h"
 #include "event_runner.h"
+#include "message_parcel.h"
 
 namespace OHOS {
 namespace AppDomainVerify {
@@ -44,6 +45,7 @@ private:
     int32_t OnQueryAssociatedDomains(MessageParcel& data, MessageParcel& reply);
     int32_t OnQueryAssociatedBundleNames(MessageParcel& data, MessageParcel& reply);
     int32_t OnGetDeferredLink(MessageParcel& data, MessageParcel& reply);
+    int32_t OnQueryAppDetailsWant(MessageParcel& data, MessageParcel& reply);
 };
 }  // namespace AppDomainVerify
 }  // namespace OHOS

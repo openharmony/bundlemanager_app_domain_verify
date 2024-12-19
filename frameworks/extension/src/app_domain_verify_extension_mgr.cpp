@@ -16,6 +16,7 @@
 #include <dlfcn.h>
 #include <string>
 #include <typeinfo>
+#include "app_domain_verify_error.h"
 #include "app_domain_verify_extension_mgr.h"
 #include "app_domain_verify_hilog.h"
 #include "app_domain_verify_extension_register.h"
@@ -138,6 +139,22 @@ ErrorCode AppDomainVerifyExtensionMgr::UpdateWhiteList()
         return ErrorCode::E_EXTENSIONS_INTERNAL_ERROR;
     }
     UNIVERSAL_ERROR_EVENT(GET_EXT_FAULT);
+    return ErrorCode::E_EXTENSIONS_LIB_NOT_FOUND;
+}
+
+ErrorCode AppDomainVerifyExtensionMgr::UpdateAppDetails()
+{
+    if (Init()) {
+        std::string verifierExtName = APP_DOMAIN_VERIFY_AGENT_EXT_NAME;
+        auto appDomainVerifierExt = GetAppDomainVerifyExt(verifierExtName);
+        if (appDomainVerifierExt != nullptr) {
+            return std::static_pointer_cast<AppDomainVerifyAgentExt>(appDomainVerifierExt)
+                ->UpdateAppDetails();
+        }
+        APP_DOMAIN_VERIFY_HILOGE(
+            APP_DOMAIN_VERIFY_MODULE_EXTENSION, "get verifierExt: %{public}s failed.", verifierExtName.c_str());
+        return ErrorCode::E_EXTENSIONS_INTERNAL_ERROR;
+    }
     return ErrorCode::E_EXTENSIONS_LIB_NOT_FOUND;
 }
 }

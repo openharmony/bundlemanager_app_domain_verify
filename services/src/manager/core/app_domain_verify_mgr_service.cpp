@@ -17,6 +17,7 @@
 #include <string>
 #include <tuple>
 #include <vector>
+#include "app_details_data_mgr.h"
 #include "ipc_skeleton.h"
 #include "app_domain_verify_mgr_service.h"
 #include "system_ability_definition.h"
@@ -36,7 +37,9 @@ AppDomainVerifyMgrService::AppDomainVerifyMgrService() : SystemAbility(APP_DOMAI
 {
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "new instance create.");
     dataManager_ = std::make_shared<AppDomainVerifyDataMgr>();
+    appDetailsDataMgr_ = std::make_shared<AppDetailsDataMgr>();
 }
+
 AppDomainVerifyMgrService::~AppDomainVerifyMgrService()
 {
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "instance dead.");
@@ -223,6 +226,21 @@ int AppDomainVerifyMgrService::QueryAssociatedBundleNames(
         return ret;
     }
     return dataManager_->QueryAssociatedBundleNames(domain, bundleNames) ? E_OK : E_INTERNAL_ERR;
+}
+
+int AppDomainVerifyMgrService::QueryAppDetailsWant(const std::string& url, AAFwk::Want& want)
+{
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "called");
+    std::string bundleName;
+    auto ret = appDetailsDataMgr_->QueryAppDetailsWant(url, want, bundleName);
+    if (ret == AppDetailsCode::QUERY_SUCC) {
+        VerifyResultInfo info;
+        if (dataManager_->GetVerifyStatus(bundleName, info)) {
+            return AppDetailsCode::QUERY_FAIL;
+        }
+        return AppDetailsCode::QUERY_SUCC;
+    }
+    return AppDetailsCode::QUERY_FAIL;
 }
 
 bool AppDomainVerifyMgrService::IsWantImplicit(const OHOS::AAFwk::Want& want)
