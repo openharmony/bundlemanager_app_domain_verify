@@ -34,7 +34,10 @@ config("app_domain_verify_mgr_client_config") {
     "-Os",
   ]
 
-  cflags_cc = [ "-Os" ]
+  cflags_cc = [
+    "-fstack-protector-strong",
+    "-Os",
+  ]
 }
 
 config("app_domain_verify_agent_client_config") {
@@ -51,11 +54,16 @@ config("app_domain_verify_agent_client_config") {
     "-fdata-sections",
     "-ffunction-sections",
     "-Os",
+    "-fstack-protector-strong",
   ]
   if (!app_domain_verify_feature_target_from_cloud) {
     cflags += [ "-D_CUT_LINK_CONVERT_" ]
   }
-  cflags_cc = [ "-Os" ]
+
+  cflags_cc = [
+    "-fstack-protector-strong",
+    "-Os",
+  ]
 }
 
 ohos_shared_library("app_domain_verify_mgr_client") {
@@ -87,9 +95,12 @@ ohos_shared_library("app_domain_verify_mgr_client") {
   }
   version_script = "mgr.versionscript"
   sanitize = {
+    boundary_sanitize = true
     cfi = true
     cfi_cross_dso = true
     debug = false
+    integer_overflow = true
+    ubsan = true
   }
   subsystem_name = "bundlemanager"
   part_name = "app_domain_verify"
@@ -119,9 +130,12 @@ ohos_shared_library("app_domain_verify_agent_client") {
     defines += [ "IS_RELEASE_VERSION" ]
   }
   sanitize = {
+    boundary_sanitize = true
     cfi = true
     cfi_cross_dso = true
     debug = false
+    integer_overflow = true
+    ubsan = true
   }
   subsystem_name = "bundlemanager"
   part_name = "app_domain_verify"
