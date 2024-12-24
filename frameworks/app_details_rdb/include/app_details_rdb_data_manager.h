@@ -40,6 +40,7 @@ public:
     bool QueryMetaData(const std::string& tableName, MetaItem& info);
     bool CreateMetaData();
     bool CreateTable(const std::string& tableName);
+    bool CreateRegularIndex(const std::string& tableName, const std::string& colName);
     bool DeleteTable(const std::string& tableName);
     bool RenameTable(const std::string& oldName, const std::string& newName);
     std::string GetDbVersion();
