@@ -246,8 +246,8 @@ bool AppDetailsRdbDataMgr::CreateRegularIndex(const std::string& tableName, cons
         APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "exec sql fail. ret:%{public}d", ret);
         return false;
     }
-    return true;    
-}
+    return true;
+};
 
 bool AppDetailsRdbDataMgr::DeleteTable(const std::string &tableName)
 {
