@@ -37,6 +37,7 @@ constexpr const char* BUNDLE_URL = "https://www.openharmony.cn/100";
 constexpr const char* BUNDLE_URL_NEW = "https://www.openharmony.cn/new";
 constexpr const char* TASK_ID = "age";
 constexpr int MAX_CACHE_SIZE = 50;
+constexpr int FLAGS = AppExecFwk::BundleFlag::GET_BUNDLE_WITH_ABILITIES | AppExecFwk::BundleFlag::GET_BUNDLE_WITH_SKILL;
 class AbilityFilterTest : public testing::Test {
 public:
     static void SetUpTestCase(void);
@@ -68,13 +69,13 @@ void AbilityFilterTest::TearDown(void)
     OHOS::AccountSA::g_accountIds.clear();
 }
 
-bool InvokeGetBundleInfo(const std::string& bundleName, const BundleFlag flag, BundleInfo& bundleInfo, int32_t userId)
+bool InvokeGetBundleInfo(const std::string& bundleName, int flag, BundleInfo& bundleInfo, int32_t userId)
 {
     bundleInfo.abilityInfos = g_mockAbilityInfos;
     return true;
 }
 /**
- * @tc.name: DeferredLinkPutTest001
+ * @tc.name: AbilityFilterTest001
  * @tc.desc: filter success.
  * @tc.type: FUNC
  */
@@ -93,7 +94,7 @@ HWTEST_F(AbilityFilterTest, AbilityFilterTest001, TestSize.Level0)
     abilityInfo.skills = skills;
     g_mockAbilityInfos.push_back(abilityInfo);
     auto mocBundleMgrService = std::make_shared<OHOS::AppExecFwk::MocBundleMgrService>();
-    EXPECT_CALL(*mocBundleMgrService, GetBundleInfo(_, _, _, _)).WillOnce(Invoke(InvokeGetBundleInfo));
+    EXPECT_CALL(*mocBundleMgrService, GetBundleInfo(_, FLAGS, _, _)).WillOnce(Invoke(InvokeGetBundleInfo));
     g_mockBundleMgrService->impl = mocBundleMgrService;
 
     auto filter = AbilityFilter::Create(BUNDLE_NAME);
@@ -101,14 +102,14 @@ HWTEST_F(AbilityFilterTest, AbilityFilterTest001, TestSize.Level0)
 }
 
 /**
- * @tc.name: DeferredLinkPutTest002
+ * @tc.name: AbilityFilterTest002
  * @tc.desc: filter with bms error.
  * @tc.type: FUNC
  */
 HWTEST_F(AbilityFilterTest, AbilityFilterTest002, TestSize.Level0)
 {
     auto mocBundleMgrService = std::make_shared<OHOS::AppExecFwk::MocBundleMgrService>();
-    EXPECT_CALL(*mocBundleMgrService, GetBundleInfo(_, _, _, _)).WillOnce(Return(false));
+    EXPECT_CALL(*mocBundleMgrService, GetBundleInfo(_, FLAGS, _, _)).WillOnce(Return(false));
     g_mockBundleMgrService->impl = mocBundleMgrService;
 
     auto filter = AbilityFilter::Create(BUNDLE_NAME);
@@ -116,14 +117,14 @@ HWTEST_F(AbilityFilterTest, AbilityFilterTest002, TestSize.Level0)
 }
 
 /**
- * @tc.name: DeferredLinkPutTest003
+ * @tc.name: AbilityFilterTest003
  * @tc.desc: filter with no abilities.
  * @tc.type: FUNC
  */
-HWTEST_F(AbilityFilterTest, DeferredLinkPutTest003, TestSize.Level0)
+HWTEST_F(AbilityFilterTest, AbilityFilterTest003, TestSize.Level0)
 {
     auto mocBundleMgrService = std::make_shared<OHOS::AppExecFwk::MocBundleMgrService>();
-    EXPECT_CALL(*mocBundleMgrService, GetBundleInfo(_, _, _, _)).WillOnce(Return(true));
+    EXPECT_CALL(*mocBundleMgrService, GetBundleInfo(_, FLAGS, _, _)).WillOnce(Return(true));
     g_mockBundleMgrService->impl = mocBundleMgrService;
 
     auto filter = AbilityFilter::Create(BUNDLE_NAME);
@@ -131,18 +132,18 @@ HWTEST_F(AbilityFilterTest, DeferredLinkPutTest003, TestSize.Level0)
 }
 
 /**
- * @tc.name: DeferredLinkPutTest004
+ * @tc.name: AbilityFilterTest004
  * @tc.desc: filter with no skill.
  * @tc.type: FUNC
  */
-HWTEST_F(AbilityFilterTest, DeferredLinkPutTest004, TestSize.Level0)
+HWTEST_F(AbilityFilterTest, AbilityFilterTest004, TestSize.Level0)
 {
     std::vector<Skill> skills;
     AbilityInfo abilityInfo;
     abilityInfo.skills = skills;
     g_mockAbilityInfos.push_back(abilityInfo);
     auto mocBundleMgrService = std::make_shared<OHOS::AppExecFwk::MocBundleMgrService>();
-    EXPECT_CALL(*mocBundleMgrService, GetBundleInfo(_, _, _, _)).WillOnce(Return(true));
+    EXPECT_CALL(*mocBundleMgrService, GetBundleInfo(_, FLAGS, _, _)).WillOnce(Return(true));
     g_mockBundleMgrService->impl = mocBundleMgrService;
 
     auto filter = AbilityFilter::Create(BUNDLE_NAME);
@@ -150,11 +151,11 @@ HWTEST_F(AbilityFilterTest, DeferredLinkPutTest004, TestSize.Level0)
 }
 
 /**
- * @tc.name: DeferredLinkPutTest005
+ * @tc.name: AbilityFilterTest005
  * @tc.desc: filter with no domainVerify skill.
  * @tc.type: FUNC
  */
-HWTEST_F(AbilityFilterTest, DeferredLinkPutTest005, TestSize.Level0)
+HWTEST_F(AbilityFilterTest, AbilityFilterTest005, TestSize.Level0)
 {
     std::vector<std::string> actions = { ACTION_VIEW_DATA };
     std::vector<std::string> entities = { ENTITY_BROWSER };
@@ -169,7 +170,7 @@ HWTEST_F(AbilityFilterTest, DeferredLinkPutTest005, TestSize.Level0)
     abilityInfo.skills = skills;
     g_mockAbilityInfos.push_back(abilityInfo);
     auto mocBundleMgrService = std::make_shared<OHOS::AppExecFwk::MocBundleMgrService>();
-    EXPECT_CALL(*mocBundleMgrService, GetBundleInfo(_, _, _, _)).WillOnce(Return(true));
+    EXPECT_CALL(*mocBundleMgrService, GetBundleInfo(_, FLAGS, _, _)).WillOnce(Return(true));
     g_mockBundleMgrService->impl = mocBundleMgrService;
 
     auto filter = AbilityFilter::Create(BUNDLE_NAME);
@@ -177,11 +178,11 @@ HWTEST_F(AbilityFilterTest, DeferredLinkPutTest005, TestSize.Level0)
 }
 
 /**
- * @tc.name: DeferredLinkPutTest006
+ * @tc.name: AbilityFilterTest006
  * @tc.desc: filter with no matched skill.
  * @tc.type: FUNC
  */
-HWTEST_F(AbilityFilterTest, DeferredLinkPutTest006, TestSize.Level0)
+HWTEST_F(AbilityFilterTest, AbilityFilterTest006, TestSize.Level0)
 {
     std::vector<std::string> actions = { ACTION_VIEW_DATA };
     std::vector<std::string> entities = { ENTITY_BROWSER };
@@ -196,7 +197,7 @@ HWTEST_F(AbilityFilterTest, DeferredLinkPutTest006, TestSize.Level0)
     abilityInfo.skills = skills;
     g_mockAbilityInfos.push_back(abilityInfo);
     auto mocBundleMgrService = std::make_shared<OHOS::AppExecFwk::MocBundleMgrService>();
-    EXPECT_CALL(*mocBundleMgrService, GetBundleInfo(_, _, _, _)).WillOnce(Return(true));
+    EXPECT_CALL(*mocBundleMgrService, GetBundleInfo(_, FLAGS, _, _)).WillOnce(Return(true));
     g_mockBundleMgrService->impl = mocBundleMgrService;
 
     auto filter = AbilityFilter::Create(BUNDLE_NAME);
