@@ -232,6 +232,23 @@ bool AppDetailsRdbDataMgr::CreateTable(const std::string &tableName)
     return true;
 };
 
+bool AppDetailsRdbDataMgr::CreateRegularIndex(const std::string& tableName, const std::string& colName)
+{
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "called");
+    std::string sql = "CREATE INDEX IF NOT EXISTS " + colName + "_INDEX " + "ON " + tableName + " (" + colName + ");";
+    auto rdbStore = GetRdbStore();
+    if (!rdbStore) {
+        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "get rdbStore fail.");
+        return false;
+    }
+    auto ret = rdbStore->ExecuteSql(sql);
+    if (ret != NativeRdb::E_OK) {
+        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "exec sql fail. ret:%{public}d", ret);
+        return false;
+    }
+    return true;
+};
+
 bool AppDetailsRdbDataMgr::DeleteTable(const std::string &tableName)
 {
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "Called");
