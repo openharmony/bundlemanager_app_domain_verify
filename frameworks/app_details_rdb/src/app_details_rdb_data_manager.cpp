@@ -48,7 +48,9 @@ AppDetailsRdbDataMgr::AppDetailsRdbDataMgr(const RdbConfigInfo& info)
 
 AppDetailsRdbDataMgr::~AppDetailsRdbDataMgr()
 {
-    closeHandler_->RemoveTask(CLOSE_TASK_ID);
+    if (closeHandler_ != nullptr) {
+        closeHandler_->RemoveTask(CLOSE_TASK_ID);
+    }
 };
 
 bool AppDetailsRdbDataMgr::ExecWithTrans(TransCallback cb)
