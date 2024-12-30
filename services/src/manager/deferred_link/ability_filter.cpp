@@ -38,6 +38,9 @@ public:
             abilityInfos_.cbegin(), abilityInfos_.cend(), [&urlWant](const AbilityInfo& abilityInfo) {
                 APP_DOMAIN_VERIFY_HILOGD(
                     APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "abilityInfo:%{private}s", abilityInfo.name.c_str());
+                if (!abilityInfo.visible) {
+                    return false;
+                }
                 auto skills = abilityInfo.skills;
                 auto matchedSkill = std::find_if(skills.cbegin(), skills.cend(),
                     [&urlWant](const Skill& skill) { return skill.domainVerify && skill.Match(urlWant); });
