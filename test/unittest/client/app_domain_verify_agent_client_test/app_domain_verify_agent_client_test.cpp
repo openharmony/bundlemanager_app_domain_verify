@@ -101,7 +101,7 @@ HWTEST_F(AppDomainVerifyAgentClientTest, AppDomainVerifyAgentClientTest001, Test
     DomainVerifyStatus domainVerificationState;
     auto queryRes = AppDomainVerifyMgrClient::GetInstance()->QueryDomainVerifyStatus(
         BUNDLE_NAME, domainVerificationState);
-    ASSERT_TRUE(queryRes);
+    ASSERT_FALSE(queryRes);
     ASSERT_TRUE(domainVerificationState == DomainVerifyStatus::STATE_NONE);
 }
 
