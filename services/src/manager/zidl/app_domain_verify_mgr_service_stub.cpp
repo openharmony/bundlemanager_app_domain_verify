@@ -294,7 +294,7 @@ int32_t AppDomainVerifyMgrServiceStub::OnQueryAppDetailsWant(MessageParcel& data
     want = *w;
     int ret = QueryAppDetailsWant(url, want);
     WRITE_PARCEL_AND_RETURN_INT_IF_FAIL(Int32, reply, ret);
-    WRITE_PARCEL_AND_RETURN_INT_IF_FAIL(Parcelable, reply, wantPtr);
+    WRITE_PARCEL_AND_RETURN_INT_IF_FAIL(Parcelable, reply, &want);
     return ERR_OK;
 }
 
