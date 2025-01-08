@@ -286,12 +286,13 @@ int32_t AppDomainVerifyMgrServiceStub::OnQueryAppDetailsWant(MessageParcel& data
     AAFwk::Want want;
     std::string url;
     READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(String, data, url);
-    AAFwk::Want* wantPtr = data.ReadParcelable<OHOS::AAFwk::Want>();
-    if (!wantPtr) {
+    std::unique_ptr<OHOS::AAFwk::Want> w(data.ReadParcelable<OHOS::AAFwk::Want>());
+    if (!w) {
         APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "read parcelable want failed.");
         return ERR_INVALID_VALUE;
     }
-    int ret = QueryAppDetailsWant(url, *wantPtr);
+    want = *w;
+    int ret = QueryAppDetailsWant(url, want);
     WRITE_PARCEL_AND_RETURN_INT_IF_FAIL(Int32, reply, ret);
     WRITE_PARCEL_AND_RETURN_INT_IF_FAIL(Parcelable, reply, wantPtr);
     return ERR_OK;
