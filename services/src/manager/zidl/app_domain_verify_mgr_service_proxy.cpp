@@ -367,12 +367,12 @@ int AppDomainVerifyMgrServiceProxy::QueryAppDetailsWant(const std::string &url, 
         APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "result failed, result: %d", result);
         return result;
     }
-    AAFwk::Want* wantPtr = reply.ReadParcelable<AAFwk::Want>();
-    if (wantPtr == nullptr) {
-        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "recv want fail");
-        return result;
+    std::unique_ptr<OHOS::AAFwk::Want> w(data.ReadParcelable<OHOS::AAFwk::Want>());
+    if (!w) {
+        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "read parcelable want failed.");
+        return ERR_INVALID_VALUE;
     }
-    want = *wantPtr;
+    want = *w;
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "call end");
     return result;
 }
