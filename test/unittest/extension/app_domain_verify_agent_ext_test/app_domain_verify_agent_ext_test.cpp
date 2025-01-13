@@ -85,8 +85,8 @@ HWTEST_F(AppDomainVerifyAgentExtTest, AppDomainVerifyAgentExtTest002, TestSize.L
     AppDomainVerifyAgentExt appDomainVerifyAgentExt;
     const BundleVerifyStatusInfo bundleVerifyStatusInfo;
     TaskType type = IMMEDIATE_TASK;
-    ASSERT_TRUE(appDomainVerifyAgentExt.CompleteVerifyRefresh(bundleVerifyStatusInfo,
-                    type) == ErrorCode::E_EXTENSIONS_LIB_NOT_FOUND);
+    ASSERT_TRUE(appDomainVerifyAgentExt.CompleteVerifyRefresh(bundleVerifyStatusInfo, type) ==
+        ErrorCode::E_EXTENSIONS_LIB_NOT_FOUND);
 }
 /**
  * @tc.name: AppDomainVerifyAgentExtTest003
@@ -104,6 +104,16 @@ HWTEST_F(AppDomainVerifyAgentExtTest, AppDomainVerifyAgentExtTest003, TestSize.L
  * @tc.type: FUNC
  */
 HWTEST_F(AppDomainVerifyAgentExtTest, AppDomainVerifyAgentExtTest004, TestSize.Level0)
+{
+    AppDomainVerifyAgentExt appDomainVerifyAgentExt;
+    ASSERT_TRUE(appDomainVerifyAgentExt.UpdateAppDetails() == ErrorCode::E_EXTENSIONS_LIB_NOT_FOUND);
+}
+/**
+ * @tc.name: AppDomainVerifyAgentExtTest005
+ * @tc.desc: ExtensionMgr test.
+ * @tc.type: FUNC
+ */
+HWTEST_F(AppDomainVerifyAgentExtTest, AppDomainVerifyAgentExtTest005, TestSize.Level0)
 {
     AppDomainVerifyAgentExt appDomainVerifyAgentExt;
     OHOS::AAFwk::Want atomicWant;

@@ -253,6 +253,7 @@ HWTEST_F(AgentServiceTest, AgentServiceTest020, TestSize.Level0)
     idleReason.SetName(BOOT_COMPLETED_EVENT);
     appDomainVerifyAgentService->OnIdle(idleReason);
     appDomainVerifyAgentService->OnStop();
+    ASSERT_TRUE(idleReason.GetName() == BOOT_COMPLETED_EVENT);
 }
 /**
  * @tc.name: AgentServiceTest021
@@ -269,6 +270,7 @@ HWTEST_F(AgentServiceTest, AgentServiceTest021, TestSize.Level0)
     idleReason.SetName(BOOT_COMPLETED_EVENT);
     appDomainVerifyAgentService->OnIdle(idleReason);
     appDomainVerifyAgentService->OnStop();
+    ASSERT_TRUE(idleReason.GetName() == BOOT_COMPLETED_EVENT);
 }
 /**
  * @tc.name: AgentServiceTest022
@@ -285,6 +287,7 @@ HWTEST_F(AgentServiceTest, AgentServiceTest022, TestSize.Level0)
     idleReason.SetName(BOOT_COMPLETED_EVENT);
     appDomainVerifyAgentService->OnIdle(idleReason);
     appDomainVerifyAgentService->OnStop();
+    ASSERT_TRUE(idleReason.GetName() == BOOT_COMPLETED_EVENT);
 }
 /**
  * @tc.name: AgentServiceTest023
@@ -302,6 +305,7 @@ HWTEST_F(AgentServiceTest, AgentServiceTest023, TestSize.Level0)
     idleReason.SetName(BOOT_COMPLETED_EVENT);
     appDomainVerifyAgentService->OnIdle(idleReason);
     appDomainVerifyAgentService->OnStop();
+    ASSERT_TRUE(idleReason.GetName() == BOOT_COMPLETED_EVENT);
 }
 /**
  * @tc.name: AgentServiceTest024
@@ -319,5 +323,6 @@ HWTEST_F(AgentServiceTest, AgentServiceTest024, TestSize.Level0)
     idleReason.SetName(BOOT_COMPLETED_EVENT);
     appDomainVerifyAgentService->OnIdle(idleReason);
     appDomainVerifyAgentService->OnStop();
+    ASSERT_TRUE(idleReason.GetName() == BOOT_COMPLETED_EVENT);
 }
 }
