@@ -28,6 +28,9 @@
 #include <thread>
 #include <vector>
 #include "app_domain_verify_hilog.h"
+#include "rdb_helper.h"
+#include "app_details_rdb_open_callback.h"
+#include "app_details_rdb_const_define.h"
 #define private public
 #define protected public
 #include "app_details_rdb_data_manager.h"
@@ -66,11 +69,7 @@ void AppDetailsRdbMgrTest::SetUp(void)
 
 void AppDetailsRdbMgrTest::TearDown(void)
 {
-    std::vector<std::string> tmpFileVec = {
-        rdbPath + rdbName,
-        rdbPath + rdbName + "-shm",
-        rdbPath + rdbName + "-wal"
-    };
+    std::vector<std::string> tmpFileVec = { rdbPath + rdbName, rdbPath + rdbName + "-shm", rdbPath + rdbName + "-wal" };
     for (auto& filePath : tmpFileVec) {
         (void)remove(filePath.c_str());
     }
@@ -102,8 +101,8 @@ HWTEST_F(AppDetailsRdbMgrTest, AppDetailsRdbMgrTest001, TestSize.Level0)
     ASSERT_TRUE(ret);
     ret = rdbMgr->DeleteTable("app_details_tmp");
     ASSERT_TRUE(ret);
+    ASSERT_TRUE(rdbMgr->GetDbVersion() == std::to_string(APP_DETAILS_RDB_VERSION));
 }
-
 
 /**
  * @tc.name: AppDetailsRdbMgrTest002
@@ -132,6 +131,8 @@ HWTEST_F(AppDetailsRdbMgrTest, AppDetailsRdbMgrTest002, TestSize.Level0)
     itemVec.push_back(item);
     ret = rdbMgr->InsertDataBatch("app_details", itemVec);
     ASSERT_TRUE(ret);
+    ret = rdbMgr->CreateRegularIndex("app_details", DETAILS_DOMAIN);
+    ASSERT_TRUE(ret);
     std::vector<AppDetailsRdbItem> itemRetVec;
     ret = rdbMgr->QueryDataByDomain("app_details", item.domain, itemRetVec);
     ASSERT_TRUE(ret);
@@ -141,7 +142,6 @@ HWTEST_F(AppDetailsRdbMgrTest, AppDetailsRdbMgrTest002, TestSize.Level0)
     ret = rdbMgr->DeleteTable("app_details");
     ASSERT_TRUE(ret);
 }
-
 
 /**
  * @tc.name: AppDetailsRdbMgrTest003
@@ -168,6 +168,10 @@ HWTEST_F(AppDetailsRdbMgrTest, AppDetailsRdbMgrTest003, TestSize.Level0)
     itemVec.push_back(item);
     ret = rdbMgr->UpdateMetaData(itemVec);
     ASSERT_TRUE(ret);
+    MetaItem queryItem;
+    ret = rdbMgr->QueryMetaData(item.tableName, queryItem);
+    ASSERT_TRUE(ret);
+    ASSERT_TRUE(queryItem.tableExtInfo == item.tableExtInfo);
     ret = rdbMgr->DeleteTable("META_DATA");
     ASSERT_TRUE(ret);
 }
@@ -196,7 +200,7 @@ HWTEST_F(AppDetailsRdbMgrTest, AppDetailsRdbMgrTest004, TestSize.Level0)
     itemVec.push_back(item);
     ret = rdbMgr->InsertDataBatch("app_details", itemVec);
     ASSERT_TRUE(ret);
-    bool retFlag = rdbMgr->ExecWithTrans([&]()->bool {
+    bool retFlag = rdbMgr->ExecWithTrans([&]() -> bool {
         auto ret = rdbMgr->DeleteTable("app_details");
         return false;
     });
@@ -204,7 +208,7 @@ HWTEST_F(AppDetailsRdbMgrTest, AppDetailsRdbMgrTest004, TestSize.Level0)
     std::vector<AppDetailsRdbItem> result;
     ret = rdbMgr->QueryDataByDomain("app_details", item.domain, result);
     ASSERT_TRUE(ret);
-    retFlag = rdbMgr->ExecWithTrans([&]()->bool {
+    retFlag = rdbMgr->ExecWithTrans([&]() -> bool {
         auto ret = rdbMgr->DeleteTable("app_details");
         return true;
     });
@@ -264,7 +268,7 @@ HWTEST_F(AppDetailsRdbMgrTest, AppDetailsRdbMgrTest006, TestSize.Level0)
     ASSERT_TRUE(ret);
     ASSERT_TRUE(result.size() != 0);
     auto task = [&sem, &checkFlag, rdbMgr]() {
-        rdbMgr->ExecWithTrans([&sem, &checkFlag]()->bool {
+        rdbMgr->ExecWithTrans([&sem, &checkFlag]() -> bool {
             sem.acquire();
             checkFlag = true;
             return true;
@@ -283,5 +287,27 @@ HWTEST_F(AppDetailsRdbMgrTest, AppDetailsRdbMgrTest006, TestSize.Level0)
     sem.release();
     std::this_thread::sleep_for(std::chrono::milliseconds(10));
     ASSERT_TRUE(checkFlag);
+}
+/**
+ * @tc.name: AppDetailsRdbCallBackTest001
+ * @tc.desc: test trans for muti table
+ * @tc.type: FUNC
+ */
+HWTEST_F(AppDetailsRdbMgrTest, AppDetailsRdbCallBackTest001, TestSize.Level0)
+{
+    RdbConfigInfo rdbConfig;
+    rdbConfig.rdbName = AppDetailsRdbMgrTest::rdbName;
+    rdbConfig.rdbPath = AppDetailsRdbMgrTest::rdbPath;
+    rdbConfig.version = AppDetailsRdbMgrTest::rdbVersion;
+    int32_t errCode = NativeRdb::E_OK;
+    AppDetailsRdbOpenCallback callback(rdbConfig);
+
+    NativeRdb::RdbStoreConfig rdbStoreConfig(rdbConfig.rdbPath + rdbConfig.rdbName);
+    rdbStoreConfig.SetSecurityLevel(NativeRdb::SecurityLevel::S1);
+    auto rdbStored = NativeRdb::RdbHelper::GetRdbStore(rdbStoreConfig, rdbConfig.version, callback, errCode);
+    ASSERT_TRUE(callback.OnCreate(*rdbStored) == NativeRdb::E_OK);
+    ASSERT_TRUE(callback.OnUpgrade(*rdbStored, 3, 3) == NativeRdb::E_OK);
+    ASSERT_TRUE(callback.OnDowngrade(*rdbStored, 2, 1) == NativeRdb::E_OK);
+    ASSERT_TRUE(callback.onCorruption("") == NativeRdb::E_OK);
 }
 }

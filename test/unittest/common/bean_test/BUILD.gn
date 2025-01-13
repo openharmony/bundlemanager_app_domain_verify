@@ -53,8 +53,6 @@ ohos_unittest("app_domain_verify_bean_test") {
     "${app_domain_verify_test_path}/mock/src/mock_bundle_manager.cpp",
     "${app_domain_verify_test_path}/mock/src/mock_os_account_manager.cpp",
     "${app_domain_verify_test_path}/mock/src/mock_service_registry.cpp",
-    "${app_domain_verify_test_path}/mock/src/mock_system_ability.cpp",
-    "${app_domain_verify_test_path}/mock/src/mock_system_ability_ondemand_reason.cpp",
     "bean_test.cpp",
   ]
   configs = [ ":module_private_config" ]
