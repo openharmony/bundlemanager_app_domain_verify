@@ -426,4 +426,14 @@ HWTEST_F(AppDomainVerifyMgrClientTest, IsValidPath_0100, TestSize.Level0)
     uri.GetPathSegments(segments);
     EXPECT_TRUE(AppDomainVerifyMgrClient::GetInstance()->IsValidPath(segments[0]));
 }
+/**
+ * @tc.name: Dump_0100
+ * @tc.desc: Test Dump.
+ * @tc.type: FUNC
+ */
+HWTEST_F(AppDomainVerifyMgrClientTest, Dump_0100, TestSize.Level0)
+{
+    VerifyResultInfo verifyResultInfo;
+    EXPECT_NE(verifyResultInfo.Dump(), "");
+}
 }

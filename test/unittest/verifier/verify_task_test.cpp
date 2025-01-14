@@ -170,6 +170,7 @@ HWTEST_F(DomainVerifierTaskTest, DomainVerifierTaskTest004, TestSize.Level0)
     response.SetResult("OK");
     std::string url = "";
     task.OnPostVerify(url, response);
+    ASSERT_TRUE(task.unVerifiedSet_.empty());
 }
 
 /**

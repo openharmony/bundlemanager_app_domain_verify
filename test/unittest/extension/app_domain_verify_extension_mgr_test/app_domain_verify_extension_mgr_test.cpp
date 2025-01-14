@@ -131,8 +131,8 @@ HWTEST_F(AppDomainVerifyExtensionMgrTest, AppDomainVerifyCompleteVerifyTest001, 
 
     const BundleVerifyStatusInfo bundleVerifyStatusInfo;
     TaskType type = IMMEDIATE_TASK;
-    ASSERT_TRUE(appDomainVerifyExtensionMgr.CompleteVerifyRefresh(
-                    bundleVerifyStatusInfo, type) == ErrorCode::E_EXTENSIONS_LIB_NOT_FOUND);
+    ASSERT_TRUE(appDomainVerifyExtensionMgr.CompleteVerifyRefresh(bundleVerifyStatusInfo, type) ==
+        ErrorCode::E_EXTENSIONS_LIB_NOT_FOUND);
 }
 
 /**
@@ -151,8 +151,8 @@ HWTEST_F(AppDomainVerifyExtensionMgrTest, AppDomainVerifyCompleteVerifyTest002, 
     const BundleVerifyStatusInfo bundleVerifyStatusInfo;
     int delaySeconds = 0;
     TaskType type = IMMEDIATE_TASK;
-    ASSERT_TRUE(appDomainVerifyExtensionMgr.CompleteVerifyRefresh(
-                    bundleVerifyStatusInfo, type) == ErrorCode::E_EXTENSIONS_INTERNAL_ERROR);
+    ASSERT_TRUE(appDomainVerifyExtensionMgr.CompleteVerifyRefresh(bundleVerifyStatusInfo, type) ==
+        ErrorCode::E_EXTENSIONS_INTERNAL_ERROR);
 }
 
 /**
@@ -227,8 +227,8 @@ HWTEST_F(AppDomainVerifyExtensionMgrTest, AppDomainVerifyConvertTest003, TestSiz
     const BundleVerifyStatusInfo bundleVerifyStatusInfo;
     int delaySeconds = 0;
     TaskType type = IMMEDIATE_TASK;
-    ASSERT_TRUE(appDomainVerifyExtensionMgr.CompleteVerifyRefresh(
-                    bundleVerifyStatusInfo, type) == ErrorCode::E_EXTENSIONS_LIB_NOT_FOUND);
+    ASSERT_TRUE(appDomainVerifyExtensionMgr.CompleteVerifyRefresh(bundleVerifyStatusInfo, type) ==
+        ErrorCode::E_EXTENSIONS_LIB_NOT_FOUND);
 }
 /**
  * @tc.name: AppDomainVerifyUpdateWhiteListTest001
@@ -276,6 +276,53 @@ HWTEST_F(AppDomainVerifyExtensionMgrTest, AppDomainVerifyUpdateWhiteListTest003,
         .WillOnce(Return(appDomainVerifyAgentExt));
 
     ASSERT_TRUE(appDomainVerifyExtensionMgr.UpdateWhiteList() == ErrorCode::E_EXTENSIONS_LIB_NOT_FOUND);
+}
+/**
+ * @tc.name: AppDomainVerifyUpdateAppDetailsTest001
+ * @tc.desc: ExtensionMgr test.
+ * @tc.type: FUNC
+ */
+HWTEST_F(AppDomainVerifyExtensionMgrTest, AppDomainVerifyUpdateAppDetailsTest001, TestSize.Level0)
+{
+    MockAppDomainVerifyExtensionMgr appDomainVerifyExtensionMgr;
+    EXPECT_CALL(appDomainVerifyExtensionMgr, Init()).Times(1).WillOnce(Return(false));
+
+    OHOS::AAFwk::Want atomicWant;
+    sptr<IConvertCallback> cb = new MocConvertCallback;
+    ASSERT_TRUE(appDomainVerifyExtensionMgr.UpdateAppDetails() == ErrorCode::E_EXTENSIONS_LIB_NOT_FOUND);
+}
+
+/**
+ * @tc.name: AppDomainVerifyUpdateAppDetailsTest002
+ * @tc.desc: ExtensionMgr test.
+ * @tc.type: FUNC
+ */
+HWTEST_F(AppDomainVerifyExtensionMgrTest, AppDomainVerifyUpdateAppDetailsTest002, TestSize.Level0)
+{
+    MockAppDomainVerifyExtensionMgr appDomainVerifyExtensionMgr;
+    EXPECT_CALL(appDomainVerifyExtensionMgr, Init()).Times(1).WillOnce(Return(true));
+    EXPECT_CALL(appDomainVerifyExtensionMgr, GetAppDomainVerifyExt(APP_DOMAIN_VERIFY_AGENT_EXT_NAME))
+        .Times(1)
+        .WillOnce(Return(nullptr));
+
+    ASSERT_TRUE(appDomainVerifyExtensionMgr.UpdateAppDetails() == ErrorCode::E_EXTENSIONS_INTERNAL_ERROR);
+}
+
+/**
+ * @tc.name: AppDomainVerifyUpdateAppDetailsTest003
+ * @tc.desc: ExtensionMgr test.
+ * @tc.type: FUNC
+ */
+HWTEST_F(AppDomainVerifyExtensionMgrTest, AppDomainVerifyUpdateAppDetailsTest003, TestSize.Level0)
+{
+    std::shared_ptr<AppDomainVerifyAgentExt> appDomainVerifyAgentExt = std::make_shared<AppDomainVerifyAgentExtImpl>();
+    MockAppDomainVerifyExtensionMgr appDomainVerifyExtensionMgr;
+    EXPECT_CALL(appDomainVerifyExtensionMgr, Init()).Times(1).WillOnce(Return(true));
+    EXPECT_CALL(appDomainVerifyExtensionMgr, GetAppDomainVerifyExt(APP_DOMAIN_VERIFY_AGENT_EXT_NAME))
+        .Times(1)
+        .WillOnce(Return(appDomainVerifyAgentExt));
+
+    ASSERT_TRUE(appDomainVerifyExtensionMgr.UpdateAppDetails() == ErrorCode::E_EXTENSIONS_LIB_NOT_FOUND);
 }
 /**
  * @tc.name: AppDomainVerifyExtensionMgrTest001
