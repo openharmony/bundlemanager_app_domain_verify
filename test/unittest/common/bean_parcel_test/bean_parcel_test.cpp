@@ -157,7 +157,6 @@ HWTEST_F(AppDomainVerifyBeanParcelTest, AppDomainVerifyBeanParcelTest002, TestSi
     printf("AppDomainVerifyBeanParcelTest001 end\n");
 }
 
-
 /**
  * @tc.name: AppDomainVerifyBeanParcelTest003
  * @tc.desc: UrlUtil test.
@@ -203,7 +202,6 @@ HWTEST_F(AppDomainVerifyBeanParcelTest, AppDomainVerifyBeanParcelTest004, TestSi
     appVerifyBaseInfo.fingerprint = "fingerprint";
     Parcel parcel;
     ASSERT_TRUE(appVerifyBaseInfo.Marshalling(parcel));
-
 
     AppVerifyBaseInfo appVerifyBaseInfoOut(appVerifyBaseInfo);
     MockReadString(false, 0);

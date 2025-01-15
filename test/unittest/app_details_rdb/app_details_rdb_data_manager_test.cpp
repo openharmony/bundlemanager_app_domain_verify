@@ -38,6 +38,7 @@
 #include "bundle_verify_status_info.h"
 #undef private
 #undef protected
+#include "../mock/include/mock_rdb.h"
 
 namespace OHOS::AppDomainVerify {
 using namespace testing;
@@ -395,8 +396,7 @@ std::shared_ptr<AbsSharedResultSet> RdbStoreToTest::QuerySql(const std::string& 
     return nullptr;
 }
 
-std::shared_ptr<ResultSet> RdbStoreToTest::QueryByStep(
-    const std::string& sql, const Values& args, bool preCount)
+std::shared_ptr<ResultSet> RdbStoreToTest::QueryByStep(const std::string& sql, const Values& args, bool preCount)
 {
     return nullptr;
 }
@@ -472,5 +472,94 @@ HWTEST_F(AppDetailsRdbMgrTest, VerifyResultInfo001, TestSize.Level0)
     VerifyResultInfo info;
     auto ret = info.Dump();
     EXPECT_NE(ret, "");
+}
+
+/**
+ * @tc.name: AppDetailsRdbItemTest001
+ * @tc.desc: AppDetailsRdbItem test
+ * @tc.type: FUNC
+ */
+HWTEST_F(AppDetailsRdbMgrTest, AppDetailsRdbItemTest001, TestSize.Level0)
+{
+    std::shared_ptr<MockResultSet> moc = std::make_shared<MockResultSet>();
+    EXPECT_CALL(*moc, GetString(DETAILS_ID_INDEX, _)).WillOnce(Return(1));
+    std::shared_ptr<AbsSharedResultSet> impl = moc;
+    AppDetailsRdbItem item;
+    ASSERT_FALSE(item.GetRdbItem(impl));
+
+    std::shared_ptr<MockResultSet> moc1 = std::make_shared<MockResultSet>();
+    EXPECT_CALL(*moc1, GetString(DETAILS_ID_INDEX, _)).WillOnce(Return(0));
+    EXPECT_CALL(*moc1, GetString(DETAILS_SCHEME_INDEX, _)).WillOnce(Return(1));
+    impl = moc1;
+    ASSERT_FALSE(item.GetRdbItem(impl));
+
+    std::shared_ptr<MockResultSet> moc2 = std::make_shared<MockResultSet>();
+    EXPECT_CALL(*moc2, GetString(DETAILS_ID_INDEX, _)).WillOnce(Return(0));
+    EXPECT_CALL(*moc2, GetString(DETAILS_SCHEME_INDEX, _)).WillOnce(Return(0));
+    EXPECT_CALL(*moc2, GetString(DETAILS_DOMAIN_INDEX, _)).WillOnce(Return(1));
+    impl = moc2;
+    ASSERT_FALSE(item.GetRdbItem(impl));
+
+    std::shared_ptr<MockResultSet> moc3 = std::make_shared<MockResultSet>();
+    EXPECT_CALL(*moc3, GetString(DETAILS_ID_INDEX, _)).WillOnce(Return(0));
+    EXPECT_CALL(*moc3, GetString(DETAILS_SCHEME_INDEX, _)).WillOnce(Return(0));
+    EXPECT_CALL(*moc3, GetString(DETAILS_DOMAIN_INDEX, _)).WillOnce(Return(0));
+    EXPECT_CALL(*moc3, GetString(DETAILS_PATH_TYPE_INDEX, _)).WillOnce(Return(1));
+    impl = moc3;
+    ASSERT_FALSE(item.GetRdbItem(impl));
+
+    std::shared_ptr<MockResultSet> moc4 = std::make_shared<MockResultSet>();
+    EXPECT_CALL(*moc4, GetString(DETAILS_ID_INDEX, _)).WillOnce(Return(0));
+    EXPECT_CALL(*moc4, GetString(DETAILS_SCHEME_INDEX, _)).WillOnce(Return(0));
+    EXPECT_CALL(*moc4, GetString(DETAILS_DOMAIN_INDEX, _)).WillOnce(Return(0));
+    EXPECT_CALL(*moc4, GetString(DETAILS_PATH_TYPE_INDEX, _)).WillOnce(Return(0));
+    EXPECT_CALL(*moc4, GetString(DETAILS_PATH_INDEX, _)).WillOnce(Return(1));
+    impl = moc4;
+    ASSERT_FALSE(item.GetRdbItem(impl));
+
+    std::shared_ptr<MockResultSet> moc5 = std::make_shared<MockResultSet>();
+    EXPECT_CALL(*moc5, GetString(DETAILS_ID_INDEX, _)).WillOnce(Return(0));
+    EXPECT_CALL(*moc5, GetString(DETAILS_SCHEME_INDEX, _)).WillOnce(Return(0));
+    EXPECT_CALL(*moc5, GetString(DETAILS_DOMAIN_INDEX, _)).WillOnce(Return(0));
+    EXPECT_CALL(*moc5, GetString(DETAILS_PATH_TYPE_INDEX, _)).WillOnce(Return(0));
+    EXPECT_CALL(*moc5, GetString(DETAILS_PATH_INDEX, _)).WillOnce(Return(0));
+    EXPECT_CALL(*moc5, GetString(DETAILS_BUNDLE_NAME_INDEX, _)).WillOnce(Return(1));
+    impl = moc5;
+    ASSERT_FALSE(item.GetRdbItem(impl));
+}
+
+/**
+ * @tc.name: MetaItemTest001
+ * @tc.desc: MetaItem test
+ * @tc.type: FUNC
+ */
+HWTEST_F(AppDetailsRdbMgrTest, MetaItemTest001, TestSize.Level0)
+{
+    std::shared_ptr<MockResultSet> moc = std::make_shared<MockResultSet>();
+    EXPECT_CALL(*moc, GetString(META_TABLE_NAME_INDEX, _)).WillOnce(Return(1));
+    std::shared_ptr<AbsSharedResultSet> impl = moc;
+    MetaItem item;
+    ASSERT_FALSE(item.GetRdbItem(impl));
+
+    std::shared_ptr<MockResultSet> moc2 = std::make_shared<MockResultSet>();
+    EXPECT_CALL(*moc2, GetString(META_TABLE_NAME_INDEX, _)).WillOnce(Return(0));
+    EXPECT_CALL(*moc2, GetString(META_TABLE_VERSION_INDEX, _)).WillOnce(Return(1));
+    impl = moc2;
+    ASSERT_FALSE(item.GetRdbItem(impl));
+
+    std::shared_ptr<MockResultSet> moc3 = std::make_shared<MockResultSet>();
+    EXPECT_CALL(*moc3, GetString(META_TABLE_NAME_INDEX, _)).WillOnce(Return(0));
+    EXPECT_CALL(*moc3, GetString(META_TABLE_VERSION_INDEX, _)).WillOnce(Return(0));
+    EXPECT_CALL(*moc3, GetString(META_TABLE_EXT_INFO_INDEX, _)).WillOnce(Return(1));
+    impl = moc3;
+    ASSERT_FALSE(item.GetRdbItem(impl));
+
+    std::shared_ptr<MockResultSet> moc4 = std::make_shared<MockResultSet>();
+    EXPECT_CALL(*moc4, GetString(META_TABLE_NAME_INDEX, _)).WillOnce(Return(0));
+    EXPECT_CALL(*moc4, GetString(META_TABLE_VERSION_INDEX, _)).WillOnce(Return(0));
+    EXPECT_CALL(*moc4, GetString(META_TABLE_EXT_INFO_INDEX, _)).WillOnce(Return(0));
+    EXPECT_CALL(*moc4, GetString(META_UPDATE_TIME_INDEX, _)).WillOnce(Return(1));
+    impl = moc4;
+    ASSERT_FALSE(item.GetRdbItem(impl));
 }
 }

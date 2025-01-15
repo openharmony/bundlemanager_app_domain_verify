@@ -264,5 +264,32 @@ HWTEST_F(DeferredLinkMgrTest, DeferredLinkGetTest006, TestSize.Level0)
 
     EXPECT_TRUE(link.empty());
 }
-
+/**
+ * @tc.name: DeferredLinkGetTest007
+ * @tc.desc: age process.
+ * @tc.type: FUNC
+ */
+HWTEST_F(DeferredLinkMgrTest, DeferredLinkGetTest007, TestSize.Level0)
+{
+    DeferredLinkMgr deferredLinkMgr;
+    deferredLinkMgr.ageHandler_ = nullptr;
+    deferredLinkMgr.PutDeferredLink(
+        { .domain = BUNDLE_DOMAIN, .url = BUNDLE_URL, .timeStamp = GetSecondsSince1970ToNow() - 10 * 60 });
+    deferredLinkMgr.AgeCacheProcess();
+    ASSERT_TRUE(deferredLinkMgr.caches_.empty());
+}
+/**
+ * @tc.name: DeferredLinkGetTest008
+ * @tc.desc: age process.
+ * @tc.type: FUNC
+ */
+HWTEST_F(DeferredLinkMgrTest, DeferredLinkGetTest008, TestSize.Level0)
+{
+    DeferredLinkMgr deferredLinkMgr;
+    deferredLinkMgr.ageHandler_ = nullptr;
+    deferredLinkMgr.PutDeferredLink(
+        { .domain = BUNDLE_DOMAIN, .url = BUNDLE_URL, .timeStamp = GetSecondsSince1970ToNow() });
+    deferredLinkMgr.AgeCacheProcess();
+    ASSERT_FALSE(deferredLinkMgr.caches_.empty());
+}
 }
