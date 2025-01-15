@@ -28,6 +28,7 @@ public:
     MOCK_METHOD(int, GetString, (int columnIndex, std::string& value), (override));
     MOCK_METHOD(int, GetInt, (int columnIndex, int& value), (override));
     MOCK_METHOD(int, Close, (), (override));
+    MOCK_METHOD(int, GetColumnCount, (int& count), (override));
 };
 class MockRdbStore : public RdbStore {
 public:
@@ -50,7 +51,9 @@ public:
 
     MOCK_METHOD(std::shared_ptr<AbsSharedResultSet>, Query,
         (const AbsRdbPredicates& predicates, const std::vector<std::string>& columns), (override));
-
+    MOCK_METHOD(int, BeginTransaction, (), (override));
+    MOCK_METHOD(int, RollBack, (), (override));
+    MOCK_METHOD(int, Commit, (), (override));
     ~MockRdbStore() override = default;
 
     int Insert(int64_t& outRowId, const std::string& table, const ValuesBucket& initialValues) override
@@ -112,8 +115,8 @@ public:
     {
         return nullptr;
     };
-    std::shared_ptr<ResultSet> QueryByStep(const std::string& sql, const std::vector<ValueObject>& bindArgs,
-        bool preCount) override
+    std::shared_ptr<ResultSet> QueryByStep(
+        const std::string& sql, const std::vector<ValueObject>& bindArgs, bool preCount) override
     {
         return nullptr;
     };
@@ -171,7 +174,7 @@ public:
     {
         return NativeRdb::E_ERROR;
     };
-    virtual void SetStatus(int status){};
+    virtual void SetStatus(int status) {};
     int GetVersion(int& version) override
     {
         return NativeRdb::E_ERROR;
@@ -180,18 +183,7 @@ public:
     {
         return NativeRdb::E_ERROR;
     };
-    int BeginTransaction() override
-    {
-        return NativeRdb::E_ERROR;
-    };
-    int RollBack() override
-    {
-        return NativeRdb::E_ERROR;
-    };
-    int Commit() override
-    {
-        return NativeRdb::E_ERROR;
-    };
+
     bool IsInTransaction() override
     {
         return false;

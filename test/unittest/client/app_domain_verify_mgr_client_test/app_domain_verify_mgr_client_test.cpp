@@ -25,7 +25,7 @@
 #undef protected
 #include "convert_callback_stub.h"
 #include "mock_access_token.h"
-
+#include "comm_define.h"
 namespace OHOS::AppDomainVerify {
 using namespace testing;
 using namespace testing::ext;
@@ -305,6 +305,25 @@ HWTEST_F(AppDomainVerifyMgrClientTest, AppDomainVerifyMgrClientTest011, TestSize
 
     std::string link;
     AppDomainVerifyMgrClient::GetInstance()->GetDeferredLink(link);
+    ASSERT_TRUE(g_mgrInvokeOK);
+    AppDomainVerifyMgrClient::appDomainVerifyMgrServiceProxy_.ForceSetRefPtr(nullptr);
+}
+/**
+ * @tc.name: AppDomainVerifyMgrClientTest012
+ * @tc.desc: QueryAssociatedDomains test.
+ * @tc.type: FUNC
+ */
+HWTEST_F(AppDomainVerifyMgrClientTest, AppDomainVerifyMgrClientTest012, TestSize.Level0)
+{
+    std::shared_ptr<AppDomainVerifyMgrRemoteStubMock> mgrStubMock_ =
+        std::make_shared<AppDomainVerifyMgrRemoteStubMock>();
+    EXPECT_CALL(*mgrStubMock_, SendRequest(_, _, _, _)).Times(1).WillOnce(::testing::Invoke(MgrInvokeOK));
+    AppDomainVerifyMgrClient::appDomainVerifyMgrServiceProxy_ = sptr<AppDomainVerifyMgrServiceProxy>::MakeSptr(
+        mgrStubMock_.get());
+
+    std::string link;
+    AAFwk::Want want;
+    AppDomainVerifyMgrClient::GetInstance()->QueryAppDetailsWant(link, want);
     ASSERT_TRUE(g_mgrInvokeOK);
     AppDomainVerifyMgrClient::appDomainVerifyMgrServiceProxy_.ForceSetRefPtr(nullptr);
 }
