@@ -34,6 +34,8 @@
 #define private public
 #define protected public
 #include "app_details_rdb_data_manager.h"
+#include "app_details_rdb_open_callback.h"
+#include "bundle_verify_status_info.h"
 #undef private
 #undef protected
 
@@ -309,5 +311,166 @@ HWTEST_F(AppDetailsRdbMgrTest, AppDetailsRdbCallBackTest001, TestSize.Level0)
     ASSERT_TRUE(callback.OnUpgrade(*rdbStored, 3, 3) == NativeRdb::E_OK);
     ASSERT_TRUE(callback.OnDowngrade(*rdbStored, 2, 1) == NativeRdb::E_OK);
     ASSERT_TRUE(callback.onCorruption("") == NativeRdb::E_OK);
+}
+
+/**
+ * @tc.name: AppDetailsRdbMgrTest007
+ * @tc.desc: test meta data
+ * @tc.type: FUNC
+ */
+HWTEST_F(AppDetailsRdbMgrTest, AppDetailsRdbMgrTest007, TestSize.Level0)
+{
+    RdbConfigInfo info;
+    info.rdbName = AppDetailsRdbMgrTest::rdbName;
+    info.rdbPath = AppDetailsRdbMgrTest::rdbPath;
+    info.version = AppDetailsRdbMgrTest::rdbVersion;
+    auto rdbMgr = std::make_shared<AppDetailsRdbDataMgr>(info);
+    auto ret = rdbMgr->CreateTable("app_details");
+    EXPECT_TRUE(ret);
+    MetaItem itemQ;
+    ret = rdbMgr->QueryMetaData("app_details", itemQ);
+    EXPECT_FALSE(ret);
+    ret = rdbMgr->DeleteTable("app_details");
+    EXPECT_TRUE(ret);
+}
+
+/**
+ * @tc.name: AppDetailsRdbMgrTest008
+ * @tc.desc: test meta data
+ * @tc.type: FUNC
+ */
+HWTEST_F(AppDetailsRdbMgrTest, AppDetailsRdbMgrTest008, TestSize.Level0)
+{
+    RdbConfigInfo info;
+    info.rdbName = AppDetailsRdbMgrTest::rdbName;
+    info.rdbPath = AppDetailsRdbMgrTest::rdbPath;
+    info.version = AppDetailsRdbMgrTest::rdbVersion;
+    auto rdbMgr = std::make_shared<AppDetailsRdbDataMgr>(info);
+    bool ret = rdbMgr->CreateMetaData();
+    EXPECT_TRUE(ret);
+    std::string colName = "col1";
+    ret = rdbMgr->CreateRegularIndex("META_DATA", colName);
+    EXPECT_FALSE(ret);
+    ret = rdbMgr->DeleteTable("META_DATA");
+    EXPECT_TRUE(ret);
+}
+
+/**
+ * @tc.name: AppDetailsRdbMgrTest009
+ * @tc.desc: test meta data
+ * @tc.type: FUNC
+ */
+HWTEST_F(AppDetailsRdbMgrTest, AppDetailsRdbMgrTest009, TestSize.Level0)
+{
+    RdbConfigInfo info;
+    info.rdbName = AppDetailsRdbMgrTest::rdbName;
+    info.rdbPath = AppDetailsRdbMgrTest::rdbPath;
+    info.version = AppDetailsRdbMgrTest::rdbVersion;
+    auto rdbMgr = std::make_shared<AppDetailsRdbDataMgr>(info);
+    bool ret = rdbMgr->CreateMetaData();
+    ASSERT_TRUE(ret);
+    auto version = rdbMgr->GetDbVersion();
+    EXPECT_NE(version, "");
+}
+
+class RdbStoreToTest : public NativeRdb::RdbStore {
+public:
+    int Delete(int& deletedRows, const std::string& table, const std::string& whereClause = "",
+        const Values& args = {}) override;
+    std::shared_ptr<AbsSharedResultSet> QuerySql(const std::string& sql, const Values& args = {}) override;
+    std::shared_ptr<ResultSet> QueryByStep(
+        const std::string& sql, const Values& args = {}, bool preCount = true) override;
+    int GetVersion(int& version) override;
+    int SetVersion(int version) override;
+};
+
+int RdbStoreToTest::Delete(
+    int& deletedRows, const std::string& table, const std::string& whereClause, const Values& args)
+{
+    return -1;
+}
+
+std::shared_ptr<AbsSharedResultSet> RdbStoreToTest::QuerySql(const std::string& sql, const Values& args)
+{
+    return nullptr;
+}
+
+std::shared_ptr<ResultSet> RdbStoreToTest::QueryByStep(
+    const std::string& sql, const Values& args, bool preCount)
+{
+    return nullptr;
+}
+
+int RdbStoreToTest::GetVersion(int& version)
+{
+    return version;
+}
+
+int RdbStoreToTest::SetVersion(int version)
+{
+    return version;
+}
+
+/**
+ * @tc.name: AppDetailsRdbOpenCallback001
+ * @tc.desc: test meta data
+ * @tc.type: FUNC
+ */
+HWTEST_F(AppDetailsRdbMgrTest, AppDetailsRdbOpenCallback001, TestSize.Level0)
+{
+    RdbConfigInfo info;
+    info.rdbName = AppDetailsRdbMgrTest::rdbName;
+    info.rdbPath = AppDetailsRdbMgrTest::rdbPath;
+    info.version = AppDetailsRdbMgrTest::rdbVersion;
+    AppDetailsRdbOpenCallback rdbMgr(info);
+    RdbStoreToTest rdbStore;
+    auto ret = rdbMgr.OnUpgrade(rdbStore, 1, 2);
+    EXPECT_EQ(ret, NativeRdb::E_OK);
+}
+
+/**
+ * @tc.name: AppDetailsRdbOpenCallback002
+ * @tc.desc: test meta data
+ * @tc.type: FUNC
+ */
+HWTEST_F(AppDetailsRdbMgrTest, AppDetailsRdbOpenCallback002, TestSize.Level0)
+{
+    RdbConfigInfo info;
+    info.rdbName = AppDetailsRdbMgrTest::rdbName;
+    info.rdbPath = AppDetailsRdbMgrTest::rdbPath;
+    info.version = AppDetailsRdbMgrTest::rdbVersion;
+    AppDetailsRdbOpenCallback rdbMgr(info);
+    RdbStoreToTest rdbStore;
+    auto ret = rdbMgr.OnUpgrade(rdbStore, 2, 1);
+    EXPECT_EQ(ret, NativeRdb::E_OK);
+}
+
+/**
+ * @tc.name: AppDetailsRdbOpenCallback003
+ * @tc.desc: test meta data
+ * @tc.type: FUNC
+ */
+HWTEST_F(AppDetailsRdbMgrTest, AppDetailsRdbOpenCallback003, TestSize.Level0)
+{
+    RdbConfigInfo info;
+    info.rdbName = AppDetailsRdbMgrTest::rdbName;
+    info.rdbPath = AppDetailsRdbMgrTest::rdbPath;
+    info.version = AppDetailsRdbMgrTest::rdbVersion;
+    AppDetailsRdbOpenCallback rdbMgr(info);
+    std::string databaseFile = "databaseFile";
+    auto ret = rdbMgr.onCorruption(databaseFile);
+    EXPECT_EQ(ret, NativeRdb::E_OK);
+}
+
+/**
+ * @tc.name: VerifyResultInfo001
+ * @tc.desc: test meta data
+ * @tc.type: FUNC
+ */
+HWTEST_F(AppDetailsRdbMgrTest, VerifyResultInfo001, TestSize.Level0)
+{
+    VerifyResultInfo info;
+    auto ret = info.Dump();
+    EXPECT_NE(ret, "");
 }
 }
