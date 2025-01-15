@@ -430,4 +430,16 @@ HWTEST_F(AppDomainVerifyExtensionMgrTest, AppDomainVerifyExtensionRegisterTest00
 
     ASSERT_TRUE(appDomainVerifyExtensionRegister.GetAppDomainVerifyExt("test") == nullptr);
 }
+
+/**
+ * @tc.name: AppDomainVerifyExtensionMgr001
+ * @tc.desc: ExtensionMgr test.
+ * @tc.type: FUNC
+ */
+HWTEST_F(AppDomainVerifyExtensionMgrTest, AppDomainVerifyExtensionMgr001, TestSize.Level0)
+{
+    AppDomainVerifyExtensionMgr appDomainVerifyExtensionMgr;
+    auto ret = appDomainVerifyExtensionMgr.UpdateAppDetails();
+    ASSERT_EQ(ret, ErrorCode::E_EXTENSIONS_INTERNAL_ERROR);
+}
 }

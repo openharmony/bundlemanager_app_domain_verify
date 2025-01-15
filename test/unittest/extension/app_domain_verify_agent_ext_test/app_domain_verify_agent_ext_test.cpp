@@ -121,4 +121,16 @@ HWTEST_F(AppDomainVerifyAgentExtTest, AppDomainVerifyAgentExtTest005, TestSize.L
 
     ASSERT_TRUE(appDomainVerifyAgentExt.ConvertToExplicitWant(atomicWant, cb) == ErrorCode::E_EXTENSIONS_LIB_NOT_FOUND);
 }
+
+/**
+ * @tc.name: AppDomainVerifyAgentExtTest006
+ * @tc.desc: ExtensionMgr test.
+ * @tc.type: FUNC
+ */
+HWTEST_F(AppDomainVerifyAgentExtTest, AppDomainVerifyAgentExtTest006, TestSize.Level0)
+{
+    AppDomainVerifyAgentExt appDomainVerifyAgentExt;
+    auto ret = appDomainVerifyAgentExt.UpdateAppDetails();
+    EXPECT_TRUE(ret == ErrorCode::E_EXTENSIONS_LIB_NOT_FOUND);
+}
 }
