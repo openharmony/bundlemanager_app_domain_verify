@@ -21,6 +21,7 @@ config("module_private_config") {
     "${app_domain_verify_frameworks_app_details_rdb_path}/include/",
     "${app_domain_verify_service_path}/include/manager/core/",
     "${app_domain_verify_service_path}/include/manager/filter",
+    "${app_domain_verify_common_path}/include",
   ]
 }
 
