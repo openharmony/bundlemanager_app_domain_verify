@@ -231,6 +231,10 @@ int AppDomainVerifyMgrService::QueryAssociatedBundleNames(
 int AppDomainVerifyMgrService::QueryAppDetailsWant(const std::string& url, AAFwk::Want& want)
 {
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "called");
+    if (!PermissionManager::IsSACall()) {
+        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "only sa can call");
+        return AppDetailsCode::QUERY_FAIL;
+    }
     std::string bundleName;
     auto ret = appDetailsDataMgr_->QueryAppDetailsWant(url, want, bundleName);
     if (ret == AppDetailsCode::QUERY_SUCC) {

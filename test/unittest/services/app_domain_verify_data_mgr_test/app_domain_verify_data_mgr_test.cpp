@@ -263,9 +263,7 @@ HWTEST_F(MgrDataMgrTest, MgrDataMgrUpdateVerifyStatusTest002, TestSize.Level0)
     AppDomainVerifyRdbConfig rdbConfig;
     std::shared_ptr<AppDomainVerifyRdbDataManager> manager = std::make_shared<AppDomainVerifyRdbDataManager>(rdbConfig);
     EXPECT_CALL(*MOC::impl, DeleteData(_)).Times(2).WillOnce(Return(true));
-    EXPECT_CALL(*MOC::impl, InsertData(_)).Times(2)
-        .WillOnce(Return(true))
-        .WillOnce(Return(false));
+    EXPECT_CALL(*MOC::impl, InsertData(_)).Times(2).WillOnce(Return(true)).WillOnce(Return(false));
     auto appDomainVerifyDataMgr = std::make_shared<AppDomainVerifyDataMgr>();
     appDomainVerifyDataMgr->rdbDataManager_ = manager;
     std::string bundleName = BUNDLE_NAME;
@@ -311,9 +309,7 @@ HWTEST_F(MgrDataMgrTest, MgrDataMgrUpdateVerifyStatusTest004, TestSize.Level0)
     AppDomainVerifyRdbConfig rdbConfig;
     std::shared_ptr<AppDomainVerifyRdbDataManager> manager = std::make_shared<AppDomainVerifyRdbDataManager>(rdbConfig);
     EXPECT_CALL(*MOC::impl, DeleteData(_)).Times(2).WillOnce(Return(true));
-    EXPECT_CALL(*MOC::impl, InsertData(_)).Times(2)
-        .WillOnce(Return(true))
-        .WillOnce(Return(true));
+    EXPECT_CALL(*MOC::impl, InsertData(_)).Times(2).WillOnce(Return(true)).WillOnce(Return(true));
     auto appDomainVerifyDataMgr = std::make_shared<AppDomainVerifyDataMgr>();
     appDomainVerifyDataMgr->rdbDataManager_ = manager;
     std::string bundleName = BUNDLE_NAME;

@@ -229,12 +229,43 @@ HWTEST_F(AgentServiceTest, AgentServiceConvertToExplicitWantTest003, TestSize.Le
         AgentInterfaceCode::CONVERT_TO_EXPLICIT_WANT, data, reply, option);
     ASSERT_TRUE(error != ERR_OK);
 }
+
 /**
- * @tc.name: AgentServiceTest020
+ * @tc.name: UnloadTest001
+ * @tc.desc: dump test
+ * @tc.type: FUNC
+ */
+HWTEST_F(AgentServiceTest, UnloadTest001, TestSize.Level0)
+{
+    appDomainVerifyAgentService->DoSync();
+    appDomainVerifyAgentService->DoSync(BOOT_REFRESH_TASK);
+    appDomainVerifyAgentService->UnloadSa();
+    appDomainVerifyAgentService->OnDelayUnloadSA();
+    appDomainVerifyAgentService->unloadHandler_->RemoveTask("unload");
+    ASSERT_TRUE(appDomainVerifyAgentService->unloadHandler_->PostTask(
+        [this] { appDomainVerifyAgentService->OnDelayUnloadSA(); }, "unload", 0));
+}
+
+/**
+ * @tc.name: DumpTest001
+ * @tc.desc: dump test
+ * @tc.type: FUNC
+ */
+HWTEST_F(AgentServiceTest, DumpTest001, TestSize.Level0)
+{
+    appDomainVerifyAgentService->OnDump();
+    int fd = 0;
+    std::vector<std::u16string> args;
+    int ret = appDomainVerifyAgentService->Dump(fd, args);
+    ASSERT_TRUE(ret == ERR_OK);
+}
+
+/**
+ * @tc.name: LifeCycleTest001
  * @tc.desc:
  * @tc.type: FUNC
  */
-HWTEST_F(AgentServiceTest, AgentServiceTest020, TestSize.Level0)
+HWTEST_F(AgentServiceTest, LifeCycleTest001, TestSize.Level0)
 {
     SystemAbilityOnDemandReason startReason;
     appDomainVerifyAgentService->OnStart(startReason);
@@ -256,11 +287,11 @@ HWTEST_F(AgentServiceTest, AgentServiceTest020, TestSize.Level0)
     ASSERT_TRUE(idleReason.GetName() == BOOT_COMPLETED_EVENT);
 }
 /**
- * @tc.name: AgentServiceTest021
+ * @tc.name: LifeCycleTest002
  * @tc.desc:
  * @tc.type: FUNC
  */
-HWTEST_F(AgentServiceTest, AgentServiceTest021, TestSize.Level0)
+HWTEST_F(AgentServiceTest, LifeCycleTest002, TestSize.Level0)
 {
     SystemAbilityOnDemandReason startReason;
     startReason.SetName(BOOT_COMPLETED_EVENT);
@@ -273,11 +304,11 @@ HWTEST_F(AgentServiceTest, AgentServiceTest021, TestSize.Level0)
     ASSERT_TRUE(idleReason.GetName() == BOOT_COMPLETED_EVENT);
 }
 /**
- * @tc.name: AgentServiceTest022
+ * @tc.name: LifeCycleTest003
  * @tc.desc:
  * @tc.type: FUNC
  */
-HWTEST_F(AgentServiceTest, AgentServiceTest022, TestSize.Level0)
+HWTEST_F(AgentServiceTest, LifeCycleTest003, TestSize.Level0)
 {
     SystemAbilityOnDemandReason startReason;
     startReason.SetName(LOOP_EVENT);
@@ -290,11 +321,11 @@ HWTEST_F(AgentServiceTest, AgentServiceTest022, TestSize.Level0)
     ASSERT_TRUE(idleReason.GetName() == BOOT_COMPLETED_EVENT);
 }
 /**
- * @tc.name: AgentServiceTest023
+ * @tc.name: LifeCycleTest004
  * @tc.desc:
  * @tc.type: FUNC
  */
-HWTEST_F(AgentServiceTest, AgentServiceTest023, TestSize.Level0)
+HWTEST_F(AgentServiceTest, LifeCycleTest004, TestSize.Level0)
 {
     SystemAbilityOnDemandReason startReason;
     startReason.SetName(LOOP_EVENT);
@@ -308,11 +339,11 @@ HWTEST_F(AgentServiceTest, AgentServiceTest023, TestSize.Level0)
     ASSERT_TRUE(idleReason.GetName() == BOOT_COMPLETED_EVENT);
 }
 /**
- * @tc.name: AgentServiceTest024
+ * @tc.name: LifeCycleTest005
  * @tc.desc:
  * @tc.type: FUNC
  */
-HWTEST_F(AgentServiceTest, AgentServiceTest024, TestSize.Level0)
+HWTEST_F(AgentServiceTest, LifeCycleTest005, TestSize.Level0)
 {
     SystemAbilityOnDemandReason startReason;
     startReason.SetName("other");
