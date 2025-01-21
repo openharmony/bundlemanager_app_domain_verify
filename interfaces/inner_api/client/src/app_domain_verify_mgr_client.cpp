@@ -213,13 +213,16 @@ bool AppDomainVerifyMgrClient::IsValidPath(const std::string& path)
     errNum = regexec(&reg, bematch, nm, pmatch, 0);
     if (errNum == REG_NOMATCH) {
         APP_DOMAIN_VERIFY_HILOGW(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "regexec no match");
+        regfree(&reg);
         return false;
     } else if (errNum) {
         regerror(errNum, &reg, errbuf, sizeof(errbuf));
         APP_DOMAIN_VERIFY_HILOGW(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "regexec error:%{public}s", errbuf);
+        regfree(&reg);
         return false;
     }
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "is valid path");
+    regfree(&reg);
     return true;
 }
 bool AppDomainVerifyMgrClient::IsValidUrl(OHOS::Uri& uri)
