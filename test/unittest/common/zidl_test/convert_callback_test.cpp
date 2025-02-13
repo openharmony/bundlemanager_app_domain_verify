@@ -140,6 +140,7 @@ HWTEST_F(AppDomainVerifyConvertCallbackTest, AppDomainVerifyConvertCallbackStubT
 HWTEST_F(AppDomainVerifyConvertCallbackTest, AppDomainVerifyConvertCallbackProxyTest001, TestSize.Level0)
 {
     sptr<ConvertCallbackProxy> proxy = new ConvertCallbackProxy(nullptr);
+    ASSERT_TRUE(proxy != nullptr);
     int resCode = 0;
     OHOS::AAFwk::Want want;
     proxy->OnConvert(resCode, want);

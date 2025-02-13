@@ -45,7 +45,7 @@ int32_t AppDomainVerifyRdbOpenCallback::OnDowngrade(
     NativeRdb::RdbStore& rdbStore, int currentVersion, int targetVersion)
 {
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE,
-        "OnDowngrade currentVersion: %{plubic}d, targetVersion: %{plubic}d", currentVersion, targetVersion);
+        "OnDowngrade currentVersion: %{public}d, targetVersion: %{public}d", currentVersion, targetVersion);
     return NativeRdb::E_OK;
 }
 int32_t AppDomainVerifyRdbOpenCallback::OnOpen(NativeRdb::RdbStore& rdbStore)

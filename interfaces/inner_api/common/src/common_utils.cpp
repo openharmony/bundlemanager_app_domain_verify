@@ -24,7 +24,7 @@ std::string MaskStr(const std::string& input)
     }
     auto len = input.length();
     auto maskLen = std::min(len, MAX_MASK_LEN);
-    std::string ret(maskLen, ' ');
+    auto ret = input;
     for (auto i = 0; i < maskLen; i++) {
         if (i % MAX_STEP == 0) {
             ret[i] = input[i];

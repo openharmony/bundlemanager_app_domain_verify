@@ -12,7 +12,7 @@
 # limitations under the License.
 
 import("//build/ohos.gni")
-import("//foundation/bundlemanager/app_domain_verify/app_domain_verify.gni")
+import("../../../app_domain_verify.gni")
 config("app_domain_verify_mgr_napi_config") {
   visibility = [ ":*" ]
   include_dirs = [
@@ -27,6 +27,8 @@ config("app_domain_verify_mgr_napi_config") {
     "-fvisibility=hidden",
     "-fdata-sections",
     "-ffunction-sections",
+    "-fstack-protector-strong",
+    "-D_FORTIFY_SOURCE=2",
     "-Os",
   ]
 
@@ -38,6 +40,16 @@ config("app_domain_verify_mgr_napi_config") {
 
 ohos_shared_library("appdomainverify_napi") {
   branch_protector_ret = "pac_ret"
+
+  sanitize = {
+    boundary_sanitize = true
+    cfi = true
+    cfi_cross_dso = true
+    debug = false
+    integer_overflow = true
+    ubsan = true
+  }
+
   sources = [
     "src/api_event_reporter.cpp",
     "src/app_domain_verify_manager_napi.cpp",

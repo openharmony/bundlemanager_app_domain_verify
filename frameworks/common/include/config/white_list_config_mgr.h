@@ -38,8 +38,6 @@ protected:
     std::string defaultWhiteUrl_;
     std::unordered_set<std::string> whiteListSet_;
     std::shared_ptr<NativePreferences::Preferences> preferences_;
-    std::mutex initLock;
-    std::atomic<bool> init{ false };
     std::mutex whiteListLock_;
 };
 

@@ -28,11 +28,15 @@ config("module_private_config") {
     "${app_domain_verify_service_path}/include/manager/constant",
     "${app_domain_verify_service_path}/include/manager/zidl",
     "${app_domain_verify_service_path}/include/manager/permission",
+    "${app_domain_verify_service_path}/include/manager/deferred_link",
+    "${app_domain_verify_service_path}/include/manager/filter",
     "${app_domain_verify_common_path}/include",
     "${app_domain_verify_frameworks_common_path}/include",
     "${app_domain_verify_frameworks_common_path}/include/utils",
     "${app_domain_verify_frameworks_extension_path}/include",
     "${app_domain_verify_test_path}/mock/include",
+    "${app_domain_verify_frameworks_common_path}/include/dfx",
+    "${app_domain_verify_frameworks_app_details_rdb_path}/include",
   ]
 }
 
@@ -41,9 +45,14 @@ ohos_unittest("app_domain_verify_mgr_service_test") {
   module_out_path = module_output_path
 
   sources = [
+    "${app_domain_verify_frameworks_app_details_rdb_path}/src/app_details_meta_item.cpp",
+    "${app_domain_verify_frameworks_app_details_rdb_path}/src/app_details_rdb_data_manager.cpp",
+    "${app_domain_verify_frameworks_app_details_rdb_path}/src/app_details_rdb_item.cpp",
+    "${app_domain_verify_frameworks_app_details_rdb_path}/src/app_details_rdb_open_callback.cpp",
+    "${app_domain_verify_service_path}/src/manager/core/app_details_data_mgr.cpp",
     "${app_domain_verify_service_path}/src/manager/core/app_domain_verify_data_mgr.cpp",
     "${app_domain_verify_service_path}/src/manager/core/app_domain_verify_mgr_service.cpp",
-    "${app_domain_verify_service_path}/src/manager/permission/permission_manager.cpp",
+    "${app_domain_verify_service_path}/src/manager/filter/app_details_filter.cpp",
     "${app_domain_verify_service_path}/src/manager/rdb/app_domain_verify_rdb_data_manager.cpp",
     "${app_domain_verify_service_path}/src/manager/rdb/app_domain_verify_rdb_open_callback.cpp",
     "${app_domain_verify_service_path}/src/manager/rdb/rdb_migrate_mgr.cpp",
@@ -51,7 +60,9 @@ ohos_unittest("app_domain_verify_mgr_service_test") {
     "${app_domain_verify_service_path}/src/manager/zidl/app_domain_verify_mgr_service_stub.cpp",
     "${app_domain_verify_test_path}/mock/src/mock_access_token.cpp",
     "${app_domain_verify_test_path}/mock/src/mock_bundle_manager.cpp",
+    "${app_domain_verify_test_path}/mock/src/mock_deferred_link_mgr.cpp",
     "${app_domain_verify_test_path}/mock/src/mock_os_account_manager.cpp",
+    "${app_domain_verify_test_path}/mock/src/mock_permission_mgr.cpp",
     "${app_domain_verify_test_path}/mock/src/mock_service_registry.cpp",
     "${app_domain_verify_test_path}/mock/src/mock_system_ability.cpp",
     "${app_domain_verify_test_path}/mock/src/mock_system_ability_ondemand_reason.cpp",
@@ -70,6 +81,8 @@ ohos_unittest("app_domain_verify_mgr_service_test") {
     "c_utils:utils",
     "eventhandler:libeventhandler",
     "ffrt:libffrt",
+    "googletest:gmock_main",
+    "googletest:gtest_main",
     "hilog:libhilog",
     "hisysevent:libhisysevent",
     "image_framework:image_native",
@@ -77,7 +90,11 @@ ohos_unittest("app_domain_verify_mgr_service_test") {
     "ipc:ipc_core",
     "netstack:http_client",
     "os_account:os_account_innerkits",
+    "preferences:native_preferences",
     "relational_store:native_rdb",
+    "safwk:system_ability_fwk",
+    "samgr:dynamic_cache",
+    "samgr:samgr_common",
     "samgr:samgr_proxy",
   ]
 
@@ -90,7 +107,5 @@ ohos_unittest("app_domain_verify_mgr_service_test") {
     "${app_domain_verify_frameworks_common_path}:app_domain_verify_frameworks_common",
     "${app_domain_verify_frameworks_extension_path}:app_domain_verify_extension_framework",
     "${app_domain_verify_frameworks_verifier_path}:app_domain_verify_agent_verifier",
-    "//third_party/googletest:gmock_main",
-    "//third_party/googletest:gtest_main",
   ]
 }

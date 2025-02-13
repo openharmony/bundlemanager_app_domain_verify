@@ -41,6 +41,36 @@ ErrCode BundleMgrService::GetBundleInfoV9(
     bundleInfo.signatureInfo.fingerprint = AppDomainVerify::FINGERPRINT;
     return ERR_OK;
 }
+bool BundleMgrService::GetBundleInfo(
+    const std::string& bundleName, const BundleFlag flag, BundleInfo& bundleInfo, int32_t userId)
+{
+    GTEST_LOG_(INFO) << "MOCK BundleMgrService GetBundleInfo";
+    if (impl != nullptr) {
+        GTEST_LOG_(INFO) << "MOCK BundleMgrService GetBundleInfo use mock";
+        return impl->GetBundleInfo(bundleName, flag, bundleInfo, userId);
+    }
+    bundleInfo.signatureInfo.fingerprint = AppDomainVerify::FINGERPRINT;
+    return true;
+}
+bool BundleMgrService::GetBundleInfo(const std::string& bundleName, int32_t flags, BundleInfo& bundleInfo, int userId)
+{
+    GTEST_LOG_(INFO) << "MOCK BundleMgrService GetBundleInfo";
+    if (impl != nullptr) {
+        GTEST_LOG_(INFO) << "MOCK BundleMgrService GetBundleInfo use mock";
+        return impl->GetBundleInfo(bundleName, flags, bundleInfo, userId);
+    }
+    bundleInfo.signatureInfo.fingerprint = AppDomainVerify::FINGERPRINT;
+    return true;
+}
+bool BundleMgrService::GetBundleNameForUid(const int uid, std::string& bundleName)
+{
+    GTEST_LOG_(INFO) << "MOCK BundleMgrService GetBundleNameForUid";
+    if (impl != nullptr) {
+        GTEST_LOG_(INFO) << "MOCK BundleMgrService GetBundleNameForUid use mock";
+        return impl->GetBundleNameForUid(uid, bundleName);
+    }
+    return true;
+}
 
 }  // namespace AppExecFwk
 }  // namespace OHOS

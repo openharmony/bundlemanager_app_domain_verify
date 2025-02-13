@@ -18,6 +18,7 @@ group("app_domain_verify_unit_test") {
   testonly = true
 
   deps = [
+    "app_details_rdb:app_details_rdb_data_manager_test",
     "client/app_domain_verify_agent_client_test:app_domain_verify_agent_client_test",
     "client/app_domain_verify_mgr_client_test:app_domain_verify_mgr_client_test",
     "common/bean_parcel_test:app_domain_verify_bean_parcel_test",
@@ -29,11 +30,15 @@ group("app_domain_verify_unit_test") {
     "frameworks_common/bms_test:app_domain_verify_bms_test",
     "frameworks_common/config_test:app_domain_verify_config_test",
     "frameworks_common/httpsession_test:app_domain_verify_httpsession_test",
+    "frameworks_common/utils_test:lru_cache_util_test",
     "moduletest:app_domain_verify_module_test",
+    "services/ability_filter_test:ability_filter_test",
     "services/app_domain_verify_agent_service_test:app_domain_verify_agent_service_test",
     "services/app_domain_verify_data_mgr_test:app_domain_verify_data_mgr_test",
+    "services/app_domain_verify_filter_test:app_domain_verify_filter_test",
     "services/app_domain_verify_mgr_service_test:app_domain_verify_mgr_service_test",
     "services/app_domain_verify_rdb_test:app_domain_verify_rdb_test",
+    "services/deferred_link_test:deferred_link_test",
     "verifier:app_domain_verify_agent_verifier_test",
   ]
 }

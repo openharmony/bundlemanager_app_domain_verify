@@ -12,7 +12,7 @@
 # limitations under the License.
 
 import("//build/test.gni")
-import("//foundation/bundlemanager/app_domain_verify/app_domain_verify.gni")
+import("../../../../app_domain_verify.gni")
 
 config("module_private_config") {
   visibility = [ ":*" ]
@@ -36,6 +36,7 @@ config("module_private_config") {
     "${app_domain_verify_service_path}/include/manager/zidl",
     "${app_domain_verify_test_path}/mock/include",
     "${app_domain_verify_common_path}/include/zidl",
+    "${app_domain_verify_frameworks_common_path}/include/dfx",
   ]
 }
 
@@ -61,7 +62,10 @@ ohos_unittest("app_domain_verify_agent_client_test") {
     "bundle_framework:appexecfwk_base",
     "bundle_framework:appexecfwk_core",
     "c_utils:utils",
+    "eventhandler:libeventhandler",
     "ffrt:libffrt",
+    "googletest:gmock_main",
+    "googletest:gtest_main",
     "hilog:libhilog",
     "hisysevent:libhisysevent",
     "image_framework:image_native",
@@ -78,7 +82,5 @@ ohos_unittest("app_domain_verify_agent_client_test") {
     "${app_domain_verify_common_path}:app_domain_verify_common",
     "${app_domain_verify_frameworks_common_path}:app_domain_verify_frameworks_common",
     "${app_domain_verify_frameworks_extension_path}:app_domain_verify_extension_framework",
-    "//third_party/googletest:gmock_main",
-    "//third_party/googletest:gtest_main",
   ]
 }
