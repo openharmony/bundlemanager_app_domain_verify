@@ -22,10 +22,11 @@
 #include "app_domain_verify_rdb_open_callback.h"
 #undef private
 #undef protected
+
 namespace OHOS::AppDomainVerify {
 using namespace testing;
 using namespace testing::ext;
-
+using namespace OHOS::NativeRdb;
 class RdbOpenCallbackTest : public testing::Test {
 public:
     static void SetUpTestCase(void);

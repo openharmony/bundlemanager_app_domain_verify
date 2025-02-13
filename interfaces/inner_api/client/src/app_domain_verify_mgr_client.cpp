@@ -13,6 +13,7 @@
  * limitations under the License.
  */
 
+#include "app_domain_verify_hilog.h"
 #include "if_system_ability_manager.h"
 #include "iservice_registry.h"
 #include "app_domain_verify_mgr_client.h"
@@ -23,6 +24,7 @@
 #include "comm_define.h"
 #include "ipc_skeleton.h"
 #include "common_utils.h"
+#include "bundle_info_query.h"
 
 namespace OHOS {
 namespace AppDomainVerify {
@@ -140,6 +142,7 @@ bool AppDomainVerifyMgrClient::IsServiceAvailable()
 
     if (appDomainVerifyMgrServiceProxy_ == nullptr) {
         APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "Service proxy null.");
+        UNIVERSAL_ERROR_EVENT(CONNECT_MGR_FAULT);
         return false;
     }
     return true;
@@ -149,13 +152,14 @@ void AppDomainVerifyMgrClient::ConnectService()
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "ConnectService start.");
     sptr<ISystemAbilityManager> samgrProxy = SystemAbilityManagerClient::GetInstance().GetSystemAbilityManager();
     if (samgrProxy == nullptr) {
-        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "Get SystemAbilityManager failed.");
+        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "ConnectService SystemAbilityManager failed.");
         appDomainVerifyMgrServiceProxy_ = nullptr;
         return;
     }
     sptr<IRemoteObject> remoteObject = samgrProxy->CheckSystemAbility(APP_DOMAIN_VERIFY_MANAGER_SA_ID);
     if (remoteObject != nullptr) {
-        APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "Get AppDomainVerifyMgrServiceProxy succeed.");
+        APP_DOMAIN_VERIFY_HILOGI(
+            APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "ConnectService AppDomainVerifyMgrServiceProxy succeed.");
         if (deathRecipient_ == nullptr) {
             deathRecipient_ = sptr<IRemoteObject::DeathRecipient>(new AppDomainVerifyMgrSaDeathRecipient());
         }
@@ -163,6 +167,7 @@ void AppDomainVerifyMgrClient::ConnectService()
         appDomainVerifyMgrServiceProxy_ = iface_cast<IAppDomainVerifyMgrService>(remoteObject);
         return;
     }
+
     APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "Getting AppDomainVerifyMgrServiceProxy failed.");
 }
 
@@ -258,8 +263,7 @@ bool AppDomainVerifyMgrClient::IsAtomicServiceUrl(const std::string& url)
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "not support, will return false!");
     return false;
 #else
-    APP_DOMAIN_VERIFY_HILOGI(
-        APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "called, url %{public}s", MaskStr(url).c_str());
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "called, url %{public}s", MaskStr(url).c_str());
     Uri uri(url);
     if (!IsValidUrl(uri)) {
         APP_DOMAIN_VERIFY_HILOGW(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "url is invalid!");
@@ -290,6 +294,17 @@ void AppDomainVerifyMgrClient::UpdateWhiteListUrls(const std::vector<std::string
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "call end");
 #endif
 }
+
+int AppDomainVerifyMgrClient::QueryAppDetailsWant(const std::string &link, AAFwk::Want &want)
+{
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "called");
+    std::lock_guard<std::mutex> autoLock(proxyLock_);
+    if (IsServiceAvailable()) {
+        return appDomainVerifyMgrServiceProxy_->QueryAppDetailsWant(link, want);
+    }
+    return CommonErrorCode::E_INTERNAL_ERR;
+}
+
 int AppDomainVerifyMgrClient::QueryAssociatedDomains(const std::string& bundleName, std::vector<std::string>& domains)
 {
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "called");
@@ -307,6 +322,16 @@ int AppDomainVerifyMgrClient::QueryAssociatedBundleNames(
     std::lock_guard<std::mutex> autoLock(proxyLock_);
     if (IsServiceAvailable()) {
         return appDomainVerifyMgrServiceProxy_->QueryAssociatedBundleNames(domain, bundleNames);
+    }
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "call end");
+    return CommonErrorCode::E_INTERNAL_ERR;
+}
+int AppDomainVerifyMgrClient::GetDeferredLink(std::string& link)
+{
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "called");
+    std::lock_guard<std::mutex> autoLock(proxyLock_);
+    if (IsServiceAvailable()) {
+        return appDomainVerifyMgrServiceProxy_->GetDeferredLink(link);
     }
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "call end");
     return CommonErrorCode::E_INTERNAL_ERR;

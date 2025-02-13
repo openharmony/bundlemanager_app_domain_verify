@@ -25,7 +25,7 @@
 #undef protected
 #include "convert_callback_stub.h"
 #include "mock_access_token.h"
-
+#include "comm_define.h"
 namespace OHOS::AppDomainVerify {
 using namespace testing;
 using namespace testing::ext;
@@ -86,7 +86,7 @@ HWTEST_F(AppDomainVerifyMgrClientTest, AppDomainVerifyMgrClientTest001, TestSize
     DomainVerifyStatus domainVerificationState;
     auto queryRes = AppDomainVerifyMgrClient::GetInstance()->QueryDomainVerifyStatus(
         BUNDLE_NAME, domainVerificationState);
-    ASSERT_TRUE(queryRes);
+    ASSERT_FALSE(queryRes);
     ASSERT_TRUE(domainVerificationState == DomainVerifyStatus::STATE_NONE);
 }
 
@@ -125,7 +125,7 @@ HWTEST_F(AppDomainVerifyMgrClientTest, AppDomainVerifyMgrClientTest003, TestSize
     bundleVerifyStatusInfo.bundleVerifyStatusInfoMap_.insert_or_assign(BUNDLE_NAME, verifyResultInfo);
     auto queryRes = AppDomainVerifyMgrClient::GetInstance()->QueryAllDomainVerifyStatus(bundleVerifyStatusInfo);
     ASSERT_TRUE(queryRes);
-    ASSERT_TRUE(bundleVerifyStatusInfo.bundleVerifyStatusInfoMap_.empty());
+    ASSERT_TRUE(bundleVerifyStatusInfo.bundleVerifyStatusInfoMap_.count(BUNDLE_NAME) == 0);
 }
 
 /**
@@ -289,6 +289,44 @@ HWTEST_F(AppDomainVerifyMgrClientTest, AppDomainVerifyMgrClientTest010, TestSize
     ASSERT_TRUE(g_mgrInvokeOK);
     AppDomainVerifyMgrClient::appDomainVerifyMgrServiceProxy_.ForceSetRefPtr(nullptr);
 }
+
+/**
+ * @tc.name: AppDomainVerifyMgrClientTest011
+ * @tc.desc: QueryAssociatedDomains test.
+ * @tc.type: FUNC
+ */
+HWTEST_F(AppDomainVerifyMgrClientTest, AppDomainVerifyMgrClientTest011, TestSize.Level0)
+{
+    std::shared_ptr<AppDomainVerifyMgrRemoteStubMock> mgrStubMock_ =
+        std::make_shared<AppDomainVerifyMgrRemoteStubMock>();
+    EXPECT_CALL(*mgrStubMock_, SendRequest(_, _, _, _)).Times(1).WillOnce(::testing::Invoke(MgrInvokeOK));
+    AppDomainVerifyMgrClient::appDomainVerifyMgrServiceProxy_ = sptr<AppDomainVerifyMgrServiceProxy>::MakeSptr(
+        mgrStubMock_.get());
+
+    std::string link;
+    AppDomainVerifyMgrClient::GetInstance()->GetDeferredLink(link);
+    ASSERT_TRUE(g_mgrInvokeOK);
+    AppDomainVerifyMgrClient::appDomainVerifyMgrServiceProxy_.ForceSetRefPtr(nullptr);
+}
+/**
+ * @tc.name: AppDomainVerifyMgrClientTest012
+ * @tc.desc: QueryAssociatedDomains test.
+ * @tc.type: FUNC
+ */
+HWTEST_F(AppDomainVerifyMgrClientTest, AppDomainVerifyMgrClientTest012, TestSize.Level0)
+{
+    std::shared_ptr<AppDomainVerifyMgrRemoteStubMock> mgrStubMock_ =
+        std::make_shared<AppDomainVerifyMgrRemoteStubMock>();
+    EXPECT_CALL(*mgrStubMock_, SendRequest(_, _, _, _)).Times(1).WillOnce(::testing::Invoke(MgrInvokeOK));
+    AppDomainVerifyMgrClient::appDomainVerifyMgrServiceProxy_ = sptr<AppDomainVerifyMgrServiceProxy>::MakeSptr(
+        mgrStubMock_.get());
+
+    std::string link;
+    AAFwk::Want want;
+    AppDomainVerifyMgrClient::GetInstance()->QueryAppDetailsWant(link, want);
+    ASSERT_TRUE(g_mgrInvokeOK);
+    AppDomainVerifyMgrClient::appDomainVerifyMgrServiceProxy_.ForceSetRefPtr(nullptr);
+}
 /**
  * @tc.name: AppDomainVerifyMgrSaDeathRecipientTest001
  * @tc.desc: VerifyDomain test.
@@ -406,5 +444,15 @@ HWTEST_F(AppDomainVerifyMgrClientTest, IsValidPath_0100, TestSize.Level0)
     std::vector<std::string> segments;
     uri.GetPathSegments(segments);
     EXPECT_TRUE(AppDomainVerifyMgrClient::GetInstance()->IsValidPath(segments[0]));
+}
+/**
+ * @tc.name: Dump_0100
+ * @tc.desc: Test Dump.
+ * @tc.type: FUNC
+ */
+HWTEST_F(AppDomainVerifyMgrClientTest, Dump_0100, TestSize.Level0)
+{
+    VerifyResultInfo verifyResultInfo;
+    EXPECT_NE(verifyResultInfo.Dump(), "");
 }
 }

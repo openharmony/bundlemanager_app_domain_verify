@@ -37,6 +37,7 @@ config("module_private_config") {
     "${app_domain_verify_service_path}/include/manager/zidl",
     "${app_domain_verify_service_path}/include/manager/config",
     "${app_domain_verify_test_path}/mock/include",
+    "${app_domain_verify_frameworks_common_path}/include/dfx",
   ]
 }
 
@@ -59,6 +60,8 @@ ohos_unittest("app_domain_verify_config_test") {
     "c_utils:utils",
     "eventhandler:libeventhandler",
     "ffrt:libffrt",
+    "googletest:gmock_main",
+    "googletest:gtest_main",
     "hilog:libhilog",
     "hisysevent:libhisysevent",
     "image_framework:image_native",
@@ -72,9 +75,5 @@ ohos_unittest("app_domain_verify_config_test") {
   ]
 
   defines = [ "API_EXPORT=__attribute__((visibility (\"default\")))" ]
-  deps = [
-    "${app_domain_verify_frameworks_common_path}:app_domain_verify_frameworks_common",
-    "//third_party/googletest:gmock_main",
-    "//third_party/googletest:gtest_main",
-  ]
+  deps = [ "${app_domain_verify_frameworks_common_path}:app_domain_verify_frameworks_common" ]
 }

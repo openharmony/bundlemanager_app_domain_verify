@@ -33,7 +33,7 @@ public:
     virtual bool ClearDomainVerifyStatus(const std::string& appIdentifier, const std::string& bundleName) = 0;
     virtual bool FilterAbilities(const OHOS::AAFwk::Want& want,
         const std::vector<OHOS::AppExecFwk::AbilityInfo>& originAbilityInfos,
-        std::vector<OHOS::AppExecFwk::AbilityInfo>& filtedAbilityInfos) = 0;
+        std::vector<OHOS::AppExecFwk::AbilityInfo>& filteredAbilityInfos) = 0;
     virtual bool QueryDomainVerifyStatus(
         const std::string& bundleName, DomainVerifyStatus& domainVerificationState) = 0;
     virtual bool QueryAllDomainVerifyStatus(BundleVerifyStatusInfo& bundleVerifyStatusInfo) = 0;
@@ -43,6 +43,8 @@ public:
     virtual void ConvertToExplicitWant(OHOS::AAFwk::Want& implicitWant, sptr<IConvertCallback>& callback) = 0;
     virtual int QueryAssociatedDomains(const std::string& bundleName, std::vector<std::string>& domains) = 0;
     virtual int QueryAssociatedBundleNames(const std::string& domain, std::vector<std::string>& bundleNames) = 0;
+    virtual int GetDeferredLink(std::string& link) = 0;
+    virtual int QueryAppDetailsWant(const std::string& link, AAFwk::Want& want) = 0;
     DECLARE_INTERFACE_DESCRIPTOR(u"ohos.appDomainVerify.IAppDomainVerifyMgrService");
 };
 }  // namespace AppDomainVerify

@@ -19,16 +19,21 @@
 
 namespace OHOS {
 namespace AppDomainVerify {
+using Want = OHOS::AAFwk::Want;
+using AbilityInfo = OHOS::AppExecFwk::AbilityInfo;
+constexpr const char* ACTION_VIEW_DATA = "ohos.want.action.viewData";
+constexpr const char* ENTITY_BROWSER = "entity.system.browsable";
 class BundleInfoQuery {
-
 public:
-    static bool GetBundleInfo(const std::string &bundleName, std::string &appIdentifier, std::string &fingerprint);
+    static bool GetBundleInfo(const std::string& bundleName, std::string& appIdentifier, std::string& fingerprint);
+    static bool GetBundleNameForUid(int uid, std::string& bundleName);
+    static bool GetBundleAbilityInfos(const std::string& bundleName, std::vector<AbilityInfo>& abilityInfos);
 
 private:
     static sptr<AppExecFwk::IBundleMgr> GetBundleMgrProxy();
     static int32_t GetCurrentAccountId();
     BundleInfoQuery(){};
-    ~BundleInfoQuery(){};
+    ~BundleInfoQuery() = default;
 };
 }
 }

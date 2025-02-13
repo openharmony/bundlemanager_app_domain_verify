@@ -20,8 +20,8 @@ namespace OHOS::AppDomainVerify {
 class MockAppDomainVerifyExtensionMgr : public AppDomainVerifyExtensionMgr {
 public:
     MOCK_METHOD(bool, Init, (), (override));
-    MOCK_METHOD(std::shared_ptr<AppDomainVerifyAgentExt>, GetAppDomainVerifyExt, (const std::string& extName),
-        (override));
+    MOCK_METHOD(
+        std::shared_ptr<AppDomainVerifyAgentExt>, GetAppDomainVerifyExt, (const std::string& extName), (override));
 };
 class MockAppDomainVerifyExtensionMgr1 : public AppDomainVerifyExtensionMgr {
 public:

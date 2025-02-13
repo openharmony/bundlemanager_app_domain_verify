@@ -42,13 +42,22 @@ public:
     bool GetVerifyStatus(const std::string& bundleName, VerifyResultInfo& verifyResultInfo);
 
     /**
-     * @brief Save the AppDomainVerify status.
+     * @brief insert the AppDomainVerify status.
      * @param bundleName Indicates the bundleName.
      * @param verifyResultInfo Indicates the value to save.
      * @return Returns true if this function is successfully called; returns false
      * otherwise.
      */
-    bool SaveVerifyStatus(const std::string& bundleName, const VerifyResultInfo& verifyResultInfo);
+    bool InsertVerifyStatus(const std::string& bundleName, const VerifyResultInfo& verifyResultInfo);
+
+    /**
+     * @brief udapte the AppDomainVerify status.
+     * @param bundleName Indicates the bundleName.
+     * @param verifyResultInfo Indicates the value to save.
+     * @return Returns true if this function is successfully called; returns false
+     * otherwise.
+     */
+    bool UpdateVerifyStatus(const std::string& bundleName, const VerifyResultInfo& verifyResultInfo);
 
     /**
      * @brief Delete the AppDomainVerify status.
@@ -74,6 +83,7 @@ private:
     bool LoadAllFromRdb();
     bool VerifyResultInfoToDB(const std::string bundleName, const VerifyResultInfo& verifyResultInfo);
     bool DBToVerifyResultInfo(const std::vector<RdbDataItem>& items, VerifyResultInfo& verifyResultInfo);
+    bool LoadData();
 
 private:
     std::shared_ptr<AppDomainVerifyRdbDataManager> rdbDataManager_ = nullptr;

@@ -24,6 +24,7 @@
 #include "i_app_domain_verify_mgr_service.h"
 #include "skill_uri.h"
 #include "domain_verify_status.h"
+#include "want.h"
 
 namespace OHOS {
 namespace AppDomainVerify {
@@ -129,6 +130,23 @@ public:
      * @return int result of query.
      */
     int QueryAssociatedBundleNames(const std::string& domain, std::vector<std::string>& bundleNames);
+
+    /**
+    * QueryAppDetailsWant
+    * @descrition query app details as want.
+    * @param link uri.
+    * @param want appdetails want.
+    * @return int result of query.
+    */
+    int QueryAppDetailsWant(const std::string& link, AAFwk::Want& want);
+
+    /**
+     * GetDeferredLink
+     * @descrition get deferred link for app.
+     * @param link link to get.
+     * @return result status.
+     */
+    int GetDeferredLink(std::string& link);
 
     /**
      * OnRemoteSaDied
