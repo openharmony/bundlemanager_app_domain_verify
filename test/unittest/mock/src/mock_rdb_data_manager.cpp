@@ -66,4 +66,15 @@ bool AppDomainVerifyRdbDataManager::CheckRdbStoreExist(const std::shared_ptr<Nat
 {
     return false;
 }
+
+bool AppDomainVerifyRdbDataManager::QueryDomainByBundleName(
+    const std::string& bundleName, std::vector<RdbDataItem>& items)
+{
+    return false;
+}
+
+bool AppDomainVerifyRdbDataManager::QueryBundleNameByDomain(const std::string& domain, std::vector<RdbDataItem>& items)
+{
+    return false;
+}
 }

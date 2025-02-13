@@ -16,6 +16,7 @@
 #include "zidl/convert_callback_interface_code.h"
 #include "app_domain_verify_hilog.h"
 #include "app_domain_verify_parcel_util.h"
+#include "app_domain_verify_hisysevent.h"
 
 namespace OHOS {
 namespace AppDomainVerify {
@@ -51,6 +52,7 @@ void ConvertCallbackProxy::OnConvert(int resCode, OHOS::AAFwk::Want& want)
     if (ret != NO_ERROR) {
         APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT,
             "fail to call OnConvert, for transact is failed, error code is: %{public}d", ret);
+        UNIVERSAL_ERROR_EVENT(CALL_BACK_FAULT);
     }
 }
 }

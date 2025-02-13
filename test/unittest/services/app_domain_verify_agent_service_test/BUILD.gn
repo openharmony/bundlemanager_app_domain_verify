@@ -22,7 +22,6 @@ config("module_private_config") {
     "${app_domain_verify_service_path}/include",
     "${app_domain_verify_service_path}/include/agent/core",
     "${app_domain_verify_service_path}/include/agent/zidl",
-    "${app_domain_verify_service_path}/include/agent/data_share",
     "${app_domain_verify_service_path}/include/manager/rdb",
     "${app_domain_verify_service_path}/include/manager/core",
     "${app_domain_verify_service_path}/include/manager/constant",
@@ -33,6 +32,7 @@ config("module_private_config") {
     "${app_domain_verify_frameworks_common_path}/include/dfx",
     "${app_domain_verify_frameworks_extension_path}/include",
     "${app_domain_verify_test_path}/mock/include",
+    "${app_domain_verify_frameworks_common_path}/include/dfx",
   ]
 }
 
@@ -42,7 +42,6 @@ ohos_unittest("app_domain_verify_agent_service_test") {
 
   sources = [
     "${app_domain_verify_service_path}/src/agent/core/app_domain_verify_agent_service.cpp",
-    "${app_domain_verify_service_path}/src/agent/data_share/setting_data_share_helper.cpp",
     "${app_domain_verify_service_path}/src/agent/zidl/app_domain_verify_agent_service_proxy.cpp",
     "${app_domain_verify_service_path}/src/agent/zidl/app_domain_verify_agent_service_stub.cpp",
     "${app_domain_verify_test_path}/mock/src/mock_bundle_manager.cpp",
@@ -60,9 +59,10 @@ ohos_unittest("app_domain_verify_agent_service_test") {
     "bundle_framework:appexecfwk_base",
     "bundle_framework:appexecfwk_core",
     "c_utils:utils",
-    "data_share:datashare_consumer",
     "eventhandler:libeventhandler",
     "ffrt:libffrt",
+    "googletest:gmock_main",
+    "googletest:gtest_main",
     "hicollie:libhicollie",
     "hilog:libhilog",
     "hisysevent:libhisysevent",
@@ -74,6 +74,9 @@ ohos_unittest("app_domain_verify_agent_service_test") {
     "os_account:os_account_innerkits",
     "os_account:os_account_innerkits",
     "relational_store:native_rdb",
+    "safwk:system_ability_fwk",
+    "samgr:dynamic_cache",
+    "samgr:samgr_common",
     "samgr:samgr_proxy",
   ]
 
@@ -86,7 +89,5 @@ ohos_unittest("app_domain_verify_agent_service_test") {
     "${app_domain_verify_frameworks_common_path}:app_domain_verify_frameworks_common",
     "${app_domain_verify_frameworks_extension_path}:app_domain_verify_extension_framework",
     "${app_domain_verify_frameworks_verifier_path}:app_domain_verify_agent_verifier",
-    "//third_party/googletest:gmock_main",
-    "//third_party/googletest:gtest_main",
   ]
 }

@@ -254,9 +254,6 @@ sptr<IRemoteObject> SystemAbility::GetSystemAbility(int32_t systemAbilityId)
 {
     GTEST_LOG_(INFO) << "MOCK SystemAbility GetSystemAbility 1";
     (void)systemAbilityId;
-    if (!g_mockAbility) {
-        return g_mockAbility;
-    }
     return nullptr;
 }
 
@@ -286,4 +283,5 @@ void SystemAbility::OnDeviceLevelChanged(int32_t type, int32_t level, std::strin
     (void)level;
     (void)action;
 }
+
 }

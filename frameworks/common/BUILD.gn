@@ -12,7 +12,7 @@
 # limitations under the License.
 
 import("//build/ohos.gni")
-import("//foundation/bundlemanager/app_domain_verify/app_domain_verify.gni")
+import("../../app_domain_verify.gni")
 
 config("app_domain_verify_frameworks_common_config") {
   visibility = [ ":*" ]
@@ -28,10 +28,15 @@ config("app_domain_verify_frameworks_common_config") {
   cflags = [
     "-fdata-sections",
     "-ffunction-sections",
+    "-fstack-protector-strong",
+    "-D_FORTIFY_SOURCE=2",
     "-Os",
   ]
 
-  cflags_cc = [ "-Os" ]
+  cflags_cc = [
+    "-fstack-protector-strong",
+    "-Os",
+  ]
 }
 
 ohos_shared_library("app_domain_verify_frameworks_common") {
@@ -56,6 +61,7 @@ ohos_shared_library("app_domain_verify_frameworks_common") {
     "ffrt:libffrt",
     "hicollie:libhicollie",
     "hilog:libhilog",
+    "hisysevent:libhisysevent",
     "ipc:ipc_core",
     "json:nlohmann_json_static",
     "netstack:http_client",
@@ -69,9 +75,12 @@ ohos_shared_library("app_domain_verify_frameworks_common") {
     defines += [ "IS_RELEASE_VERSION" ]
   }
   sanitize = {
+    boundary_sanitize = true
     cfi = true
     cfi_cross_dso = true
     debug = false
+    integer_overflow = true
+    ubsan = true
   }
   subsystem_name = "bundlemanager"
   part_name = "app_domain_verify"

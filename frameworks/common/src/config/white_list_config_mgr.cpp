@@ -17,6 +17,7 @@
 #include "domain_url_util.h"
 #include "white_list_config_mgr.h"
 #include "app_domain_verify_hilog.h"
+#include "app_domain_verify_hisysevent.h"
 
 namespace OHOS::AppDomainVerify {
 const static std::string DYNAMIC_WHITE_LIST_PRE_PATH =
@@ -36,12 +37,14 @@ void WhiteListConfigMgr::LoadDefault()
 {
     preferences_ = GetPreference(DEFAULT_WHITE_LIST_PRE_PATH);
     if (preferences_ == nullptr) {
+        UNIVERSAL_ERROR_EVENT(READ_DEFAULT_WHITE_LIST_FAULT);
         APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MODULE_COMMON, "WhiteListConfigMgr::Load failed.");
         return;
     }
 
     defaultWhiteUrl_ = preferences_->GetString(DEFAULT_URL_KEY, "");
     if (defaultWhiteUrl_.empty()) {
+        UNIVERSAL_ERROR_EVENT(READ_DEFAULT_WHITE_LIST_FAULT);
         APP_DOMAIN_VERIFY_HILOGW(APP_DOMAIN_VERIFY_MODULE_COMMON, "WhiteListConfigMgr::Load defaultWhiteUrl empty.");
     }
 }
@@ -49,6 +52,7 @@ void WhiteListConfigMgr::LoadDynamic()
 {
     preferences_ = GetPreference(DYNAMIC_WHITE_LIST_PRE_PATH);
     if (preferences_ == nullptr) {
+        UNIVERSAL_ERROR_EVENT(READ_DYNAMIC_WHITE_LIST_FAULT);
         APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MODULE_COMMON, "WhiteListConfigMgr::Load failed.");
         return;
     }
@@ -59,10 +63,8 @@ void WhiteListConfigMgr::LoadDynamic()
 void WhiteListConfigMgr::Load()
 {
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MODULE_COMMON, "called");
-    std::lock_guard<std::mutex> lock(initLock);
     LoadDefault();
     LoadDynamic();
-    init = true;
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MODULE_COMMON, "called end");
 }
 void WhiteListConfigMgr::Split(std::string src)
@@ -111,6 +113,11 @@ bool WhiteListConfigMgr::Save()
         strSteam << element << ",";
     }
     auto ret = preferences_->PutString(WHITE_LIST_KEY, strSteam.str());
+    if (ret != 0) {
+        UNIVERSAL_ERROR_EVENT(WRITE_DYNAMIC_WHITE_LIST_FAULT);
+        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MODULE_COMMON, "put dynamic white list error ret:%{public}d.", ret);
+        return false;
+    }
     preferences_->Flush();
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MODULE_COMMON, "WhiteListConfigMgr::Save %{public}s ret%{public}d.",
         strSteam.str().c_str(), ret);
@@ -120,9 +127,6 @@ bool WhiteListConfigMgr::Save()
 bool WhiteListConfigMgr::IsInWhiteList(const std::string& url)
 {
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "called");
-    if (!init) {
-        Load();
-    }
     std::lock_guard<std::mutex> lock(whiteListLock_);
     bool ret;
     if (whiteListSet_.empty()) {
@@ -137,9 +141,6 @@ bool WhiteListConfigMgr::IsInWhiteList(const std::string& url)
 void WhiteListConfigMgr::UpdateWhiteList(const std::unordered_set<std::string>& whiteList)
 {
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "called");
-    if (!init) {
-        Load();
-    }
     std::unordered_set<std::string> filtedWhiteList;
     std::for_each(whiteList.begin(), whiteList.end(), [&filtedWhiteList](const std::string& element) {
         if (UrlUtil::IsValidUrl(element)) {
@@ -149,7 +150,10 @@ void WhiteListConfigMgr::UpdateWhiteList(const std::unordered_set<std::string>& 
     std::lock_guard<std::mutex> lock(whiteListLock_);
     whiteListSet_ = filtedWhiteList;
     if (!whiteListSet_.empty()) {
-        Save();
+        if (!Save()) {
+            UNIVERSAL_ERROR_EVENT(WRITE_DYNAMIC_WHITE_LIST_FAULT);
+            APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "save white list failed.");
+        }
     }
 }
 

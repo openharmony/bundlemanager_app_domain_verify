@@ -33,7 +33,7 @@ const int32_t DB_DOMAIN_INDEX = 3;
 const int32_t DB_STATUES_INDEX = 4;
 const int32_t DB_VERIFY_TIME_INDEX = 5;
 const int32_t DB_VERIFY_COUNT_INDEX = 6;
-const int32_t CLOSE_TIME = 20;  // delay 20s stop rdbStore
+const int32_t CLOSE_TIME = 20 * 1000;  // delay 20s stop rdbStore
 
 AppDomainVerifyRdbDataManager::AppDomainVerifyRdbDataManager(const AppDomainVerifyRdbConfig& rdbConfig)
     : appDomainVerifyRdbConfig_(rdbConfig)
@@ -45,7 +45,7 @@ void AppDomainVerifyRdbDataManager::DeleteIfCannotAccess()
 {
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "DeleteIfCannotAccess.");
     auto rdbFile = appDomainVerifyRdbConfig_.dbPath + appDomainVerifyRdbConfig_.dbName;
-    // ÎÄ¼ş´æÔÚµ«ÊÇÃ»ÓĞ¶ÁĞ´È¨ÏŞ£¬É¾³ıÎÄ¼ş
+    // æ–‡ä»¶å­˜åœ¨ä½†æ˜¯æ²¡æœ‰è¯»å†™æƒé™ï¼Œåˆ é™¤æ–‡ä»¶
     if (access(rdbFile.c_str(), F_OK) == 0 && access(rdbFile.c_str(), R_OK | W_OK) != 0) {
         auto ret = remove(rdbFile.c_str());
         APP_DOMAIN_VERIFY_HILOGW(
@@ -206,7 +206,6 @@ void AppDomainVerifyRdbDataManager::DelayCloseRdbStore()
     std::weak_ptr<AppDomainVerifyRdbDataManager> weakPtr = shared_from_this();
     auto func = [weakPtr]() {
         APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "DelayCloseRdbStore thread begin");
-        std::this_thread::sleep_for(std::chrono::seconds(CLOSE_TIME));
         auto sharedPtr = weakPtr.lock();
         if (sharedPtr == nullptr) {
             return;
@@ -215,7 +214,7 @@ void AppDomainVerifyRdbDataManager::DelayCloseRdbStore()
         sharedPtr->rdbStore_ = nullptr;
         APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "DelayCloseRdbStore thread end");
     };
-    continuationHandler_->submit(func);
+    continuationHandler_->submit(func, ffrt::task_attr().delay(CLOSE_TIME));
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "call end");
 }
 
