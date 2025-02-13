@@ -36,7 +36,7 @@ class MocAppDomainVerifyRdbDataManagerImpl : public IMocAppDomainVerifyRdbDataMa
 public:
     MOCK_METHOD(bool, InsertData, (const RdbDataItem& rdbDataItem), (override));
     MOCK_METHOD(bool, DeleteData, (const std::string& bundleName), (override));
-    MOCK_METHOD(bool, QueryAllData, (DataMap& dataMap), (override));
+    MOCK_METHOD(bool, QueryAllData, (DataMap & dataMap), (override));
     MOCK_METHOD(bool, CreateTable, (), (override));
 };
 namespace MOC {

@@ -20,6 +20,7 @@
 #include "app_domain_verify_parcel_util.h"
 #include "iservice_registry.h"
 #include "system_ability_definition.h"
+#include "want.h"
 
 namespace OHOS {
 namespace AppDomainVerify {
@@ -66,6 +67,10 @@ int32_t AppDomainVerifyMgrServiceStub::OnRemoteRequest(
             return OnQueryAssociatedDomains(data, reply);
         case static_cast<uint32_t>(AppDomainVerifyMgrInterfaceCode::QUERY_ASSOCIATED_BUNDLE_NAMES):
             return OnQueryAssociatedBundleNames(data, reply);
+        case static_cast<uint32_t>(AppDomainVerifyMgrInterfaceCode::GET_DEFERRED_LINK):
+            return OnGetDeferredLink(data, reply);
+        case static_cast<uint32_t>(AppDomainVerifyMgrInterfaceCode::QUERY_APP_DETAILS_WANT):
+            return OnQueryAppDetailsWant(data, reply);
         default:
             APP_DOMAIN_VERIFY_HILOGW(
                 APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "receive unknown code, code = %{public}d", code);
@@ -263,5 +268,35 @@ int32_t AppDomainVerifyMgrServiceStub::OnQueryAssociatedBundleNames(MessageParce
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "call end");
     return ERR_OK;
 }
+int32_t AppDomainVerifyMgrServiceStub::OnGetDeferredLink(MessageParcel& data, MessageParcel& reply)
+{
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "called");
+    std::string link;
+    int ret = GetDeferredLink(link);
+
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, reply, ret);
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String, reply, link);
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "call end");
+    return ERR_OK;
+}
+
+int32_t AppDomainVerifyMgrServiceStub::OnQueryAppDetailsWant(MessageParcel& data, MessageParcel& reply)
+{
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "called");
+    AAFwk::Want want;
+    std::string url;
+    READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(String, data, url);
+    std::unique_ptr<OHOS::AAFwk::Want> w(data.ReadParcelable<OHOS::AAFwk::Want>());
+    if (!w) {
+        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "read parcelable want failed.");
+        return ERR_INVALID_VALUE;
+    }
+    want = *w;
+    int ret = QueryAppDetailsWant(url, want);
+    WRITE_PARCEL_AND_RETURN_INT_IF_FAIL(Int32, reply, ret);
+    WRITE_PARCEL_AND_RETURN_INT_IF_FAIL(Parcelable, reply, &want);
+    return ERR_OK;
+}
+
 }  // namespace AppDomainVerify
 }  // namespace OHOS

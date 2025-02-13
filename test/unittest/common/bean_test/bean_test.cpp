@@ -136,8 +136,8 @@ HWTEST_F(AppDomainVerifyBeanTest, AppDomainVerifyBundleVerifyStatusInfoTest001, 
     ASSERT_TRUE(unmarshalling->bundleVerifyStatusInfoMap_.begin()->second.hostVerifyStatusMap.size() == 1);
     ASSERT_TRUE(unmarshalling->bundleVerifyStatusInfoMap_.begin()->second.hostVerifyStatusMap.begin()->first ==
         "https://" + HOST);
-    auto [status, verifyTime, cnt] =
-        unmarshalling->bundleVerifyStatusInfoMap_.begin()->second.hostVerifyStatusMap.begin()->second;
+    auto [status, verifyTime,
+        cnt] = unmarshalling->bundleVerifyStatusInfoMap_.begin()->second.hostVerifyStatusMap.begin()->second;
     ASSERT_TRUE(status == InnerVerifyStatus::STATE_SUCCESS);
 
     Parcel parcel1;

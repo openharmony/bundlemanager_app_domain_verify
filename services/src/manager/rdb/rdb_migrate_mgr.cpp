@@ -14,6 +14,7 @@
  */
 #include "rdb_migrate_mgr.h"
 #include "app_domain_verify_hilog.h"
+#include "app_domain_verify_hisysevent.h"
 #include "rdb_errno.h"
 #include "rdb_store.h"
 
@@ -101,6 +102,7 @@ void RdbMigrateMgr::UpgradeFromV1ToV2(NativeRdb::RdbStore& rdbStore)
         if (ret != NativeRdb::E_OK) {
             APP_DOMAIN_VERIFY_HILOGE(
                 APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "execute sql %{public}s failed.", sql.c_str());
+            UNIVERSAL_ERROR_EVENT(UPDATE_DB_FAULT);
             auto dropTableSql = R"(drop table IF EXISTS verified_domain;)";
             (void)rdbStore.ExecuteSql(dropTableSql);
             APP_DOMAIN_VERIFY_HILOGE(

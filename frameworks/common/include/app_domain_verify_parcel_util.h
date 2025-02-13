@@ -18,7 +18,7 @@
 #include "app_domain_verify_hilog.h"
 #include "comm_define.h"
 #include "string_ex.h"
-
+namespace OHOS::AppDomainVerify {
 #define WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(type, parcel, data)                                              \
     do {                                                                                                       \
         if (!(parcel).Write##type(data)) {                                                                     \
@@ -58,10 +58,11 @@
             return false;                                                                                     \
         }                                                                                                     \
     } while (0)
-
+}
 #define MAX_PARCEL_ARRAY_SIZE (99)
 namespace OHOS::AppDomainVerify {
-inline bool IsInvalidParcelArraySize(int size)
+template <typename T>
+inline bool IsInvalidParcelArraySize(T size)
 {
     if (size > MAX_PARCEL_ARRAY_SIZE) {
         APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MODULE_COMMON, "is invalid parcel array size %{public}d", size);

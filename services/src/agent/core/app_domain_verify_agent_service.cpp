@@ -42,6 +42,7 @@ constexpr int32_t DUMP_SYSTEM_START_YEAR = 1900;
 constexpr int32_t FORMAT_BLANK_SIZE = 32;
 }
 static const std::string TASK_ID = "unload";
+static const std::string UPDATE_DETAILS_TASK_ID = "udpateDetails";
 using namespace NetManagerStandard;
 const bool REGISTER_RESULT = SystemAbility::MakeAndRegisterAbility(new AppDomainVerifyAgentService());
 
@@ -70,7 +71,7 @@ AppDomainVerifyAgentService::~AppDomainVerifyAgentService()
 void AppDomainVerifyAgentService::CompleteVerifyRefresh(
     const BundleVerifyStatusInfo& bundleVerifyStatusInfo, TaskType type)
 {
-    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "%s called", __func__);
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "called");
     if (ErrorCode::E_EXTENSIONS_LIB_NOT_FOUND !=
         appDomainVerifyExtMgr_->CompleteVerifyRefresh(bundleVerifyStatusInfo, type)) {
         APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "extension call end");
@@ -89,12 +90,12 @@ void AppDomainVerifyAgentService::CompleteVerifyRefresh(
         }
         ExecuteVerifyTask(appVerifyBaseInfo, it->second, type);
     }
-    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "%s call end", __func__);
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "call end");
 }
 void AppDomainVerifyAgentService::ConvertToExplicitWant(
     OHOS::AAFwk::Want& implicitWant, sptr<IConvertCallback>& callback)
 {
-    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s called", __func__);
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "called");
     if (ErrorCode::E_EXTENSIONS_LIB_NOT_FOUND !=
         appDomainVerifyExtMgr_->ConvertToExplicitWant(implicitWant, callback)) {
         APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "extension call end");
@@ -104,7 +105,7 @@ void AppDomainVerifyAgentService::ConvertToExplicitWant(
     if (callback) {
         callback->OnConvert(0, implicitWant);
     }
-    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%s called", __func__);
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "called");
 }
 void AppDomainVerifyAgentService::SingleVerify(
     const AppVerifyBaseInfo& appVerifyBaseInfo, const VerifyResultInfo& verifyResultInfo)
@@ -138,6 +139,7 @@ void AppDomainVerifyAgentService::QueryAndCompleteRefresh(TaskType type)
         CompleteVerifyRefresh(bundleVerifyStatusInfo, type);
         return;
     }
+    UNIVERSAL_ERROR_EVENT(GET_DATE_IN_BOOT_FAULT);
 }
 
 void AppDomainVerifyAgentService::UpdateWhiteList()
@@ -148,6 +150,16 @@ void AppDomainVerifyAgentService::UpdateWhiteList()
         return;
     }
 }
+
+void AppDomainVerifyAgentService::UpdateAppDetails()
+{
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "called");
+    if (ErrorCode::E_EXTENSIONS_LIB_NOT_FOUND != appDomainVerifyExtMgr_->UpdateAppDetails()) {
+        APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "extension call end");
+        return;
+    }
+}
+
 // sa_main进程统一调用
 void AppDomainVerifyAgentService::OnStart(const SystemAbilityOnDemandReason& startReason)
 {
@@ -193,6 +205,7 @@ void AppDomainVerifyAgentService::DoSync(const TaskType& type)
 {
     QueryAndCompleteRefresh(type);
     UpdateWhiteList();
+    UpdateAppDetails();
 }
 
 bool AppDomainVerifyAgentService::IsNetAvailable()
@@ -287,6 +300,5 @@ int AppDomainVerifyAgentService::Dump(int fd, const std::vector<std::u16string>&
     (void)write(fd, dumpString.c_str(), dumpString.size());
     return 0;
 }
-
 }  // namespace AppDomainVerify
 }  // namespace OHOS

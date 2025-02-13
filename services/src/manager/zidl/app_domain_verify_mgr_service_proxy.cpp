@@ -16,6 +16,7 @@
 #include "app_domain_verify_mgr_interface_code.h"
 #include "system_ability_definition.h"
 #include "app_domain_verify_parcel_util.h"
+#include "want.h"
 
 namespace OHOS {
 namespace AppDomainVerify {
@@ -75,7 +76,7 @@ bool AppDomainVerifyMgrServiceProxy::ClearDomainVerifyStatus(
 
 bool AppDomainVerifyMgrServiceProxy::FilterAbilities(const OHOS::AAFwk::Want& want,
     const std::vector<OHOS::AppExecFwk::AbilityInfo>& originAbilityInfos,
-    std::vector<OHOS::AppExecFwk::AbilityInfo>& filtedAbilityInfos)
+    std::vector<OHOS::AppExecFwk::AbilityInfo>& filteredAbilityInfos)
 {
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "called");
     MessageParcel data;
@@ -112,7 +113,7 @@ bool AppDomainVerifyMgrServiceProxy::FilterAbilities(const OHOS::AAFwk::Want& wa
             APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "Read Parcelable AbilityInfo failed");
             return false;
         }
-        filtedAbilityInfos.emplace_back(*info);
+        filteredAbilityInfos.emplace_back(*info);
     }
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "call end");
     return true;
@@ -320,6 +321,58 @@ int AppDomainVerifyMgrServiceProxy::QueryAssociatedBundleNames(
         READ_PARCEL_AND_RETURN_INT_IF_FAIL(String, reply, bundleName);
         bundleNames.emplace_back(bundleName);
     }
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "call end");
+    return result;
+}
+int AppDomainVerifyMgrServiceProxy::GetDeferredLink(std::string& link)
+{
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "called");
+    MessageParcel data;
+    MessageParcel reply;
+    MessageOption option;
+    WRITE_PARCEL_AND_RETURN_INT_IF_FAIL(InterfaceToken, data, GetDescriptor());
+    int32_t error = Remote()->SendRequest(
+        AppDomainVerifyMgrInterfaceCode::GET_DEFERRED_LINK, data, reply, option);
+    if (error != ERR_NONE) {
+        APP_DOMAIN_VERIFY_HILOGE(
+            APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "GetDeferredLink failed, error: %d", error);
+    }
+    int32_t result = reply.ReadInt32();
+    if (result != 0) {
+        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "result failed, result: %d", result);
+        return result;
+    }
+    READ_PARCEL_AND_RETURN_INT_IF_FAIL(String, reply, link);
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "call end");
+    return result;
+}
+
+int AppDomainVerifyMgrServiceProxy::QueryAppDetailsWant(const std::string &url, AAFwk::Want& want)
+{
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "called");
+    MessageParcel data;
+    MessageParcel reply;
+    MessageOption option;
+    WRITE_PARCEL_AND_RETURN_INT_IF_FAIL(InterfaceToken, data, GetDescriptor());
+    WRITE_PARCEL_AND_RETURN_INT_IF_FAIL(String, data, url);
+    WRITE_PARCEL_AND_RETURN_INT_IF_FAIL(Parcelable, data, &want);
+    int32_t error = Remote()->SendRequest(
+        AppDomainVerifyMgrInterfaceCode::QUERY_APP_DETAILS_WANT, data, reply, option);
+    if (error != ERR_NONE) {
+        APP_DOMAIN_VERIFY_HILOGE(
+            APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "QueryAppDetailsWant failed, error: %d", error);
+    }
+    int32_t result = reply.ReadInt32();
+    if (result != 0) {
+        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "result failed, result: %d", result);
+        return result;
+    }
+    std::unique_ptr<OHOS::AAFwk::Want> w(data.ReadParcelable<OHOS::AAFwk::Want>());
+    if (!w) {
+        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "read parcelable want failed.");
+        return ERR_INVALID_VALUE;
+    }
+    want = *w;
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "call end");
     return result;
 }
