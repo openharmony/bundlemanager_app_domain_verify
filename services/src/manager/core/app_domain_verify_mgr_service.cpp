@@ -113,10 +113,17 @@ bool AppDomainVerifyMgrService::FilterAbilities(const OHOS::AAFwk::Want& want,
             }
         }
     }
-    if (filteredAbilityInfos.empty() && !IsUrlInBlackList(uriString)) {
-        deferredLinkMgr_->PutDeferredLink(
-            { .domain = hostVerifyKey, .url = uriString, .timeStamp = GetSecondsSince1970ToNow() });
+    if (filteredAbilityInfos.empty()) {
+        !IsUrlInBlackList(hostVerifyKey) ?
+            deferredLinkMgr_->PutDeferredLink(
+                { .domain = hostVerifyKey, .url = uriString, .timeStamp = GetSecondsSince1970ToNow() }) :
+            void();
+    } else {
+        // Calling openlink may call FilterAbilities multiple times, the link will be stored when matching default
+        // browser's abilities, so remove it if the link matches verified abilities.
+        deferredLinkMgr_->RemoveDeferredLink({ .domain = hostVerifyKey, .url = uriString });
     }
+
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "call end");
     return true;
 }
