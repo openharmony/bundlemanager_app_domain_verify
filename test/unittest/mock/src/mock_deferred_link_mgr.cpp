@@ -38,7 +38,12 @@ std::string DeferredLinkMgr::GetDeferredLink(const std::string& bundleName, cons
     }
     return {};
 }
-
+void DeferredLinkMgr::RemoveDeferredLink(const DeferredLinkInfo& info)
+{
+    if (g_mocDeferredLinkMgr) {
+        g_mocDeferredLinkMgr->RemoveDeferredLink(info);
+    }
+}
 DeferredLinkMgr::~DeferredLinkMgr()
 {
 }

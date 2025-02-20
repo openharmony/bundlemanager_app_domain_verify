@@ -57,6 +57,13 @@ public:
      */
     std::string GetDeferredLink(const std::string& bundleName, const std::vector<std::string>& domains);
 
+    /**
+     * RemoveDeferredLink
+     * @descrition sinremove link stored.
+     * @param info the deferred link info to remove.
+     */
+    void RemoveDeferredLink(const DeferredLinkInfo& info);
+
     ~DeferredLinkMgr();
 
 private:
