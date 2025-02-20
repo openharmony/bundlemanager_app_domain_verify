@@ -23,7 +23,7 @@ constexpr int MAX_CACHE_SIZE = 50;
 }
 void DeferredLinkMgr::PutDeferredLink(const DeferredLinkInfo& info)
 {
-    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "called.");
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "called.");
     std::unique_lock<std::mutex> lock(cachesMutex_);
     CheckStartTimerUnlocked();
     CheckRemoveExistedUnlocked(info);
@@ -110,6 +110,17 @@ void DeferredLinkMgr::CheckRemoveExistedUnlocked(const DeferredLinkInfo& info)
         return false;
     });
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "called.");
+}
+void DeferredLinkMgr::RemoveDeferredLink(const DeferredLinkInfo& info)
+{
+    std::unique_lock<std::mutex> lock(cachesMutex_);
+    caches_.remove_if([&info](const DeferredLinkInfo& curInfo) {
+        if (curInfo.url == info.url && curInfo.domain == info.domain) {
+            return true;
+        }
+        return false;
+    });
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "called.");
 }
 DeferredLinkMgr::DeferredLinkMgr()
 {
