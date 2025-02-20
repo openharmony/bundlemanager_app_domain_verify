@@ -114,7 +114,7 @@ bool AppDomainVerifyMgrService::FilterAbilities(const OHOS::AAFwk::Want& want,
         }
     }
     if (filteredAbilityInfos.empty()) {
-        !IsUrlInBlackList(uriString) ?
+        !IsUrlInBlackList(hostVerifyKey) ?
             deferredLinkMgr_->PutDeferredLink(
                 { .domain = hostVerifyKey, .url = uriString, .timeStamp = GetSecondsSince1970ToNow() }) :
             void();
