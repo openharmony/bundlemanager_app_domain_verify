@@ -301,15 +301,13 @@ HWTEST_F(DeferredLinkMgrTest, DeferredLinkGetTest009, TestSize.Level0)
 {
     DeferredLinkMgr deferredLinkMgr;
     deferredLinkMgr.ageHandler_ = nullptr;
-    std::shared_ptr<MocAbilityFilter> filter = std::make_shared<MocAbilityFilter>();
-    EXPECT_CALL(*filter, Filter(_)).Times(1).WillOnce(Return(true));
-    MockAbilityFilter(filter);
     deferredLinkMgr.PutDeferredLink(
         { .domain = BUNDLE_DOMAIN, .url = BUNDLE_URL, .timeStamp = GetSecondsSince1970ToNow() });
     EXPECT_TRUE(deferredLinkMgr.caches_.size() == 1);
 
     deferredLinkMgr.RemoveDeferredLink(
         { .domain = BUNDLE_DOMAIN, .url = BUNDLE_URL, .timeStamp = GetSecondsSince1970ToNow() });
+    EXPECT_TRUE(deferredLinkMgr.caches_.empty());
 
     std::vector<std::string> domains;
     domains.emplace_back(BUNDLE_DOMAIN);
