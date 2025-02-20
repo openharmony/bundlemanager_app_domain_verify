@@ -59,7 +59,7 @@ public:
 
     /**
      * RemoveDeferredLink
-     * @descrition sinremove link stored.
+     * @descrition remove link stored.
      * @param info the deferred link info to remove.
      */
     void RemoveDeferredLink(const DeferredLinkInfo& info);
