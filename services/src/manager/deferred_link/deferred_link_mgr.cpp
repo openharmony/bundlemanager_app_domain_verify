@@ -72,6 +72,7 @@ void DeferredLinkMgr::PostAgeCacheTask()
 {
     if (ageHandler_) {
         APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "PostAgeCacheTask.");
+        ageHandler_->RemoveTask(TASK_ID);
         ageHandler_->PostTask([this] { AgeCacheProcess(); }, TASK_ID, DELAY_TIME);
     }
 }
