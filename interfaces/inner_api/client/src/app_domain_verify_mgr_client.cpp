@@ -300,7 +300,9 @@ int AppDomainVerifyMgrClient::QueryAppDetailsWant(const std::string &link, AAFwk
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "called");
     std::lock_guard<std::mutex> autoLock(proxyLock_);
     if (IsServiceAvailable()) {
+        std::string identity = IPCSkeleton::ResetCallingIdentity();
         return appDomainVerifyMgrServiceProxy_->QueryAppDetailsWant(link, want);
+        IPCSkeleton::SetCallingIdentity(identity);
     }
     return CommonErrorCode::E_INTERNAL_ERR;
 }
