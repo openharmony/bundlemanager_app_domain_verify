@@ -72,7 +72,6 @@ private:
     int QueryVerifiedBundleWithDomains(std::string& bundleName, std::vector<std::string>& domains);
 
 private:
-    std::shared_ptr<AppDomainVerifyDataMgr> dataManager_ = nullptr;
     std::shared_ptr<AppDetailsDataMgr> appDetailsDataMgr_ = nullptr;
     bool InitConfigMgr();
     std::shared_ptr<WhiteListConfigMgr> whiteListConfigMgr_;
