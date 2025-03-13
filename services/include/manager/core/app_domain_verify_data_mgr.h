@@ -27,11 +27,11 @@
 
 namespace OHOS {
 namespace AppDomainVerify {
-class AppDomainVerifyDataMgr {
-public:
-    AppDomainVerifyDataMgr();
-    virtual ~AppDomainVerifyDataMgr();
+class AppDomainVerifyDataMgr : public DelayedSingleton<AppDomainVerifyDataMgr> {
+    DECLARE_DELAYED_SINGLETON(AppDomainVerifyDataMgr);
+    DISALLOW_COPY_AND_MOVE(AppDomainVerifyDataMgr);
 
+public:
     /**
      * @brief Get AppDomainVerify status.
      * @param bundleName Indicates the bundleName.
