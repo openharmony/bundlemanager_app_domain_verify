@@ -36,7 +36,6 @@ const std::string FUZZY_HOST_START = "*.";
 AppDomainVerifyMgrService::AppDomainVerifyMgrService() : SystemAbility(APP_DOMAIN_VERIFY_MANAGER_SA_ID, true)
 {
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "new instance create.");
-    dataManager_ = std::make_shared<AppDomainVerifyDataMgr>();
     appDetailsDataMgr_ = std::make_shared<AppDetailsDataMgr>();
 }
 
@@ -62,7 +61,7 @@ void AppDomainVerifyMgrService::VerifyDomain(const std::string& appIdentifier, c
     verifyResultInfo.appIdentifier = appIdentifier;
 
     CollectDomains(skillUris, verifyResultInfo);
-    dataManager_->InsertVerifyStatus(bundleName, verifyResultInfo);
+    DelayedSingleton<AppDomainVerifyDataMgr>::GetInstance()->InsertVerifyStatus(bundleName, verifyResultInfo);
     AppDomainVerifyAgentClient::GetInstance()->SingleVerify(appVerifyBaseInfo, verifyResultInfo);
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "call end");
 }
@@ -74,7 +73,7 @@ bool AppDomainVerifyMgrService::ClearDomainVerifyStatus(const std::string& appId
         APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "only sa can call");
         return false;
     }
-    bool res = dataManager_->DeleteVerifyStatus(bundleName);
+    bool res = DelayedSingleton<AppDomainVerifyDataMgr>::GetInstance()->DeleteVerifyStatus(bundleName);
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "call end");
     return res;
 }
@@ -105,7 +104,8 @@ bool AppDomainVerifyMgrService::FilterAbilities(const OHOS::AAFwk::Want& want,
         // todo bms AbilityInfo contains appIdentifier
         VerifyResultInfo verifyResultInfo;
         // get from emory variable, non-IO operation.
-        if (dataManager_->GetVerifyStatus(it->bundleName, verifyResultInfo)) {
+        if (DelayedSingleton<AppDomainVerifyDataMgr>::GetInstance()->GetVerifyStatus(
+                it->bundleName, verifyResultInfo)) {
             auto itr = verifyResultInfo.hostVerifyStatusMap.find(hostVerifyKey);
             if (itr != verifyResultInfo.hostVerifyStatusMap.end() &&
                 std::get<0>(itr->second) == InnerVerifyStatus::STATE_SUCCESS) {
@@ -137,7 +137,7 @@ bool AppDomainVerifyMgrService::QueryDomainVerifyStatus(
         return false;
     }
     VerifyResultInfo verifyResultInfo;
-    bool res = dataManager_->GetVerifyStatus(bundleName, verifyResultInfo);
+    bool res = DelayedSingleton<AppDomainVerifyDataMgr>::GetInstance()->GetVerifyStatus(bundleName, verifyResultInfo);
     domainVerificationState = DomainVerifyStatus::STATE_NONE;
     for (auto it = verifyResultInfo.hostVerifyStatusMap.begin();
          res && it != verifyResultInfo.hostVerifyStatusMap.end(); ++it) {
@@ -157,7 +157,8 @@ bool AppDomainVerifyMgrService::QueryAllDomainVerifyStatus(BundleVerifyStatusInf
         APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "only sa can call");
         return false;
     }
-    bundleVerifyStatusInfo.bundleVerifyStatusInfoMap_ = dataManager_->GetAllVerifyStatus();
+    bundleVerifyStatusInfo.bundleVerifyStatusInfoMap_ =
+        DelayedSingleton<AppDomainVerifyDataMgr>::GetInstance()->GetAllVerifyStatus();
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "call end");
     return true;
 }
@@ -170,7 +171,8 @@ bool AppDomainVerifyMgrService::SaveDomainVerifyStatus(
         APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "only sa can call");
         return false;
     }
-    bool res = dataManager_->UpdateVerifyStatus(bundleName, verifyResultInfo);
+    bool res = DelayedSingleton<AppDomainVerifyDataMgr>::GetInstance()->UpdateVerifyStatus(
+        bundleName, verifyResultInfo);
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "call end");
     return res;
 }
@@ -221,7 +223,9 @@ int AppDomainVerifyMgrService::QueryAssociatedDomains(const std::string& bundleN
         APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "CheckPermission failed:%{public}d", ret);
         return ret;
     }
-    return dataManager_->QueryAssociatedDomains(bundleName, domains) ? E_OK : E_INTERNAL_ERR;
+    return DelayedSingleton<AppDomainVerifyDataMgr>::GetInstance()->QueryAssociatedDomains(bundleName, domains) ?
+        E_OK :
+        E_INTERNAL_ERR;
 }
 int AppDomainVerifyMgrService::QueryAssociatedBundleNames(
     const std::string& domain, std::vector<std::string>& bundleNames)
@@ -232,7 +236,9 @@ int AppDomainVerifyMgrService::QueryAssociatedBundleNames(
         APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "CheckPermission failed:%{public}d", ret);
         return ret;
     }
-    return dataManager_->QueryAssociatedBundleNames(domain, bundleNames) ? E_OK : E_INTERNAL_ERR;
+    return DelayedSingleton<AppDomainVerifyDataMgr>::GetInstance()->QueryAssociatedBundleNames(domain, bundleNames) ?
+        E_OK :
+        E_INTERNAL_ERR;
 }
 
 int AppDomainVerifyMgrService::QueryAppDetailsWant(const std::string& url, AAFwk::Want& want)
@@ -246,7 +252,7 @@ int AppDomainVerifyMgrService::QueryAppDetailsWant(const std::string& url, AAFwk
     auto ret = appDetailsDataMgr_->QueryAppDetailsWant(url, want, bundleName);
     if (ret == AppDetailsCode::QUERY_SUCC) {
         VerifyResultInfo info;
-        if (dataManager_->GetVerifyStatus(bundleName, info)) {
+        if (DelayedSingleton<AppDomainVerifyDataMgr>::GetInstance()->GetVerifyStatus(bundleName, info)) {
             return AppDetailsCode::QUERY_FAIL;
         }
         return AppDetailsCode::QUERY_SUCC;
@@ -383,7 +389,7 @@ int AppDomainVerifyMgrService::QueryVerifiedBundleWithDomains(
         return CommonErrorCode::E_PARAM_ERROR;
     }
     VerifyResultInfo verifyResultInfo;
-    if (!dataManager_->GetVerifyStatus(bundleName, verifyResultInfo)) {
+    if (!DelayedSingleton<AppDomainVerifyDataMgr>::GetInstance()->GetVerifyStatus(bundleName, verifyResultInfo)) {
         APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "can not get verifyResultInfo");
         return CommonErrorCode::E_INTERNAL_ERR;
     }
