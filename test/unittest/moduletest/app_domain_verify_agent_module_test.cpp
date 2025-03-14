@@ -23,12 +23,12 @@
 #include "app_domain_verify_mgr_client.h"
 #include "mock_constant.h"
 #include "mock_verify_agent.h"
-#include "agent_interface_code.h"
+#include "../../../interfaces/inner_api/client/sa_interface/agent_interface_code.h"
 #define private public
 #define protected public
 #include "app_domain_verify_agent_client.h"
 #include "app_domain_verify_agent_service.h"
-#include "app_domain_verify_mgr_service.h"
+#include "../../../interfaces/inner_api/client/sa_interface/app_domain_verify_mgr_service.h"
 #undef private
 #undef protected
 #include "mock_access_token.h"

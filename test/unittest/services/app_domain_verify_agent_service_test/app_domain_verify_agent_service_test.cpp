@@ -26,7 +26,7 @@
 #include "app_domain_verify_agent_service_proxy.h"
 #undef private
 #undef protected
-#include "agent_interface_code.h"
+#include "../../../../interfaces/inner_api/client/sa_interface/agent_interface_code.h"
 #include "mock_convert_callback.h"
 namespace OHOS::AppDomainVerify {
 using namespace testing;

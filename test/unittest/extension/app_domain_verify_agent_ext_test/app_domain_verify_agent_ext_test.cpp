@@ -133,4 +133,17 @@ HWTEST_F(AppDomainVerifyAgentExtTest, AppDomainVerifyAgentExtTest006, TestSize.L
     auto ret = appDomainVerifyAgentExt.UpdateAppDetails();
     EXPECT_TRUE(ret == ErrorCode::E_EXTENSIONS_LIB_NOT_FOUND);
 }
+/**
+ * @tc.name: AppDomainVerifyAgentExtTest007
+ * @tc.desc: ExtensionMgr test.
+ * @tc.type: FUNC
+ */
+HWTEST_F(AppDomainVerifyAgentExtTest, AppDomainVerifyAgentExtTest007, TestSize.Level0)
+{
+    AppDomainVerifyAgentExt appDomainVerifyAgentExt;
+    std::string request;
+    std::string response;
+    auto ret = appDomainVerifyAgentExt.CommonTransact(0, request, response);
+    EXPECT_TRUE(ret == ErrorCode::E_EXTENSIONS_LIB_NOT_FOUND);
+}
 }

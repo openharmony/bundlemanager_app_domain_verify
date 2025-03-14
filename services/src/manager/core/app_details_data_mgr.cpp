@@ -23,7 +23,7 @@
 #include "app_details_rdb_data_define.h"
 #include "app_details_rdb_const_define.h"
 #include "app_details_rdb_data_manager.h"
-#include "comm_define.h"
+#include "app_domain_verify_error.h"
 #include "domain_url_util.h"
 #include "app_domain_verify_hilog.h"
 #include "filter_define.h"

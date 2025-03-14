@@ -42,6 +42,7 @@ public:
     API_EXPORT void SingleVerify(
         const AppVerifyBaseInfo& appVerifyBaseInfo, const VerifyResultInfo &verifyResultInfo) override;
     API_EXPORT void ConvertToExplicitWant(OHOS::AAFwk::Want& implicitWant, sptr<IConvertCallback>& callback) override;
+    API_EXPORT int CommonTransact(uint32_t opcode, const std::string& request, std::string& response) override;
 protected:
     void OnStart(const SystemAbilityOnDemandReason& startReason) override;
     void OnStop() override;

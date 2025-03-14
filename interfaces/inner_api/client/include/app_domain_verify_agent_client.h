@@ -17,7 +17,7 @@
 #define APP_DOMAIN_VERIFY_AGENT_CLIENT_H
 
 #include "singleton.h"
-#include "i_app_domain_verify_agent_service.h"
+#include "../sa_interface/i_app_domain_verify_agent_service.h"
 #include "zidl/i_convert_callback.h"
 
 namespace OHOS {

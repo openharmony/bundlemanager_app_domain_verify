@@ -15,7 +15,7 @@
 
 #include <memory>
 #include "app_domain_verify_agent_service_stub.h"
-#include "agent_interface_code.h"
+#include "../../../../interfaces/inner_api/client/sa_interface/agent_interface_code.h"
 #include "errors.h"
 #include "iservice_registry.h"
 #include "system_ability_definition.h"
@@ -86,6 +86,22 @@ int32_t AppDomainVerifyAgentServiceStub::OnConvertToExplicitWant(MessageParcel& 
     ConvertToExplicitWant(want, cleanCacheCallback);
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "call end");
     return ERR_OK;
+}
+int32_t AppDomainVerifyAgentServiceStub::OnCommonTransact(MessageParcel& data, MessageParcel& reply)
+{
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "called");
+    OHOS::AAFwk::Want want;
+    std::string request;
+    uint32_t opcode;
+    READ_PARCEL_AND_RETURN_INT_IF_FAIL(Uint32, data, opcode);
+    READ_PARCEL_AND_RETURN_INT_IF_FAIL(String, data, request);
+    std::string response;
+    auto status = CommonTransact(opcode, request, response);
+    WRITE_PARCEL_AND_RETURN_INT_IF_FAIL(Int32, reply, status);
+    WRITE_PARCEL_AND_RETURN_INT_IF_FAIL(String, reply, response);
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "call end");
+    return ERR_OK;
+    return 0;
 }
 
 }  // namespace AppDomainVerify

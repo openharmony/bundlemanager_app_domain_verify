@@ -16,7 +16,7 @@
 #ifndef APP_DOMAIN_VERIFY_AGENT_SERVICE_STUB_H
 #define APP_DOMAIN_VERIFY_AGENT_SERVICE_STUB_H
 #include <map>
-#include "i_app_domain_verify_agent_service.h"
+#include "../../../../interfaces/inner_api/client/sa_interface/i_app_domain_verify_agent_service.h"
 #include "iremote_stub.h"
 #include "event_handler.h"
 #include "event_runner.h"
@@ -33,6 +33,7 @@ public:
 private:
     int32_t OnSingleVerify(MessageParcel& data, MessageParcel& reply);
     int32_t OnConvertToExplicitWant(MessageParcel& data, MessageParcel& reply);
+    int32_t OnCommonTransact(MessageParcel& data, MessageParcel& reply);
 };
 }  // namespace AppDomainVerify
 }  // namespace OHOS
