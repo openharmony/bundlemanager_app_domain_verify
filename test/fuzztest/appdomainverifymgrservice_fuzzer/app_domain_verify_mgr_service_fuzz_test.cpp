@@ -18,7 +18,7 @@
 #include <cstddef>
 #include <cstdint>
 #include "securec.h"
-#include "app_domain_verify_mgr_service.h"
+#include "sa_interface/app_domain_verify_mgr_service.h"
 
 using namespace OHOS::AppExecFwk;
 namespace OHOS {

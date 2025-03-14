@@ -945,7 +945,7 @@ HWTEST_F(MgrServiceTest, QueryAssociatedDomains001, TestSize.Level0)
         BUNDLE_NAME, std::make_tuple(InnerVerifyStatus::STATE_SUCCESS, std::string(), 0));
     DelayedSingleton<AppDomainVerifyDataMgr>::GetInstance()->InsertVerifyStatus(BUNDLE_NAME, verifyResultInfo);
     std::vector<std::string> domains;
-    EXPECT_EQ(appDomainVerifyMgrService->QueryAssociatedDomains(BUNDLE_NAME, domains), CommonErrorCode::E_OK);
+    EXPECT_EQ(appDomainVerifyMgrService->QueryAssociatedDomains(BUNDLE_NAME, domains), ErrorCode::E_OK);
 }
 /**
  * @tc.name: QueryAssociatedDomains002

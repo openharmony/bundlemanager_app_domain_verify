@@ -18,7 +18,8 @@ namespace OHOS {
 namespace AppDomainVerify {
 enum AgentInterfaceCode {
     SINGLE_VERIFY = 0,
-    CONVERT_TO_EXPLICIT_WANT = 1
+    CONVERT_TO_EXPLICIT_WANT = 1,
+    COMMON_TRANSACT = 2
 };
 }
 }  // namespace OHOS

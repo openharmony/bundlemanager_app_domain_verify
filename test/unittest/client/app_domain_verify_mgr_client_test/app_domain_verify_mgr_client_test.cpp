@@ -25,7 +25,7 @@
 #undef protected
 #include "convert_callback_stub.h"
 #include "mock_access_token.h"
-#include "comm_define.h"
+#include "app_domain_verify_error.h"
 namespace OHOS::AppDomainVerify {
 using namespace testing;
 using namespace testing::ext;

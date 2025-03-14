@@ -16,7 +16,7 @@
 #define APP_VERIFY_PARCEL_UTIL_H
 
 #include "app_domain_verify_hilog.h"
-#include "comm_define.h"
+#include "app_domain_verify_error.h"
 #include "string_ex.h"
 namespace OHOS::AppDomainVerify {
 #define WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(type, parcel, data)                                              \
@@ -39,7 +39,7 @@ namespace OHOS::AppDomainVerify {
     do {                                                                                                       \
         if (!(parcel).Write##type(data)) {                                                                     \
             APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MODULE_COMMON, "fail to write %{public}s type", #type); \
-            return CommonErrorCode::E_INTERNAL_ERR;                                                            \
+            return ErrorCode::E_INTERNAL_ERR;                                                            \
         }                                                                                                      \
     } while (0)
 
@@ -47,7 +47,7 @@ namespace OHOS::AppDomainVerify {
     do {                                                                                                      \
         if (!(parcel).Read##type(data)) {                                                                     \
             APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MODULE_COMMON, "fail to read %{public}s type", #type); \
-            return CommonErrorCode::E_INTERNAL_ERR;                                                           \
+            return ErrorCode::E_INTERNAL_ERR;                                                           \
         }                                                                                                     \
     } while (0)
 

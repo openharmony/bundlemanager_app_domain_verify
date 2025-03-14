@@ -18,10 +18,16 @@
 namespace OHOS {
 namespace AppDomainVerify {
 // todo 错误码与serviceid对应
-enum class ErrorCode {
+enum ErrorCode : int32_t {
     E_OK,
-    E_EXTENSIONS_LIB_NOT_FOUND,
-    E_EXTENSIONS_INTERNAL_ERROR,
+    E_PERMISSION_DENIED = 201,
+    E_IS_NOT_SYS_APP = 202,
+    E_PARAM_ERROR = 401,
+    E_EXTENSIONS_LIB_NOT_FOUND = 10000001,
+    E_EXTENSIONS_INTERNAL_ERROR = 10000002,
+    E_INTERNAL_ERR = 29900001,
+    E_NET_CONNECT_ERR = 29900002,
+    E_SERVER_ERR = 29900003,
 };
 }  // namespace AppDomainVerify
 }  // namespace OHOS
