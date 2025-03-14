@@ -20,7 +20,7 @@ config("module_private_config") {
   include_dirs = [ "${app_domain_verify_frameworks_common_path}/include/utils" ]
 }
 
-module_output_path = "app_domain_verify/app_domain_verify"
+module_output_path = "app_domain_verify/appdomainverify"
 
 ohos_unittest("lru_cache_util_test") {
   module_out_path = module_output_path

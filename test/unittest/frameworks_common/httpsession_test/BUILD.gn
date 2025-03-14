@@ -39,7 +39,7 @@ config("module_private_config") {
   ]
 }
 
-module_output_path = "app_domain_verify/app_domain_verify"
+module_output_path = "app_domain_verify/appdomainverify"
 
 ohos_unittest("app_domain_verify_httpsession_test") {
   module_out_path = module_output_path
