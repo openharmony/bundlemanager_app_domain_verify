@@ -24,7 +24,7 @@ config("app_domain_verify_frameworks_common_config") {
     "include/zidl",
     "include/config",
     "include/dfx",
-    "include/permission"
+    "include/permission",
   ]
   cflags = [
     "-fdata-sections",
@@ -47,8 +47,8 @@ ohos_shared_library("app_domain_verify_frameworks_common") {
     "src/config/white_list_config_mgr.cpp",
     "src/httpsession/app_domain_verify_task_mgr.cpp",
     "src/httpsession/i_http_task.cpp",
-    "src/utils/domain_url_util.cpp",
     "src/permission/permission_manager.cpp",
+    "src/utils/domain_url_util.cpp",
   ]
 
   public_configs = [ ":app_domain_verify_frameworks_common_config" ]
