@@ -39,6 +39,8 @@ int32_t AppDomainVerifyAgentServiceStub::OnRemoteRequest(
             return OnSingleVerify(data, reply);
         case static_cast<uint32_t>(AgentInterfaceCode::CONVERT_TO_EXPLICIT_WANT):
             return OnConvertToExplicitWant(data, reply);
+        case static_cast<uint32_t>(AgentInterfaceCode::COMMON_TRANSACT):
+            return OnCommonTransact(data, reply);
         default:
             APP_DOMAIN_VERIFY_HILOGW(
                 APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "receive unknown code, code = %{public}d", code);
@@ -86,6 +88,22 @@ int32_t AppDomainVerifyAgentServiceStub::OnConvertToExplicitWant(MessageParcel& 
     ConvertToExplicitWant(want, cleanCacheCallback);
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "call end");
     return ERR_OK;
+}
+int32_t AppDomainVerifyAgentServiceStub::OnCommonTransact(MessageParcel& data, MessageParcel& reply)
+{
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "called");
+    OHOS::AAFwk::Want want;
+    std::string request;
+    uint32_t opcode;
+    READ_PARCEL_AND_RETURN_INT_IF_FAIL(Uint32, data, opcode);
+    READ_PARCEL_AND_RETURN_INT_IF_FAIL(String, data, request);
+    std::string response;
+    auto status = CommonTransact(opcode, request, response);
+    WRITE_PARCEL_AND_RETURN_INT_IF_FAIL(Int32, reply, status);
+    WRITE_PARCEL_AND_RETURN_INT_IF_FAIL(String, reply, response);
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "call end");
+    return ERR_OK;
+    return 0;
 }
 
 }  // namespace AppDomainVerify

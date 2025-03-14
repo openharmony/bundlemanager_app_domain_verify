@@ -24,4 +24,11 @@ uint32_t IHttpTask::GetTaskId()
 {
     return taskId_;
 }
+void IHttpTask::OnCancel(const HttpClientRequest& request, const HttpClientResponse& response)
+{
+}
+void IHttpTask::OnDataReceive(std::shared_ptr<OHOS::NetStack::HttpClient::HttpClientTask> task,
+    const HttpClientRequest& request, const uint8_t* data, size_t length)
+{
+}
 }

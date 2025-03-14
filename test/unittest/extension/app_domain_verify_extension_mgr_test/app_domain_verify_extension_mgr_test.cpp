@@ -325,6 +325,61 @@ HWTEST_F(AppDomainVerifyExtensionMgrTest, AppDomainVerifyUpdateAppDetailsTest003
     ASSERT_TRUE(appDomainVerifyExtensionMgr.UpdateAppDetails() == ErrorCode::E_EXTENSIONS_LIB_NOT_FOUND);
 }
 /**
+ * @tc.name: AppDomainVerifyCommonTransactTest001
+ * @tc.desc: ExtensionMgr test.
+ * @tc.type: FUNC
+ */
+HWTEST_F(AppDomainVerifyExtensionMgrTest, AppDomainVerifyCommonTransactTest001, TestSize.Level0)
+{
+    MockAppDomainVerifyExtensionMgr appDomainVerifyExtensionMgr;
+    EXPECT_CALL(appDomainVerifyExtensionMgr, Init()).Times(1).WillOnce(Return(false));
+
+    OHOS::AAFwk::Want atomicWant;
+    sptr<IConvertCallback> cb = new MocConvertCallback;
+    std::string request;
+    std::string response;
+    ASSERT_TRUE(
+        appDomainVerifyExtensionMgr.CommonTransact(0, request, response) == ErrorCode::E_EXTENSIONS_LIB_NOT_FOUND);
+}
+
+/**
+ * @tc.name: AppDomainVerifyCommonTransactTest002
+ * @tc.desc: ExtensionMgr test.
+ * @tc.type: FUNC
+ */
+HWTEST_F(AppDomainVerifyExtensionMgrTest, AppDomainVerifyCommonTransactTest002, TestSize.Level0)
+{
+    MockAppDomainVerifyExtensionMgr appDomainVerifyExtensionMgr;
+    EXPECT_CALL(appDomainVerifyExtensionMgr, Init()).Times(1).WillOnce(Return(true));
+    EXPECT_CALL(appDomainVerifyExtensionMgr, GetAppDomainVerifyExt(APP_DOMAIN_VERIFY_AGENT_EXT_NAME))
+        .Times(1)
+        .WillOnce(Return(nullptr));
+    std::string request;
+    std::string response;
+    ASSERT_TRUE(
+        appDomainVerifyExtensionMgr.CommonTransact(0, request, response) == ErrorCode::E_EXTENSIONS_INTERNAL_ERROR);
+}
+
+/**
+ * @tc.name: AppDomainVerifyCommonTransactTest003
+ * @tc.desc: ExtensionMgr test.
+ * @tc.type: FUNC
+ */
+HWTEST_F(AppDomainVerifyExtensionMgrTest, AppDomainVerifyCommonTransactTest003, TestSize.Level0)
+{
+    std::shared_ptr<AppDomainVerifyAgentExt> appDomainVerifyAgentExt = std::make_shared<AppDomainVerifyAgentExtImpl>();
+    MockAppDomainVerifyExtensionMgr appDomainVerifyExtensionMgr;
+    EXPECT_CALL(appDomainVerifyExtensionMgr, Init()).Times(1).WillOnce(Return(true));
+    EXPECT_CALL(appDomainVerifyExtensionMgr, GetAppDomainVerifyExt(APP_DOMAIN_VERIFY_AGENT_EXT_NAME))
+        .Times(1)
+        .WillOnce(Return(appDomainVerifyAgentExt));
+
+    std::string request;
+    std::string response;
+    ASSERT_TRUE(
+        appDomainVerifyExtensionMgr.CommonTransact(0, request, response) == ErrorCode::E_EXTENSIONS_LIB_NOT_FOUND);
+}
+/**
  * @tc.name: AppDomainVerifyExtensionMgrTest001
  * @tc.desc: ExtensionMgr test.
  * @tc.type: FUNC

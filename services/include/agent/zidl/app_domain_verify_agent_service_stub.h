@@ -33,6 +33,7 @@ public:
 private:
     int32_t OnSingleVerify(MessageParcel& data, MessageParcel& reply);
     int32_t OnConvertToExplicitWant(MessageParcel& data, MessageParcel& reply);
+    int32_t OnCommonTransact(MessageParcel& data, MessageParcel& reply);
 };
 }  // namespace AppDomainVerify
 }  // namespace OHOS

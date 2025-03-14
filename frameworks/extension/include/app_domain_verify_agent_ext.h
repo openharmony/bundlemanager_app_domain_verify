@@ -39,6 +39,7 @@ public:
     virtual ErrorCode ConvertToExplicitWant(OHOS::AAFwk::Want& implicitWant, sptr<IConvertCallback>& callback);
     virtual ErrorCode UpdateWhiteList();
     virtual ErrorCode UpdateAppDetails();
+    virtual ErrorCode CommonTransact(uint32_t opcode, const std::string& request, std::string& response);
 };
 }
 }

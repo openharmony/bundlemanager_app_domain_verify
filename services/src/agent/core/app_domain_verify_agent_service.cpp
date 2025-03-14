@@ -25,6 +25,8 @@
 #include "app_domain_verify_mgr_client.h"
 #include "verify_task.h"
 #include "iservice_registry.h"
+#include "app_domain_verify_error.h"
+#include "permission_manager.h"
 
 namespace OHOS {
 namespace AppDomainVerify {
@@ -96,6 +98,10 @@ void AppDomainVerifyAgentService::ConvertToExplicitWant(
     OHOS::AAFwk::Want& implicitWant, sptr<IConvertCallback>& callback)
 {
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "called");
+    if (PermissionManager::IsSACall()) {
+        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "no sa call");
+        return;
+    }
     if (ErrorCode::E_EXTENSIONS_LIB_NOT_FOUND !=
         appDomainVerifyExtMgr_->ConvertToExplicitWant(implicitWant, callback)) {
         APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "extension call end");
@@ -111,6 +117,10 @@ void AppDomainVerifyAgentService::SingleVerify(
     const AppVerifyBaseInfo& appVerifyBaseInfo, const VerifyResultInfo& verifyResultInfo)
 {
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "called");
+    if (PermissionManager::IsSACall()) {
+        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "no sa call");
+        return;
+    }
     ExecuteVerifyTask(appVerifyBaseInfo, verifyResultInfo, TaskType::IMMEDIATE_TASK);
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "call end");
 }
@@ -159,7 +169,15 @@ void AppDomainVerifyAgentService::UpdateAppDetails()
         return;
     }
 }
-
+int AppDomainVerifyAgentService::CommonTransact(uint32_t opcode, const std::string& request, std::string& response)
+{
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "called");
+    if (ErrorCode::E_EXTENSIONS_LIB_NOT_FOUND != appDomainVerifyExtMgr_->CommonTransact(opcode, request, response)) {
+        APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "extension call end");
+        return ErrorCode::E_INTERNAL_ERR;
+    }
+    return ErrorCode::E_OK;
+}
 // sa_main进程统一调用
 void AppDomainVerifyAgentService::OnStart(const SystemAbilityOnDemandReason& startReason)
 {
@@ -300,5 +318,6 @@ int AppDomainVerifyAgentService::Dump(int fd, const std::vector<std::u16string>&
     (void)write(fd, dumpString.c_str(), dumpString.size());
     return 0;
 }
+
 }  // namespace AppDomainVerify
 }  // namespace OHOS

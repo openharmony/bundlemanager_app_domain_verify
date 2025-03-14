@@ -157,5 +157,21 @@ ErrorCode AppDomainVerifyExtensionMgr::UpdateAppDetails()
     }
     return ErrorCode::E_EXTENSIONS_LIB_NOT_FOUND;
 }
+ErrorCode AppDomainVerifyExtensionMgr::CommonTransact(
+    uint32_t opcode, const std::string& request, std::string& response)
+{
+    if (Init()) {
+        std::string verifierExtName = APP_DOMAIN_VERIFY_AGENT_EXT_NAME;
+        auto appDomainVerifierExt = GetAppDomainVerifyExt(verifierExtName);
+        if (appDomainVerifierExt != nullptr) {
+            return std::static_pointer_cast<AppDomainVerifyAgentExt>(appDomainVerifierExt)
+                ->CommonTransact(opcode, request, response);
+        }
+        APP_DOMAIN_VERIFY_HILOGE(
+            APP_DOMAIN_VERIFY_MODULE_EXTENSION, "get verifierExt: %{public}s failed.", verifierExtName.c_str());
+        return ErrorCode::E_EXTENSIONS_INTERNAL_ERROR;
+    }
+    return ErrorCode::E_EXTENSIONS_LIB_NOT_FOUND;
+}
 }
 }
