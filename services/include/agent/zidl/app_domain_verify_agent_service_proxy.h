@@ -16,7 +16,7 @@
 #ifndef APP_DOMAIN_VERIFY_AGENT_SERVICE_PROXY_H
 #define APP_DOMAIN_VERIFY_AGENT_SERVICE_PROXY_H
 
-#include "../../../../interfaces/inner_api/client/sa_interface/i_app_domain_verify_agent_service.h"
+#include "i_app_domain_verify_agent_service.h"
 #include "iremote_proxy.h"
 #include "zidl/i_convert_callback.h"
 

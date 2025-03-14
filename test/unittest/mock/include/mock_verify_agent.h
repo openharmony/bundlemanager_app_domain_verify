@@ -18,7 +18,7 @@
 #include <gmock/gmock.h>
 #include <iremote_object.h>
 #include <iremote_stub.h>
-#include "../../../../interfaces/inner_api/client/sa_interface/i_app_domain_verify_agent_service.h"
+#include "sa_interface/i_app_domain_verify_agent_service.h"
 #include "app_domain_verify_agent_service_proxy.h"
 #include "app_domain_verify_agent_service_stub.h"
 

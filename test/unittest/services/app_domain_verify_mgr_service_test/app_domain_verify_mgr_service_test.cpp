@@ -20,7 +20,7 @@
 #define private public
 #define protected public
 #include "app_domain_verify_data_mgr.h"
-#include "../../../../interfaces/inner_api/client/sa_interface/app_domain_verify_mgr_service.h"
+#include "app_domain_verify_mgr_service.h"
 #include "app_domain_verify_agent_client.h"
 #undef private
 #undef protected
@@ -28,10 +28,10 @@
 #include "mock_constant.h"
 #include "mock_verify_mgr.h"
 #include "mock_access_token.h"
-#include "../../../../interfaces/inner_api/client/sa_interface/app_domain_verify_mgr_interface_code.h"
+#include "app_domain_verify_mgr_interface_code.h"
 #include "rdb_helper.h"
 #include "app_domain_verify_mgr_service_proxy.h"
-#include "../../../../interfaces/inner_api/client/sa_interface/app_domain_verify_mgr_interface_code.h"
+#include "app_domain_verify_mgr_interface_code.h"
 #include "system_ability_definition.h"
 #include "app_domain_verify_parcel_util.h"
 #include "mock_convert_callback.h"

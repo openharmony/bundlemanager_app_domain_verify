@@ -15,7 +15,7 @@
 
 #include <memory>
 #include "app_domain_verify_agent_service_stub.h"
-#include "../../../../interfaces/inner_api/client/sa_interface/agent_interface_code.h"
+#include "agent_interface_code.h"
 #include "errors.h"
 #include "iservice_registry.h"
 #include "system_ability_definition.h"
@@ -39,6 +39,8 @@ int32_t AppDomainVerifyAgentServiceStub::OnRemoteRequest(
             return OnSingleVerify(data, reply);
         case static_cast<uint32_t>(AgentInterfaceCode::CONVERT_TO_EXPLICIT_WANT):
             return OnConvertToExplicitWant(data, reply);
+        case static_cast<uint32_t>(AgentInterfaceCode::COMMON_TRANSACT):
+            return OnCommonTransact(data, reply);
         default:
             APP_DOMAIN_VERIFY_HILOGW(
                 APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "receive unknown code, code = %{public}d", code);
