@@ -21,7 +21,7 @@
 #include "dfx/app_domain_verify_hisysevent.h"
 #include "zidl/convert_callback_stub.h"
 #include "regex.h"
-#include "comm_define.h"
+#include "app_domain_verify_error.h"
 #include "ipc_skeleton.h"
 #include "common_utils.h"
 #include "bundle_info_query.h"
@@ -304,7 +304,7 @@ int AppDomainVerifyMgrClient::QueryAppDetailsWant(const std::string &link, AAFwk
         return appDomainVerifyMgrServiceProxy_->QueryAppDetailsWant(link, want);
         IPCSkeleton::SetCallingIdentity(identity);
     }
-    return CommonErrorCode::E_INTERNAL_ERR;
+    return ErrorCode::E_INTERNAL_ERR;
 }
 
 int AppDomainVerifyMgrClient::QueryAssociatedDomains(const std::string& bundleName, std::vector<std::string>& domains)
@@ -315,7 +315,7 @@ int AppDomainVerifyMgrClient::QueryAssociatedDomains(const std::string& bundleNa
         return appDomainVerifyMgrServiceProxy_->QueryAssociatedDomains(bundleName, domains);
     }
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "call end");
-    return CommonErrorCode::E_INTERNAL_ERR;
+    return ErrorCode::E_INTERNAL_ERR;
 }
 int AppDomainVerifyMgrClient::QueryAssociatedBundleNames(
     const std::string& domain, std::vector<std::string>& bundleNames)
@@ -326,7 +326,7 @@ int AppDomainVerifyMgrClient::QueryAssociatedBundleNames(
         return appDomainVerifyMgrServiceProxy_->QueryAssociatedBundleNames(domain, bundleNames);
     }
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "call end");
-    return CommonErrorCode::E_INTERNAL_ERR;
+    return ErrorCode::E_INTERNAL_ERR;
 }
 int AppDomainVerifyMgrClient::GetDeferredLink(std::string& link)
 {
@@ -336,7 +336,7 @@ int AppDomainVerifyMgrClient::GetDeferredLink(std::string& link)
         return appDomainVerifyMgrServiceProxy_->GetDeferredLink(link);
     }
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "call end");
-    return CommonErrorCode::E_INTERNAL_ERR;
+    return ErrorCode::E_INTERNAL_ERR;
 }
 AppDomainVerifyMgrSaDeathRecipient::AppDomainVerifyMgrSaDeathRecipient()
 {

@@ -18,6 +18,7 @@ config("app_domain_verify_mgr_client_config") {
   visibility = [ ":*" ]
   include_dirs = [
     "include",
+    "${app_domain_verify_client_path}/include/sa_interface",
     "${app_domain_verify_service_path}/include/manager/core",
     "${app_domain_verify_service_path}/include/manager/zidl",
     "${app_domain_verify_common_path}/include",
@@ -44,6 +45,7 @@ config("app_domain_verify_agent_client_config") {
   visibility = [ ":*" ]
   include_dirs = [
     "include",
+    "${app_domain_verify_client_path}/include/sa_interface",
     "${app_domain_verify_service_path}/include/agent/core",
     "${app_domain_verify_service_path}/include/agent/zidl",
     "${app_domain_verify_common_path}/include",

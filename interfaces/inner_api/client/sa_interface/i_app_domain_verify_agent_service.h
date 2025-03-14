@@ -30,9 +30,12 @@ namespace OHOS {
 namespace AppDomainVerify {
 class IAppDomainVerifyAgentService : public IRemoteBroker {
 public:
-    virtual void SingleVerify(const AppVerifyBaseInfo& appVerifyBaseInfo, const VerifyResultInfo &verifyResultInfo) = 0;
-    virtual void ConvertToExplicitWant(OHOS::AAFwk::Want& implicitWant, sptr<IConvertCallback>& callback) = 0;
-
+    virtual void SingleVerify(const AppVerifyBaseInfo& appVerifyBaseInfo, const VerifyResultInfo& verifyResultInfo) {};
+    virtual void ConvertToExplicitWant(OHOS::AAFwk::Want& implicitWant, sptr<IConvertCallback>& callback) {};
+    virtual int CommonTransact(uint32_t opcode, const std::string& request, std::string& response)
+    {
+        return 0;
+    };
     DECLARE_INTERFACE_DESCRIPTOR(u"ohos.appDomainVerify.IAppDomainVerifyAgentService");
 };
 }  // namespace AppDomainVerify
