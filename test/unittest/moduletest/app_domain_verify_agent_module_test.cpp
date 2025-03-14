@@ -82,7 +82,7 @@ std::string jsonString =
  * @tc.desc: SingleVerify bundleName fingerprint ok test.
  * @tc.type: FUNC
  */
-HWTEST_F(AppDomainVerifyAgentModuleTest, AppDomainVerifyAgentModuleTest001, TestSize.Level0)
+HWTEST_F(AppDomainVerifyAgentModuleTest, AppDomainVerifyAgentModuleTest001, TestSize.Level1)
 {
     std::shared_ptr<AppDomainVerifyAgentService> appDomainVerifyAgentService =
         std::make_shared<AppDomainVerifyAgentService>();

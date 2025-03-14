@@ -92,7 +92,7 @@ void AppDomainVerifyMgrModuleTest::TearDown(void)
  * @tc.desc: VerifyDomain ok test.
  * @tc.type: FUNC
  */
-HWTEST_F(AppDomainVerifyMgrModuleTest, AppDomainVerifyMgrModuleTest001, TestSize.Level0)
+HWTEST_F(AppDomainVerifyMgrModuleTest, AppDomainVerifyMgrModuleTest001, TestSize.Level1)
 {
     EXPECT_CALL(*appDomainVerifyAgentStubMock_, SendRequest(_, _, _, _))
         .Times(1)
@@ -116,7 +116,7 @@ HWTEST_F(AppDomainVerifyMgrModuleTest, AppDomainVerifyMgrModuleTest001, TestSize
  * @tc.desc: VerifyDomain fail test.
  * @tc.type: FUNC
  */
-HWTEST_F(AppDomainVerifyMgrModuleTest, AppDomainVerifyMgrModuleTest002, TestSize.Level0)
+HWTEST_F(AppDomainVerifyMgrModuleTest, AppDomainVerifyMgrModuleTest002, TestSize.Level1)
 {
     EXPECT_CALL(*appDomainVerifyAgentStubMock_, SendRequest(_, _, _, _))
         .Times(1)
@@ -141,7 +141,7 @@ HWTEST_F(AppDomainVerifyMgrModuleTest, AppDomainVerifyMgrModuleTest002, TestSize
  * @tc.desc: FilterAbilities ok test.
  * @tc.type: FUNC
  */
-HWTEST_F(AppDomainVerifyMgrModuleTest, AppDomainVerifyMgrModuleTest003, TestSize.Level0)
+HWTEST_F(AppDomainVerifyMgrModuleTest, AppDomainVerifyMgrModuleTest003, TestSize.Level1)
 {
     EXPECT_CALL(*appDomainVerifyAgentStubMock_, SendRequest(_, _, _, _))
         .Times(1)
@@ -173,7 +173,7 @@ HWTEST_F(AppDomainVerifyMgrModuleTest, AppDomainVerifyMgrModuleTest003, TestSize
  * @tc.desc: FilterAbilities fail test.
  * @tc.type: FUNC
  */
-HWTEST_F(AppDomainVerifyMgrModuleTest, AppDomainVerifyMgrModuleTest004, TestSize.Level0)
+HWTEST_F(AppDomainVerifyMgrModuleTest, AppDomainVerifyMgrModuleTest004, TestSize.Level1)
 {
     EXPECT_CALL(*appDomainVerifyAgentStubMock_, SendRequest(_, _, _, _))
         .Times(1)
@@ -205,7 +205,7 @@ HWTEST_F(AppDomainVerifyMgrModuleTest, AppDomainVerifyMgrModuleTest004, TestSize
  * @tc.desc: FilterAbilities fail test.
  * @tc.type: FUNC
  */
-HWTEST_F(AppDomainVerifyMgrModuleTest, AppDomainVerifyMgrModuleTest005, TestSize.Level0)
+HWTEST_F(AppDomainVerifyMgrModuleTest, AppDomainVerifyMgrModuleTest005, TestSize.Level1)
 {
     OHOS::AAFwk::Want want;
     want.SetElementName(BUNDLE_NAME, "MainAbility");
@@ -226,7 +226,7 @@ HWTEST_F(AppDomainVerifyMgrModuleTest, AppDomainVerifyMgrModuleTest005, TestSize
  * @tc.desc: QueryDomainVerifyStatus test.
  * @tc.type: FUNC
  */
-HWTEST_F(AppDomainVerifyMgrModuleTest, AppDomainVerifyMgrModuleTest006, TestSize.Level0)
+HWTEST_F(AppDomainVerifyMgrModuleTest, AppDomainVerifyMgrModuleTest006, TestSize.Level1)
 {
     DomainVerifyStatus domainVerificationState;
     auto queryRes = appDomainVerifyMgrService_->QueryDomainVerifyStatus(BUNDLE_NAME, domainVerificationState);
