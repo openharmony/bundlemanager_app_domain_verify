@@ -26,6 +26,7 @@
 #include "verify_task.h"
 #include "iservice_registry.h"
 #include "app_domain_verify_error.h"
+#include "permission_manager.h"
 
 namespace OHOS {
 namespace AppDomainVerify {
@@ -97,6 +98,10 @@ void AppDomainVerifyAgentService::ConvertToExplicitWant(
     OHOS::AAFwk::Want& implicitWant, sptr<IConvertCallback>& callback)
 {
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "called");
+    if(PermissionManager::IsSACall()){
+        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "no sa call");
+        return;
+    }
     if (ErrorCode::E_EXTENSIONS_LIB_NOT_FOUND !=
         appDomainVerifyExtMgr_->ConvertToExplicitWant(implicitWant, callback)) {
         APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "extension call end");
@@ -112,6 +117,10 @@ void AppDomainVerifyAgentService::SingleVerify(
     const AppVerifyBaseInfo& appVerifyBaseInfo, const VerifyResultInfo& verifyResultInfo)
 {
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "called");
+    if(PermissionManager::IsSACall()){
+        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "no sa call");
+        return;
+    }
     ExecuteVerifyTask(appVerifyBaseInfo, verifyResultInfo, TaskType::IMMEDIATE_TASK);
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "call end");
 }
