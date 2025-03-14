@@ -338,7 +338,8 @@ HWTEST_F(AppDomainVerifyExtensionMgrTest, AppDomainVerifyCommonTransactTest001, 
     sptr<IConvertCallback> cb = new MocConvertCallback;
     std::string request;
     std::string response;
-    ASSERT_TRUE(appDomainVerifyExtensionMgr.CommonTransact(0, request, response) == ErrorCode::E_EXTENSIONS_LIB_NOT_FOUND);
+    ASSERT_TRUE(
+        appDomainVerifyExtensionMgr.CommonTransact(0, request, response) == ErrorCode::E_EXTENSIONS_LIB_NOT_FOUND);
 }
 
 /**
@@ -355,7 +356,8 @@ HWTEST_F(AppDomainVerifyExtensionMgrTest, AppDomainVerifyCommonTransactTest002, 
         .WillOnce(Return(nullptr));
     std::string request;
     std::string response;
-    ASSERT_TRUE(appDomainVerifyExtensionMgr.CommonTransact(0, request, response) == ErrorCode::E_EXTENSIONS_INTERNAL_ERROR);
+    ASSERT_TRUE(
+        appDomainVerifyExtensionMgr.CommonTransact(0, request, response) == ErrorCode::E_EXTENSIONS_INTERNAL_ERROR);
 }
 
 /**
@@ -374,7 +376,8 @@ HWTEST_F(AppDomainVerifyExtensionMgrTest, AppDomainVerifyCommonTransactTest003, 
 
     std::string request;
     std::string response;
-    ASSERT_TRUE(appDomainVerifyExtensionMgr.CommonTransact(0, request, response) == ErrorCode::E_EXTENSIONS_LIB_NOT_FOUND);
+    ASSERT_TRUE(
+        appDomainVerifyExtensionMgr.CommonTransact(0, request, response) == ErrorCode::E_EXTENSIONS_LIB_NOT_FOUND);
 }
 /**
  * @tc.name: AppDomainVerifyExtensionMgrTest001

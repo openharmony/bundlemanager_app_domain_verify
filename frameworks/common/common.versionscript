@@ -27,6 +27,7 @@
     *WhiteListUpdater*;
     *WhiteListConfigMgr*;
     *SendFaultEvent*;
+    *PermissionManager*;
   local:
     *;
 };

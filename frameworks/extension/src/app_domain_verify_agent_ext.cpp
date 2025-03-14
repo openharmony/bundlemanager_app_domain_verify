@@ -42,7 +42,7 @@ ErrorCode AppDomainVerifyAgentExt::UpdateAppDetails()
 }
 ErrorCode AppDomainVerifyAgentExt::CommonTransact(uint32_t opcode, const std::string& request, std::string& response)
 {
-    return ErrorCode::E_EXTENSIONS_LIB_NOT_FOUND;;
+    return ErrorCode::E_EXTENSIONS_LIB_NOT_FOUND;
 }
 }
 }
