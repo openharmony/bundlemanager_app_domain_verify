@@ -16,7 +16,7 @@ import("//build/config/features.gni")
 import("//build/ohos.gni")
 import("//build/test.gni")
 import("//foundation/bundlemanager/app_domain_verify/app_domain_verify.gni")
-module_output_path = "app_domain_verify/app_domain_verify"
+module_output_path = "app_domain_verify/appdomainverify"
 
 ##############################fuzztest##########################################
 ohos_fuzztest("AppDomainVerifyAgentServiceFuzzTest") {
