@@ -15,7 +15,7 @@
 
 #include <memory>
 #include "app_domain_verify_mgr_service_stub.h"
-#include "../../../../interfaces/inner_api/client/sa_interface/app_domain_verify_mgr_interface_code.h"
+#include "sa_interface/app_domain_verify_mgr_interface_code.h"
 #include "errors.h"
 #include "app_domain_verify_parcel_util.h"
 #include "iservice_registry.h"

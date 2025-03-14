@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 #include "app_domain_verify_agent_service_proxy.h"
-#include "../../../../interfaces/inner_api/client/sa_interface/agent_interface_code.h"
+#include "agent_interface_code.h"
 #include "system_ability_definition.h"
 #include "app_domain_verify_parcel_util.h"
 

@@ -19,7 +19,7 @@
 #include <vector>
 #include "app_details_data_mgr.h"
 #include "ipc_skeleton.h"
-#include "../../../../interfaces/inner_api/client/sa_interface/app_domain_verify_mgr_service.h"
+#include "app_domain_verify_mgr_service.h"
 #include "system_ability_definition.h"
 #include "domain_url_util.h"
 #include "app_domain_verify_agent_client.h"
