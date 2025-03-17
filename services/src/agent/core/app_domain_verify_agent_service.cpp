@@ -98,7 +98,7 @@ void AppDomainVerifyAgentService::ConvertToExplicitWant(
     OHOS::AAFwk::Want& implicitWant, sptr<IConvertCallback>& callback)
 {
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "called");
-    if (PermissionManager::IsSACall()) {
+    if (!PermissionManager::IsSACall()) {
         APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "no sa call");
         return;
     }
@@ -117,7 +117,7 @@ void AppDomainVerifyAgentService::SingleVerify(
     const AppVerifyBaseInfo& appVerifyBaseInfo, const VerifyResultInfo& verifyResultInfo)
 {
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "called");
-    if (PermissionManager::IsSACall()) {
+    if (!PermissionManager::IsSACall()) {
         APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "no sa call");
         return;
     }
