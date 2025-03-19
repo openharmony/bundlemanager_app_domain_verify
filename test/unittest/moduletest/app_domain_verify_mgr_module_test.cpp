@@ -74,8 +74,15 @@ void AppDomainVerifyMgrModuleTest::SetUpTestCase(void)
 
 void AppDomainVerifyMgrModuleTest::TearDownTestCase(void)
 {
-    appDomainVerifyMgrService_.reset();
+    printf("TearDownTestCase  1\n");
+    AppDomainVerifyAgentClient::agentServiceProxy_.ForceSetRefPtr(nullptr);
+    printf("TearDownTestCase 2\n");
+    AppDomainVerifyAgentClient::DestroyInstance();
+    printf("TearDownTestCase 3\n");
+    appDomainVerifyMgrService_->appDetailsDataMgr_ = nullptr;
+    appDomainVerifyMgrService_->Stop();
     appDomainVerifyAgentStubMock_.reset();
+    printf("TearDownTestCase \n");
 }
 
 void AppDomainVerifyMgrModuleTest::SetUp(void)
