@@ -91,8 +91,8 @@ void AppDomainVerifyMgrModuleTest::TearDown(void)
     printf("TearDownTestCase 2\n");
     AppDomainVerifyAgentClient::DestroyInstance();
     printf("TearDownTestCase 3\n");
-    appDomainVerifyMgrService->appDetailsDataMgr_ = nullptr;
-    appDomainVerifyMgrService->Stop();
+    appDomainVerifyMgrService_->appDetailsDataMgr_ = nullptr;
+    appDomainVerifyMgrService_->Stop();
     appDomainVerifyAgentStubMock_.reset();
     printf("TearDownTestCase \n");
 }
