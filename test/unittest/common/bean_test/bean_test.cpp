@@ -238,6 +238,7 @@ HWTEST_F(AppDomainVerifyBeanTest, AppDomainVerifyUrlUtilTest001, TestSize.Level0
     ASSERT_TRUE(UrlUtil::IsValidAppDomainVerifyHost("https://" + HOST));
     ASSERT_TRUE(UrlUtil::IsValidUrl("https://" + HOST));
     ASSERT_TRUE(UrlUtil::GetScheme(HOST) == "");
+    ASSERT_TRUE(UrlUtil::GetHost("https://" + HOST) == HOST);
 }
 
 /**
