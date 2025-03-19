@@ -86,10 +86,12 @@ void MgrServiceTest::SetUpTestCase(void)
 void MgrServiceTest::TearDownTestCase(void)
 {
     printf("TearDownTestCase  1\n");
+    DelayedSingleton<AppDomainVerifyDataMgr>::GetInstance()->rdbDataManager_ = nullptr;
     AppDomainVerifyAgentClient::agentServiceProxy_.ForceSetRefPtr(nullptr);
     printf("TearDownTestCase 2\n");
     AppDomainVerifyAgentClient::DestroyInstance();
     printf("TearDownTestCase 3\n");
+    appDomainVerifyMgrService->appDetailsDataMgr_ = nullptr;
     appDomainVerifyMgrService->Stop();
     appDomainVerifyAgentStubMock_.reset();
     printf("TearDownTestCase \n");
