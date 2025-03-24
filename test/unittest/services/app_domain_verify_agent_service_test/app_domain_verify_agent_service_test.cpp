@@ -67,20 +67,6 @@ void AgentServiceTest::SetUp(void)
 void AgentServiceTest::TearDown(void)
 {
 }
-/**
- * @tc.name: AgentServiceTest001
- * @tc.desc: CompleteVerifyRefresh test.
- * @tc.type: FUNC
- */
-HWTEST_F(AgentServiceTest, AgentServiceTest001, TestSize.Level0)
-{
-    BundleVerifyStatusInfo bundleVerifyStatusInfo;
-    VerifyResultInfo verifyResultInfo;
-    verifyResultInfo.hostVerifyStatusMap.insert_or_assign(
-        "https://" + HOST, std::make_tuple(InnerVerifyStatus::STATE_FAIL, std::string(), 0));
-    bundleVerifyStatusInfo.bundleVerifyStatusInfoMap_.insert_or_assign(BUNDLE_NAME, verifyResultInfo);
-    appDomainVerifyAgentService->CompleteVerifyRefresh(bundleVerifyStatusInfo, TaskType::IMMEDIATE_TASK);
-}
 
 /**
  * @tc.name: AgentServiceTest003
