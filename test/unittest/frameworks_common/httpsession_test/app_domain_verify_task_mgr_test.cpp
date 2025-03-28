@@ -208,15 +208,8 @@ public:
     void OnSuccess(const HttpClientRequest& request, const HttpClientResponse& response) override
     {
     }
-    void OnCancel(const HttpClientRequest& request, const HttpClientResponse& response) override
-    {
-    }
     void OnFail(
         const HttpClientRequest& request, const HttpClientResponse& response, const HttpClientError& error) override
-    {
-    }
-    void OnDataReceive(std::shared_ptr<OHOS::NetStack::HttpClient::HttpClientTask> task,
-        const HttpClientRequest& request, const uint8_t* data, size_t length) override
     {
     }
 };
