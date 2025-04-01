@@ -64,6 +64,7 @@ private:
     bool IsNetAvailable();
     bool CanUnloadSa();
     void UnloadSa();
+    void DoLoopStart();
     std::string GetStatTime();
 
 private:
