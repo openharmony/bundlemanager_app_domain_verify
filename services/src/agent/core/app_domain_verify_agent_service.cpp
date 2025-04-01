@@ -42,6 +42,7 @@ std::atomic<int> retryCnt = 0;
 std::atomic<bool> isDoSyncDone = false;
 constexpr int32_t DUMP_SYSTEM_START_YEAR = 1900;
 constexpr int32_t FORMAT_BLANK_SIZE = 32;
+constexpr const char* LOOP_EVENT = "loopevent";
 }
 static const std::string TASK_ID = "unload";
 static const std::string UPDATE_DETAILS_TASK_ID = "udpateDetails";
@@ -188,6 +189,9 @@ void AppDomainVerifyAgentService::OnStart(const SystemAbilityOnDemandReason& sta
     if (!res) {
         APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "Publish failed");
     }
+    if (startReason.GetName() == LOOP_EVENT) {
+        DoLoopStart();
+    }
 }
 
 void AppDomainVerifyAgentService::OnStop()
@@ -222,8 +226,12 @@ bool AppDomainVerifyAgentService::IsIdle()
 void AppDomainVerifyAgentService::DoSync(const TaskType& type)
 {
     QueryAndCompleteRefresh(type);
-    UpdateWhiteList();
     UpdateAppDetails();
+}
+void AppDomainVerifyAgentService::DoLoopStart()
+{
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "called");
+    UpdateWhiteList();
 }
 
 bool AppDomainVerifyAgentService::IsNetAvailable()
