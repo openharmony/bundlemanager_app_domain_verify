@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Huawei Device Co., Ltd.
+ * Copyright (C) 2023-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -17,7 +17,7 @@
 #define APP_DOMAIN_VERIFY_AGENT_CLIENT_H
 
 #include "singleton.h"
-#include "../sa_interface/i_app_domain_verify_agent_service.h"
+#include "i_app_domain_verify_agent_service.h"
 #include "zidl/i_convert_callback.h"
 
 namespace OHOS {
