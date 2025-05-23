@@ -213,6 +213,7 @@ public:
     {
     }
 };
+
 /**
  * @tc.name: AppDomainVerifyTaskMgrTest007
  * @tc.desc: test HttpTask
