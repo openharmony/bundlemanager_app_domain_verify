@@ -74,6 +74,9 @@ public:
     void OnConvert(int resCode, AAFwk::Want& want) override
     {
     }
+    void OnConvert(int resCode, TargetInfo& want) override
+    {
+    }
 };
 /**
  * @tc.name: AppDomainVerifyMgrClientTest001
@@ -421,30 +424,59 @@ HWTEST_F(AppDomainVerifyMgrClientTest, OnRemoteSaDied_0100, TestSize.Level0)
  */
 HWTEST_F(AppDomainVerifyMgrClientTest, IsValidUrl_0100, TestSize.Level0)
 {
-    OHOS::Uri schemeWrongUri("schemeWrongUri");
+    std::string schemeWrongUri("schemeWrongUri");
     EXPECT_FALSE(AppDomainVerifyMgrClient::GetInstance()->IsValidUrl(schemeWrongUri));
-    OHOS::Uri hostEmptyUri("https://");
+    std::string hostEmptyUri("https://");
     EXPECT_FALSE(AppDomainVerifyMgrClient::GetInstance()->IsValidUrl(hostEmptyUri));
-    OHOS::Uri segmentsSizeWrongUri("https://www.openharmony.com/");
-    EXPECT_FALSE(AppDomainVerifyMgrClient::GetInstance()->IsValidUrl(segmentsSizeWrongUri));
-    OHOS::Uri segmentsWrongUri("https://www.openharmony.com/test*");
-    EXPECT_FALSE(AppDomainVerifyMgrClient::GetInstance()->IsValidUrl(segmentsWrongUri));
-    OHOS::Uri trueUri("https://www.openharmony.com/t1_-est/");
-    EXPECT_TRUE(AppDomainVerifyMgrClient::GetInstance()->IsValidUrl(trueUri));
+}
+/**
+ * @tc.name: IsShortUrlTest001
+ * @tc.desc: IsShortUrl test.
+ * @tc.type: FUNC
+ */
+#define MAX_URL_LEN (2048)
+HWTEST_F(AppDomainVerifyMgrClientTest, IsShortUrlTest001, TestSize.Level0)
+{
+    std::shared_ptr<AppDomainVerifyMgrRemoteStubMock> mgrStubMock_ =
+        std::make_shared<AppDomainVerifyMgrRemoteStubMock>();
+    EXPECT_CALL(*mgrStubMock_, SendRequest(_, _, _, _)).WillRepeatedly(::testing::Invoke(MgrInvokeOK));
+    AppDomainVerifyMgrClient::appDomainVerifyMgrServiceProxy_ = sptr<AppDomainVerifyMgrServiceProxy>::MakeSptr(
+        mgrStubMock_.get());
+
+    ASSERT_TRUE(AppDomainVerifyMgrClient::GetInstance()->IsShortUrl("https://www.openharmony.com/t1_-est"));
+
+    std::string longPath(MAX_PATH_LEN + 1, 'a');
+    ASSERT_FALSE(
+        AppDomainVerifyMgrClient::GetInstance()->IsAtomicServiceUrl("https://www.openharmony.com/" + longPath));
+
+    std::string longPath1(MAX_PATH_LEN, 'a');
+    ASSERT_TRUE(
+        AppDomainVerifyMgrClient::GetInstance()->IsAtomicServiceUrl("https://www.openharmony.com/" + longPath1));
+
+    ASSERT_TRUE(g_mgrInvokeOK);
+    AppDomainVerifyMgrClient::appDomainVerifyMgrServiceProxy_.ForceSetRefPtr(nullptr);
 }
 
 /**
- * @tc.name: IsValidPath_0100
- * @tc.desc: Test IsValidPath.
+ * @tc.name: ConvertFromShortUrlTest001
+ * @tc.desc: ConvertFromShortUrl test.
  * @tc.type: FUNC
  */
-HWTEST_F(AppDomainVerifyMgrClientTest, IsValidPath_0100, TestSize.Level0)
+HWTEST_F(AppDomainVerifyMgrClientTest, ConvertFromShortUrlTest001, TestSize.Level0)
 {
-    OHOS::Uri uri("https://www.openharmony.com/t1_-est/");
-    std::vector<std::string> segments;
-    uri.GetPathSegments(segments);
-    EXPECT_TRUE(AppDomainVerifyMgrClient::GetInstance()->IsValidPath(segments[0]));
+    std::shared_ptr<AppDomainVerifyMgrRemoteStubMock> mgrStubMock_ =
+        std::make_shared<AppDomainVerifyMgrRemoteStubMock>();
+    EXPECT_CALL(*mgrStubMock_, SendRequest(_, _, _, _)).Times(1).WillOnce(::testing::Invoke(MgrInvokeOK));
+    AppDomainVerifyMgrClient::appDomainVerifyMgrServiceProxy_ = sptr<AppDomainVerifyMgrServiceProxy>::MakeSptr(
+        mgrStubMock_.get());
+
+    OHOS::AAFwk::Want atomicWant;
+    sptr<IConvertCallback> cb = new CallBack;
+    AppDomainVerifyMgrClient::GetInstance()->ConvertFromShortUrl(atomicWant, cb);
+    ASSERT_TRUE(g_mgrInvokeOK);
+    AppDomainVerifyMgrClient::appDomainVerifyMgrServiceProxy_.ForceSetRefPtr(nullptr);
 }
+
 /**
  * @tc.name: Dump_0100
  * @tc.desc: Test Dump.

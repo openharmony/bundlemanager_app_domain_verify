@@ -26,6 +26,7 @@ public:
     virtual ~ConvertCallbackProxy() override;
 
     virtual void OnConvert(int resCode, OHOS::AAFwk::Want& want) override;
+    virtual void OnConvert(int resCode, TargetInfo& targetInfo) override;
 
 private:
     static inline BrokerDelegator<ConvertCallbackProxy> delegator_;

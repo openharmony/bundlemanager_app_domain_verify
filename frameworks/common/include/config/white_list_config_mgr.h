@@ -29,6 +29,7 @@ public:
     bool IsInWhiteList(const std::string& url);
     void UpdateWhiteList(const std::unordered_set<std::string>& whiteList);
 protected:
+    static bool IsMatched(const std::string& url, const std::string& regPatten);
     void Load();
     void LoadDefault();
     void LoadDynamic();

@@ -46,14 +46,14 @@ int ConvertCallbackStub::OnRemoteRequest(
     switch (code) {
         case static_cast<uint32_t>(ConvertCallbackInterfaceCode::ON_CONVERT_CALLBACK): {
             int32_t retCode = data.ReadInt32();
-            std::unique_ptr<OHOS::AAFwk::Want> w(data.ReadParcelable<OHOS::AAFwk::Want>());
-            OHOS::AAFwk::Want want;
+            std::unique_ptr<TargetInfo> w(data.ReadParcelable<TargetInfo>());
+            TargetInfo targetInfo;
             if (!w) {
                 APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "read parcelable want failed.");
                 return ERR_INVALID_VALUE;
             }
-            want = *w;
-            OnConvert(retCode, want);
+            targetInfo = *w;
+            OnConvert(retCode, targetInfo);
             break;
         }
         default:

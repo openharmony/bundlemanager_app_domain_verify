@@ -44,6 +44,8 @@ public:
     int QueryAssociatedBundleNames(const std::string& domain, std::vector<std::string>& bundleNames) override;
     int GetDeferredLink(std::string& link) override;
     int QueryAppDetailsWant(const std::string& link, AAFwk::Want& want) override;
+    bool IsShortUrl(const std::string& url) override;
+    void ConvertFromShortUrl(OHOS::AAFwk::Want& originWant, sptr<IConvertCallback>& callback) override;
 private:
     static inline BrokerDelegator<AppDomainVerifyMgrServiceProxy> delegator_;
 };

@@ -331,11 +331,9 @@ int AppDomainVerifyMgrServiceProxy::GetDeferredLink(std::string& link)
     MessageParcel reply;
     MessageOption option;
     WRITE_PARCEL_AND_RETURN_INT_IF_FAIL(InterfaceToken, data, GetDescriptor());
-    int32_t error = Remote()->SendRequest(
-        AppDomainVerifyMgrInterfaceCode::GET_DEFERRED_LINK, data, reply, option);
+    int32_t error = Remote()->SendRequest(AppDomainVerifyMgrInterfaceCode::GET_DEFERRED_LINK, data, reply, option);
     if (error != ERR_NONE) {
-        APP_DOMAIN_VERIFY_HILOGE(
-            APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "GetDeferredLink failed, error: %d", error);
+        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "GetDeferredLink failed, error: %d", error);
     }
     int32_t result = reply.ReadInt32();
     if (result != 0) {
@@ -347,7 +345,7 @@ int AppDomainVerifyMgrServiceProxy::GetDeferredLink(std::string& link)
     return result;
 }
 
-int AppDomainVerifyMgrServiceProxy::QueryAppDetailsWant(const std::string &url, AAFwk::Want& want)
+int AppDomainVerifyMgrServiceProxy::QueryAppDetailsWant(const std::string& url, AAFwk::Want& want)
 {
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "called");
     MessageParcel data;
@@ -356,11 +354,9 @@ int AppDomainVerifyMgrServiceProxy::QueryAppDetailsWant(const std::string &url, 
     WRITE_PARCEL_AND_RETURN_INT_IF_FAIL(InterfaceToken, data, GetDescriptor());
     WRITE_PARCEL_AND_RETURN_INT_IF_FAIL(String, data, url);
     WRITE_PARCEL_AND_RETURN_INT_IF_FAIL(Parcelable, data, &want);
-    int32_t error = Remote()->SendRequest(
-        AppDomainVerifyMgrInterfaceCode::QUERY_APP_DETAILS_WANT, data, reply, option);
+    int32_t error = Remote()->SendRequest(AppDomainVerifyMgrInterfaceCode::QUERY_APP_DETAILS_WANT, data, reply, option);
     if (error != ERR_NONE) {
-        APP_DOMAIN_VERIFY_HILOGE(
-            APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "QueryAppDetailsWant failed, error: %d", error);
+        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "QueryAppDetailsWant failed, error: %d", error);
     }
     int32_t result = reply.ReadInt32();
     if (result != 0) {
@@ -375,6 +371,40 @@ int AppDomainVerifyMgrServiceProxy::QueryAppDetailsWant(const std::string &url, 
     want = *w;
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "call end");
     return result;
+}
+bool AppDomainVerifyMgrServiceProxy::IsShortUrl(const std::string& url)
+{
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "called");
+    MessageParcel data;
+    MessageParcel reply;
+    MessageOption option;
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(InterfaceToken, data, GetDescriptor());
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String, data, url);
+    int32_t error = Remote()->SendRequest(AppDomainVerifyMgrInterfaceCode::IS_SHORT_URL, data, reply, option);
+    if (error != ERR_NONE) {
+        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "IsAtomicServiceUrl failed, error: %d", error);
+        return false;
+    }
+    bool status = false;
+    READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, reply, status);
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "call end");
+    return status;
+}
+void AppDomainVerifyMgrServiceProxy::ConvertFromShortUrl(AAFwk::Want& originWant, sptr<IConvertCallback>& callback)
+{
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "called");
+    MessageParcel data;
+    MessageParcel reply;
+    MessageOption option;
+    WRITE_PARCEL_AND_RETURN_IF_FAIL(InterfaceToken, data, GetDescriptor());
+    WRITE_PARCEL_AND_RETURN_IF_FAIL(Parcelable, data, &originWant);
+    WRITE_PARCEL_AND_RETURN_IF_FAIL(RemoteObject, data, callback->AsObject());
+
+    int32_t error = Remote()->SendRequest(AppDomainVerifyMgrInterfaceCode::CONVERT_FROM_SHORT_URL, data, reply, option);
+    if (error != ERR_NONE) {
+        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "ConvertToExplicitWant failed, error: %d", error);
+    }
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "call end");
 }
 }  // namespace AppDomainVerify
 }  // namespace OHOS

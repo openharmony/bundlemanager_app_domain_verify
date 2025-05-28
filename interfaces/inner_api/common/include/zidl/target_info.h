@@ -13,19 +13,28 @@
  * limitations under the License.
  */
 
-#ifndef APP_DOMAIN_VERIFY_I_CONVERT_CALLBACK_H
-#define APP_DOMAIN_VERIFY_I_CONVERT_CALLBACK_H
+#ifndef APP_DOMAIN_VERIFY_TARGET_INFO_H
+#define APP_DOMAIN_VERIFY_TARGET_INFO_H
 #include "iremote_broker.h"
 #include "want.h"
-#include "target_info.h"
-namespace OHOS {
-namespace AppDomainVerify {
-class IConvertCallback : public IRemoteBroker {
+namespace OHOS::AppDomainVerify {
+enum TargetType : uint32_t {
+    ATOMIC_SERVICE = 0,
+    APP,
+    APP_DETAIL,
+    WEB
+};
+
+struct TargetInfo : public Parcelable {
+    TargetType targetType;
+    OHOS::AAFwk::Want targetWant;
+
 public:
-    DECLARE_INTERFACE_DESCRIPTOR(u"ohos.appdomainverify.IConvertCallback");
-    virtual void OnConvert(int resCode, OHOS::AAFwk::Want& want) = 0;
-    virtual void OnConvert(int resCode, TargetInfo& targetInfo) = 0;
+    bool Marshalling(Parcel& parcel) const override;
+    static TargetInfo* Unmarshalling(Parcel& parcel);
+
+private:
+    bool ReadFromParcel(Parcel& parcel);
 };
 }
-}
-#endif  // APP_DOMAIN_VERIFY_I_CONVERT_CALLBACK_H
+#endif  // APP_DOMAIN_VERIFY_TARGET_INFO_H

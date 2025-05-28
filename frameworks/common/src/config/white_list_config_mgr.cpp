@@ -18,6 +18,7 @@
 #include "white_list_config_mgr.h"
 #include "app_domain_verify_hilog.h"
 #include "app_domain_verify_hisysevent.h"
+#include "regex.h"
 
 namespace OHOS::AppDomainVerify {
 const static std::string DYNAMIC_WHITE_LIST_PRE_PATH =
@@ -25,7 +26,11 @@ const static std::string DYNAMIC_WHITE_LIST_PRE_PATH =
 const static std::string DEFAULT_WHITE_LIST_PRE_PATH = "/system/etc/app_domain_verify/whitelist_pref";
 const static std::string DEFAULT_URL_KEY = "defaultUrl";
 const static std::string WHITE_LIST_KEY = "whiteList";
+const static std::string DEFAULT_REG_URL_KEY = "defaultRegUrl";
+const static std::string REG_WHITE_LIST_KEY = "RegWhiteList";
 const static std::string SPLITOR = ",";
+constexpr int REG_ERR_BUF = 1024;
+constexpr int NM = 10;
 WhiteListConfigMgr::WhiteListConfigMgr()
 {
     Load();
@@ -42,7 +47,7 @@ void WhiteListConfigMgr::LoadDefault()
         return;
     }
 
-    defaultWhiteUrl_ = preferences_->GetString(DEFAULT_URL_KEY, "");
+    defaultWhiteUrl_ = preferences_->GetString(DEFAULT_REG_URL_KEY, "");
     if (defaultWhiteUrl_.empty()) {
         UNIVERSAL_ERROR_EVENT(READ_DEFAULT_WHITE_LIST_FAULT);
         APP_DOMAIN_VERIFY_HILOGW(APP_DOMAIN_VERIFY_MODULE_COMMON, "WhiteListConfigMgr::Load defaultWhiteUrl empty.");
@@ -57,7 +62,7 @@ void WhiteListConfigMgr::LoadDynamic()
         return;
     }
 
-    auto whiteListStr = preferences_->GetString(WHITE_LIST_KEY, "");
+    auto whiteListStr = preferences_->GetString(REG_WHITE_LIST_KEY, "");
     Split(whiteListStr);
 }
 void WhiteListConfigMgr::Load()
@@ -112,7 +117,7 @@ bool WhiteListConfigMgr::Save()
     for (const auto& element : whiteListSet_) {
         strSteam << element << ",";
     }
-    auto ret = preferences_->PutString(WHITE_LIST_KEY, strSteam.str());
+    auto ret = preferences_->PutString(REG_WHITE_LIST_KEY, strSteam.str());
     if (ret != 0) {
         UNIVERSAL_ERROR_EVENT(WRITE_DYNAMIC_WHITE_LIST_FAULT);
         APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MODULE_COMMON, "put dynamic white list error ret:%{public}d.", ret);
@@ -130,12 +135,14 @@ bool WhiteListConfigMgr::IsInWhiteList(const std::string& url)
     std::lock_guard<std::mutex> lock(whiteListLock_);
     bool ret;
     if (whiteListSet_.empty()) {
-        ret = (url == defaultWhiteUrl_);
+        ret = IsMatched(url, defaultWhiteUrl_);
     } else {
-        ret = (whiteListSet_.count(url) != 0) || (url == defaultWhiteUrl_);
+        auto targetPatten = std::find_if(whiteListSet_.begin(), whiteListSet_.end(),
+            [&url](const std::string& urlPatten) { return IsMatched(url, urlPatten); });
+
+        ret = (targetPatten != whiteListSet_.end()) || (IsMatched(url, defaultWhiteUrl_));
     }
-    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "is count %{public}d url %{private}s",
-        whiteListSet_.count(url) != 0, url.c_str());
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "is matched url %{private}s", url.c_str());
     return ret;
 }
 void WhiteListConfigMgr::UpdateWhiteList(const std::unordered_set<std::string>& whiteList)
@@ -155,6 +162,35 @@ void WhiteListConfigMgr::UpdateWhiteList(const std::unordered_set<std::string>& 
             APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "save white list failed.");
         }
     }
+}
+
+bool WhiteListConfigMgr::IsMatched(const std::string& url, const std::string& regPatten)
+{
+    const char* bematch = url.c_str();
+    char errbuf[REG_ERR_BUF];
+    regex_t reg;
+    int errNum = 0;
+    int nm = NM;
+    regmatch_t pmatch[nm];
+    if (regcomp(&reg, regPatten.c_str(), REG_EXTENDED) < 0) {
+        regerror(errNum, &reg, errbuf, sizeof(errbuf));
+        APP_DOMAIN_VERIFY_HILOGW(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "regexec error:%{public}s", errbuf);
+        return false;
+    }
+    errNum = regexec(&reg, bematch, nm, pmatch, 0);
+    if (errNum == REG_NOMATCH) {
+        APP_DOMAIN_VERIFY_HILOGW(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "regexec no match");
+        regfree(&reg);
+        return false;
+    } else if (errNum) {
+        regerror(errNum, &reg, errbuf, sizeof(errbuf));
+        APP_DOMAIN_VERIFY_HILOGW(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "regexec error:%{public}s", errbuf);
+        regfree(&reg);
+        return false;
+    }
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "is valid path");
+    regfree(&reg);
+    return true;
 }
 
 }

@@ -25,6 +25,8 @@
 #include "app_domain_verify_agent_client.h"
 #include "app_domain_verify_error.h"
 #include "bundle_info_query.h"
+#include "sa_interface/app_domain_verify_mgr_service.h"
+
 namespace OHOS {
 namespace AppDomainVerify {
 constexpr const char* GET_DOMAIN_VERIFY_INFO = "ohos.permission.GET_APP_DOMAIN_BUNDLE_INFO";
@@ -429,6 +431,21 @@ int AppDomainVerifyMgrService::GetDeferredLink(std::string& link)
 bool AppDomainVerifyMgrService::IsUrlInBlackList(const std::string& url)
 {
     return IsAtomicServiceUrl(url);
+}
+
+bool AppDomainVerify::AppDomainVerifyMgrService::IsShortUrl(const std::string& url)
+{
+    return IsAtomicServiceUrl(url);;
+}
+void AppDomainVerifyMgrService::ConvertFromShortUrl(Want& originWant, sptr<IConvertCallback>& callback)
+{
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "called");
+    if (!PermissionManager::IsSACall()) {
+        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "only sa can call");
+        return;
+    }
+    AppDomainVerifyAgentClient::GetInstance()->ConvertToExplicitWant(originWant, callback);
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "called");
 }
 }  // namespace AppDomainVerify
 }  // namespace OHOS
