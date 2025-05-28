@@ -19,6 +19,7 @@
 #include "convert_callback_proxy.h"
 #include "convert_callback_interface_code.h"
 #include "app_domain_verify_parcel_util.h"
+#include "target_info.h"
 namespace OHOS::AppDomainVerify {
 using namespace testing;
 using namespace testing::ext;
@@ -48,6 +49,9 @@ void AppDomainVerifyConvertCallbackTest::TearDown(void)
 class CallBack : public ConvertCallbackStub {
 public:
     void OnConvert(int resCode, AAFwk::Want& want) override
+    {
+    }
+    void OnConvert(int resCode, TargetInfo& want) override
     {
     }
 };
@@ -144,5 +148,32 @@ HWTEST_F(AppDomainVerifyConvertCallbackTest, AppDomainVerifyConvertCallbackProxy
     int resCode = 0;
     OHOS::AAFwk::Want want;
     proxy->OnConvert(resCode, want);
+}
+
+/**
+ * @tc.name: AppDomainVerifyTargetInfoTest001
+ * @tc.desc: AddTask test
+ * @tc.type: FUNC
+ */
+HWTEST_F(AppDomainVerifyConvertCallbackTest, AppDomainVerifyTargetInfoTest001, TestSize.Level0)
+{
+    TargetInfo targetInfo;
+    OHOS::AAFwk::Want want;
+    want.SetUri("hello");
+    targetInfo.targetType = TargetType::ATOMIC_SERVICE;
+    targetInfo.targetWant = want;
+
+    Parcel parcel;
+    targetInfo.Marshalling(parcel);
+    auto unmarshalling = TargetInfo::Unmarshalling(parcel);
+    ASSERT_TRUE(unmarshalling->targetType == TargetType::ATOMIC_SERVICE);
+    ASSERT_TRUE(unmarshalling->targetWant.GetUri() == Uri("hello"));
+
+    Parcel parcel1;
+    unmarshalling = TargetInfo::Unmarshalling(parcel1);
+    ASSERT_TRUE(unmarshalling == nullptr);
+    parcel1.WriteInt32(TargetType::ATOMIC_SERVICE);
+    unmarshalling = TargetInfo::Unmarshalling(parcel1);
+    ASSERT_TRUE(unmarshalling == nullptr);
 }
 }

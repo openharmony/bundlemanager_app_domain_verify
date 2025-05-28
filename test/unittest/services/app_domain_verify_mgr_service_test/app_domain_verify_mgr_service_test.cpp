@@ -1251,5 +1251,127 @@ HWTEST_F(MgrServiceTest, LifeCycle001, TestSize.Level0)
     service->OnStop();
     ASSERT_TRUE(service != nullptr);
 }
+/**
+ * @tc.name: MgrServiceIsAtomicUrlTest001
+ * @tc.desc: is aotmic service url
+ * @tc.type: FUNC
+ */
+HWTEST_F(MgrServiceTest, MgrServiceIsShortUrlTest001, TestSize.Level0)
+{
+    std::string url = "https://www.openharmony.com";
+    MessageParcel data;
+    MessageParcel reply;
+    MessageOption option;
+    WRITE_PARCEL_AND_RETURN_IF_FAIL(InterfaceToken, data, IAppDomainVerifyMgrService::GetDescriptor());
+    WRITE_PARCEL_AND_RETURN_IF_FAIL(String, data, url);
 
+    int32_t error = appDomainVerifyMgrService->OnRemoteRequest(
+        AppDomainVerifyMgrInterfaceCode::IS_SHORT_URL, data, reply, option);
+    ASSERT_TRUE(error == ERR_OK);
+}
+/**
+ * @tc.name: MgrServiceIsShortUrlTest002
+ * @tc.desc: is aotmic service url without permission
+ * @tc.type: FUNC
+ */
+HWTEST_F(MgrServiceTest, MgrServiceIsShortUrlTest002, TestSize.Level0)
+{
+    std::string url = "https://www.openharmony.com";
+    MessageParcel data;
+    MessageParcel reply;
+    MessageOption option;
+    WRITE_PARCEL_AND_RETURN_IF_FAIL(InterfaceToken, data, IAppDomainVerifyMgrService::GetDescriptor());
+    WRITE_PARCEL_AND_RETURN_IF_FAIL(String, data, url);
+
+    auto mocPermissionManager = std::make_shared<MocPermissionManager>();
+    EXPECT_CALL(*mocPermissionManager, IsSACall()).Times(1).WillOnce(Return(false));
+    DoMocPermissionManager(mocPermissionManager);
+
+    int32_t error = appDomainVerifyMgrService->OnRemoteRequest(
+        AppDomainVerifyMgrInterfaceCode::IS_SHORT_URL, data, reply, option);
+    ASSERT_TRUE(error == ERR_OK);
+}
+/**
+ * @tc.name: MgrServiceConvertFromShortUrlTest001
+ * @tc.desc: convert to explicit want
+ * @tc.type: FUNC
+ */
+HWTEST_F(MgrServiceTest, MgrServiceConvertFromShortUrlTest001, TestSize.Level0)
+{
+    OHOS::AAFwk::Want implicitWant;
+    sptr<MocConvertCallback> callback = new MocConvertCallback;
+    MessageParcel data;
+    MessageParcel reply;
+    MessageOption option;
+    WRITE_PARCEL_AND_RETURN_IF_FAIL(InterfaceToken, data, IAppDomainVerifyMgrService::GetDescriptor());
+    WRITE_PARCEL_AND_RETURN_IF_FAIL(Parcelable, data, &implicitWant);
+    WRITE_PARCEL_AND_RETURN_IF_FAIL(RemoteObject, data, callback->AsObject());
+
+    int32_t error = appDomainVerifyMgrService->OnRemoteRequest(
+        AppDomainVerifyMgrInterfaceCode::CONVERT_FROM_SHORT_URL, data, reply, option);
+    ASSERT_TRUE(error == ERR_OK);
+}
+
+/**
+ * @tc.name: MgrServiceConvertFromShortUrlTest002
+ * @tc.desc: convert to explicit want with out want
+ * @tc.type: FUNC
+ */
+HWTEST_F(MgrServiceTest, MgrServiceConvertFromShortUrlTest002, TestSize.Level0)
+{
+    OHOS::AAFwk::Want implicitWant;
+    sptr<MocConvertCallback> callback = new MocConvertCallback;
+    MessageParcel data;
+    MessageParcel reply;
+    MessageOption option;
+    WRITE_PARCEL_AND_RETURN_IF_FAIL(InterfaceToken, data, IAppDomainVerifyMgrService::GetDescriptor());
+    WRITE_PARCEL_AND_RETURN_IF_FAIL(RemoteObject, data, callback->AsObject());
+
+    int32_t error = appDomainVerifyMgrService->OnRemoteRequest(
+        AppDomainVerifyMgrInterfaceCode::CONVERT_FROM_SHORT_URL, data, reply, option);
+    ASSERT_TRUE(error != ERR_OK);
+}
+/**
+ * @tc.name: MgrServiceConvertFromShortUrlTest003
+ * @tc.desc: convert to explicit want without cb
+ * @tc.type: FUNC
+ */
+HWTEST_F(MgrServiceTest, MgrServiceConvertFromShortUrlTest003, TestSize.Level0)
+{
+    OHOS::AAFwk::Want implicitWant;
+    sptr<MocConvertCallback> callback = new MocConvertCallback;
+    MessageParcel data;
+    MessageParcel reply;
+    MessageOption option;
+    WRITE_PARCEL_AND_RETURN_IF_FAIL(InterfaceToken, data, IAppDomainVerifyMgrService::GetDescriptor());
+    WRITE_PARCEL_AND_RETURN_IF_FAIL(Parcelable, data, &implicitWant);
+
+    int32_t error = appDomainVerifyMgrService->OnRemoteRequest(
+        AppDomainVerifyMgrInterfaceCode::CONVERT_FROM_SHORT_URL, data, reply, option);
+    ASSERT_TRUE(error != ERR_OK);
+}
+/**
+ * @tc.name: MgrServiceConvertFromShortUrlTest004
+ * @tc.desc: convert to explicit want without permission
+ * @tc.type: FUNC
+ */
+HWTEST_F(MgrServiceTest, MgrServiceConvertFromShortUrlTest004, TestSize.Level0)
+{
+    OHOS::AAFwk::Want implicitWant;
+    sptr<MocConvertCallback> callback = new MocConvertCallback;
+    MessageParcel data;
+    MessageParcel reply;
+    MessageOption option;
+    WRITE_PARCEL_AND_RETURN_IF_FAIL(InterfaceToken, data, IAppDomainVerifyMgrService::GetDescriptor());
+    WRITE_PARCEL_AND_RETURN_IF_FAIL(Parcelable, data, &implicitWant);
+    WRITE_PARCEL_AND_RETURN_IF_FAIL(RemoteObject, data, callback->AsObject());
+
+    auto mocPermissionManager = std::make_shared<MocPermissionManager>();
+    EXPECT_CALL(*mocPermissionManager, IsSACall()).Times(1).WillOnce(Return(false));
+    DoMocPermissionManager(mocPermissionManager);
+
+    int32_t error = appDomainVerifyMgrService->OnRemoteRequest(
+        AppDomainVerifyMgrInterfaceCode::CONVERT_FROM_SHORT_URL, data, reply, option);
+    ASSERT_TRUE(error == ERR_OK);
+}
 }

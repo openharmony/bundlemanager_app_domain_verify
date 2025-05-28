@@ -81,6 +81,9 @@ public:
     void OnConvert(int resCode, AAFwk::Want& want) override
     {
     }
+    void OnConvert(int resCode, TargetInfo& want) override
+    {
+    }
 };
 /**
  * @tc.name: AppDomainVerifyAgentClientTest001

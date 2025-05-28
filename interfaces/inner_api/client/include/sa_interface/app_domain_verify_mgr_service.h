@@ -55,7 +55,8 @@ public:
         const std::string& domain, std::vector<std::string>& bundleNames) override;
     API_EXPORT int GetDeferredLink(std::string& link) override;
     API_EXPORT int QueryAppDetailsWant(const std::string& link, AAFwk::Want& want) override;
-
+    API_EXPORT bool IsShortUrl(const std::string& url) override;
+    API_EXPORT void ConvertFromShortUrl(OHOS::AAFwk::Want& originWant, sptr<IConvertCallback>& callback) override;
 protected:
     void OnDump() override;
     int Dump(int fd, const std::vector<std::u16string>& args) override;

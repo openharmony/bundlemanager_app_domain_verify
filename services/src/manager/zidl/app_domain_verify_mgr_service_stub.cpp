@@ -297,6 +297,35 @@ int32_t AppDomainVerifyMgrServiceStub::OnQueryAppDetailsWant(MessageParcel& data
     WRITE_PARCEL_AND_RETURN_INT_IF_FAIL(Parcelable, reply, &want);
     return ERR_OK;
 }
+int32_t AppDomainVerifyMgrServiceStub::OnIsShortUrl(MessageParcel& data, MessageParcel& reply)
+{
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "called");
+    std::string url = data.ReadString();
+    bool status = IsAtomicServiceUrl(url);
+    WRITE_PARCEL_AND_RETURN_INT_IF_FAIL(Bool, reply, status);
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "call end");
+    return ERR_OK;
+}
+int32_t AppDomainVerifyMgrServiceStub::OnConvertFromShortUrl(MessageParcel& data, MessageParcel& reply)
+{
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "called");
+    OHOS::AAFwk::Want want;
+    std::unique_ptr<OHOS::AAFwk::Want> w(data.ReadParcelable<OHOS::AAFwk::Want>());
+    if (!w) {
+        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "read parcelable want failed.");
+        return ERR_INVALID_VALUE;
+    }
+    want = *w;
+    sptr<IRemoteObject> object = data.ReadRemoteObject();
+    if (object == nullptr) {
+        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "read failed");
+        return ERR_INVALID_VALUE;
+    }
+    sptr<IConvertCallback> cleanCacheCallback = iface_cast<IConvertCallback>(object);
+    ConvertToExplicitWant(want, cleanCacheCallback);
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "call end");
+    return ERR_OK;
+}
 
 }  // namespace AppDomainVerify
 }  // namespace OHOS
