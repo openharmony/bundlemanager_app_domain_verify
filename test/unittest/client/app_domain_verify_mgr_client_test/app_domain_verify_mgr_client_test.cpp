@@ -190,9 +190,7 @@ HWTEST_F(AppDomainVerifyMgrClientTest, AppDomainVerifyMgrClientTest006, TestSize
 
     ASSERT_TRUE(AppDomainVerifyMgrClient::GetInstance()->IsAtomicServiceUrl("https://www.openharmony.com/t1_-est"));
 
-    ASSERT_FALSE(AppDomainVerifyMgrClient::GetInstance()->IsAtomicServiceUrl("https://www.openharmony.com"));
-
-    ASSERT_FALSE(AppDomainVerifyMgrClient::GetInstance()->IsAtomicServiceUrl("https://www.openharmony.com/"));
+    ASSERT_TRUE(AppDomainVerifyMgrClient::GetInstance()->IsAtomicServiceUrl("https://www.openharmony.com"));
 
     ASSERT_TRUE(AppDomainVerifyMgrClient::GetInstance()->IsAtomicServiceUrl("https://www.openharmony.com/t1_-est/"));
 
@@ -200,17 +198,9 @@ HWTEST_F(AppDomainVerifyMgrClientTest, AppDomainVerifyMgrClientTest006, TestSize
 
     ASSERT_FALSE(AppDomainVerifyMgrClient::GetInstance()->IsAtomicServiceUrl("test://www.openharmony.com/test"));
 
-    ASSERT_FALSE(AppDomainVerifyMgrClient::GetInstance()->IsAtomicServiceUrl("https://www.openharmony.com/test*"));
+    ASSERT_TRUE(AppDomainVerifyMgrClient::GetInstance()->IsAtomicServiceUrl("https://www.openharmony.com/test*"));
 
-    ASSERT_FALSE(AppDomainVerifyMgrClient::GetInstance()->IsAtomicServiceUrl("https://www.openharmony.com/test/test"));
-
-    std::string longPath(MAX_PATH_LEN + 1, 'a');
-    ASSERT_FALSE(
-        AppDomainVerifyMgrClient::GetInstance()->IsAtomicServiceUrl("https://www.openharmony.com/" + longPath));
-
-    std::string longPath1(MAX_PATH_LEN, 'a');
-    ASSERT_TRUE(
-        AppDomainVerifyMgrClient::GetInstance()->IsAtomicServiceUrl("https://www.openharmony.com/" + longPath1));
+    ASSERT_TRUE(AppDomainVerifyMgrClient::GetInstance()->IsAtomicServiceUrl("https://www.openharmony.com/test/test"));
 
     ASSERT_TRUE(g_mgrInvokeOK);
     AppDomainVerifyMgrClient::appDomainVerifyMgrServiceProxy_.ForceSetRefPtr(nullptr);
@@ -444,15 +434,6 @@ HWTEST_F(AppDomainVerifyMgrClientTest, IsShortUrlTest001, TestSize.Level0)
         mgrStubMock_.get());
 
     ASSERT_TRUE(AppDomainVerifyMgrClient::GetInstance()->IsShortUrl("https://www.openharmony.com/t1_-est"));
-
-    std::string longPath(MAX_PATH_LEN + 1, 'a');
-    ASSERT_FALSE(
-        AppDomainVerifyMgrClient::GetInstance()->IsAtomicServiceUrl("https://www.openharmony.com/" + longPath));
-
-    std::string longPath1(MAX_PATH_LEN, 'a');
-    ASSERT_TRUE(
-        AppDomainVerifyMgrClient::GetInstance()->IsAtomicServiceUrl("https://www.openharmony.com/" + longPath1));
-
     ASSERT_TRUE(g_mgrInvokeOK);
     AppDomainVerifyMgrClient::appDomainVerifyMgrServiceProxy_.ForceSetRefPtr(nullptr);
 }

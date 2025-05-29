@@ -71,6 +71,10 @@ int32_t AppDomainVerifyMgrServiceStub::OnRemoteRequest(
             return OnGetDeferredLink(data, reply);
         case static_cast<uint32_t>(AppDomainVerifyMgrInterfaceCode::QUERY_APP_DETAILS_WANT):
             return OnQueryAppDetailsWant(data, reply);
+        case static_cast<uint32_t>(AppDomainVerifyMgrInterfaceCode::IS_SHORT_URL):
+            return OnIsShortUrl(data, reply);
+        case static_cast<uint32_t>(AppDomainVerifyMgrInterfaceCode::CONVERT_FROM_SHORT_URL):
+            return OnConvertFromShortUrl(data, reply);
         default:
             APP_DOMAIN_VERIFY_HILOGW(
                 APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "receive unknown code, code = %{public}d", code);

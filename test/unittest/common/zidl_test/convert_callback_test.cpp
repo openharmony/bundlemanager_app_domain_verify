@@ -55,6 +55,7 @@ public:
     {
     }
 };
+
 /**
  * @tc.name: AppDomainVerifyConvertCallbackStubTest001
  * @tc.desc: AddTask test
@@ -68,9 +69,10 @@ HWTEST_F(AppDomainVerifyConvertCallbackTest, AppDomainVerifyConvertCallbackStubT
 
     int resCode = 0;
     OHOS::AAFwk::Want want;
+    TargetInfo targetInfo;
     WRITE_PARCEL_AND_RETURN_IF_FAIL(InterfaceToken, data, IConvertCallback::GetDescriptor());
     WRITE_PARCEL_AND_RETURN_IF_FAIL(Int32, data, resCode);
-    WRITE_PARCEL_AND_RETURN_IF_FAIL(Parcelable, data, &want);
+    WRITE_PARCEL_AND_RETURN_IF_FAIL(Parcelable, data, &targetInfo);
     sptr<CallBack> callback = new CallBack;
     auto ret = callback->OnRemoteRequest(
         static_cast<int32_t>(ConvertCallbackInterfaceCode::ON_CONVERT_CALLBACK), data, reply, option);

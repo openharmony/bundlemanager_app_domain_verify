@@ -19,15 +19,14 @@
 #include "app_domain_verify_hilog.h"
 #include "app_domain_verify_hisysevent.h"
 #include "regex.h"
+#include "uri.h"
 
 namespace OHOS::AppDomainVerify {
 const static std::string DYNAMIC_WHITE_LIST_PRE_PATH =
     "/data/service/el1/public/app_domain_verify_mgr_service/whitelist_pref";
 const static std::string DEFAULT_WHITE_LIST_PRE_PATH = "/system/etc/app_domain_verify/whitelist_pref";
-const static std::string DEFAULT_URL_KEY = "defaultUrl";
-const static std::string WHITE_LIST_KEY = "whiteList";
-const static std::string DEFAULT_REG_URL_KEY = "defaultRegUrl";
-const static std::string REG_WHITE_LIST_KEY = "RegWhiteList";
+const static std::string REG_DEFAULT_URL_KEY = "regDefaultUrl";
+const static std::string REG_WHITE_LIST_KEY = "regWhiteList";
 const static std::string SPLITOR = ",";
 constexpr int REG_ERR_BUF = 1024;
 constexpr int NM = 10;
@@ -47,7 +46,7 @@ void WhiteListConfigMgr::LoadDefault()
         return;
     }
 
-    defaultWhiteUrl_ = preferences_->GetString(DEFAULT_REG_URL_KEY, "");
+    defaultWhiteUrl_ = preferences_->GetString(REG_DEFAULT_URL_KEY, "");
     if (defaultWhiteUrl_.empty()) {
         UNIVERSAL_ERROR_EVENT(READ_DEFAULT_WHITE_LIST_FAULT);
         APP_DOMAIN_VERIFY_HILOGW(APP_DOMAIN_VERIFY_MODULE_COMMON, "WhiteListConfigMgr::Load defaultWhiteUrl empty.");
@@ -142,15 +141,16 @@ bool WhiteListConfigMgr::IsInWhiteList(const std::string& url)
 
         ret = (targetPatten != whiteListSet_.end()) || (IsMatched(url, defaultWhiteUrl_));
     }
-    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "is matched url %{private}s", url.c_str());
+    APP_DOMAIN_VERIFY_HILOGI(
+        APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "is matched url %{private}s, ret:%{public}d", url.c_str(), ret);
     return ret;
 }
 void WhiteListConfigMgr::UpdateWhiteList(const std::unordered_set<std::string>& whiteList)
 {
-    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "called");
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "called 1");
     std::unordered_set<std::string> filtedWhiteList;
     std::for_each(whiteList.begin(), whiteList.end(), [&filtedWhiteList](const std::string& element) {
-        if (UrlUtil::IsValidUrl(element)) {
+        if (!element.empty()) {
             filtedWhiteList.insert(element);
         }
     });
@@ -166,6 +166,10 @@ void WhiteListConfigMgr::UpdateWhiteList(const std::unordered_set<std::string>& 
 
 bool WhiteListConfigMgr::IsMatched(const std::string& url, const std::string& regPatten)
 {
+    if (regPatten.empty()) {
+        APP_DOMAIN_VERIFY_HILOGW(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "regPatten null");
+        return false;
+    }
     const char* bematch = url.c_str();
     char errbuf[REG_ERR_BUF];
     regex_t reg;
