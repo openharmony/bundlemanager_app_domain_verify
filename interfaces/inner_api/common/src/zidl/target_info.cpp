@@ -43,7 +43,7 @@ bool TargetInfo::ReadFromParcel(Parcel& parcel)
     OHOS::AAFwk::Want want;
     if (!w) {
         APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "read parcelable want failed.");
-        return ERR_INVALID_VALUE;
+        return false;
     }
     targetWant = *w;
     return true;

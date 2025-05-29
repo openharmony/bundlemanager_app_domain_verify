@@ -53,13 +53,17 @@ void AppDomainVerifyConfigTest::TearDown(void)
     GTEST_LOG_(INFO) << "TearDown";
     MockPreferences(nullptr);
 }
-const static std::string DEFAULT_URL = "https://atomic.openharmony.com";
-const static std::string DYNAMIC_URL1 = "https://atomic1.openharmony.com";
-const static std::string DYNAMIC_URL2 = "https://atomic2.openharmony.com";
-const static std::string OTHER_URL = "https://atomic-other.openharmony.com";
-const static std::string DEFAULT_URL_KEY = "defaultUrl";
-const static std::string WHITE_LIST_KEY = "whiteList";
+const static std::string REG_DEFAULT_KEY = R"(^https:\/\/[a-zA-Z0-9-]+.openharmony.link\/123)";
+const static std::string REG_DYNAMIC_KEY1 = R"(^https:\/\/[a-zA-Z0-9-]+.openharmony1.link\/123)";
+const static std::string REG_DYNAMIC_KEY2 = R"(^https:\/\/[a-zA-Z0-9-]+.openharmony2.link\/123)";
+const static std::string DEFAULT_URL = "https://atomic.openharmony.link/123";
+const static std::string DYNAMIC_URL1 = "https://atomic1.openharmony1.link/123";
+const static std::string DYNAMIC_URL2 = "https://atomic2.openharmony2.link/123";
+const static std::string OTHER_URL = "https://atomic-other.openharmony3.link/123";
+const static std::string REG_DEFAULT_URL_KEY = "regDefaultUrl";
+const static std::string REG_WHITE_LIST_KEY = "regWhiteList";
 const static std::string SPLITOR = ",";
+
 /**
  * @tc.name: AppDomainVerifyCheckerTest001
  * @tc.desc: Checker test null preferences
@@ -72,12 +76,12 @@ HWTEST_F(AppDomainVerifyConfigTest, AppDomainVerifyCheckerTest001, TestSize.Leve
     std::shared_ptr<WhiteListConfigMgr> checker = std::make_shared<WhiteListConfigMgr>();
 
     ASSERT_FALSE(checker->IsInWhiteList(OTHER_URL));
-    ASSERT_FALSE(checker->IsInWhiteList(DEFAULT_URL_KEY));
+    ASSERT_FALSE(checker->IsInWhiteList(DEFAULT_URL));
     ASSERT_FALSE(checker->IsInWhiteList(DYNAMIC_URL1));
 }
 /**
  * @tc.name: AppDomainVerifyCheckerTest002
- * @tc.desc: AddTask test, all return null
+ * @tc.desc: Checker test empty preferences
  * @tc.type: FUNC
  */
 HWTEST_F(AppDomainVerifyConfigTest, AppDomainVerifyCheckerTest002, TestSize.Level0)
@@ -89,7 +93,7 @@ HWTEST_F(AppDomainVerifyConfigTest, AppDomainVerifyCheckerTest002, TestSize.Leve
     std::shared_ptr<WhiteListConfigMgr> checker = std::make_shared<WhiteListConfigMgr>();
 
     ASSERT_FALSE(checker->IsInWhiteList(OTHER_URL));
-    ASSERT_FALSE(checker->IsInWhiteList(DEFAULT_URL_KEY));
+    ASSERT_FALSE(checker->IsInWhiteList(DEFAULT_URL));
     ASSERT_FALSE(checker->IsInWhiteList(DYNAMIC_URL1));
 }
 
@@ -101,7 +105,7 @@ HWTEST_F(AppDomainVerifyConfigTest, AppDomainVerifyCheckerTest002, TestSize.Leve
 HWTEST_F(AppDomainVerifyConfigTest, AppDomainVerifyCheckerTest003, TestSize.Level0)
 {
     std::shared_ptr<MocPreferences> mocPreferences = std::make_shared<MocPreferences>();
-    EXPECT_CALL(*mocPreferences, GetString(_, _)).Times(AtLeast(1)).WillRepeatedly(Return(DEFAULT_URL));
+    EXPECT_CALL(*mocPreferences, GetString(_, _)).Times(AtLeast(1)).WillRepeatedly(Return(REG_DEFAULT_KEY));
     MockPreferences(mocPreferences);
 
     std::shared_ptr<WhiteListConfigMgr> checker = std::make_shared<WhiteListConfigMgr>();
@@ -110,6 +114,7 @@ HWTEST_F(AppDomainVerifyConfigTest, AppDomainVerifyCheckerTest003, TestSize.Leve
     ASSERT_TRUE(checker->IsInWhiteList(DEFAULT_URL));
     ASSERT_FALSE(checker->IsInWhiteList(DYNAMIC_URL1));
 }
+
 /**
  * @tc.name: AppDomainVerifyCheckerTest004
  * @tc.desc: AddTask test, return dynamic
@@ -118,8 +123,8 @@ HWTEST_F(AppDomainVerifyConfigTest, AppDomainVerifyCheckerTest003, TestSize.Leve
 HWTEST_F(AppDomainVerifyConfigTest, AppDomainVerifyCheckerTest004, TestSize.Level0)
 {
     std::shared_ptr<MocPreferences> mocPreferences = std::make_shared<MocPreferences>();
-    EXPECT_CALL(*mocPreferences, GetString(DEFAULT_URL_KEY, _)).Times(AtLeast(1)).WillOnce(Return(DEFAULT_URL));
-    EXPECT_CALL(*mocPreferences, GetString(WHITE_LIST_KEY, _)).Times(AtLeast(1)).WillOnce(Return(DYNAMIC_URL1));
+    EXPECT_CALL(*mocPreferences, GetString(REG_DEFAULT_URL_KEY, _)).Times(AtLeast(1)).WillOnce(Return(REG_DEFAULT_KEY));
+    EXPECT_CALL(*mocPreferences, GetString(REG_WHITE_LIST_KEY, _)).Times(AtLeast(1)).WillOnce(Return(REG_DYNAMIC_KEY1));
     MockPreferences(mocPreferences);
 
     std::shared_ptr<WhiteListConfigMgr> checker = std::make_shared<WhiteListConfigMgr>();
@@ -136,8 +141,10 @@ HWTEST_F(AppDomainVerifyConfigTest, AppDomainVerifyCheckerTest004, TestSize.Leve
 HWTEST_F(AppDomainVerifyConfigTest, AppDomainVerifyCheckerTest005, TestSize.Level0)
 {
     std::shared_ptr<MocPreferences> mocPreferences = std::make_shared<MocPreferences>();
-    EXPECT_CALL(*mocPreferences, GetString(DEFAULT_URL_KEY, _)).Times(AtLeast(1)).WillOnce(Return(DEFAULT_URL));
-    EXPECT_CALL(*mocPreferences, GetString(WHITE_LIST_KEY, _)).Times(AtLeast(1)).WillOnce(Return(DYNAMIC_URL1 + ","));
+    EXPECT_CALL(*mocPreferences, GetString(REG_DEFAULT_URL_KEY, _)).Times(AtLeast(1)).WillOnce(Return(REG_DEFAULT_KEY));
+    EXPECT_CALL(*mocPreferences, GetString(REG_WHITE_LIST_KEY, _))
+        .Times(AtLeast(1))
+        .WillOnce(Return(REG_DYNAMIC_KEY1 + ","));
     MockPreferences(mocPreferences);
 
     std::shared_ptr<WhiteListConfigMgr> checker = std::make_shared<WhiteListConfigMgr>();
@@ -146,6 +153,7 @@ HWTEST_F(AppDomainVerifyConfigTest, AppDomainVerifyCheckerTest005, TestSize.Leve
     ASSERT_TRUE(checker->IsInWhiteList(DYNAMIC_URL1));
     ASSERT_TRUE(checker->IsInWhiteList(DEFAULT_URL));
 }
+
 /**
  * @tc.name: AppDomainVerifyCheckerTest006
  * @tc.desc: AddTask test, return dynamic
@@ -154,10 +162,10 @@ HWTEST_F(AppDomainVerifyConfigTest, AppDomainVerifyCheckerTest005, TestSize.Leve
 HWTEST_F(AppDomainVerifyConfigTest, AppDomainVerifyCheckerTest006, TestSize.Level0)
 {
     std::shared_ptr<MocPreferences> mocPreferences = std::make_shared<MocPreferences>();
-    EXPECT_CALL(*mocPreferences, GetString(DEFAULT_URL_KEY, _)).Times(AtLeast(1)).WillOnce(Return(DEFAULT_URL));
-    EXPECT_CALL(*mocPreferences, GetString(WHITE_LIST_KEY, _))
+    EXPECT_CALL(*mocPreferences, GetString(REG_DEFAULT_URL_KEY, _)).Times(AtLeast(1)).WillOnce(Return(REG_DEFAULT_KEY));
+    EXPECT_CALL(*mocPreferences, GetString(REG_WHITE_LIST_KEY, _))
         .Times(AtLeast(1))
-        .WillOnce(Return(DYNAMIC_URL1 + "," + DYNAMIC_URL2));
+        .WillOnce(Return(REG_DYNAMIC_KEY1 + "," + REG_DYNAMIC_KEY2));
     MockPreferences(mocPreferences);
     std::shared_ptr<WhiteListConfigMgr> checker = std::make_shared<WhiteListConfigMgr>();
 
@@ -181,6 +189,7 @@ HWTEST_F(AppDomainVerifyConfigTest, AppDomainVerifyUpdaterTest001, TestSize.Leve
 
     ASSERT_TRUE(updater->whiteListSet_.empty());
 }
+
 /**
  * @tc.name: AppDomainVerifyUpdaterTest002
  * @tc.desc: AddTask test, return null ref
@@ -189,16 +198,19 @@ HWTEST_F(AppDomainVerifyConfigTest, AppDomainVerifyUpdaterTest001, TestSize.Leve
 HWTEST_F(AppDomainVerifyConfigTest, AppDomainVerifyUpdaterTest002, TestSize.Level0)
 {
     std::shared_ptr<MocPreferences> mocPreferences = std::make_shared<MocPreferences>();
-    EXPECT_CALL(*mocPreferences, PutString(WHITE_LIST_KEY, DYNAMIC_URL1 + ",")).Times(AtLeast(1)).WillOnce(Return(1));
+    EXPECT_CALL(*mocPreferences, PutString(REG_WHITE_LIST_KEY, REG_DYNAMIC_KEY1 + ","))
+        .Times(AtLeast(1))
+        .WillOnce(Return(1));
     MockPreferences(mocPreferences);
     std::shared_ptr<WhiteListConfigMgr> updater = std::make_shared<WhiteListConfigMgr>();
     std::unordered_set<std::string> whiteList;
-    whiteList.insert(DYNAMIC_URL1);
+    whiteList.insert(REG_DYNAMIC_KEY1);
 
     updater->UpdateWhiteList(whiteList);
 
     ASSERT_TRUE(!updater->whiteListSet_.empty());
 }
+
 /**
  * @tc.name: AppDomainVerifyUpdaterTest003
  * @tc.desc: AddTask test, return ok
@@ -207,14 +219,12 @@ HWTEST_F(AppDomainVerifyConfigTest, AppDomainVerifyUpdaterTest002, TestSize.Leve
 HWTEST_F(AppDomainVerifyConfigTest, AppDomainVerifyUpdaterTest003, TestSize.Level0)
 {
     std::shared_ptr<MocPreferences> mocPreferences = std::make_shared<MocPreferences>();
-    EXPECT_CALL(*mocPreferences, PutString(WHITE_LIST_KEY, _))
-        .Times(1)
-        .WillOnce(Return(0));
+    EXPECT_CALL(*mocPreferences, PutString(REG_WHITE_LIST_KEY, _)).Times(1).WillOnce(Return(0));
     MockPreferences(mocPreferences);
     std::shared_ptr<WhiteListConfigMgr> updater = std::make_shared<WhiteListConfigMgr>();
     std::unordered_set<std::string> whiteList;
-    whiteList.insert(DYNAMIC_URL1);
-    whiteList.insert(DYNAMIC_URL2);
+    whiteList.insert(REG_DYNAMIC_KEY1);
+    whiteList.insert(REG_DYNAMIC_KEY2);
 
     updater->UpdateWhiteList(whiteList);
 
@@ -228,21 +238,19 @@ HWTEST_F(AppDomainVerifyConfigTest, AppDomainVerifyUpdaterTest003, TestSize.Leve
 HWTEST_F(AppDomainVerifyConfigTest, AppDomainVerifyUpdaterTest004, TestSize.Level0)
 {
     std::shared_ptr<MocPreferences> mocPreferences = std::make_shared<MocPreferences>();
-    EXPECT_CALL(
-        *mocPreferences, PutString(WHITE_LIST_KEY, _))
-        .Times(1)
-        .WillOnce(Return(0));
+    EXPECT_CALL(*mocPreferences, PutString(REG_WHITE_LIST_KEY, _)).Times(1).WillOnce(Return(0));
     MockPreferences(mocPreferences);
     std::shared_ptr<WhiteListConfigMgr> updater = std::make_shared<WhiteListConfigMgr>();
     std::unordered_set<std::string> whiteList;
     whiteList.insert("  ");
-    whiteList.insert(DYNAMIC_URL1);
-    whiteList.insert(DYNAMIC_URL2);
+    whiteList.insert(REG_DYNAMIC_KEY1);
+    whiteList.insert(REG_DYNAMIC_KEY2);
 
     updater->UpdateWhiteList(whiteList);
 
     ASSERT_TRUE(!updater->whiteListSet_.empty());
 }
+
 /**
  * @tc.name: AppDomainVerifyUpdaterTest005
  * @tc.desc: AddTask test, empty whitelist
@@ -277,4 +285,5 @@ HWTEST_F(AppDomainVerifyConfigTest, AppDomainVerifyUpdaterTest006, TestSize.Leve
 
     ASSERT_TRUE(updater->whiteListSet_.empty());
 }
+
 }
