@@ -220,28 +220,7 @@ bool AppDomainVerifyMgrClient::IsValidUrl(const std::string& url)
 }
 
 #endif
-bool AppDomainVerifyMgrClient::IsAtomicServiceUrl(const std::string& url)
-{
-#ifdef _CUT_LINK_CONVERT_
-    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "not support, will return false!");
-    return false;
-#else
-    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "called, url %{public}s", MaskStr(url).c_str());
-    if (!IsValidUrl(url)) {
-        APP_DOMAIN_VERIFY_HILOGW(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "url is invalid!");
-        return false;
-    }
-    bool ret{ false };
-    std::lock_guard<std::mutex> autoLock(proxyLock_);
-    if (IsServiceAvailable()) {
-        std::string identity = IPCSkeleton::ResetCallingIdentity();
-        ret = appDomainVerifyMgrServiceProxy_->IsAtomicServiceUrl(url);
-        IPCSkeleton::SetCallingIdentity(identity);
-    }
-    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "call end, IsAtomicServiceUrl:%{public}d", ret);
-    return ret;
-#endif
-}
+
 void AppDomainVerifyMgrClient::UpdateWhiteListUrls(const std::vector<std::string>& urls)
 {
 #ifdef _CUT_LINK_CONVERT_

@@ -48,10 +48,7 @@ void AppDomainVerifyConvertCallbackTest::TearDown(void)
 }
 class CallBack : public ConvertCallbackStub {
 public:
-    void OnConvert(int resCode, AAFwk::Want& want) override
-    {
-    }
-    void OnConvert(int resCode, TargetInfo& want) override
+    void OnConvert(int resCode, TargetInfo& targetInfo) override
     {
     }
 };
@@ -137,19 +134,6 @@ HWTEST_F(AppDomainVerifyConvertCallbackTest, AppDomainVerifyConvertCallbackStubT
     auto ret = callback->OnRemoteRequest(
         static_cast<int32_t>(ConvertCallbackInterfaceCode::ON_CONVERT_CALLBACK), data, reply, option);
     ASSERT_TRUE(ret != 0);
-}
-/**
- * @tc.name: AppDomainVerifyConvertCallbackProxyTest001
- * @tc.desc: AddTask test
- * @tc.type: FUNC
- */
-HWTEST_F(AppDomainVerifyConvertCallbackTest, AppDomainVerifyConvertCallbackProxyTest001, TestSize.Level0)
-{
-    sptr<ConvertCallbackProxy> proxy = new ConvertCallbackProxy(nullptr);
-    ASSERT_TRUE(proxy != nullptr);
-    int resCode = 0;
-    OHOS::AAFwk::Want want;
-    proxy->OnConvert(resCode, want);
 }
 
 /**

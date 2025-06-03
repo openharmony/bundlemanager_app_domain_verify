@@ -78,9 +78,6 @@ void AppDomainVerifyAgentClientTest::TearDown(void)
 }
 class CallBack : public ConvertCallbackStub {
 public:
-    void OnConvert(int resCode, AAFwk::Want& want) override
-    {
-    }
     void OnConvert(int resCode, TargetInfo& want) override
     {
     }

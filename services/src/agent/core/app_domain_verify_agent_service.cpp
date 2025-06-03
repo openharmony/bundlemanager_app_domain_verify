@@ -110,7 +110,8 @@ void AppDomainVerifyAgentService::ConvertToExplicitWant(
     }
 
     if (callback) {
-        callback->OnConvert(0, implicitWant);
+        TargetInfo targetInfo;
+        callback->OnConvert(0, targetInfo);
     }
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "called");
 }
