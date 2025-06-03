@@ -30,31 +30,6 @@ ConvertCallbackProxy::~ConvertCallbackProxy()
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "instance dead.");
 }
 
-void ConvertCallbackProxy::OnConvert(int resCode, OHOS::AAFwk::Want& want)
-{
-    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "OnConvert result %{public}d", resCode);
-    MessageParcel data;
-    MessageParcel reply;
-    MessageOption option(MessageOption::TF_SYNC);
-
-    WRITE_PARCEL_AND_RETURN_IF_FAIL(InterfaceToken, data, GetDescriptor());
-    WRITE_PARCEL_AND_RETURN_IF_FAIL(Int32, data, resCode);
-    WRITE_PARCEL_AND_RETURN_IF_FAIL(Parcelable, data, &want);
-    sptr<IRemoteObject> remote = Remote();
-    if (remote == nullptr) {
-        APP_DOMAIN_VERIFY_HILOGE(
-            APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "fail to call OnConvert, for Remote() is nullptr");
-        return;
-    }
-
-    int32_t ret = remote->SendRequest(
-        static_cast<int32_t>(ConvertCallbackInterfaceCode::ON_CONVERT_CALLBACK), data, reply, option);
-    if (ret != NO_ERROR) {
-        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT,
-            "fail to call OnConvert, for transact is failed, error code is: %{public}d", ret);
-        UNIVERSAL_ERROR_EVENT(CALL_BACK_FAULT);
-    }
-}
 void ConvertCallbackProxy::OnConvert(int resCode, TargetInfo& targetInfo)
 {
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "OnConvert result %{public}d", resCode);

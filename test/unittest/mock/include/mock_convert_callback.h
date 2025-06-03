@@ -20,7 +20,6 @@ namespace OHOS {
 namespace AppDomainVerify {
 class MocConvertCallback : public ConvertCallbackStub {
 public:
-    void OnConvert(int resCode, OHOS::AAFwk::Want& want) override {};
     void OnConvert(int resCode, TargetInfo& targetInfo) override {
 
     };

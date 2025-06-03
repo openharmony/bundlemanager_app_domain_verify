@@ -71,9 +71,6 @@ void AppDomainVerifyMgrClientTest::TearDown(void)
 }
 class CallBack : public ConvertCallbackStub {
 public:
-    void OnConvert(int resCode, AAFwk::Want& want) override
-    {
-    }
     void OnConvert(int resCode, TargetInfo& want) override
     {
     }
@@ -172,37 +169,6 @@ HWTEST_F(AppDomainVerifyMgrClientTest, AppDomainVerifyMgrClientTest005, TestSize
     AppDomainVerifyMgrClient::GetInstance()->SaveDomainVerifyStatus(BUNDLE_NAME, verifyResultInfo);
     ASSERT_TRUE(g_mgrInvokeOK);
     AppDomainVerifyMgrClient::GetInstance()->ClearDomainVerifyStatus(APP_IDENTIFIER, BUNDLE_NAME);
-    AppDomainVerifyMgrClient::appDomainVerifyMgrServiceProxy_.ForceSetRefPtr(nullptr);
-}
-/**
- * @tc.name: AppDomainVerifyMgrClientTest006
- * @tc.desc: VerifyDomain test.
- * @tc.type: FUNC
- */
-#define MAX_PATH_LEN (99)
-HWTEST_F(AppDomainVerifyMgrClientTest, AppDomainVerifyMgrClientTest006, TestSize.Level0)
-{
-    std::shared_ptr<AppDomainVerifyMgrRemoteStubMock> mgrStubMock_ =
-        std::make_shared<AppDomainVerifyMgrRemoteStubMock>();
-    EXPECT_CALL(*mgrStubMock_, SendRequest(_, _, _, _)).WillRepeatedly(::testing::Invoke(MgrInvokeOK));
-    AppDomainVerifyMgrClient::appDomainVerifyMgrServiceProxy_ = sptr<AppDomainVerifyMgrServiceProxy>::MakeSptr(
-        mgrStubMock_.get());
-
-    ASSERT_TRUE(AppDomainVerifyMgrClient::GetInstance()->IsAtomicServiceUrl("https://www.openharmony.com/t1_-est"));
-
-    ASSERT_TRUE(AppDomainVerifyMgrClient::GetInstance()->IsAtomicServiceUrl("https://www.openharmony.com"));
-
-    ASSERT_TRUE(AppDomainVerifyMgrClient::GetInstance()->IsAtomicServiceUrl("https://www.openharmony.com/t1_-est/"));
-
-    ASSERT_FALSE(AppDomainVerifyMgrClient::GetInstance()->IsAtomicServiceUrl("www.openharmony.com/feitj"));
-
-    ASSERT_FALSE(AppDomainVerifyMgrClient::GetInstance()->IsAtomicServiceUrl("test://www.openharmony.com/test"));
-
-    ASSERT_TRUE(AppDomainVerifyMgrClient::GetInstance()->IsAtomicServiceUrl("https://www.openharmony.com/test*"));
-
-    ASSERT_TRUE(AppDomainVerifyMgrClient::GetInstance()->IsAtomicServiceUrl("https://www.openharmony.com/test/test"));
-
-    ASSERT_TRUE(g_mgrInvokeOK);
     AppDomainVerifyMgrClient::appDomainVerifyMgrServiceProxy_.ForceSetRefPtr(nullptr);
 }
 

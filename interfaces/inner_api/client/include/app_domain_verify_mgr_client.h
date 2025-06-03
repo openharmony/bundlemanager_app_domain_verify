@@ -93,15 +93,6 @@ public:
     bool SaveDomainVerifyStatus(const std::string& bundleName, const VerifyResultInfo& verifyResultInfo);
 
     /**
-     * IsAtomicServiceUrl
-     * @descrition check input url is atomic service or not.
-     * @param url input url to check.
-     * @return bool is atomic service or not.
-     * @deprecated
-     */
-    bool IsAtomicServiceUrl(const std::string& url);
-
-    /**
      * IsShortUrl
      * @descrition check input url is short url or not.
      * @param url input url to check.

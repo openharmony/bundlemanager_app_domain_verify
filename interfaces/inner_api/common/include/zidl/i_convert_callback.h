@@ -23,7 +23,6 @@ namespace AppDomainVerify {
 class IConvertCallback : public IRemoteBroker {
 public:
     DECLARE_INTERFACE_DESCRIPTOR(u"ohos.appdomainverify.IConvertCallback");
-    virtual void OnConvert(int resCode, OHOS::AAFwk::Want& want) = 0;
     virtual void OnConvert(int resCode, TargetInfo& targetInfo) = 0;
 };
 }
