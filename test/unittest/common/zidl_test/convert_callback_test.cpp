@@ -19,6 +19,7 @@
 #include "convert_callback_proxy.h"
 #include "convert_callback_interface_code.h"
 #include "app_domain_verify_parcel_util.h"
+#include "target_info.h"
 namespace OHOS::AppDomainVerify {
 using namespace testing;
 using namespace testing::ext;
@@ -47,10 +48,11 @@ void AppDomainVerifyConvertCallbackTest::TearDown(void)
 }
 class CallBack : public ConvertCallbackStub {
 public:
-    void OnConvert(int resCode, AAFwk::Want& want) override
+    void OnConvert(int resCode, TargetInfo& targetInfo) override
     {
     }
 };
+
 /**
  * @tc.name: AppDomainVerifyConvertCallbackStubTest001
  * @tc.desc: AddTask test
@@ -64,9 +66,10 @@ HWTEST_F(AppDomainVerifyConvertCallbackTest, AppDomainVerifyConvertCallbackStubT
 
     int resCode = 0;
     OHOS::AAFwk::Want want;
+    TargetInfo targetInfo;
     WRITE_PARCEL_AND_RETURN_IF_FAIL(InterfaceToken, data, IConvertCallback::GetDescriptor());
     WRITE_PARCEL_AND_RETURN_IF_FAIL(Int32, data, resCode);
-    WRITE_PARCEL_AND_RETURN_IF_FAIL(Parcelable, data, &want);
+    WRITE_PARCEL_AND_RETURN_IF_FAIL(Parcelable, data, &targetInfo);
     sptr<CallBack> callback = new CallBack;
     auto ret = callback->OnRemoteRequest(
         static_cast<int32_t>(ConvertCallbackInterfaceCode::ON_CONVERT_CALLBACK), data, reply, option);
@@ -132,17 +135,31 @@ HWTEST_F(AppDomainVerifyConvertCallbackTest, AppDomainVerifyConvertCallbackStubT
         static_cast<int32_t>(ConvertCallbackInterfaceCode::ON_CONVERT_CALLBACK), data, reply, option);
     ASSERT_TRUE(ret != 0);
 }
+
 /**
- * @tc.name: AppDomainVerifyConvertCallbackProxyTest001
+ * @tc.name: AppDomainVerifyTargetInfoTest001
  * @tc.desc: AddTask test
  * @tc.type: FUNC
  */
-HWTEST_F(AppDomainVerifyConvertCallbackTest, AppDomainVerifyConvertCallbackProxyTest001, TestSize.Level0)
+HWTEST_F(AppDomainVerifyConvertCallbackTest, AppDomainVerifyTargetInfoTest001, TestSize.Level0)
 {
-    sptr<ConvertCallbackProxy> proxy = new ConvertCallbackProxy(nullptr);
-    ASSERT_TRUE(proxy != nullptr);
-    int resCode = 0;
+    TargetInfo targetInfo;
     OHOS::AAFwk::Want want;
-    proxy->OnConvert(resCode, want);
+    want.SetUri("hello");
+    targetInfo.targetType = TargetType::ATOMIC_SERVICE;
+    targetInfo.targetWant = want;
+
+    Parcel parcel;
+    targetInfo.Marshalling(parcel);
+    auto unmarshalling = TargetInfo::Unmarshalling(parcel);
+    ASSERT_TRUE(unmarshalling->targetType == TargetType::ATOMIC_SERVICE);
+    ASSERT_TRUE(unmarshalling->targetWant.GetUri() == Uri("hello"));
+
+    Parcel parcel1;
+    unmarshalling = TargetInfo::Unmarshalling(parcel1);
+    ASSERT_TRUE(unmarshalling == nullptr);
+    parcel1.WriteInt32(TargetType::ATOMIC_SERVICE);
+    unmarshalling = TargetInfo::Unmarshalling(parcel1);
+    ASSERT_TRUE(unmarshalling == nullptr);
 }
 }

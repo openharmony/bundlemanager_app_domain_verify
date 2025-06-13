@@ -81,6 +81,13 @@ public:
     {
         return true;
     }
+    virtual bool IsShortUrl(const std::string& url) override
+    {
+        return true;
+    }
+    virtual void ConvertFromShortUrl(OHOS::AAFwk::Want& originWant, sptr<IConvertCallback>& callback) override
+    {
+    }
     MOCK_METHOD4(SendRequest, int(uint32_t, MessageParcel&, MessageParcel&, MessageOption&));
     MOCK_METHOD(sptr<IRemoteObject>, AsObject, (), (override));
 };
@@ -145,6 +152,13 @@ public:
     virtual int QueryAppDetailsWant(const std::string& link, AAFwk::Want& want) override
     {
         return true;
+    }
+    virtual bool IsShortUrl(const std::string& url) override
+    {
+        return true;
+    }
+    virtual void ConvertFromShortUrl(OHOS::AAFwk::Want& originWant, sptr<IConvertCallback>& callback) override
+    {
     }
 };
 }  // namespace AppDomainVerify

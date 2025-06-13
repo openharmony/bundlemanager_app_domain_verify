@@ -93,12 +93,20 @@ public:
     bool SaveDomainVerifyStatus(const std::string& bundleName, const VerifyResultInfo& verifyResultInfo);
 
     /**
-     * IsAtomicServiceUrl
-     * @descrition check input url is atomic service or not.
+     * IsShortUrl
+     * @descrition check input url is short url or not.
      * @param url input url to check.
      * @return bool is atomic service or not.
      */
-    bool IsAtomicServiceUrl(const std::string& url);
+    bool IsShortUrl(const std::string& url);
+
+    /**
+     * ConvertFromShortUrl
+     * @descrition convert want contains short to explicit want.
+     * @param originWant origin want contain short url to convert.
+     * @param callback callback when convert finish.
+     */
+    void ConvertFromShortUrl(OHOS::AAFwk::Want& originWant, sptr<IConvertCallback>& callback);
 
     /**
      * UpdateWhiteListUrl
@@ -159,8 +167,7 @@ public:
 private:
     bool IsServiceAvailable();
     void ConnectService();
-    bool IsValidUrl(OHOS::Uri& uri);
-    bool IsValidPath(const std::string& url);
+    bool IsValidUrl(const std::string& url);
 
 private:
     class StaticDestoryMonitor {

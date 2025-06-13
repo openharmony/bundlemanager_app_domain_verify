@@ -45,6 +45,8 @@ public:
     virtual int QueryAssociatedBundleNames(const std::string& domain, std::vector<std::string>& bundleNames) = 0;
     virtual int GetDeferredLink(std::string& link) = 0;
     virtual int QueryAppDetailsWant(const std::string& link, AAFwk::Want& want) = 0;
+    virtual bool IsShortUrl(const std::string& url) = 0;
+    virtual void ConvertFromShortUrl(OHOS::AAFwk::Want& originWant, sptr<IConvertCallback>& callback) = 0;
     DECLARE_INTERFACE_DESCRIPTOR(u"ohos.appDomainVerify.IAppDomainVerifyMgrService");
 };
 }  // namespace AppDomainVerify

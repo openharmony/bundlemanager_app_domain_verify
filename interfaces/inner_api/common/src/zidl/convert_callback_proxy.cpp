@@ -30,7 +30,7 @@ ConvertCallbackProxy::~ConvertCallbackProxy()
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "instance dead.");
 }
 
-void ConvertCallbackProxy::OnConvert(int resCode, OHOS::AAFwk::Want& want)
+void ConvertCallbackProxy::OnConvert(int resCode, TargetInfo& targetInfo)
 {
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "OnConvert result %{public}d", resCode);
     MessageParcel data;
@@ -39,7 +39,7 @@ void ConvertCallbackProxy::OnConvert(int resCode, OHOS::AAFwk::Want& want)
 
     WRITE_PARCEL_AND_RETURN_IF_FAIL(InterfaceToken, data, GetDescriptor());
     WRITE_PARCEL_AND_RETURN_IF_FAIL(Int32, data, resCode);
-    WRITE_PARCEL_AND_RETURN_IF_FAIL(Parcelable, data, &want);
+    WRITE_PARCEL_AND_RETURN_IF_FAIL(Parcelable, data, &targetInfo);
     sptr<IRemoteObject> remote = Remote();
     if (remote == nullptr) {
         APP_DOMAIN_VERIFY_HILOGE(
