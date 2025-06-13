@@ -21,7 +21,6 @@ namespace AppDomainVerify {
 class MocConvertCallback : public ConvertCallbackStub {
 public:
     void OnConvert(int resCode, TargetInfo& targetInfo) override {
-
     };
 };
 }
