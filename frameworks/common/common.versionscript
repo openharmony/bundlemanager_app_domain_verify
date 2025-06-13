@@ -28,6 +28,8 @@
     *WhiteListConfigMgr*;
     *SendFaultEvent*;
     *PermissionManager*;
+    *CriticalUtils*;
+    *CriticalLock*;
   local:
     *;
 };

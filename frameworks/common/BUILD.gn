@@ -48,6 +48,7 @@ ohos_shared_library("app_domain_verify_frameworks_common") {
     "src/httpsession/app_domain_verify_task_mgr.cpp",
     "src/httpsession/i_http_task.cpp",
     "src/permission/permission_manager.cpp",
+    "src/utils/critical_utils.cpp",
     "src/utils/domain_url_util.cpp",
   ]
 
@@ -68,6 +69,7 @@ ohos_shared_library("app_domain_verify_frameworks_common") {
     "hisysevent:libhisysevent",
     "ipc:ipc_core",
     "json:nlohmann_json_static",
+    "memmgr:memmgrclient",
     "netstack:http_client",
     "os_account:os_account_innerkits",
     "preferences:native_preferences",

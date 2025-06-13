@@ -27,6 +27,7 @@
 #include "iservice_registry.h"
 #include "app_domain_verify_error.h"
 #include "permission_manager.h"
+#include "critial_utils.h"
 
 namespace OHOS {
 namespace AppDomainVerify {
@@ -185,6 +186,9 @@ void AppDomainVerifyAgentService::OnStart(const SystemAbilityOnDemandReason& sta
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "OnStart reason %{public}s, reasonId_:%{public}d",
         startReason.GetName().c_str(), startReason.GetId());
     PostDelayUnloadTask();
+
+    CriticalUtils::GetInstance().NotifyProcessStatus(1);
+
     bool res = Publish(this);
     if (!res) {
         APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "Publish failed");
@@ -196,6 +200,7 @@ void AppDomainVerifyAgentService::OnStart(const SystemAbilityOnDemandReason& sta
 
 void AppDomainVerifyAgentService::OnStop()
 {
+    CriticalUtils::GetInstance().NotifyProcessStatus(0);
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "called");
 }
 void AppDomainVerifyAgentService::UnloadSa()

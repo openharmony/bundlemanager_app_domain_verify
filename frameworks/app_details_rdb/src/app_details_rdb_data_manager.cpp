@@ -30,6 +30,7 @@
 #include <variant>
 #include <vector>
 #include "app_details_rdb_const_define.h"
+#include "utils/critial_utils.h"
 
 namespace OHOS {
 namespace AppDomainVerify {
@@ -57,6 +58,7 @@ bool AppDetailsRdbDataMgr::ExecWithTrans(TransCallback cb)
 {
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "call");
     auto rdbStore = GetRdbStore();
+    CriticalLock criticalLock;
     auto ret = rdbStore->BeginTransaction();
     if (ret != NativeRdb::E_OK) {
         return false;
@@ -135,6 +137,7 @@ bool AppDetailsRdbDataMgr::InsertDataBatch(const std::string& tableName, std::ve
         rows.emplace_back(valuesBucket);
     }
     int64_t num = 0;
+    CriticalLock criticalLock;
     return CheckRdbReturnIfOk(rdbStore_->BatchInsert(num, tableName, rows));
 };
 
@@ -153,6 +156,7 @@ bool AppDetailsRdbDataMgr::CreateMetaData()
                             "TABLE_EXT_INFO TEXT,"
                             "UPDATE_TIME TEXT"
                         ");";
+    CriticalLock lock;
     auto ret = rdbStore->ExecuteSql(sql);
     if (ret != NativeRdb::E_OK) {
         APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "exec sql fail. ret:%{public}d", ret);
@@ -169,6 +173,7 @@ bool AppDetailsRdbDataMgr::UpdateMetaData(std::vector<MetaItem> &itemVec)
         APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "get rdbStore fail.");
         return false;
     }
+    CriticalLock lock;
     for (auto& item : itemVec) {
         NativeRdb::ValuesBucket valuesBucket;
         item.AddRdbItemToBucket(valuesBucket);
@@ -226,6 +231,7 @@ bool AppDetailsRdbDataMgr::CreateTable(const std::string &tableName)
         APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "get rdbStore fail.");
         return false;
     }
+    CriticalLock lock;
     auto ret = rdbStore->ExecuteSql(sql);
     if (ret != NativeRdb::E_OK) {
         APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "exec sql fail. ret:%{public}d", ret);
@@ -243,6 +249,7 @@ bool AppDetailsRdbDataMgr::CreateRegularIndex(const std::string& tableName, cons
         APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "get rdbStore fail.");
         return false;
     }
+    CriticalLock lock;
     auto ret = rdbStore->ExecuteSql(sql);
     if (ret != NativeRdb::E_OK) {
         APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "exec sql fail. ret:%{public}d", ret);
@@ -260,6 +267,7 @@ bool AppDetailsRdbDataMgr::DeleteTable(const std::string &tableName)
         APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "Get rdbStore fail.");
         return false;
     }
+    CriticalLock lock;
     auto ret = rdbStore->ExecuteSql(sql);
     if (ret != NativeRdb::E_OK) {
         APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "Exec sql fail. ret:%{public}d", ret);
@@ -292,6 +300,7 @@ bool AppDetailsRdbDataMgr::RenameTable(const std::string &oldName, const std::st
         APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "get rdbStore fail.");
         return false;
     }
+    CriticalLock lock;
     auto ret = rdbStore->ExecuteSql(sql);
     if (ret != NativeRdb::E_OK) {
         APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "exec sql fail. ret:%{public}d", ret);
