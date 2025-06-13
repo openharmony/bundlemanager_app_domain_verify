@@ -435,7 +435,7 @@ bool AppDomainVerifyMgrService::IsUrlInBlackList(const std::string& url)
 
 bool AppDomainVerify::AppDomainVerifyMgrService::IsShortUrl(const std::string& url)
 {
-    return IsAtomicServiceUrl(url);;
+    return IsAtomicServiceUrl(url);
 }
 void AppDomainVerifyMgrService::ConvertFromShortUrl(Want& originWant, sptr<IConvertCallback>& callback)
 {
