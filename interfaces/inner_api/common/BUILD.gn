@@ -45,6 +45,7 @@ ohos_shared_library("app_domain_verify_common") {
     "src/skill_uri.cpp",
     "src/zidl/convert_callback_proxy.cpp",
     "src/zidl/convert_callback_stub.cpp",
+    "src/zidl/target_info.cpp",
   ]
 
   public_configs = [ ":app_domain_verify_common_config" ]

@@ -47,6 +47,7 @@ ohos_unittest("app_domain_verify_zidl_test") {
   sources = [
     "${app_domain_verify_common_path}/src/zidl/convert_callback_proxy.cpp",
     "${app_domain_verify_common_path}/src/zidl/convert_callback_stub.cpp",
+    "${app_domain_verify_common_path}/src/zidl/target_info.cpp",
     "${app_domain_verify_test_path}/mock/src/mock_bundle_manager.cpp",
     "${app_domain_verify_test_path}/mock/src/mock_os_account_manager.cpp",
     "${app_domain_verify_test_path}/mock/src/mock_service_registry.cpp",

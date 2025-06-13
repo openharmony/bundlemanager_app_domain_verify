@@ -13,23 +13,28 @@
  * limitations under the License.
  */
 
-#ifndef APP_DOMAIN_VERIFY_I_CONVERT_CALLBACK_PROXY_H
-#define APP_DOMAIN_VERIFY_I_CONVERT_CALLBACK_PROXY_H
-#include "iremote_proxy.h"
-#include "i_convert_callback.h"
+#ifndef APP_DOMAIN_VERIFY_TARGET_INFO_H
+#define APP_DOMAIN_VERIFY_TARGET_INFO_H
+#include "iremote_broker.h"
+#include "want.h"
+namespace OHOS::AppDomainVerify {
+enum TargetType : uint32_t {
+    ATOMIC_SERVICE = 0,
+    APP,
+    APP_DETAIL,
+    WEB
+};
 
-namespace OHOS {
-namespace AppDomainVerify {
-class ConvertCallbackProxy : public IRemoteProxy<IConvertCallback> {
+struct TargetInfo : public Parcelable {
+    TargetType targetType;
+    OHOS::AAFwk::Want targetWant;
+
 public:
-    explicit ConvertCallbackProxy(const sptr<IRemoteObject>& object);
-    virtual ~ConvertCallbackProxy() override;
-
-    virtual void OnConvert(int resCode, TargetInfo& targetInfo) override;
+    bool Marshalling(Parcel& parcel) const override;
+    static TargetInfo* Unmarshalling(Parcel& parcel);
 
 private:
-    static inline BrokerDelegator<ConvertCallbackProxy> delegator_;
+    bool ReadFromParcel(Parcel& parcel);
 };
 }
-}
-#endif  // APP_DOMAIN_VERIFY_I_CONVERT_CALLBACK_PROXY_H
+#endif  // APP_DOMAIN_VERIFY_TARGET_INFO_H

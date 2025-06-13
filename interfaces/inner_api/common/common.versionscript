@@ -27,6 +27,7 @@
     *WhiteListUpdater*;
     *WhiteListConfigMgr*;
     *MaskStr*;
+    *TargetInfo*;
   local:
     *;
 };

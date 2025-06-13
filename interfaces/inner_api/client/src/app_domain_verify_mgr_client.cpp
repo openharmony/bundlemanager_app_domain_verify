@@ -31,12 +31,8 @@ namespace AppDomainVerify {
 std::mutex AppDomainVerifyMgrClient::proxyLock_;
 sptr<IAppDomainVerifyMgrService> AppDomainVerifyMgrClient::appDomainVerifyMgrServiceProxy_;
 AppDomainVerifyMgrClient::StaticDestoryMonitor AppDomainVerifyMgrClient::staticDestoryMonitor_;
-#ifndef _CUT_LINK_CONVERT_
 static const std::string SCHEME_HTTPS("https");
-static const char* PATTEN = "^[a-zA-Z0-9_-]{1,99}$";
-constexpr int REG_ERR_BUF = 1024;
-constexpr int NM = 10;
-#endif
+constexpr int MAX_SHORT_URL_LEN = 2048;
 AppDomainVerifyMgrClient::AppDomainVerifyMgrClient()
 {
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "new instance created.");
@@ -202,36 +198,14 @@ void AppDomainVerifyMgrClient::ConvertToExplicitWant(AAFwk::Want& implicitWant, 
 #endif
 }
 #ifndef _CUT_LINK_CONVERT_
-bool AppDomainVerifyMgrClient::IsValidPath(const std::string& path)
+
+bool AppDomainVerifyMgrClient::IsValidUrl(const std::string& url)
 {
-    const char* bematch = path.c_str();
-    char errbuf[REG_ERR_BUF];
-    regex_t reg;
-    int errNum = 0;
-    int nm = NM;
-    regmatch_t pmatch[nm];
-    if (regcomp(&reg, PATTEN, REG_EXTENDED) < 0) {
-        regerror(errNum, &reg, errbuf, sizeof(errbuf));
-        APP_DOMAIN_VERIFY_HILOGW(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "regexec error:%{public}s", errbuf);
+    if (url.length() > MAX_SHORT_URL_LEN) {
+        APP_DOMAIN_VERIFY_HILOGW(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "url too long");
         return false;
     }
-    errNum = regexec(&reg, bematch, nm, pmatch, 0);
-    if (errNum == REG_NOMATCH) {
-        APP_DOMAIN_VERIFY_HILOGW(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "regexec no match");
-        regfree(&reg);
-        return false;
-    } else if (errNum) {
-        regerror(errNum, &reg, errbuf, sizeof(errbuf));
-        APP_DOMAIN_VERIFY_HILOGW(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "regexec error:%{public}s", errbuf);
-        regfree(&reg);
-        return false;
-    }
-    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "is valid path");
-    regfree(&reg);
-    return true;
-}
-bool AppDomainVerifyMgrClient::IsValidUrl(OHOS::Uri& uri)
-{
+    Uri uri(url);
     if (uri.GetScheme() != SCHEME_HTTPS) {
         APP_DOMAIN_VERIFY_HILOGW(
             APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "scheme:%{public}s is not https", uri.GetScheme().c_str());
@@ -241,45 +215,12 @@ bool AppDomainVerifyMgrClient::IsValidUrl(OHOS::Uri& uri)
         APP_DOMAIN_VERIFY_HILOGW(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "host is empty");
         return false;
     }
-    std::vector<std::string> segments;
-    uri.GetPathSegments(segments);
-    if (segments.size() != 1) {
-        APP_DOMAIN_VERIFY_HILOGW(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "short path is more than one");
-        return false;
-    }
-    if (!IsValidPath(segments[0])) {
-        APP_DOMAIN_VERIFY_HILOGW(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT,
-            "short path:%{public}s must only contains number,alphabet or dash line!", segments[0].c_str());
-        return false;
-    }
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "is valid Url");
     return true;
 }
 
 #endif
-bool AppDomainVerifyMgrClient::IsAtomicServiceUrl(const std::string& url)
-{
-#ifdef _CUT_LINK_CONVERT_
-    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "not support, will return false!");
-    return false;
-#else
-    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "called, url %{public}s", MaskStr(url).c_str());
-    Uri uri(url);
-    if (!IsValidUrl(uri)) {
-        APP_DOMAIN_VERIFY_HILOGW(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "url is invalid!");
-        return false;
-    }
-    bool ret{ false };
-    std::lock_guard<std::mutex> autoLock(proxyLock_);
-    if (IsServiceAvailable()) {
-        std::string identity = IPCSkeleton::ResetCallingIdentity();
-        ret = appDomainVerifyMgrServiceProxy_->IsAtomicServiceUrl(uri.GetScheme() + "://" + uri.GetHost());
-        IPCSkeleton::SetCallingIdentity(identity);
-    }
-    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "call end, IsAtomicServiceUrl:%{public}d", ret);
-    return ret;
-#endif
-}
+
 void AppDomainVerifyMgrClient::UpdateWhiteListUrls(const std::vector<std::string>& urls)
 {
 #ifdef _CUT_LINK_CONVERT_
@@ -295,7 +236,7 @@ void AppDomainVerifyMgrClient::UpdateWhiteListUrls(const std::vector<std::string
 #endif
 }
 
-int AppDomainVerifyMgrClient::QueryAppDetailsWant(const std::string &link, AAFwk::Want &want)
+int AppDomainVerifyMgrClient::QueryAppDetailsWant(const std::string& link, AAFwk::Want& want)
 {
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "called");
     std::lock_guard<std::mutex> autoLock(proxyLock_);
@@ -338,6 +279,46 @@ int AppDomainVerifyMgrClient::GetDeferredLink(std::string& link)
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "call end");
     return ErrorCode::E_INTERNAL_ERR;
 }
+bool AppDomainVerifyMgrClient::IsShortUrl(const std::string& url)
+{
+#ifdef _CUT_LINK_CONVERT_
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "not support, will return false!");
+    return false;
+#else
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "called, url %{public}s", MaskStr(url).c_str());
+    if (!IsValidUrl(url)) {
+        return false;
+    }
+    bool ret{ false };
+    std::lock_guard<std::mutex> autoLock(proxyLock_);
+    if (IsServiceAvailable()) {
+        std::string identity = IPCSkeleton::ResetCallingIdentity();
+        ret = appDomainVerifyMgrServiceProxy_->IsShortUrl(url);
+        IPCSkeleton::SetCallingIdentity(identity);
+    }
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "call end, IsAtomicServiceUrl:%{public}d", ret);
+    return ret;
+#endif
+}
+
+void AppDomainVerifyMgrClient::ConvertFromShortUrl(OHOS::AAFwk::Want& originWant, sptr<IConvertCallback>& callback)
+{
+#ifdef _CUT_LINK_CONVERT_
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "not support, will return false!");
+    if (callback) {
+        callback->OnConvert(-1, implicitWant);
+    }
+#else
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "called");
+    std::lock_guard<std::mutex> autoLock(proxyLock_);
+    if (IsServiceAvailable()) {
+        std::string identity = IPCSkeleton::ResetCallingIdentity();
+        appDomainVerifyMgrServiceProxy_->ConvertFromShortUrl(originWant, callback);
+        IPCSkeleton::SetCallingIdentity(identity);
+    }
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "call end");
+#endif
+}
 AppDomainVerifyMgrSaDeathRecipient::AppDomainVerifyMgrSaDeathRecipient()
 {
 }
@@ -353,5 +334,6 @@ void AppDomainVerifyMgrSaDeathRecipient::OnRemoteDied(const wptr<IRemoteObject>&
         APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "AppDomainVerifyMgrSaDeathRecipient on remote systemAbility died.");
     AppDomainVerifyMgrClient::GetInstance()->OnRemoteSaDied(object);
 }
+
 }  // namespace AppDomainVerify
 }  // namespace OHOS
