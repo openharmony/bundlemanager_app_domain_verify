@@ -42,7 +42,7 @@ ohos_shared_library("app_domain_verify_app_details_rdb") {
     "src/app_details_rdb_open_callback.cpp",
   ]
   public_configs = [ ":app_domain_verify_app_details_rdb_config" ]
-
+  deps = [ "${app_domain_verify_frameworks_common_path}:app_domain_verify_frameworks_common" ]
   external_deps = [
     "ability_base:base",
     "ability_base:want",
