@@ -12,7 +12,7 @@
 # limitations under the License.
 
 import("//build/ohos.gni")
-import("../../../app_domain_verify.gni")
+import("../../../../app_domain_verify.gni")
 config("app_domain_verify_mgr_napi_config") {
   visibility = [ ":*" ]
   include_dirs = [
@@ -20,6 +20,7 @@ config("app_domain_verify_mgr_napi_config") {
     "${app_domain_verify_client_path}/include",
     "${app_domain_verify_common_path}/include",
     "${app_domain_verify_common_path}/include/zidl",
+    "${app_domain_verify_kits_path}/common/include",
   ]
   configs = [ "//build/config/compiler:exceptions" ]
   ldflags = [ "-Wl,--exclude-libs=ALL" ]
@@ -51,9 +52,9 @@ ohos_shared_library("appdomainverify_napi") {
   }
 
   sources = [
-    "src/api_event_reporter.cpp",
+    "${app_domain_verify_kits_path}/common/src/api_event_reporter.cpp",
+    "${app_domain_verify_kits_path}/common/src/config_parser.cpp",
     "src/app_domain_verify_manager_napi.cpp",
-    "src/config_parser.cpp",
     "src/native_module.cpp",
   ]
   public_configs = [ ":app_domain_verify_mgr_napi_config" ]
