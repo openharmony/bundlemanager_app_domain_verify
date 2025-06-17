@@ -17,6 +17,8 @@
 
 #include <string>
 namespace OHOS::AppDomainVerify::Dfx {
+constexpr int32_t API_SUCCESS = 0;
+constexpr int32_t API_FAIL = 1;
 class ApiEventReporter {
 public:
     explicit ApiEventReporter(const std::string& apiName);
