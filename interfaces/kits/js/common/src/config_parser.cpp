@@ -29,8 +29,8 @@ bool ConfigParser::load(const std::string& filename)
     std::ifstream file(filename, std::ios::ate);
     if (!file.is_open()) {
         std::cerr << "Unable to open file: " << filename << std::endl;
-        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MODULE_JS_NAPI, "Unable to open file: filename:%{public}s",
-            filename.c_str());
+        APP_DOMAIN_VERIFY_HILOGE(
+            APP_DOMAIN_VERIFY_MODULE_JS_NAPI, "Unable to open file: filename:%{public}s", filename.c_str());
         return false;
     }
 
