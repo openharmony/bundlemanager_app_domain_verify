@@ -47,7 +47,8 @@
         "eventhandler",
         "hiappevent",
         "hicollie",
-        "netmanager_base"
+        "netmanager_base",
+        "memmgr"
       ],
       "third_party": [
         "openssl"
