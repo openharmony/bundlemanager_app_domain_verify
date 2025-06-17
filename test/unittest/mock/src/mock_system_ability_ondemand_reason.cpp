@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Huawei Device Co., Ltd.
+ * Copyright (c) 2023-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -13,6 +13,7 @@
  * limitations under the License.
  */
 
+#include "cJSON.h"
 #include "parse_util.h"
 #include "system_ability_ondemand_reason.h"
 
@@ -48,14 +49,21 @@ bool OnDemandReasonExtraData::Marshalling(Parcel& parcel) const
     if (!parcel.WriteString(data_)) {
         return false;
     }
-    nlohmann::json payload;
-    for (auto it = want_.begin(); it != want_.end(); ++it) {
-        payload[it->first] = it->second;
-    }
-    if (!parcel.WriteString(payload.dump())) {
+    cJSON *payload = cJSON_CreateObject();
+    if (payload == nullptr) {
         return false;
     }
-    return true;
+    for (const auto& pair : want_) {
+        cJSON_AddStringToObject(payload, pair.first.c_str(), pair.second.c_str());
+    }
+    char *jsonString = cJSON_PrintUnformatted(payload);
+    bool result = false;
+    if (jsonString != nullptr) {
+        result = parcel.WriteString(jsonString);
+        cJSON_free(jsonString);
+    }
+    cJSON_Delete(payload);
+    return result;
 }
 
 OnDemandReasonExtraData *OnDemandReasonExtraData::Unmarshalling(Parcel& parcel)
@@ -69,14 +77,27 @@ OnDemandReasonExtraData *OnDemandReasonExtraData::Unmarshalling(Parcel& parcel)
         return nullptr;
     }
     std::map<std::string, std::string> want;
-    nlohmann::json payload = ParseUtil::StringToJsonObj(parcel.ReadString());
-    for (nlohmann::json::iterator it = payload.begin(); it != payload.end(); ++it) {
-        if (it.value().is_string()) {
-            want[it.key()] = it.value();
-        }
+    std::string jsonStr;
+    if (!parcel.ReadString(jsonStr)) {
+        return nullptr;
     }
-    OnDemandReasonExtraData* extraData = new OnDemandReasonExtraData(code, data, want);
-    return extraData;
+    cJSON *payload = cJSON_Parse(jsonStr.c_str());
+    if (payload == nullptr) {
+        return nullptr;
+    }
+    cJSON *child = payload->child;
+    while (child != nullptr) {
+        if (child->string == nullptr || *child->string == '\0') {
+            child = child->next;
+            continue;
+        }
+        if (cJSON_IsString(child) && child->valuestring != nullptr) {
+            want[child->string] = child->valuestring;
+        }
+        child = child->next;
+    }
+    cJSON_Delete(payload);
+    return new OnDemandReasonExtraData(code, data, want);
 }
 
 SystemAbilityOnDemandReason::SystemAbilityOnDemandReason(OnDemandReasonId reasonId, const std::string& reasonName,

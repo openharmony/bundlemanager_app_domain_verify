@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Huawei Device Co., Ltd.
+ * Copyright (C) 2023-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -12,64 +12,63 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include "json.hpp"
+#include "cJSON.h"
 #include "domain_json_util.h"
 #include "agent_constants.h"
 #include "app_domain_verify_hilog.h"
 
 namespace OHOS {
 namespace AppDomainVerify {
-using json = nlohmann::json;
 
 bool JsonUtil::Parse(const std::string &assetJsonsStr, AssetJsonObj &assetJsonObj)
 {
-    if (!assetJsonsStr.empty()) {
-        json jsonObj;
-        try {
-            if (!json::accept(assetJsonsStr)) {
-                APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "assetJsonsStr can not be accept.");
-                return false;
-            }
-            jsonObj = json::parse(assetJsonsStr);
-        } catch (json::parse_error &e) {
-            APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "assetJsonsStr can not be parsed.");
-            return false;
-        }
-        if (jsonObj == nullptr || !jsonObj.is_object()) {
-            APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE,
-                "assetLinksStr can not be parsed into obj.");
-            return false;
-        }
-        if (jsonObj.find(ApplinkingAssetKeys::APP_LINKING) == jsonObj.end() ||
-            !jsonObj.at(ApplinkingAssetKeys::APP_LINKING).is_object()) {
-            APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "can not parsed applinking into obj.");
-            return false;
-        }
-        auto applinkingObj = jsonObj.at(ApplinkingAssetKeys::APP_LINKING);
-        if (applinkingObj.find(ApplinkingAssetKeys::APPS) != applinkingObj.end() &&
-            applinkingObj.at(ApplinkingAssetKeys::APPS).is_array()) {
-            auto appsArray = applinkingObj.at(ApplinkingAssetKeys::APPS);
-            for (size_t i = 0; i < appsArray.size(); i++) {
-                AppVerifyBaseInfo appVerifyBaseInfo;
-                auto arrayItem = appsArray[i];
-                appVerifyBaseInfo.appIdentifier = arrayItem.find(ApplinkingAssetKeys::APP_IDENTIFIER) !=
-                            arrayItem.end() &&
-                        arrayItem.at(ApplinkingAssetKeys::APP_IDENTIFIER).is_string() ?
-                    arrayItem.at(ApplinkingAssetKeys::APP_IDENTIFIER) :
-                    "";
-                appVerifyBaseInfo.bundleName = arrayItem.find(ApplinkingAssetKeys::BUNDLE_NAME) != arrayItem.end() &&
-                        arrayItem.at(ApplinkingAssetKeys::BUNDLE_NAME).is_string() ?
-                    arrayItem.at(ApplinkingAssetKeys::BUNDLE_NAME) :
-                    "";
-                appVerifyBaseInfo.fingerprint = arrayItem.find(ApplinkingAssetKeys::FINGERPRINT) != arrayItem.end() &&
-                        arrayItem.at(ApplinkingAssetKeys::FINGERPRINT).is_string() ?
-                    arrayItem.at(ApplinkingAssetKeys::FINGERPRINT) :
-                    "";
-                assetJsonObj.applinking.apps.emplace_back(appVerifyBaseInfo);
-            }
-            return true;
-        }
+    if (assetJsonsStr.empty()) {
+        return false;
     }
+    cJSON *jsonObj = cJSON_Parse(assetJsonsStr.c_str());
+    if (jsonObj == nullptr) {
+        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "assetJsonsStr can not be parsed.");
+        return false;
+    }
+    if (!cJSON_IsObject(jsonObj)) {
+        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "assetLinksStr can not be parsed into obj.");
+        cJSON_Delete(jsonObj);
+        return false;
+    }
+    cJSON *applinkingObj = cJSON_GetObjectItemCaseSensitive(jsonObj, ApplinkingAssetKeys::APP_LINKING.c_str());
+    if (applinkingObj == nullptr || !cJSON_IsObject(applinkingObj)) {
+        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "can not parsed applinking into obj.");
+        cJSON_Delete(jsonObj);
+        return false;
+    }
+    cJSON *appsArray = cJSON_GetObjectItemCaseSensitive(applinkingObj, ApplinkingAssetKeys::APPS.c_str());
+    if (appsArray != nullptr && cJSON_IsArray(appsArray)) {
+        int arraySize = cJSON_GetArraySize(appsArray);
+        for (int i = 0; i < arraySize; i++) {
+            cJSON *arrayItem = cJSON_GetArrayItem(appsArray, i);
+            if (!cJSON_IsObject(arrayItem)) {
+                continue;
+            }
+            AppVerifyBaseInfo appVerifyBaseInfo;
+            cJSON *appIdentifier = cJSON_GetObjectItemCaseSensitive(arrayItem,
+                ApplinkingAssetKeys::APP_IDENTIFIER.c_str());
+            if (appIdentifier != nullptr && cJSON_IsString(appIdentifier) && appIdentifier->valuestring != nullptr) {
+                appVerifyBaseInfo.appIdentifier = appIdentifier->valuestring;
+            }
+            cJSON *bundleName = cJSON_GetObjectItemCaseSensitive(arrayItem, ApplinkingAssetKeys::BUNDLE_NAME.c_str());
+            if (bundleName != nullptr && cJSON_IsString(bundleName) && bundleName->valuestring != nullptr) {
+                appVerifyBaseInfo.bundleName = bundleName->valuestring;
+            }
+            cJSON *fingerprint = cJSON_GetObjectItemCaseSensitive(arrayItem, ApplinkingAssetKeys::FINGERPRINT.c_str());
+            if (fingerprint != nullptr && cJSON_IsString(fingerprint) && fingerprint->valuestring != nullptr) {
+                appVerifyBaseInfo.fingerprint = fingerprint->valuestring;
+            }
+            assetJsonObj.applinking.apps.emplace_back(appVerifyBaseInfo);
+        }
+        cJSON_Delete(jsonObj);
+        return true;
+    }
+    cJSON_Delete(jsonObj);
     return false;
 }
 }

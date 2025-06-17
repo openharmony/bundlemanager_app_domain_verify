@@ -1,4 +1,4 @@
-# Copyright (C) 2023 Huawei Device Co., Ltd.
+# Copyright (C) 2023-2025 Huawei Device Co., Ltd.
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -92,13 +92,13 @@ ohos_shared_library("app_domain_verify_mgr_service") {
     "access_token:libtokenid_sdk",
     "bundle_framework:appexecfwk_base",
     "bundle_framework:appexecfwk_core",
+    "cJSON:cjson",
     "c_utils:utils",
     "eventhandler:libeventhandler",
     "ffrt:libffrt",
     "hilog:libhilog",
     "hisysevent:libhisysevent",
     "ipc:ipc_core",
-    "json:nlohmann_json_static",
     "os_account:os_account_innerkits",
     "preferences:native_preferences",
     "relational_store:native_rdb",
@@ -186,6 +186,7 @@ ohos_shared_library("app_domain_verify_agent_service") {
     "ability_base:zuri",
     "ability_runtime:ability_manager",
     "bundle_framework:appexecfwk_core",
+    "cJSON:cjson",
     "c_utils:utils",
     "curl:curl_shared",
     "eventhandler:libeventhandler",
@@ -194,7 +195,6 @@ ohos_shared_library("app_domain_verify_agent_service") {
     "hilog:libhilog",
     "hisysevent:libhisysevent",
     "ipc:ipc_core",
-    "json:nlohmann_json_static",
     "netmanager_base:net_conn_manager_if",
     "netstack:http_client",
     "os_account:os_account_innerkits",
