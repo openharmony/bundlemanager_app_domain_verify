@@ -135,6 +135,19 @@ HWTEST_F(AppDomainVerifyConvertCallbackTest, AppDomainVerifyConvertCallbackStubT
         static_cast<int32_t>(ConvertCallbackInterfaceCode::ON_CONVERT_CALLBACK), data, reply, option);
     ASSERT_TRUE(ret != 0);
 }
+/**
+ * @tc.name: AppDomainVerifyConvertCallbackProxyTest001
+ * @tc.desc: AddTask test
+ * @tc.type: FUNC
+ */
+HWTEST_F(AppDomainVerifyConvertCallbackTest, AppDomainVerifyConvertCallbackProxyTest001, TestSize.Level0)
+{
+    sptr<ConvertCallbackProxy> proxy = new ConvertCallbackProxy(nullptr);
+    ASSERT_TRUE(proxy != nullptr);
+    int resCode = 0;
+    TargetInfo targetInfo;
+    proxy->OnConvert(resCode, targetInfo);
+}
 
 /**
  * @tc.name: AppDomainVerifyTargetInfoTest001
