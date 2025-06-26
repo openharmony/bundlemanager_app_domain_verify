@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Huawei Device Co., Ltd.
+ * Copyright (C) 2024-2025 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -38,7 +38,7 @@
 #include "bundle_verify_status_info.h"
 #undef private
 #undef protected
-#include "../mock/include/mock_rdb.h"
+#include "mock_rdb.h"
 
 namespace OHOS::AppDomainVerify {
 using namespace testing;
