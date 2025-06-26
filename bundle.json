@@ -40,7 +40,7 @@
         "netstack",
         "os_account",
         "ffrt",
-        "json",
+        "cJSON",
         "curl",
         "preferences",
         "access_token",
