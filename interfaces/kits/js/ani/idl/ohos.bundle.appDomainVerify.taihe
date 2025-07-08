@@ -14,7 +14,6 @@
  */
 
 @!namespace("@ohos.bundle.appDomainVerify", "appDomainVerify")
-@!typed_array
 
 @!sts_inject("""
 static { loadLibrary("app_domain_verify_ani.z"); }
