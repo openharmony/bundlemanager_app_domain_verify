@@ -58,6 +58,10 @@ bool AppDetailsRdbDataMgr::ExecWithTrans(TransCallback cb)
 {
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "call");
     auto rdbStore = GetRdbStore();
+    if (!rdbStore) {
+        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "get rdbStore fail.");
+        return false;
+    }
     CriticalLock criticalLock;
     auto ret = rdbStore->BeginTransaction();
     if (ret != NativeRdb::E_OK) {
