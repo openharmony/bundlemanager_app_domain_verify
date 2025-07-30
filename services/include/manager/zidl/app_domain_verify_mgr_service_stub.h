@@ -48,6 +48,7 @@ private:
     int32_t OnQueryAppDetailsWant(MessageParcel& data, MessageParcel& reply);
     int32_t OnIsShortUrl(MessageParcel& data, MessageParcel& reply);
     int32_t OnConvertFromShortUrl(MessageParcel& data, MessageParcel& reply);
+    int32_t OnQueryAbilityInfos(MessageParcel& data, MessageParcel& reply);
 };
 }  // namespace AppDomainVerify
 }  // namespace OHOS

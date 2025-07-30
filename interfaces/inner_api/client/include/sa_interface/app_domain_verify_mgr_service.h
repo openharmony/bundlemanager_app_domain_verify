@@ -57,6 +57,9 @@ public:
     API_EXPORT int QueryAppDetailsWant(const std::string& link, AAFwk::Want& want) override;
     API_EXPORT bool IsShortUrl(const std::string& url) override;
     API_EXPORT void ConvertFromShortUrl(OHOS::AAFwk::Want& originWant, sptr<IConvertCallback>& callback) override;
+    API_EXPORT bool QueryAbilityInfos(const std::string& url, bool withDefault,
+        std::vector<AppExecFwk::AbilityInfo>& abilityInfos, bool& findDefaultApp) override;
+
 protected:
     void OnDump() override;
     int Dump(int fd, const std::vector<std::u16string>& args) override;

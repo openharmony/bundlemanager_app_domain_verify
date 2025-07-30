@@ -88,6 +88,12 @@ public:
     virtual void ConvertFromShortUrl(OHOS::AAFwk::Want& originWant, sptr<IConvertCallback>& callback) override
     {
     }
+    virtual bool QueryAbilityInfos(const std::string& url, bool withDefault,
+        std::vector<OHOS::AppExecFwk::AbilityInfo>& abilityInfos, bool& findDefaultApp) override
+    {
+        return true;
+    }
+
     MOCK_METHOD4(SendRequest, int(uint32_t, MessageParcel&, MessageParcel&, MessageOption&));
     MOCK_METHOD(sptr<IRemoteObject>, AsObject, (), (override));
 };
@@ -159,6 +165,11 @@ public:
     }
     virtual void ConvertFromShortUrl(OHOS::AAFwk::Want& originWant, sptr<IConvertCallback>& callback) override
     {
+    }
+    virtual bool QueryAbilityInfos(const std::string& url, bool withDefault,
+        std::vector<OHOS::AppExecFwk::AbilityInfo>& abilityInfos, bool& findDefaultApp) override
+    {
+        return true;
     }
 };
 }  // namespace AppDomainVerify

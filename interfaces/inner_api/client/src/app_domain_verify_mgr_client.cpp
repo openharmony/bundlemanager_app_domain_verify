@@ -319,6 +319,21 @@ void AppDomainVerifyMgrClient::ConvertFromShortUrl(OHOS::AAFwk::Want& originWant
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "call end");
 #endif
 }
+bool AppDomainVerifyMgrClient::QueryAbilityInfos(const std::string& url, bool withDefault,
+    std::vector<OHOS::AppExecFwk::AbilityInfo>& abilityInfos, bool& findDefaultApp)
+{
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "called");
+    bool ret{ false };
+    std::lock_guard<std::mutex> autoLock(proxyLock_);
+    if (IsServiceAvailable()) {
+        std::string identity = IPCSkeleton::ResetCallingIdentity();
+        ret = appDomainVerifyMgrServiceProxy_->QueryAbilityInfos(url, withDefault, abilityInfos, findDefaultApp);
+        IPCSkeleton::SetCallingIdentity(identity);
+    }
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "call end");
+    return ret;
+}
+
 AppDomainVerifyMgrSaDeathRecipient::AppDomainVerifyMgrSaDeathRecipient()
 {
 }

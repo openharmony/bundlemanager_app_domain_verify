@@ -26,17 +26,15 @@ class AppDomainVerifyMgrServiceProxy : public IRemoteProxy<IAppDomainVerifyMgrSe
 public:
     explicit AppDomainVerifyMgrServiceProxy(const sptr<IRemoteObject>& object);
     ~AppDomainVerifyMgrServiceProxy() override;
-    void VerifyDomain(const std::string& appIdentifier, const std::string& bundleName,
-        const std::string& fingerprint, const std::vector<SkillUri>& skillUris) override;
+    void VerifyDomain(const std::string& appIdentifier, const std::string& bundleName, const std::string& fingerprint,
+        const std::vector<SkillUri>& skillUris) override;
     bool ClearDomainVerifyStatus(const std::string& appIdentifier, const std::string& bundleName) override;
     bool FilterAbilities(const OHOS::AAFwk::Want& want,
         const std::vector<OHOS::AppExecFwk::AbilityInfo>& originAbilityInfos,
         std::vector<OHOS::AppExecFwk::AbilityInfo>& filteredAbilityInfos) override;
-    bool QueryDomainVerifyStatus(
-        const std::string& bundleName, DomainVerifyStatus& domainVerificationState) override;
+    bool QueryDomainVerifyStatus(const std::string& bundleName, DomainVerifyStatus& domainVerificationState) override;
     bool QueryAllDomainVerifyStatus(BundleVerifyStatusInfo& bundleVerifyStatusInfo) override;
-    bool SaveDomainVerifyStatus(
-        const std::string& bundleName, const VerifyResultInfo& verifyResultInfo) override;
+    bool SaveDomainVerifyStatus(const std::string& bundleName, const VerifyResultInfo& verifyResultInfo) override;
     bool IsAtomicServiceUrl(const std::string& url) override;
     void ConvertToExplicitWant(OHOS::AAFwk::Want& implicitWant, sptr<IConvertCallback>& callback) override;
     void UpdateWhiteListUrls(const std::vector<std::string>& urls) override;
@@ -46,6 +44,9 @@ public:
     int QueryAppDetailsWant(const std::string& link, AAFwk::Want& want) override;
     bool IsShortUrl(const std::string& url) override;
     void ConvertFromShortUrl(OHOS::AAFwk::Want& originWant, sptr<IConvertCallback>& callback) override;
+    bool QueryAbilityInfos(const std::string& url, bool withDefault,
+        std::vector<OHOS::AppExecFwk::AbilityInfo>& abilityInfos, bool& findDefaultApp) override;
+
 private:
     static inline BrokerDelegator<AppDomainVerifyMgrServiceProxy> delegator_;
 };
