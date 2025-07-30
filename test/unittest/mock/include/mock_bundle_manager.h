@@ -40,6 +40,9 @@ public:
     bool GetBundleInfo(const std::string& bundleName, int32_t flags, BundleInfo& bundleInfo,
         int32_t userId = Constants::UNSPECIFIED_USERID) override;
     bool GetBundleNameForUid(const int uid, std::string& bundleName) override;
+    bool ImplicitQueryInfos(const Want &want, int32_t flags, int32_t userId, bool withDefault,
+        std::vector<AbilityInfo> &abilityInfos, std::vector<ExtensionAbilityInfo> &extensionInfos,
+        bool &findDefaultApp) override;
 };
 
 class BundleMgrStub : public IRemoteStub<IBundleMgr> {
@@ -60,6 +63,10 @@ public:
     MOCK_METHOD(bool, GetBundleInfo,
         (const std::string& bundleName, int32_t flags, BundleInfo& bundleInfo, int32_t userId), (override));
     MOCK_METHOD(bool, GetBundleNameForUid, (const int uid, std::string& bundleName), (override));
+    MOCK_METHOD(bool, ImplicitQueryInfos,
+        (const Want& want, int32_t flags, int32_t userId, bool withDefault, std::vector<AbilityInfo>& abilityInfos,
+            std::vector<ExtensionAbilityInfo>& extensionInfos, bool& findDefaultApp),
+        (override));
 };
 
 class BundleMgrService : public BundleMgrStub {
@@ -74,6 +81,9 @@ public:
     bool GetBundleInfo(const std::string& bundleName, int32_t flags, BundleInfo& bundleInfo,
         int32_t userId = Constants::UNSPECIFIED_USERID) override;
     bool GetBundleNameForUid(const int uid, std::string& bundleName) override;
+    bool ImplicitQueryInfos(const Want &want, int32_t flags, int32_t userId, bool withDefault,
+        std::vector<AbilityInfo> &abilityInfos, std::vector<ExtensionAbilityInfo> &extensionInfos,
+        bool &findDefaultApp) override;
     std::shared_ptr<MocBundleMgrService> impl = nullptr;
 };
 

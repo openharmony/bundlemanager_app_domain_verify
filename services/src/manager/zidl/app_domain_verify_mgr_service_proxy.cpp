@@ -17,6 +17,7 @@
 #include "system_ability_definition.h"
 #include "app_domain_verify_parcel_util.h"
 #include "want.h"
+#include "sa_interface/app_domain_verify_mgr_interface_code.h"
 
 namespace OHOS {
 namespace AppDomainVerify {
@@ -405,6 +406,45 @@ void AppDomainVerifyMgrServiceProxy::ConvertFromShortUrl(AAFwk::Want& originWant
         APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "ConvertToExplicitWant failed, error: %d", error);
     }
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "call end");
+}
+bool AppDomainVerifyMgrServiceProxy::QueryAbilityInfos(const std::string& url, bool withDefault,
+    std::vector<OHOS::AppExecFwk::AbilityInfo>& abilityInfos, bool& findDefaultApp)
+{
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "called");
+    MessageParcel data;
+    MessageParcel reply;
+    MessageOption option;
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(InterfaceToken, data, GetDescriptor());
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String, data, url);
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, data, withDefault);
+
+    int32_t error = Remote()->SendRequest(AppDomainVerifyMgrInterfaceCode::QUERY_ABILITY_INFOS, data, reply, option);
+    if (error != ERR_NONE) {
+        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "ipc failed, error: %d", error);
+        return false;
+    }
+    bool status{ false };
+    READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, reply, status);
+    if (!status) {
+        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "status failed");
+        return false;
+    }
+    int32_t size = reply.ReadInt32();
+    if (IsInvalidParcelArraySize(size)) {
+        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "read parcelable size invalid.");
+        return false;
+    }
+    for (int32_t i = 0; i < size; i++) {
+        std::unique_ptr<OHOS::AppExecFwk::AbilityInfo> info(reply.ReadParcelable<OHOS::AppExecFwk::AbilityInfo>());
+        if (!info) {
+            APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "read parcelable abilityInfo failed.");
+            return false;
+        }
+        abilityInfos.emplace_back(*info);
+    }
+    READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, reply, findDefaultApp);
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "call end");
+    return true;
 }
 }  // namespace AppDomainVerify
 }  // namespace OHOS

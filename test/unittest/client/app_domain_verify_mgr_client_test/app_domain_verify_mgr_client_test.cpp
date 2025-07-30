@@ -425,6 +425,26 @@ HWTEST_F(AppDomainVerifyMgrClientTest, ConvertFromShortUrlTest001, TestSize.Leve
 }
 
 /**
+ * @tc.name: QueryAbilityInfosTest001
+ * @tc.desc: QueryAbilityInfos test.
+ * @tc.type: FUNC
+ */
+HWTEST_F(AppDomainVerifyMgrClientTest, QueryAbilityInfosTest001, TestSize.Level0)
+{
+    std::shared_ptr<AppDomainVerifyMgrRemoteStubMock> mgrStubMock_ =
+        std::make_shared<AppDomainVerifyMgrRemoteStubMock>();
+    EXPECT_CALL(*mgrStubMock_, SendRequest(_, _, _, _)).Times(1).WillOnce(::testing::Invoke(MgrInvokeOK));
+    AppDomainVerifyMgrClient::appDomainVerifyMgrServiceProxy_ = sptr<AppDomainVerifyMgrServiceProxy>::MakeSptr(
+        mgrStubMock_.get());
+    std::string url{ "openharmony.com" };
+    std::vector<OHOS::AppExecFwk::AbilityInfo> originAbilityInfos;
+    bool findDefault{ false };
+    AppDomainVerifyMgrClient::GetInstance()->QueryAbilityInfos(url, true, originAbilityInfos, findDefault);
+    ASSERT_TRUE(g_mgrInvokeOK);
+    AppDomainVerifyMgrClient::appDomainVerifyMgrServiceProxy_.ForceSetRefPtr(nullptr);
+}
+
+/**
  * @tc.name: Dump_0100
  * @tc.desc: Test Dump.
  * @tc.type: FUNC
