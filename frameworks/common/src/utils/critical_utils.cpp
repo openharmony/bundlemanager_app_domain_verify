@@ -28,7 +28,7 @@ CriticalUtils& CriticalUtils::GetInstance()
 }
 void CriticalUtils::AddCritical()
 {
-    std::unique_lock<std::mutex> lock;
+    std::unique_lock<std::mutex> lock(mutex_);
     if (count_ == 0) {
         SetCritical(true);
     }
@@ -36,7 +36,7 @@ void CriticalUtils::AddCritical()
 }
 void CriticalUtils::RemoveCritical()
 {
-    std::unique_lock<std::mutex> lock;
+    std::unique_lock<std::mutex> lock(mutex_);
     --count_;
     if (count_ == 0) {
         SetCritical(false);

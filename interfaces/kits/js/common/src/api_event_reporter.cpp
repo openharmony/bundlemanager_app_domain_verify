@@ -27,7 +27,7 @@ static std::mutex g_mutex;
 constexpr int TRIGGER_COND_TIMEOUT = 90;
 constexpr int TRIGGER_COND_ROW = 30;
 static const std::string SDK_NAME("AbilityKit");
-
+constexpr int INVALID_PROCESSOR_ID = -1;
 ApiEventReporter::ApiEventReporter(const std::string& apiName) : apiName_(apiName)
 {
     transId_ = std::string("transId_") + std::to_string(std::rand());
@@ -49,6 +49,9 @@ int64_t ApiEventReporter::AddProcessor()
     if (parser.load(API_REPORT_CONFIG_PATH)) {
         config.appId = parser.get("report_appId");
         config.name = parser.get("report_name");
+    }
+    if (config.appId.empty() || config.name.empty()) {
+        return INVALID_PROCESSOR_ID;
     }
     config.routeInfo = "AUTO";
     config.triggerCond.timeout = TRIGGER_COND_TIMEOUT;
@@ -98,10 +101,12 @@ void ApiEventReporter::WriteEndEvent(const int result, const int32_t errCode)
     event.AddParam("end_time", endTime);
     event.AddParam("result", result);
     event.AddParam("error_code", errCode);
-    int ret = Write(event);
-    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MODULE_JS_NAPI,
-        "WriteEndEvent transId:%{public}s, apiName:%{public}s, sdkName:%{public}s, result:%{public}d, "
-        "errCode:%{public}d, ret:%{public}d",
-        transId_.c_str(), apiName_.c_str(), SDK_NAME.c_str(), result, errCode, ret);
+    if (g_processId > 0) {
+        int ret = Write(event);
+        APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MODULE_JS_NAPI,
+            "WriteEndEvent transId:%{public}s, apiName:%{public}s, sdkName:%{public}s, result:%{public}d, "
+            "errCode:%{public}d, ret:%{public}d",
+            transId_.c_str(), apiName_.c_str(), SDK_NAME.c_str(), result, errCode, ret);
+    }
 }
 }
