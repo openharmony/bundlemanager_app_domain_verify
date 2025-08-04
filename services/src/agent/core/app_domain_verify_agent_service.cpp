@@ -265,7 +265,7 @@ bool AppDomainVerifyAgentService::CanUnloadSa()
         "can unload? isDoSyncDone:%{public}d, retryCnt:%{public}d, IsIdle:%{public}d, reachedMaxCnt:%{public}d, "
         "maxCnt:%{public}d",
         isDoSyncDone.load(), retryCnt.load(), IsIdle(), reachedMaxCnt, MAX_DELAY_RETRY_CNT);
-    return (isDoSyncDone || reachedMaxCnt) && IsIdle();
+    return (isDoSyncDone.load() || reachedMaxCnt) && IsIdle();
 }
 
 void AppDomainVerifyAgentService::OnDelayUnloadSA()
@@ -297,17 +297,16 @@ std::string AppDomainVerifyAgentService::GetStatTime()
 {
     std::string startTime;
     time_t tt = std::chrono::system_clock::to_time_t(now);
-    auto ptm = localtime(&tt);
-    if (ptm != nullptr) {
-        char date[FORMAT_BLANK_SIZE] = { 0 };
-        auto flag = sprintf_s(date, sizeof(date), "%04d-%02d-%02d  %02d:%02d:%02d",
-            (int)ptm->tm_year + DUMP_SYSTEM_START_YEAR, (int)ptm->tm_mon + 1, (int)ptm->tm_mday, (int)ptm->tm_hour,
-            (int)ptm->tm_min, (int)ptm->tm_sec);
-        if (flag < 0) {
-            return startTime;
-        }
-        startTime = date;
+    struct tm ptm {};
+    localtime_r(&tt, &ptm);
+    char date[FORMAT_BLANK_SIZE] = { 0 };
+    auto flag = sprintf_s(date, sizeof(date), "%04d-%02d-%02d  %02d:%02d:%02d",
+        (int)ptm.tm_year + DUMP_SYSTEM_START_YEAR, (int)ptm.tm_mon + 1, (int)ptm.tm_mday, (int)ptm.tm_hour,
+        (int)ptm.tm_min, (int)ptm.tm_sec);
+    if (flag < 0) {
+        return startTime;
     }
+    startTime = date;
     return startTime;
 }
 int AppDomainVerifyAgentService::Dump(int fd, const std::vector<std::u16string>& args)

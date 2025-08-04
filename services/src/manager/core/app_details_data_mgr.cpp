@@ -30,7 +30,6 @@
 #include "lru_cache_util.h"
 #include "app_details_data_mgr.h"
 
-
 namespace OHOS {
 namespace AppDomainVerify {
 const static std::string OHOS_WANT_ACTION_APPDETAILS = "ohos.want.action.appdetail";
@@ -42,10 +41,9 @@ AppDetailsDataMgr::AppDetailsDataMgr()
     rdbMgr_ = std::make_shared<AppDetailsRdbDataMgr>(false);
 };
 
-AppDetailsDataMgr::~AppDetailsDataMgr()
-{};
+AppDetailsDataMgr::~AppDetailsDataMgr(){};
 
-int AppDetailsDataMgr::QueryAppDetailsWant(const std::string &url, AAFwk::Want& want, std::string& bundleName)
+int AppDetailsDataMgr::QueryAppDetailsWant(const std::string& url, AAFwk::Want& want, std::string& bundleName)
 {
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "call, url:%{private}s", url.c_str());
     std::string bundleNameQuery;
@@ -68,9 +66,8 @@ int AppDetailsDataMgr::QueryAppDetailsWant(const std::string &url, AAFwk::Want& 
 
 bool AppDetailsDataMgr::QueryAppDetailsWantByCache(const std::string& url, std::string& bundleName)
 {
-    int64_t currTime = std::chrono::time_point_cast<std::chrono::seconds>(std::chrono::system_clock::now())
-                          .time_since_epoch()
-                          .count();
+    int64_t currTime =
+        std::chrono::time_point_cast<std::chrono::seconds>(std::chrono::system_clock::now()).time_since_epoch().count();
     if (currTime - cacheBeginTime_ > CACHE_TIME_S) {
         cacheBeginTime_ = currTime;
         lruCache_->Clear();
@@ -120,11 +117,15 @@ bool AppDetailsDataMgr::QueryAppDetailsWantByRdb(const std::string& url, std::st
 
 void AppDetailsDataMgr::AddInfoToWant(AAFwk::Want& want, const std::string& bundleName)
 {
-    MetaItem info;
-    if (agWantUrl_.empty()) {
-        rdbMgr_->QueryMetaData(APP_DETAILS_TABLE, info);
-        agWantUrl_ = info.tableExtInfo;
+    {
+        std::lock_guard<std::mutex> lock(agWantUrlMutex);
+        if (agWantUrl_.empty()) {
+            MetaItem info;
+            rdbMgr_->QueryMetaData(APP_DETAILS_TABLE, info);
+            agWantUrl_ = info.tableExtInfo;
+        }
     }
+
     want.SetAction(OHOS_WANT_ACTION_APPDETAILS);
     want.SetUri(agWantUrl_ + bundleName);
     return;

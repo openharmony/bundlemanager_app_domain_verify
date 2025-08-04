@@ -304,6 +304,8 @@ void AppDomainVerifyMgrService::DumpAllVerifyInfos(std::string& dumpString)
 {
     BundleVerifyStatusInfo allBundleVerifyStatusInfo;
     if (!QueryAllDomainVerifyStatus(allBundleVerifyStatusInfo)) {
+        APP_DOMAIN_VERIFY_HILOGE(
+            APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "DumpAllVerifyInfos fail to query all domain verify status");
         return;
     }
     for (const auto& bundleVerifyStatusInfo : allBundleVerifyStatusInfo.bundleVerifyStatusInfoMap_) {
