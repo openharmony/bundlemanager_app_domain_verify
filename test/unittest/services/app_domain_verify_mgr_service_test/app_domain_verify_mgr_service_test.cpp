@@ -1374,4 +1374,87 @@ HWTEST_F(MgrServiceTest, MgrServiceConvertFromShortUrlTest004, TestSize.Level0)
         AppDomainVerifyMgrInterfaceCode::CONVERT_FROM_SHORT_URL, data, reply, option);
     ASSERT_TRUE(error == ERR_OK);
 }
+
+/**
+ * @tc.name: MgrServiceQueryAbilityInfosTest001
+ * @tc.desc: query ability infos
+ * @tc.type: FUNC
+ */
+HWTEST_F(MgrServiceTest, MgrServiceQueryAbilityInfosTest001, TestSize.Level0)
+{
+    std::string url;
+    bool withDefault{ true };
+    MessageParcel data;
+    MessageParcel reply;
+    MessageOption option;
+    WRITE_PARCEL_AND_RETURN_IF_FAIL(InterfaceToken, data, IAppDomainVerifyMgrService::GetDescriptor());
+    WRITE_PARCEL_AND_RETURN_IF_FAIL(String, data, url);
+    WRITE_PARCEL_AND_RETURN_IF_FAIL(Bool, data, withDefault);
+
+    auto mocPermissionManager = std::make_shared<MocPermissionManager>();
+    EXPECT_CALL(*mocPermissionManager, IsAgentCall()).Times(1).WillOnce(Return(true));
+    DoMocPermissionManager(mocPermissionManager);
+    int32_t error = appDomainVerifyMgrService->OnRemoteRequest(
+        AppDomainVerifyMgrInterfaceCode::QUERY_ABILITY_INFOS, data, reply, option);
+    ASSERT_TRUE(error == ERR_OK);
+}
+
+/**
+ * @tc.name: MgrServiceQueryAbilityInfosTest002
+ * @tc.desc: convert to explicit want with out default
+ * @tc.type: FUNC
+ */
+HWTEST_F(MgrServiceTest, MgrServiceQueryAbilityInfosTest002, TestSize.Level0)
+{
+    std::string url;
+    MessageParcel data;
+    MessageParcel reply;
+    MessageOption option;
+    WRITE_PARCEL_AND_RETURN_IF_FAIL(InterfaceToken, data, IAppDomainVerifyMgrService::GetDescriptor());
+    WRITE_PARCEL_AND_RETURN_IF_FAIL(String, data, url);
+
+    int32_t error = appDomainVerifyMgrService->OnRemoteRequest(
+        AppDomainVerifyMgrInterfaceCode::QUERY_ABILITY_INFOS, data, reply, option);
+    ASSERT_TRUE(error != ERR_OK);
+}
+/**
+ * @tc.name: MgrServiceQueryAbilityInfosTest003
+ * @tc.desc: query ability infos want without url
+ * @tc.type: FUNC
+ */
+HWTEST_F(MgrServiceTest, MgrServiceQueryAbilityInfosTest003, TestSize.Level0)
+{
+    MessageParcel data;
+    MessageParcel reply;
+    MessageOption option;
+    WRITE_PARCEL_AND_RETURN_IF_FAIL(InterfaceToken, data, IAppDomainVerifyMgrService::GetDescriptor());
+
+    int32_t error = appDomainVerifyMgrService->OnRemoteRequest(
+        AppDomainVerifyMgrInterfaceCode::QUERY_ABILITY_INFOS, data, reply, option);
+    ASSERT_TRUE(error != ERR_OK);
+}
+/**
+ * @tc.name: MgrServiceQueryAbilityInfosTest004
+ * @tc.desc: query ability infos without permission
+ * @tc.type: FUNC
+ */
+HWTEST_F(MgrServiceTest, MgrServiceQueryAbilityInfosTest004, TestSize.Level0)
+{
+    OHOS::AAFwk::Want implicitWant;
+    sptr<MocConvertCallback> callback = new MocConvertCallback;
+    MessageParcel data;
+    MessageParcel reply;
+    MessageOption option;
+    WRITE_PARCEL_AND_RETURN_IF_FAIL(InterfaceToken, data, IAppDomainVerifyMgrService::GetDescriptor());
+    WRITE_PARCEL_AND_RETURN_IF_FAIL(Parcelable, data, &implicitWant);
+    WRITE_PARCEL_AND_RETURN_IF_FAIL(RemoteObject, data, callback->AsObject());
+
+    auto mocPermissionManager = std::make_shared<MocPermissionManager>();
+    EXPECT_CALL(*mocPermissionManager, IsSACall()).Times(1).WillOnce(Return(false));
+    DoMocPermissionManager(mocPermissionManager);
+
+    int32_t error = appDomainVerifyMgrService->OnRemoteRequest(
+        AppDomainVerifyMgrInterfaceCode::CONVERT_FROM_SHORT_URL, data, reply, option);
+    ASSERT_TRUE(error == ERR_OK);
+}
 }

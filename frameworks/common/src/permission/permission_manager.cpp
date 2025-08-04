@@ -18,7 +18,7 @@
 #include "accesstoken_kit.h"
 #include "tokenid_kit.h"
 namespace OHOS::AppDomainVerify {
-
+constexpr const char* PROCESS_AGENT = "app_domain_verify_agent";
 bool PermissionManager::CheckPermission(const std::string& permission)
 {
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%{public}s: is called.", __func__);
@@ -58,6 +58,19 @@ bool PermissionManager::IsSACall()
         return true;
     }
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "Not SA called.");
+    return false;
+}
+bool PermissionManager::IsAgentCall()
+{
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "%{public}s: is called.", __func__);
+    auto callerToken = IPCSkeleton::GetCallingTokenID();
+    Security::AccessToken::NativeTokenInfo tokenInfo;
+    if (Security::AccessToken::AccessTokenKit::GetNativeTokenInfo(callerToken, tokenInfo) ==
+        Security::AccessToken::AccessTokenKitRet::RET_SUCCESS) {
+        if (tokenInfo.processName == PROCESS_AGENT) {
+            return true;
+        }
+    }
     return false;
 }
 }

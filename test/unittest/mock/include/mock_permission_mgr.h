@@ -26,12 +26,14 @@ public:
     virtual bool CheckPermission(const std::string& permission) = 0;
     virtual bool IsSystemAppCall() = 0;
     virtual bool IsSACall() = 0;
+    virtual bool IsAgentCall() = 0;
 };
 class MocPermissionManager : public MocIPermissionManager {
 public:
     MOCK_METHOD(bool, CheckPermission, (const std::string& permission), (override));
     MOCK_METHOD(bool, IsSystemAppCall, (), (override));
     MOCK_METHOD(bool, IsSACall, (), (override));
+    MOCK_METHOD(bool, IsAgentCall, (), (override));
 };
 void DoMocPermissionManager(std::shared_ptr<MocIPermissionManager> moc);
 }

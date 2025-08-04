@@ -47,6 +47,8 @@ public:
     virtual int QueryAppDetailsWant(const std::string& link, AAFwk::Want& want) = 0;
     virtual bool IsShortUrl(const std::string& url) = 0;
     virtual void ConvertFromShortUrl(OHOS::AAFwk::Want& originWant, sptr<IConvertCallback>& callback) = 0;
+    virtual bool QueryAbilityInfos(const std::string& url, bool withDefault,
+        std::vector<OHOS::AppExecFwk::AbilityInfo>& abilityInfos, bool& findDefaultApp) = 0;
     DECLARE_INTERFACE_DESCRIPTOR(u"ohos.appDomainVerify.IAppDomainVerifyMgrService");
 };
 }  // namespace AppDomainVerify

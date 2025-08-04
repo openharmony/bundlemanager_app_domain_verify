@@ -140,22 +140,27 @@ public:
     int QueryAssociatedBundleNames(const std::string& domain, std::vector<std::string>& bundleNames);
 
     /**
-    * QueryAppDetailsWant
-    * @descrition query app details as want.
-    * @param link uri.
-    * @param want appdetails want.
-    * @return int result of query.
-    */
+     * QueryAppDetailsWant
+     * @descrition query app details as want.
+     * @param link uri.
+     * @param want appdetails want.
+     * @return int result of query.
+     */
     int QueryAppDetailsWant(const std::string& link, AAFwk::Want& want);
 
     /**
-     * GetDeferredLink
-     * @descrition get deferred link for app.
-     * @param link link to get.
+     * QueryAbilityInfos
+     * @descrition query ability infos matches url, only provide for app_domain_verify_agent.
+     * @param url query url.
+     * @param abilityInfos queried url.
+     * @param withDefault is find default abilityInfo.
+     * @param findDefaultApp has find default abilityInfo.
      * @return result status.
      */
     int GetDeferredLink(std::string& link);
 
+    bool QueryAbilityInfos(const std::string& url, bool withDefault,
+        std::vector<OHOS::AppExecFwk::AbilityInfo>& abilityInfos, bool& findDefaultApp);
     /**
      * OnRemoteSaDied
      * @descrition

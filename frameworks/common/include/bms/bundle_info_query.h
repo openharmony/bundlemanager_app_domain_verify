@@ -28,6 +28,8 @@ public:
     static bool GetBundleInfo(const std::string& bundleName, std::string& appIdentifier, std::string& fingerprint);
     static bool GetBundleNameForUid(int uid, std::string& bundleName);
     static bool GetBundleAbilityInfos(const std::string& bundleName, std::vector<AbilityInfo>& abilityInfos);
+    static bool QueryAbilityInfos(
+        const std::string& url, bool withDefault, std::vector<AbilityInfo>& abilityInfos, bool& findDefaultApp);
 
 private:
     static sptr<AppExecFwk::IBundleMgr> GetBundleMgrProxy();

@@ -42,4 +42,11 @@ bool PermissionManager::IsSACall()
     }
     return true;
 }
+bool PermissionManager::IsAgentCall()
+{
+    if (g_mocPermissionManager) {
+        return g_mocPermissionManager->IsAgentCall();
+    }
+    return true;
+}
 }

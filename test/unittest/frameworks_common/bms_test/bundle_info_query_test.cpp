@@ -192,4 +192,21 @@ HWTEST_F(BundleInfoQueryTest, BundleGetBundleNameForUidTest001, TestSize.Level0)
     std::string bundleName;
     ASSERT_TRUE(BundleInfoQuery::GetBundleNameForUid(id, bundleName));
 }
+/**
+ * @tc.name: QueryAbilityInfosTest001
+ * @tc.desc: QueryAbilityInfos success.
+ * @tc.type: FUNC
+ */
+HWTEST_F(BundleInfoQueryTest, QueryAbilityInfosTest001, TestSize.Level0)
+{
+    auto mocBundleMgrService = std::make_shared<OHOS::AppExecFwk::MocBundleMgrService>();
+    EXPECT_CALL(*mocBundleMgrService,
+        ImplicitQueryInfos(_, _, _, _, _, _, _))
+        .WillOnce(Return(true));
+    g_mockBundleMgrService->impl = mocBundleMgrService;
+    std::string url{ "openharmony.com" };
+    std::vector<OHOS::AppExecFwk::AbilityInfo> originAbilityInfos;
+    bool findDefault{ false };
+    ASSERT_TRUE(BundleInfoQuery::QueryAbilityInfos(url, true, originAbilityInfos, findDefault));
+}
 }

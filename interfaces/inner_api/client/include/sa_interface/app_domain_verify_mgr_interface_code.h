@@ -32,6 +32,7 @@ enum AppDomainVerifyMgrInterfaceCode {
     QUERY_APP_DETAILS_WANT = 12,
     IS_SHORT_URL = 13,
     CONVERT_FROM_SHORT_URL = 14,
+    QUERY_ABILITY_INFOS = 15,
 };
 }
 }  // namespace OHOS
