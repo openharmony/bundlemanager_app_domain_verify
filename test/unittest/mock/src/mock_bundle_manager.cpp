@@ -71,6 +71,16 @@ bool BundleMgrService::GetBundleNameForUid(const int uid, std::string& bundleNam
     }
     return true;
 }
+bool BundleMgrService::ImplicitQueryInfos(const Want& want, int flags, int userId, bool withDefault,
+    std::vector<AbilityInfo>& abilityInfos, std::vector<ExtensionAbilityInfo>& extensionInfos, bool& findDefaultApp)
+{
+    GTEST_LOG_(INFO) << "MOCK BundleMgrService ImplicitQueryInfos";
+    if (impl != nullptr) {
+        GTEST_LOG_(INFO) << "MOCK BundleMgrService ImplicitQueryInfos use mock";
+        return impl->ImplicitQueryInfos(want, flags, userId, withDefault, abilityInfos, extensionInfos, findDefaultApp);
+    }
+    return true;
+}
 
 }  // namespace AppExecFwk
 }  // namespace OHOS

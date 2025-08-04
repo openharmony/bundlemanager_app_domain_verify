@@ -146,6 +146,34 @@ bool BundleInfoQuery::GetBundleAbilityInfos(const std::string& bundleName, std::
     abilityInfos = bundleInfo.abilityInfos;
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MODULE_COMMON, "call end");
     return true;
-};
+}
+bool BundleInfoQuery::QueryAbilityInfos(
+    const std::string& url, bool withDefault, std::vector<AbilityInfo>& abilityInfos, bool& findDefaultApp)
+{
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MODULE_COMMON, "called");
+    sptr<AppExecFwk::IBundleMgr> bundleMgrProxy = GetBundleMgrProxy();
+
+    if (bundleMgrProxy == nullptr) {
+        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MODULE_COMMON, "bundleMgrProxy is nullptr.");
+        UNIVERSAL_ERROR_EVENT(CONNECT_OTHER_FAULT);
+        return false;
+    }
+
+    Want uriWant;
+    uriWant.SetUri(url);
+    uriWant.SetAction(ACTION_VIEW_DATA);
+    uriWant.SetEntities({ ENTITY_BROWSER });
+
+    std::vector<AppExecFwk::ExtensionAbilityInfo> extensionAbilityInfo;
+    // use sa identity
+    std::string identity = IPCSkeleton::ResetCallingIdentity();
+    auto ret = bundleMgrProxy->ImplicitQueryInfos(uriWant, AppExecFwk::BundleFlag::GET_BUNDLE_WITH_ABILITIES,
+        AppExecFwk::Constants::ANY_USERID, withDefault, abilityInfos, extensionAbilityInfo, findDefaultApp);
+    IPCSkeleton::SetCallingIdentity(identity);
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MODULE_COMMON,
+        "ImplicitQueryInfos withDefault:%{public}d, size:%{public}zu findDefaultApp:%{public}d", withDefault,
+        abilityInfos.size(), findDefaultApp);
+    return ret;
+}
 }
 }

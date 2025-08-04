@@ -75,6 +75,8 @@ int32_t AppDomainVerifyMgrServiceStub::OnRemoteRequest(
             return OnIsShortUrl(data, reply);
         case static_cast<uint32_t>(AppDomainVerifyMgrInterfaceCode::CONVERT_FROM_SHORT_URL):
             return OnConvertFromShortUrl(data, reply);
+        case static_cast<uint32_t>(AppDomainVerifyMgrInterfaceCode::QUERY_ABILITY_INFOS):
+            return OnQueryAbilityInfos(data, reply);
         default:
             APP_DOMAIN_VERIFY_HILOGW(
                 APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "receive unknown code, code = %{public}d", code);
@@ -327,6 +329,25 @@ int32_t AppDomainVerifyMgrServiceStub::OnConvertFromShortUrl(MessageParcel& data
     }
     sptr<IConvertCallback> cleanCacheCallback = iface_cast<IConvertCallback>(object);
     ConvertToExplicitWant(want, cleanCacheCallback);
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "call end");
+    return ERR_OK;
+}
+int32_t AppDomainVerifyMgrServiceStub::OnQueryAbilityInfos(MessageParcel& data, MessageParcel& reply)
+{
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "called");
+    std::string url;
+    bool withDefault{ false };
+    bool findDefault{ false };
+    READ_PARCEL_AND_RETURN_INT_IF_FAIL(String, data, url);
+    READ_PARCEL_AND_RETURN_INT_IF_FAIL(Bool, data, withDefault);
+    std::vector<OHOS::AppExecFwk::AbilityInfo> abilityInfos;
+    bool status = QueryAbilityInfos(url, withDefault, abilityInfos, findDefault);
+    WRITE_PARCEL_AND_RETURN_INT_IF_FAIL(Bool, reply, status);
+    WRITE_PARCEL_AND_RETURN_INT_IF_FAIL(Int32, reply, abilityInfos.size());
+    for (auto& it : abilityInfos) {
+        WRITE_PARCEL_AND_RETURN_INT_IF_FAIL(Parcelable, reply, &it);
+    }
+    WRITE_PARCEL_AND_RETURN_INT_IF_FAIL(Bool, reply, findDefault);
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "call end");
     return ERR_OK;
 }

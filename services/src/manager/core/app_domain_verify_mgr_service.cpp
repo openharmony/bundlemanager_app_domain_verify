@@ -447,5 +447,16 @@ void AppDomainVerifyMgrService::ConvertFromShortUrl(Want& originWant, sptr<IConv
     AppDomainVerifyAgentClient::GetInstance()->ConvertToExplicitWant(originWant, callback);
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "called");
 }
+
+bool AppDomainVerifyMgrService::QueryAbilityInfos(
+    const std::string& url, bool withDefault, std::vector<AbilityInfo>& abilityInfos, bool& findDefaultApp)
+{
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "called");
+    if (!PermissionManager::IsAgentCall()) {
+        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "only agenet can call");
+        return false;
+    }
+    return BundleInfoQuery::QueryAbilityInfos(url, withDefault, abilityInfos, findDefaultApp);
+}
 }  // namespace AppDomainVerify
 }  // namespace OHOS
