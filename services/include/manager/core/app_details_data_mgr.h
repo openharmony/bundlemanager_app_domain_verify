@@ -45,6 +45,7 @@ private:
     std::shared_ptr<AppDetailsRdbDataMgr> rdbMgr_;
     std::shared_ptr<AppDetailsFilter> detailsFilter_;
     int64_t cacheBeginTime_ = 0;
+    std::mutex agWantUrlMutex;
     std::string agWantUrl_;
 };
 }  // namespace AppDomainVerify
