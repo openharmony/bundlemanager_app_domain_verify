@@ -270,6 +270,7 @@ int AppDomainVerifyMgrServiceProxy::QueryAssociatedDomains(
     if (error != ERR_NONE) {
         APP_DOMAIN_VERIFY_HILOGE(
             APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "QueryAssociatedDomains failed, error: %d", error);
+        return error;
     }
     int32_t result = reply.ReadInt32();
     if (result != 0) {
