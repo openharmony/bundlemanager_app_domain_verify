@@ -152,10 +152,6 @@ bool BundleVerifyStatusInfo::ReadFromParcel(Parcel& parcel)
 {
     uint32_t size = 0;
     READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(Uint32, parcel, size);
-    if (IsInvalidParcelArraySize(size)) {
-        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "read parcelable size invalid.");
-        return false;
-    }
     bundleVerifyStatusInfoMap_.clear();
     for (uint32_t index = 0; index < size; ++index) {
         std::string bundleName;
