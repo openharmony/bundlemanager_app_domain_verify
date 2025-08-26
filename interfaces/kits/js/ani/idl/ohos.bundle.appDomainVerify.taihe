@@ -16,7 +16,7 @@
 @!namespace("@ohos.bundle.appDomainVerify", "appDomainVerify")
 
 @!sts_inject("""
-static { loadLibrary("app_domain_verify_ani.z"); }
+static { loadLibraryWithPermissionCheck("app_domain_verify_ani.z", "@ohos.bundle.appDomainVerify"); }
 """)
 
 function queryAssociatedDomains(bundleName: String): Array<String>;
