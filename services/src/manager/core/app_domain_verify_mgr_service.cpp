@@ -103,16 +103,22 @@ bool AppDomainVerifyMgrService::FilterAbilities(const OHOS::AAFwk::Want& want,
     }
     std::string hostVerifyKey = scheme + "://" + host;
     for (auto it = originAbilityInfos.begin(); it != originAbilityInfos.end(); ++it) {
-        // todo bms AbilityInfo contains appIdentifier
         VerifyResultInfo verifyResultInfo;
         // get from emory variable, non-IO operation.
-        if (DelayedSingleton<AppDomainVerifyDataMgr>::GetInstance()->GetVerifyStatus(
+        if (!DelayedSingleton<AppDomainVerifyDataMgr>::GetInstance()->GetVerifyStatus(
                 it->bundleName, verifyResultInfo)) {
-            auto itr = verifyResultInfo.hostVerifyStatusMap.find(hostVerifyKey);
-            if (itr != verifyResultInfo.hostVerifyStatusMap.end() &&
-                std::get<0>(itr->second) == InnerVerifyStatus::STATE_SUCCESS) {
-                filteredAbilityInfos.emplace_back(*it);
-            }
+            continue;
+        }
+        auto itr = verifyResultInfo.hostVerifyStatusMap.find(hostVerifyKey);
+        if (itr == verifyResultInfo.hostVerifyStatusMap.end()) {
+            continue;
+        }
+
+        if (std::get<0>(itr->second) == InnerVerifyStatus::STATE_SUCCESS) {
+            filteredAbilityInfos.emplace_back(*it);
+        } else {
+            APP_DOMAIN_VERIFY_HILOGI(
+                APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "find unverified status:%{public}d", std::get<0>(itr->second));
         }
     }
     if (filteredAbilityInfos.empty()) {
