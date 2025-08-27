@@ -13,6 +13,7 @@
  * limitations under the License.
  */
 #include "deferred_link_mgr.h"
+#include "common_utils.h"
 
 namespace OHOS::AppDomainVerify {
 namespace {
@@ -23,7 +24,8 @@ constexpr int MAX_CACHE_SIZE = 50;
 }
 void DeferredLinkMgr::PutDeferredLink(const DeferredLinkInfo& info)
 {
-    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "called.");
+    APP_DOMAIN_VERIFY_HILOGI(
+        APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "called, link:%{public}s.", MaskStr(info.url).c_str());
     std::unique_lock<std::mutex> lock(cachesMutex_);
     CheckStartTimerUnlocked();
     CheckRemoveExistedUnlocked(info);
