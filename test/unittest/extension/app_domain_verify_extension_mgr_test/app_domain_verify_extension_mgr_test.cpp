@@ -149,7 +149,6 @@ HWTEST_F(AppDomainVerifyExtensionMgrTest, AppDomainVerifyCompleteVerifyTest002, 
         .WillOnce(Return(nullptr));
 
     const BundleVerifyStatusInfo bundleVerifyStatusInfo;
-    int delaySeconds = 0;
     TaskType type = IMMEDIATE_TASK;
     ASSERT_TRUE(appDomainVerifyExtensionMgr.CompleteVerifyRefresh(bundleVerifyStatusInfo, type) ==
         ErrorCode::E_EXTENSIONS_INTERNAL_ERROR);
@@ -225,7 +224,6 @@ HWTEST_F(AppDomainVerifyExtensionMgrTest, AppDomainVerifyConvertTest003, TestSiz
         .WillOnce(Return(appDomainVerifyAgentExt));
 
     const BundleVerifyStatusInfo bundleVerifyStatusInfo;
-    int delaySeconds = 0;
     TaskType type = IMMEDIATE_TASK;
     ASSERT_TRUE(appDomainVerifyExtensionMgr.CompleteVerifyRefresh(bundleVerifyStatusInfo, type) ==
         ErrorCode::E_EXTENSIONS_LIB_NOT_FOUND);
