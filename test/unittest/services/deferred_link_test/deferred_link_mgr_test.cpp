@@ -29,7 +29,6 @@ constexpr const char* BUNDLE_DOMAIN = "https://www.openharmony.cn";
 constexpr const char* BUNDLE_DOMAIN_WRONG = "https://www.openharmony_wrong.cn";
 constexpr const char* BUNDLE_URL = "https://www.openharmony.cn/100";
 constexpr const char* BUNDLE_URL_NEW = "https://www.openharmony.cn/new";
-constexpr const char* TASK_ID = "age";
 constexpr int MAX_CACHE_SIZE = 50;
 class DeferredLinkMgrTest : public testing::Test {
 public:
