@@ -21,7 +21,6 @@
 #undef protected
 #include "bms/bundle_info_query.h"
 #include "mock_bundle_manager.h"
-#include "mock_system_ability.h"
 #include "mock_system_ability_registry.h"
 #include "mock_os_accout_manager.h"
 
@@ -30,13 +29,7 @@ using Want = OHOS::AAFwk::Want;
 using namespace OHOS::AppExecFwk;
 using namespace testing;
 using namespace testing::ext;
-constexpr const char* BUNDLE_NAME_WRONG = "BUNDLE_NAME_WRONG";
-constexpr const char* BUNDLE_DOMAIN = "https://www.openharmony.cn";
-constexpr const char* BUNDLE_DOMAIN_WRONG = "https://www.openharmony_wrong.cn";
 constexpr const char* BUNDLE_URL = "https://www.openharmony.cn/100";
-constexpr const char* BUNDLE_URL_NEW = "https://www.openharmony.cn/new";
-constexpr const char* TASK_ID = "age";
-constexpr int MAX_CACHE_SIZE = 50;
 constexpr int FLAGS = AppExecFwk::BundleFlag::GET_BUNDLE_WITH_ABILITIES | AppExecFwk::BundleFlag::GET_BUNDLE_WITH_SKILL;
 class AbilityFilterTest : public testing::Test {
 public:
