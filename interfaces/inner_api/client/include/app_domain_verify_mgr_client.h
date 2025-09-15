@@ -161,6 +161,7 @@ public:
 
     bool QueryAbilityInfos(const std::string& url, bool withDefault,
         std::vector<OHOS::AppExecFwk::AbilityInfo>& abilityInfos, bool& findDefaultApp);
+        
     /**
      * OnRemoteSaDied
      * @descrition
