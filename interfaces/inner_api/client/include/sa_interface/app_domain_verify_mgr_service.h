@@ -53,7 +53,8 @@ public:
     API_EXPORT int QueryAssociatedDomains(const std::string& bundleName, std::vector<std::string>& domains) override;
     API_EXPORT int QueryAssociatedBundleNames(
         const std::string& domain, std::vector<std::string>& bundleNames) override;
-    API_EXPORT int GetDeferredLink(std::string& link) override;
+    API_EXPORT int PopDeferredLink(std::string& link) override;
+    API_EXPORT int GetDeferredLink(const std::string& appIdentifier, std::string& link) override;
     API_EXPORT int QueryAppDetailsWant(const std::string& link, AAFwk::Want& want) override;
     API_EXPORT bool IsShortUrl(const std::string& url) override;
     API_EXPORT void ConvertFromShortUrl(OHOS::AAFwk::Want& originWant, sptr<IConvertCallback>& callback) override;
@@ -74,7 +75,9 @@ private:
     bool IsUrlInBlackList(const std::string& url);
     // with check caller's bundleName and appIdentifier
     int QueryVerifiedBundleWithDomains(std::string& bundleName, std::vector<std::string>& domains);
-
+    void SendVerifiedEvent(const std::string& bundleName, const VerifyResultInfo& verifyResultInfo);
+    int QueryVerifiedBundleWithDomainsByAppIdentifer(const std::string& appIdentifer,
+        std::string& bundleName, std::vector<std::string>& domains);
 private:
     std::shared_ptr<AppDetailsDataMgr> appDetailsDataMgr_ = nullptr;
     bool InitConfigMgr();

@@ -43,12 +43,13 @@ public:
     virtual void ConvertToExplicitWant(OHOS::AAFwk::Want& implicitWant, sptr<IConvertCallback>& callback) = 0;
     virtual int QueryAssociatedDomains(const std::string& bundleName, std::vector<std::string>& domains) = 0;
     virtual int QueryAssociatedBundleNames(const std::string& domain, std::vector<std::string>& bundleNames) = 0;
-    virtual int GetDeferredLink(std::string& link) = 0;
+    virtual int PopDeferredLink(std::string& link) = 0;
     virtual int QueryAppDetailsWant(const std::string& link, AAFwk::Want& want) = 0;
     virtual bool IsShortUrl(const std::string& url) = 0;
     virtual void ConvertFromShortUrl(OHOS::AAFwk::Want& originWant, sptr<IConvertCallback>& callback) = 0;
     virtual bool QueryAbilityInfos(const std::string& url, bool withDefault,
         std::vector<OHOS::AppExecFwk::AbilityInfo>& abilityInfos, bool& findDefaultApp) = 0;
+    virtual int GetDeferredLink(const std::string& appIdentifier, std::string& link) = 0;
     DECLARE_INTERFACE_DESCRIPTOR(u"ohos.appDomainVerify.IAppDomainVerifyMgrService");
 };
 }  // namespace AppDomainVerify
