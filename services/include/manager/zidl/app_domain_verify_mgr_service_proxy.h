@@ -40,12 +40,13 @@ public:
     void UpdateWhiteListUrls(const std::vector<std::string>& urls) override;
     int QueryAssociatedDomains(const std::string& bundleName, std::vector<std::string>& domains) override;
     int QueryAssociatedBundleNames(const std::string& domain, std::vector<std::string>& bundleNames) override;
-    int GetDeferredLink(std::string& link) override;
+    int PopDeferredLink(std::string& link) override;
     int QueryAppDetailsWant(const std::string& link, AAFwk::Want& want) override;
     bool IsShortUrl(const std::string& url) override;
     void ConvertFromShortUrl(OHOS::AAFwk::Want& originWant, sptr<IConvertCallback>& callback) override;
     bool QueryAbilityInfos(const std::string& url, bool withDefault,
         std::vector<OHOS::AppExecFwk::AbilityInfo>& abilityInfos, bool& findDefaultApp) override;
+    int GetDeferredLink(const std::string& appIdentifer, std::string& link) override;
 
 private:
     static inline BrokerDelegator<AppDomainVerifyMgrServiceProxy> delegator_;

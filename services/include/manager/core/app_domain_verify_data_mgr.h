@@ -42,6 +42,17 @@ public:
     bool GetVerifyStatus(const std::string& bundleName, VerifyResultInfo& verifyResultInfo);
 
     /**
+     * @brief Get AppDomainVerify status.
+     * @param appIdentifer Indicates the appIdentifer.
+     * @param bundleName Indicates the bundleName.
+     * @param verifyResultInfo output value.
+     * @return Returns true if this function is successfully called; returns false
+     * otherwise.
+     */
+    bool GetVerifyStatusByAppIdentifier(const std::string& appIdentifer, std::string& bundleName,
+        VerifyResultInfo& verifyResultInfo);
+
+    /**
      * @brief insert the AppDomainVerify status.
      * @param bundleName Indicates the bundleName.
      * @param verifyResultInfo Indicates the value to save.

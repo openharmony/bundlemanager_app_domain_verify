@@ -73,7 +73,11 @@ public:
     {
         return true;
     }
-    virtual int GetDeferredLink(std::string& link) override
+    virtual int PopDeferredLink(std::string& link) override
+    {
+        return true;
+    }
+    virtual int GetDeferredLink(const std::string& appIdentifer, std::string& link) override
     {
         return true;
     }
@@ -151,7 +155,11 @@ public:
     {
         return true;
     }
-    virtual int GetDeferredLink(std::string& link) override
+    virtual int PopDeferredLink(std::string& link) override
+    {
+        return true;
+    }
+    virtual int GetDeferredLink(const std::string& appIdentifer, std::string& link) override
     {
         return true;
     }
