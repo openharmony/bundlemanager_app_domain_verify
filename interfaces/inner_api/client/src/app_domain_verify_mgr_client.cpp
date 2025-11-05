@@ -269,12 +269,22 @@ int AppDomainVerifyMgrClient::QueryAssociatedBundleNames(
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "call end");
     return ErrorCode::E_INTERNAL_ERR;
 }
-int AppDomainVerifyMgrClient::GetDeferredLink(std::string& link)
+int AppDomainVerifyMgrClient::PopDeferredLink(std::string& link)
 {
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "called");
     std::lock_guard<std::mutex> autoLock(proxyLock_);
     if (IsServiceAvailable()) {
-        return appDomainVerifyMgrServiceProxy_->GetDeferredLink(link);
+        return appDomainVerifyMgrServiceProxy_->PopDeferredLink(link);
+    }
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "call end");
+    return ErrorCode::E_INTERNAL_ERR;
+}
+int AppDomainVerifyMgrClient::GetDeferredLink(const std::string& appIdentifer, std::string& link)
+{
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "called");
+    std::lock_guard<std::mutex> autoLock(proxyLock_);
+    if (IsServiceAvailable()) {
+        return appDomainVerifyMgrServiceProxy_->GetDeferredLink(appIdentifer, link);
     }
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_CLIENT, "call end");
     return ErrorCode::E_INTERNAL_ERR;

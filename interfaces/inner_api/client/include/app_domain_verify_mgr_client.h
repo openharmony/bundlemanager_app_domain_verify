@@ -149,15 +149,20 @@ public:
     int QueryAppDetailsWant(const std::string& link, AAFwk::Want& want);
 
     /**
-     * QueryAbilityInfos
-     * @descrition query ability infos matches url, only provide for app_domain_verify_agent.
-     * @param url query url.
-     * @param abilityInfos queried url.
-     * @param withDefault is find default abilityInfo.
-     * @param findDefaultApp has find default abilityInfo.
+     * PopDeferredLink
+     * @param link queried url.
      * @return result status.
      */
-    int GetDeferredLink(std::string& link);
+    int PopDeferredLink(std::string& link);
+
+    /**
+     * GetDeferredLink
+     * @descrition get deferred link.
+     * @param appIdentifer query appIdentifer.
+     * @param link queried url.
+     * @return result status.
+     */
+    int GetDeferredLink(const std::string& appIdentifer, std::string& link);
 
     bool QueryAbilityInfos(const std::string& url, bool withDefault,
         std::vector<OHOS::AppExecFwk::AbilityInfo>& abilityInfos, bool& findDefaultApp);

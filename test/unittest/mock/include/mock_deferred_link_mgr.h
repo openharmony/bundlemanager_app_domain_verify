@@ -25,13 +25,15 @@ public:
     MocIDeferredLinkMgr() = default;
     virtual ~MocIDeferredLinkMgr() = default;
     virtual void PutDeferredLink(const DeferredLinkInfo& info) = 0;
-    virtual std::string GetDeferredLink(const std::string& bundleName, const std::vector<std::string>& domains) = 0;
+    virtual std::string GetDeferredLink(const std::string& bundleName, const std::vector<std::string>& domains,
+        bool resv) = 0;
     virtual void RemoveDeferredLink(const DeferredLinkInfo& info) = 0;
 };
 class MocDeferredLinkMgr : public MocIDeferredLinkMgr {
 public:
     MOCK_METHOD(void, PutDeferredLink, (const DeferredLinkInfo& info), (override));
-    MOCK_METHOD(std::string, GetDeferredLink, (const std::string& bundleName, const std::vector<std::string>& domains),
+    MOCK_METHOD(std::string, GetDeferredLink, (const std::string& bundleName, const std::vector<std::string>& domains,
+        bool resv),
         (override));
     MOCK_METHOD(void, RemoveDeferredLink, (const DeferredLinkInfo& info), (override));
 };

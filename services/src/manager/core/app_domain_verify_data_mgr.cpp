@@ -53,6 +53,22 @@ bool AppDomainVerifyDataMgr::GetVerifyStatus(const std::string& bundleName, Veri
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "get verify status fail, verify result can't find");
     return false;
 }
+bool AppDomainVerifyDataMgr::GetVerifyStatusByAppIdentifier(
+    const std::string& appIdentifer, std::string& bundleName, VerifyResultInfo& verifyResultInfo)
+{
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "called");
+    std::lock_guard<std::mutex> lock(verifyMapMutex_);
+    for (auto iter : *verifyMap_) {
+        if (iter.second.appIdentifier == appIdentifer) {
+            bundleName = iter.first;
+            verifyResultInfo = iter.second;
+            return true;
+        }
+    }
+    APP_DOMAIN_VERIFY_HILOGD(
+        APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "get verify status by appIdentifer fail, verify result can't find");
+    return false;
+}
 bool AppDomainVerifyDataMgr::VerifyResultInfoToDB(
     const std::string bundleName, const VerifyResultInfo& verifyResultInfo)
 {

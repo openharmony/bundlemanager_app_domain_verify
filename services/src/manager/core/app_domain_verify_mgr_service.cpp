@@ -17,6 +17,7 @@
 #include <string>
 #include <tuple>
 #include <vector>
+#include "system_ability.h"
 #include "app_details_data_mgr.h"
 #include "ipc_skeleton.h"
 #include "app_domain_verify_mgr_service.h"
@@ -26,6 +27,8 @@
 #include "app_domain_verify_error.h"
 #include "bundle_info_query.h"
 #include "sa_interface/app_domain_verify_mgr_service.h"
+#include "common_event_manager.h"
+#include "common_event_support.h"
 
 namespace OHOS {
 namespace AppDomainVerify {
@@ -34,6 +37,8 @@ const bool REGISTER_RESULT = SystemAbility::MakeAndRegisterAbility(new (std::not
 const std::string HTTPS = "https";
 const std::set<std::string> SCHEME_WHITE_SET = { HTTPS };
 const std::string FUZZY_HOST_START = "*.";
+const std::string COMMON_EVENT_DOMAIN_VERIFY_DONE = "usual.event.DOMAIN_VERIFY_DONE";
+const int32_t SUBSCRIBER_UID = 7996;
 
 AppDomainVerifyMgrService::AppDomainVerifyMgrService() : SystemAbility(APP_DOMAIN_VERIFY_MANAGER_SA_ID, true)
 {
@@ -148,7 +153,7 @@ bool AppDomainVerifyMgrService::QueryDomainVerifyStatus(
     bool res = DelayedSingleton<AppDomainVerifyDataMgr>::GetInstance()->GetVerifyStatus(bundleName, verifyResultInfo);
     domainVerificationState = DomainVerifyStatus::STATE_NONE;
     for (auto it = verifyResultInfo.hostVerifyStatusMap.begin();
-         res && it != verifyResultInfo.hostVerifyStatusMap.end(); ++it) {
+        res && it != verifyResultInfo.hostVerifyStatusMap.end(); ++it) {
         if (std::get<0>(it->second) == InnerVerifyStatus::STATE_SUCCESS) {
             domainVerificationState = DomainVerifyStatus::STATE_VERIFIED;
             break;
@@ -181,8 +186,40 @@ bool AppDomainVerifyMgrService::SaveDomainVerifyStatus(
     }
     bool res = DelayedSingleton<AppDomainVerifyDataMgr>::GetInstance()->UpdateVerifyStatus(
         bundleName, verifyResultInfo);
+    SendVerifiedEvent(bundleName, verifyResultInfo);
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "call end");
     return res;
+}
+void AppDomainVerifyMgrService::SendVerifiedEvent(
+    const std::string& bundleName, const VerifyResultInfo& verifyResultInfo)
+{
+    std::vector<std::string> domains;
+    for (auto [fst, snd] : verifyResultInfo.hostVerifyStatusMap) {
+        if (std::get<0>(snd) == InnerVerifyStatus::STATE_SUCCESS) {
+            domains.push_back(fst);
+        }
+    }
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE,
+        "SendVerifiedEvent bundleName:%{public}s, domains size:%{public}zu", bundleName.c_str(), domains.size());
+    auto link = deferredLinkMgr_->GetDeferredLink(bundleName, domains, true);
+    if (link.empty()) {
+        APP_DOMAIN_VERIFY_HILOGD(
+            APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "deferred link empty, no need send verified event");
+        return;
+    }
+    AAFwk::Want want;
+    want.SetAction(COMMON_EVENT_DOMAIN_VERIFY_DONE);
+    want.SetParam("appIdentifier", verifyResultInfo.appIdentifier);
+    EventFwk::CommonEventData commonData{ want };
+    EventFwk::CommonEventPublishInfo publishInfo;
+    publishInfo.SetSubscriberUid({ SUBSCRIBER_UID });
+    std::string identity = OHOS::IPCSkeleton::ResetCallingIdentity();
+    if (!EventFwk::CommonEventManager::PublishCommonEvent(commonData, publishInfo)) {
+        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "PublishCommonEvent failed");
+    }
+    OHOS::IPCSkeleton::SetCallingIdentity(identity);
+    APP_DOMAIN_VERIFY_HILOGI(
+        APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "PublishCommonEvent COMMON_EVENT_DOMAIN_VERIFY_DONE");
 }
 bool AppDomainVerifyMgrService::IsAtomicServiceUrl(const std::string& url)
 {
@@ -415,8 +452,25 @@ int AppDomainVerifyMgrService::QueryVerifiedBundleWithDomains(
         });
     return ErrorCode::E_OK;
 }
+int AppDomainVerifyMgrService::QueryVerifiedBundleWithDomainsByAppIdentifer(
+    const std::string& appIdentifer, std::string& bundleName, std::vector<std::string>& domains)
+{
+    VerifyResultInfo verifyResultInfo;
+    if (!DelayedSingleton<AppDomainVerifyDataMgr>::GetInstance()->GetVerifyStatusByAppIdentifier(
+            appIdentifer, bundleName, verifyResultInfo)) {
+        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "can not get verifyResultInfo");
+        return ErrorCode::E_INTERNAL_ERR;
+    }
 
-int AppDomainVerifyMgrService::GetDeferredLink(std::string& link)
+    std::for_each(std::begin(verifyResultInfo.hostVerifyStatusMap), std::end(verifyResultInfo.hostVerifyStatusMap),
+        [&domains](const auto& item) {
+            if (std::get<0>(item.second) == InnerVerifyStatus::STATE_SUCCESS) {
+                domains.push_back(item.first);
+            }
+        });
+    return ErrorCode::E_OK;
+}
+int AppDomainVerifyMgrService::PopDeferredLink(std::string& link)
 {
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "called");
     std::string bundleName;
@@ -432,6 +486,26 @@ int AppDomainVerifyMgrService::GetDeferredLink(std::string& link)
         return ErrorCode::E_OK;
     }
     link = deferredLinkMgr_->GetDeferredLink(bundleName, domains);
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "get link, %{private}s.", link.c_str());
+    return ErrorCode::E_OK;
+}
+
+int AppDomainVerifyMgrService::GetDeferredLink(const std::string& appIdentifer, std::string& link)
+{
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "called");
+    std::string bundleName;
+    std::vector<std::string> domains;
+    auto ret = QueryVerifiedBundleWithDomainsByAppIdentifer(appIdentifer, bundleName, domains);
+    if (ret != ErrorCode::E_OK) {
+        APP_DOMAIN_VERIFY_HILOGE(
+            APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "QueryVerifiedBundleWithDomains error:%{public}d.", ret);
+        return ret;
+    }
+    if (domains.empty()) {
+        APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "domains empty, will return.");
+        return ErrorCode::E_OK;
+    }
+    link = deferredLinkMgr_->GetDeferredLink(bundleName, domains, true);
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "get link, %{private}s.", link.c_str());
     return ErrorCode::E_OK;
 }
