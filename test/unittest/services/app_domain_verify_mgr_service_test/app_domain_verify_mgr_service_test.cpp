@@ -1086,11 +1086,11 @@ ErrCode InvokeGetBundleInfoV9(const std::string& bundleName, int32_t flags, Bund
 }
 
 /**
- * @tc.name: GetDeferredLink001
- * @tc.desc: GetDeferredLink
+ * @tc.name: PopDeferredLink001
+ * @tc.desc: PopDeferredLink
  * @tc.type: FUNC
  */
-HWTEST_F(MgrServiceTest, GetDeferredLink001, TestSize.Level0)
+HWTEST_F(MgrServiceTest, PopDeferredLink001, TestSize.Level0)
 {
     MessageParcel data;
     MessageParcel reply;
@@ -1103,7 +1103,7 @@ HWTEST_F(MgrServiceTest, GetDeferredLink001, TestSize.Level0)
     g_mockBundleMgrService->impl = mocBundleMgrService;
 
     std::string link;
-    int32_t error = appDomainVerifyMgrService->GetDeferredLink(link);
+    int32_t error = appDomainVerifyMgrService->PopDeferredLink(link);
     ASSERT_TRUE(error != ERR_OK);
 
     // get empty bundleName
@@ -1111,7 +1111,7 @@ HWTEST_F(MgrServiceTest, GetDeferredLink001, TestSize.Level0)
     EXPECT_CALL(*mocBundleMgrService1, GetBundleNameForUid(_, _)).WillOnce(Return(true));
     g_mockBundleMgrService->impl = mocBundleMgrService1;
 
-    error = appDomainVerifyMgrService->GetDeferredLink(link);
+    error = appDomainVerifyMgrService->PopDeferredLink(link);
     ASSERT_TRUE(error != ERR_OK);
 
     // can not get bundleInfo
@@ -1120,7 +1120,7 @@ HWTEST_F(MgrServiceTest, GetDeferredLink001, TestSize.Level0)
     EXPECT_CALL(*mocBundleMgrService2, GetBundleInfoV9(_, _, _, _)).WillOnce(Return(false));
     g_mockBundleMgrService->impl = mocBundleMgrService2;
 
-    error = appDomainVerifyMgrService->GetDeferredLink(link);
+    error = appDomainVerifyMgrService->PopDeferredLink(link);
     ASSERT_TRUE(error != ERR_OK);
 
     // empty app identifier
@@ -1129,17 +1129,36 @@ HWTEST_F(MgrServiceTest, GetDeferredLink001, TestSize.Level0)
     EXPECT_CALL(*mocBundleMgrService3, GetBundleInfoV9(_, _, _, _)).WillOnce(Return(true));
     g_mockBundleMgrService->impl = mocBundleMgrService3;
 
-    error = appDomainVerifyMgrService->GetDeferredLink(link);
+    error = appDomainVerifyMgrService->PopDeferredLink(link);
     ASSERT_TRUE(error != ERR_OK);
+
+    auto mocDeferredLinkMgr = std::make_shared<MocDeferredLinkMgr>();
+    EXPECT_CALL(*mocDeferredLinkMgr, GetDeferredLink(_, _, _)).Times(1).WillOnce(Return(""));
+    DoMocDeferredLinkMgr(mocDeferredLinkMgr);
+    error = appDomainVerifyMgrService->PopDeferredLink(link);
+    ASSERT_TRUE(error == ERR_OK);
+}
+
+/**
+ * @tc.name: PopDeferredLink002
+ * @tc.desc: PopDeferredLink
+ * @tc.type: FUNC
+ */
+HWTEST_F(MgrServiceTest, PopDeferredLink002, TestSize.Level0)
+{
+    MessageParcel data;
+    MessageParcel reply;
+    MessageOption option;
+    WRITE_PARCEL_AND_RETURN_IF_FAIL(InterfaceToken, data, IAppDomainVerifyMgrService::GetDescriptor());
 
     // can not get verify result
     auto mocBundleMgrService4 = std::make_shared<OHOS::AppExecFwk::MocBundleMgrService>();
     EXPECT_CALL(*mocBundleMgrService4, GetBundleNameForUid(_, _)).WillRepeatedly(InvokeGetBundleNameForUid);
     EXPECT_CALL(*mocBundleMgrService4, GetBundleInfoV9(_, _, _, _)).WillRepeatedly(InvokeGetBundleInfoV9);
     g_mockBundleMgrService->impl = mocBundleMgrService4;
-
+    std::string link;
     DelayedSingleton<AppDomainVerifyDataMgr>::GetInstance()->DeleteVerifyStatus(BUNDLE_NAME);
-    error = appDomainVerifyMgrService->GetDeferredLink(link);
+    int32_t error = appDomainVerifyMgrService->PopDeferredLink(link);
     ASSERT_TRUE(error != ERR_OK);
 
     // app identifier not equal
@@ -1148,14 +1167,14 @@ HWTEST_F(MgrServiceTest, GetDeferredLink001, TestSize.Level0)
 
     DelayedSingleton<AppDomainVerifyDataMgr>::GetInstance()->DeleteVerifyStatus(BUNDLE_NAME);
     DelayedSingleton<AppDomainVerifyDataMgr>::GetInstance()->InsertVerifyStatus(BUNDLE_NAME, verifyResultInfo);
-    error = appDomainVerifyMgrService->GetDeferredLink(link);
+    error = appDomainVerifyMgrService->PopDeferredLink(link);
     ASSERT_TRUE(error != ERR_OK);
 
     // empty host status map
     verifyResultInfo.appIdentifier = AppDomainVerify::APP_IDENTIFIER;
     DelayedSingleton<AppDomainVerifyDataMgr>::GetInstance()->DeleteVerifyStatus(BUNDLE_NAME);
     DelayedSingleton<AppDomainVerifyDataMgr>::GetInstance()->InsertVerifyStatus(BUNDLE_NAME, verifyResultInfo);
-    error = appDomainVerifyMgrService->GetDeferredLink(link);
+    error = appDomainVerifyMgrService->PopDeferredLink(link);
     ASSERT_TRUE(error == ERR_OK);
 
     // empty success empty status map
@@ -1163,7 +1182,7 @@ HWTEST_F(MgrServiceTest, GetDeferredLink001, TestSize.Level0)
         BUNDLE_NAME, std::make_tuple(InnerVerifyStatus::STATE_FAIL, std::string(), 0));
     DelayedSingleton<AppDomainVerifyDataMgr>::GetInstance()->DeleteVerifyStatus(BUNDLE_NAME);
     DelayedSingleton<AppDomainVerifyDataMgr>::GetInstance()->InsertVerifyStatus(BUNDLE_NAME, verifyResultInfo);
-    error = appDomainVerifyMgrService->GetDeferredLink(link);
+    error = appDomainVerifyMgrService->PopDeferredLink(link);
     ASSERT_TRUE(error == ERR_OK);
 
     // empty success empty status map
@@ -1173,7 +1192,7 @@ HWTEST_F(MgrServiceTest, GetDeferredLink001, TestSize.Level0)
         BUNDLE_NAME + "1", std::make_tuple(InnerVerifyStatus::STATE_FAIL, std::string(), 0));
     DelayedSingleton<AppDomainVerifyDataMgr>::GetInstance()->DeleteVerifyStatus(BUNDLE_NAME);
     DelayedSingleton<AppDomainVerifyDataMgr>::GetInstance()->InsertVerifyStatus(BUNDLE_NAME, verifyResultInfo);
-    error = appDomainVerifyMgrService->GetDeferredLink(link);
+    error = appDomainVerifyMgrService->PopDeferredLink(link);
     ASSERT_TRUE(error == ERR_OK);
 
     // 1 success empty status map
@@ -1183,13 +1202,7 @@ HWTEST_F(MgrServiceTest, GetDeferredLink001, TestSize.Level0)
         BUNDLE_NAME + "1", std::make_tuple(InnerVerifyStatus::STATE_FAIL, std::string(), 0));
     DelayedSingleton<AppDomainVerifyDataMgr>::GetInstance()->DeleteVerifyStatus(BUNDLE_NAME);
     DelayedSingleton<AppDomainVerifyDataMgr>::GetInstance()->InsertVerifyStatus(BUNDLE_NAME, verifyResultInfo);
-    error = appDomainVerifyMgrService->GetDeferredLink(link);
-    ASSERT_TRUE(error == ERR_OK);
-
-    auto mocDeferredLinkMgr = std::make_shared<MocDeferredLinkMgr>();
-    EXPECT_CALL(*mocDeferredLinkMgr, GetDeferredLink(_, _)).Times(1).WillOnce(Return(""));
-    DoMocDeferredLinkMgr(mocDeferredLinkMgr);
-    error = appDomainVerifyMgrService->GetDeferredLink(link);
+    error = appDomainVerifyMgrService->PopDeferredLink(link);
     ASSERT_TRUE(error == ERR_OK);
 }
 

@@ -31,10 +31,11 @@ void DeferredLinkMgr::PutDeferredLink(const DeferredLinkInfo& info)
 {
 }
 
-std::string DeferredLinkMgr::GetDeferredLink(const std::string& bundleName, const std::vector<std::string>& domains)
+std::string DeferredLinkMgr::GetDeferredLink(const std::string& bundleName, const std::vector<std::string>& domains,
+    bool resv)
 {
     if (g_mocDeferredLinkMgr) {
-        return g_mocDeferredLinkMgr->GetDeferredLink(bundleName, domains);
+        return g_mocDeferredLinkMgr->GetDeferredLink(bundleName, domains, resv);
     }
     return {};
 }

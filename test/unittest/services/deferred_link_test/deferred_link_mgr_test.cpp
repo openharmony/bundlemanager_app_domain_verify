@@ -314,4 +314,35 @@ HWTEST_F(DeferredLinkMgrTest, DeferredLinkGetTest009, TestSize.Level0)
 
     EXPECT_TRUE(link.empty());
 }
+/**
+ * @tc.name: DeferredLinkGetTest010
+ * @tc.desc: get link with matched domain and matched url, return new link, cache resv link all.
+ * @tc.type: FUNC
+ */
+HWTEST_F(DeferredLinkMgrTest, DeferredLinkGetTest010, TestSize.Level0)
+{
+    DeferredLinkMgr deferredLinkMgr;
+    deferredLinkMgr.ageHandler_ = nullptr;
+    std::shared_ptr<MocAbilityFilter> filter = std::make_shared<MocAbilityFilter>();
+    EXPECT_CALL(*filter, Filter(_)).Times(4).WillRepeatedly(Return(true));
+    MockAbilityFilter(filter);
+    deferredLinkMgr.PutDeferredLink(
+        { .domain = BUNDLE_DOMAIN, .url = BUNDLE_URL, .timeStamp = GetSecondsSince1970ToNow() });
+    deferredLinkMgr.PutDeferredLink(
+        { .domain = BUNDLE_DOMAIN, .url = BUNDLE_URL_NEW, .timeStamp = GetSecondsSince1970ToNow() });
+    EXPECT_TRUE(deferredLinkMgr.caches_.size() == 2);
+
+    std::vector<std::string> domains;
+    domains.emplace_back(BUNDLE_DOMAIN);
+    auto link = deferredLinkMgr.GetDeferredLink(BUNDLE_NAME, domains, true);
+
+    EXPECT_FALSE(link.empty());
+    EXPECT_EQ(link, BUNDLE_URL_NEW);
+    EXPECT_FALSE(deferredLinkMgr.caches_.empty());
+
+    auto link1 = deferredLinkMgr.GetDeferredLink(BUNDLE_NAME, domains, false);
+    EXPECT_FALSE(link.empty());
+    EXPECT_EQ(link, BUNDLE_URL_NEW);
+    EXPECT_TRUE(deferredLinkMgr.caches_.empty());
+}
 }

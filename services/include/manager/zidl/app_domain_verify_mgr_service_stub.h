@@ -44,11 +44,12 @@ private:
     int32_t OnUpdateWhiteListUrls(MessageParcel& data, MessageParcel& reply);
     int32_t OnQueryAssociatedDomains(MessageParcel& data, MessageParcel& reply);
     int32_t OnQueryAssociatedBundleNames(MessageParcel& data, MessageParcel& reply);
-    int32_t OnGetDeferredLink(MessageParcel& data, MessageParcel& reply);
+    int32_t OnPopDeferredLink(MessageParcel& data, MessageParcel& reply);
     int32_t OnQueryAppDetailsWant(MessageParcel& data, MessageParcel& reply);
     int32_t OnIsShortUrl(MessageParcel& data, MessageParcel& reply);
     int32_t OnConvertFromShortUrl(MessageParcel& data, MessageParcel& reply);
     int32_t OnQueryAbilityInfos(MessageParcel& data, MessageParcel& reply);
+    int32_t OnGetDeferredLink(MessageParcel& data, MessageParcel& reply);
 };
 }  // namespace AppDomainVerify
 }  // namespace OHOS

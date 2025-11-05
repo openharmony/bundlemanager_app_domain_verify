@@ -49,13 +49,15 @@ public:
     void PutDeferredLink(const DeferredLinkInfo& info);
 
     /**
-     * GetDeferredLink
+     * PopDeferredLink
      * @descrition get deferred link within domains and bundleName
      * @param bundleName the bundleName to filter link info.
      * @param domains the domains to filter link info.
+     * @param resv true:need to keep the link, false:remove the link.
      * @return url the deferred url to open.
      */
-    std::string GetDeferredLink(const std::string& bundleName, const std::vector<std::string>& domains);
+    std::string GetDeferredLink(const std::string& bundleName, const std::vector<std::string>& domains,
+        bool resv = false);
 
     /**
      * RemoveDeferredLink

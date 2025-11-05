@@ -251,7 +251,7 @@ HWTEST_F(AppDomainVerifyMgrClientTest, AppDomainVerifyMgrClientTest010, TestSize
 
 /**
  * @tc.name: AppDomainVerifyMgrClientTest011
- * @tc.desc: QueryAssociatedDomains test.
+ * @tc.desc: PopDeferredLink test.
  * @tc.type: FUNC
  */
 HWTEST_F(AppDomainVerifyMgrClientTest, AppDomainVerifyMgrClientTest011, TestSize.Level0)
@@ -263,10 +263,11 @@ HWTEST_F(AppDomainVerifyMgrClientTest, AppDomainVerifyMgrClientTest011, TestSize
         mgrStubMock_.get());
 
     std::string link;
-    AppDomainVerifyMgrClient::GetInstance()->GetDeferredLink(link);
+    AppDomainVerifyMgrClient::GetInstance()->PopDeferredLink(link);
     ASSERT_TRUE(g_mgrInvokeOK);
     AppDomainVerifyMgrClient::appDomainVerifyMgrServiceProxy_.ForceSetRefPtr(nullptr);
 }
+
 /**
  * @tc.name: AppDomainVerifyMgrClientTest012
  * @tc.desc: QueryAssociatedDomains test.
@@ -283,6 +284,25 @@ HWTEST_F(AppDomainVerifyMgrClientTest, AppDomainVerifyMgrClientTest012, TestSize
     std::string link;
     AAFwk::Want want;
     AppDomainVerifyMgrClient::GetInstance()->QueryAppDetailsWant(link, want);
+    ASSERT_TRUE(g_mgrInvokeOK);
+    AppDomainVerifyMgrClient::appDomainVerifyMgrServiceProxy_.ForceSetRefPtr(nullptr);
+}
+
+/**
+ * @tc.name: AppDomainVerifyMgrClientTest013
+ * @tc.desc: GetDeferredLink test.
+ * @tc.type: FUNC
+ */
+HWTEST_F(AppDomainVerifyMgrClientTest, AppDomainVerifyMgrClientTest013, TestSize.Level0)
+{
+    std::shared_ptr<AppDomainVerifyMgrRemoteStubMock> mgrStubMock_ =
+        std::make_shared<AppDomainVerifyMgrRemoteStubMock>();
+    EXPECT_CALL(*mgrStubMock_, SendRequest(_, _, _, _)).Times(1).WillOnce(::testing::Invoke(MgrInvokeOK));
+    AppDomainVerifyMgrClient::appDomainVerifyMgrServiceProxy_ = sptr<AppDomainVerifyMgrServiceProxy>::MakeSptr(
+        mgrStubMock_.get());
+
+    std::string link;
+    AppDomainVerifyMgrClient::GetInstance()->GetDeferredLink("", link);
     ASSERT_TRUE(g_mgrInvokeOK);
     AppDomainVerifyMgrClient::appDomainVerifyMgrServiceProxy_.ForceSetRefPtr(nullptr);
 }

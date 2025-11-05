@@ -36,7 +36,8 @@ void DeferredLinkMgr::PutDeferredLink(const DeferredLinkInfo& info)
         info.domain.c_str(), info.url.c_str());
 }
 
-std::string DeferredLinkMgr::GetDeferredLink(const std::string& bundleName, const std::vector<std::string>& domains)
+std::string DeferredLinkMgr::GetDeferredLink(const std::string& bundleName, const std::vector<std::string>& domains,
+    bool resv)
 {
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "called.");
     {
@@ -53,20 +54,30 @@ std::string DeferredLinkMgr::GetDeferredLink(const std::string& bundleName, cons
 
     {
         std::unique_lock<std::mutex> lock(cachesMutex_);
-        // find links in bundle's domain and can match bundle's ability, then remove all of them.
-        caches_.remove_if([filter, &domainSet, &destination](const DeferredLinkInfo& linkInfo) {
-            if (domainSet.count(linkInfo.domain) != 0 && filter->Filter({ .url = linkInfo.url })) {
-                // keep newly in front
-                destination.push_back(linkInfo);
-                APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "matched.");
-                return true;
+        if (!resv) {
+            // find links in bundle's domain and can match bundle's ability, then remove all of them.
+            caches_.remove_if([filter, &domainSet, &destination](const DeferredLinkInfo& linkInfo) {
+                if (domainSet.count(linkInfo.domain) != 0 && filter->Filter({ .url = linkInfo.url })) {
+                    // keep newly in front
+                    destination.push_back(linkInfo);
+                    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "matched.");
+                    return true;
+                }
+                return false;
+            });
+        } else {
+            for (auto linkInfo : caches_) {
+                if (domainSet.count(linkInfo.domain) != 0 && filter->Filter({ .url = linkInfo.url })) {
+                    destination.push_back(linkInfo);
+                    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "matched.");
+                }
             }
-            return false;
-        });
+        }
     }
 
     std::string result = destination.empty() ? "" : destination.front().url;
-    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "get deferred link:%{private}s", result.c_str());
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "get deferred link:%{private}s resv:%{public}d",
+        result.c_str(), resv);
     return result;
 }
 
