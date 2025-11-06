@@ -23,6 +23,7 @@ struct AppVerifyBaseInfo : public Parcelable {
     std::string appIdentifier{};
     std::string bundleName{};
     std::string fingerprint{};
+    int priority{};
     AppVerifyBaseInfo();
     AppVerifyBaseInfo(const AppVerifyBaseInfo &appVerifyBaseInfo);
 

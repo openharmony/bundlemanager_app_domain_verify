@@ -93,7 +93,7 @@ HWTEST_F(AppDomainVerifyAgentModuleTest, AppDomainVerifyAgentModuleTest001, Test
     VerifyResultInfo verifyResultInfo;
     verifyResultInfo.appIdentifier = APP_IDENTIFIER;
     verifyResultInfo.hostVerifyStatusMap.insert_or_assign(
-        "https://" + HOST, std::make_tuple(InnerVerifyStatus::UNKNOWN, std::string(), 0));
+        "https://" + HOST, VerifyStatus({ .status = STATE_SUCCESS, .verifyTime = std::string(), .retryCnt = 0 }));
     appDomainVerifyAgentService->SingleVerify(appVerifyBaseInfo, verifyResultInfo);
     Sleep();
     DomainVerifyStatus domainVerificationState;

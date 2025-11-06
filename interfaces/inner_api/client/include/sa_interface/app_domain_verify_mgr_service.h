@@ -78,6 +78,10 @@ private:
     void SendVerifiedEvent(const std::string& bundleName, const VerifyResultInfo& verifyResultInfo);
     int QueryVerifiedBundleWithDomainsByAppIdentifer(const std::string& appIdentifer,
         std::string& bundleName, std::vector<std::string>& domains);
+    void FilterAbilitiesInner(std::string hostVerifyKey,
+        const std::vector<OHOS::AppExecFwk::AbilityInfo>& originAbilityInfos,
+        std::vector<OHOS::AppExecFwk::AbilityInfo>& filteredAbilityInfos);
+
 private:
     std::shared_ptr<AppDetailsDataMgr> appDetailsDataMgr_ = nullptr;
     bool InitConfigMgr();

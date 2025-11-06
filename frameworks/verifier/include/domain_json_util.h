@@ -17,7 +17,7 @@
 
 #include <string>
 #include "asset_json_obj.h"
-
+#include "cJSON.h"
 namespace OHOS {
 namespace AppDomainVerify {
 class JsonUtil {
@@ -25,6 +25,7 @@ public:
     static bool Parse(const std::string &assetJsonsStr, AssetJsonObj &assetJsonObj);
 
 private:
+    static void ParseItem(AssetJsonObj& assetJsonObj, cJSON* appsArray);
     JsonUtil();
     ~JsonUtil();
 };
