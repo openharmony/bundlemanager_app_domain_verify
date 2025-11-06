@@ -46,24 +46,24 @@ public:
 };
 auto appDomainVerifyMgrService_ = std::make_shared<AppDomainVerifyMgrService>();
 auto appDomainVerifyAgentStubMock_ = std::make_shared<AppDomainVerifyAgentRemoteStubMock>();
-int InvokeSingleVerifyOK(uint32_t code, MessageParcel &data, MessageParcel &reply, MessageOption &option)
+int InvokeSingleVerifyOK(uint32_t code, MessageParcel& data, MessageParcel& reply, MessageOption& option)
 {
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MODULE_BUTT, "call end");
     std::string bundleName = BUNDLE_NAME;
     VerifyResultInfo verifyResultInfo;
     verifyResultInfo.hostVerifyStatusMap.insert_or_assign(
-        "https://" + HOST, std::make_tuple(InnerVerifyStatus::STATE_SUCCESS, std::string(), 0));
+        "https://" + HOST, VerifyStatus({ .status = STATE_SUCCESS, .verifyTime = std::string(), .retryCnt = 0 }));
     appDomainVerifyMgrService_->SaveDomainVerifyStatus(bundleName, verifyResultInfo);
     return 0;
 }
 
-int InvokeSingleVerifyFail(uint32_t code, MessageParcel &data, MessageParcel &reply, MessageOption &option)
+int InvokeSingleVerifyFail(uint32_t code, MessageParcel& data, MessageParcel& reply, MessageOption& option)
 {
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MODULE_BUTT, "call end");
     std::string bundleName = BUNDLE_NAME;
     VerifyResultInfo verifyResultInfo;
     verifyResultInfo.hostVerifyStatusMap.insert_or_assign(
-        "https://" + HOST, std::make_tuple(InnerVerifyStatus::STATE_FAIL, std::string(), 0));
+        "https://" + HOST, VerifyStatus({ .status = STATE_FAIL, .verifyTime = std::string(), .retryCnt = 0 }));
     appDomainVerifyMgrService_->SaveDomainVerifyStatus(bundleName, verifyResultInfo);
     return UNKNOWN_ERROR;
 }

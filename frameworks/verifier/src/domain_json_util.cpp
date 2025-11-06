@@ -20,6 +20,34 @@
 namespace OHOS {
 namespace AppDomainVerify {
 
+void JsonUtil::ParseItem(AssetJsonObj& assetJsonObj, cJSON* appsArray)
+{
+    int arraySize = cJSON_GetArraySize(appsArray);
+    for (int i = 0; i < arraySize; i++) {
+        cJSON* arrayItem = cJSON_GetArrayItem(appsArray, i);
+        if (!cJSON_IsObject(arrayItem)) {
+            continue;
+        }
+        AppVerifyBaseInfo appVerifyBaseInfo;
+        cJSON* appIdentifier = cJSON_GetObjectItemCaseSensitive(arrayItem, ApplinkingAssetKeys::APP_IDENTIFIER.c_str());
+        if (appIdentifier != nullptr && cJSON_IsString(appIdentifier) && appIdentifier->valuestring != nullptr) {
+            appVerifyBaseInfo.appIdentifier = appIdentifier->valuestring;
+        }
+        cJSON* bundleName = cJSON_GetObjectItemCaseSensitive(arrayItem, ApplinkingAssetKeys::BUNDLE_NAME.c_str());
+        if (bundleName != nullptr && cJSON_IsString(bundleName) && bundleName->valuestring != nullptr) {
+            appVerifyBaseInfo.bundleName = bundleName->valuestring;
+        }
+        cJSON* fingerprint = cJSON_GetObjectItemCaseSensitive(arrayItem, ApplinkingAssetKeys::FINGERPRINT.c_str());
+        if (fingerprint != nullptr && cJSON_IsString(fingerprint) && fingerprint->valuestring != nullptr) {
+            appVerifyBaseInfo.fingerprint = fingerprint->valuestring;
+        }
+        cJSON* priority = cJSON_GetObjectItemCaseSensitive(arrayItem, ApplinkingAssetKeys::PRIORITY.c_str());
+        if (priority != nullptr && cJSON_IsNumber(priority)) {
+            appVerifyBaseInfo.priority = priority->valueint;
+        }
+        assetJsonObj.applinking.apps.emplace_back(appVerifyBaseInfo);
+    }
+}
 bool JsonUtil::Parse(const std::string &assetJsonsStr, AssetJsonObj &assetJsonObj)
 {
     if (assetJsonsStr.empty()) {
@@ -43,28 +71,7 @@ bool JsonUtil::Parse(const std::string &assetJsonsStr, AssetJsonObj &assetJsonOb
     }
     cJSON *appsArray = cJSON_GetObjectItemCaseSensitive(applinkingObj, ApplinkingAssetKeys::APPS.c_str());
     if (appsArray != nullptr && cJSON_IsArray(appsArray)) {
-        int arraySize = cJSON_GetArraySize(appsArray);
-        for (int i = 0; i < arraySize; i++) {
-            cJSON *arrayItem = cJSON_GetArrayItem(appsArray, i);
-            if (!cJSON_IsObject(arrayItem)) {
-                continue;
-            }
-            AppVerifyBaseInfo appVerifyBaseInfo;
-            cJSON *appIdentifier = cJSON_GetObjectItemCaseSensitive(arrayItem,
-                ApplinkingAssetKeys::APP_IDENTIFIER.c_str());
-            if (appIdentifier != nullptr && cJSON_IsString(appIdentifier) && appIdentifier->valuestring != nullptr) {
-                appVerifyBaseInfo.appIdentifier = appIdentifier->valuestring;
-            }
-            cJSON *bundleName = cJSON_GetObjectItemCaseSensitive(arrayItem, ApplinkingAssetKeys::BUNDLE_NAME.c_str());
-            if (bundleName != nullptr && cJSON_IsString(bundleName) && bundleName->valuestring != nullptr) {
-                appVerifyBaseInfo.bundleName = bundleName->valuestring;
-            }
-            cJSON *fingerprint = cJSON_GetObjectItemCaseSensitive(arrayItem, ApplinkingAssetKeys::FINGERPRINT.c_str());
-            if (fingerprint != nullptr && cJSON_IsString(fingerprint) && fingerprint->valuestring != nullptr) {
-                appVerifyBaseInfo.fingerprint = fingerprint->valuestring;
-            }
-            assetJsonObj.applinking.apps.emplace_back(appVerifyBaseInfo);
-        }
+        ParseItem(assetJsonObj, appsArray);
         cJSON_Delete(jsonObj);
         return true;
     }

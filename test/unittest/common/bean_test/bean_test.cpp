@@ -124,7 +124,7 @@ HWTEST_F(AppDomainVerifyBeanTest, AppDomainVerifyBundleVerifyStatusInfoTest001, 
     BundleVerifyStatusInfo bundleVerifyStatusInfo;
     VerifyResultInfo verifyResultInfo;
     verifyResultInfo.hostVerifyStatusMap.insert_or_assign(
-        "https://" + HOST, std::make_tuple(InnerVerifyStatus::STATE_SUCCESS, "", 0));
+        "https://" + HOST, VerifyStatus({.status = STATE_SUCCESS, .verifyTime = std::string(), .retryCnt = 0}));
     bundleVerifyStatusInfo.bundleVerifyStatusInfoMap_.insert_or_assign(BUNDLE_NAME, verifyResultInfo);
 
     Parcel parcel;
@@ -136,9 +136,8 @@ HWTEST_F(AppDomainVerifyBeanTest, AppDomainVerifyBundleVerifyStatusInfoTest001, 
     ASSERT_TRUE(unmarshalling->bundleVerifyStatusInfoMap_.begin()->second.hostVerifyStatusMap.size() == 1);
     ASSERT_TRUE(unmarshalling->bundleVerifyStatusInfoMap_.begin()->second.hostVerifyStatusMap.begin()->first ==
         "https://" + HOST);
-    auto [status, verifyTime,
-        cnt] = unmarshalling->bundleVerifyStatusInfoMap_.begin()->second.hostVerifyStatusMap.begin()->second;
-    ASSERT_TRUE(status == InnerVerifyStatus::STATE_SUCCESS);
+    auto verifyStatus = unmarshalling->bundleVerifyStatusInfoMap_.begin()->second.hostVerifyStatusMap.begin()->second;
+    ASSERT_TRUE(verifyStatus.status == InnerVerifyStatus::STATE_SUCCESS);
 
     Parcel parcel1;
     unmarshalling = BundleVerifyStatusInfo::Unmarshalling(parcel1);
@@ -190,7 +189,7 @@ HWTEST_F(AppDomainVerifyBeanTest, AppDomainVerifyVerifyResultInfoTest001, TestSi
     VerifyResultInfo verifyResultInfo;
     verifyResultInfo.appIdentifier = APP_IDENTIFIER;
     verifyResultInfo.hostVerifyStatusMap.insert_or_assign(
-        "https://" + HOST, std::make_tuple(InnerVerifyStatus::STATE_SUCCESS, "", 0));
+        "https://" + HOST, VerifyStatus({.status = STATE_SUCCESS, .verifyTime = std::string(), .retryCnt = 0}));
 
     Parcel parcel;
     verifyResultInfo.Marshalling(parcel);
@@ -198,8 +197,8 @@ HWTEST_F(AppDomainVerifyBeanTest, AppDomainVerifyVerifyResultInfoTest001, TestSi
     ASSERT_TRUE(unmarshalling->appIdentifier == APP_IDENTIFIER);
     ASSERT_TRUE(unmarshalling->hostVerifyStatusMap.size() == 1);
     ASSERT_TRUE(unmarshalling->hostVerifyStatusMap.begin()->first == "https://" + HOST);
-    auto [status, verifyTime, cnt] = unmarshalling->hostVerifyStatusMap.begin()->second;
-    ASSERT_TRUE(status == InnerVerifyStatus::STATE_SUCCESS);
+    auto verifyStatus= unmarshalling->hostVerifyStatusMap.begin()->second;
+    ASSERT_TRUE(verifyStatus.status == InnerVerifyStatus::STATE_SUCCESS);
 
     Parcel parcel1;
     unmarshalling = VerifyResultInfo::Unmarshalling(parcel1);

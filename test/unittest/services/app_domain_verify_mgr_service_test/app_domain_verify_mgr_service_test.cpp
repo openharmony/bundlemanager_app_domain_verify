@@ -24,6 +24,7 @@
 #include "app_domain_verify_agent_client.h"
 #undef private
 #undef protected
+#include "agent_constants.h"
 #include "mock_verify_agent.h"
 #include "mock_constant.h"
 #include "mock_verify_mgr.h"
@@ -62,7 +63,7 @@ int InvokeSingleVerifyOK(uint32_t code, MessageParcel& data, MessageParcel& repl
     std::string bundleName = BUNDLE_NAME;
     VerifyResultInfo verifyResultInfo;
     verifyResultInfo.hostVerifyStatusMap.insert_or_assign(
-        "https://" + HOST, std::make_tuple(InnerVerifyStatus::STATE_SUCCESS, std::string(), 0));
+        "https://" + HOST, VerifyStatus({ .status = STATE_SUCCESS, .verifyTime = std::string(), .retryCnt = 0 }));
     appDomainVerifyMgrService->SaveDomainVerifyStatus(bundleName, verifyResultInfo);
     return 0;
 }
@@ -73,7 +74,7 @@ int InvokeSingleVerifyFail(uint32_t code, MessageParcel& data, MessageParcel& re
     std::string bundleName = BUNDLE_NAME;
     VerifyResultInfo verifyResultInfo;
     verifyResultInfo.hostVerifyStatusMap.insert_or_assign(
-        "https://" + HOST, std::make_tuple(InnerVerifyStatus::STATE_FAIL, std::string(), 0));
+        "https://" + HOST, VerifyStatus({ .status = STATE_FAIL, .verifyTime = std::string(), .retryCnt = 0 }));
     appDomainVerifyMgrService->SaveDomainVerifyStatus(bundleName, verifyResultInfo);
     return UNKNOWN_ERROR;
 }
@@ -795,9 +796,9 @@ HWTEST_F(MgrServiceTest, MgrServiceQueryDomainVerifyStatusTest001, TestSize.Leve
     std::string bundleName{ "MgrServiceTest029" };
     VerifyResultInfo verifyResultInfo;
     verifyResultInfo.hostVerifyStatusMap.emplace(
-        bundleName, std::make_tuple(InnerVerifyStatus::STATE_SUCCESS, std::string(), 0));
+        bundleName, VerifyStatus({ .status = STATE_SUCCESS, .verifyTime = std::string(), .retryCnt = 0 }));
     verifyResultInfo.hostVerifyStatusMap.emplace(
-        "test", std::make_tuple(InnerVerifyStatus::STATE_SUCCESS, std::string(), 0));
+        "test", VerifyStatus({ .status = STATE_SUCCESS, .verifyTime = std::string(), .retryCnt = 0 }));
     DelayedSingleton<AppDomainVerifyDataMgr>::GetInstance()->InsertVerifyStatus(bundleName, verifyResultInfo);
 
     DomainVerifyStatus domainVerificationState = DomainVerifyStatus::STATE_NONE;
@@ -816,7 +817,7 @@ HWTEST_F(MgrServiceTest, MgrServiceQueryDomainVerifyStatusTest002, TestSize.Leve
     std::string bundleName{ "MgrServiceTest030" };
     VerifyResultInfo verifyResultInfo;
     verifyResultInfo.hostVerifyStatusMap.emplace(
-        bundleName, std::make_tuple(InnerVerifyStatus::UNKNOWN, std::string(), 0));
+        bundleName, VerifyStatus({ .status = UNKNOWN, .verifyTime = std::string(), .retryCnt = 0 }));
     DelayedSingleton<AppDomainVerifyDataMgr>::GetInstance()->InsertVerifyStatus(bundleName, verifyResultInfo);
     DomainVerifyStatus domainVerificationState = DomainVerifyStatus::STATE_NONE;
     EXPECT_TRUE(appDomainVerifyMgrService->QueryDomainVerifyStatus(bundleName, domainVerificationState));
@@ -851,7 +852,7 @@ HWTEST_F(MgrServiceTest, MgrServiceQueryDomainVerifyStatusTest004, TestSize.Leve
     std::string bundleName{ "MgrServiceTest031" };
     VerifyResultInfo verifyResultInfo;
     verifyResultInfo.hostVerifyStatusMap.emplace(
-        bundleName, std::make_tuple(InnerVerifyStatus::STATE_FAIL, std::string(), 0));
+        bundleName, VerifyStatus({ .status = STATE_FAIL, .verifyTime = std::string(), .retryCnt = 0 }));
     DelayedSingleton<AppDomainVerifyDataMgr>::GetInstance()->InsertVerifyStatus(bundleName, verifyResultInfo);
 
     BundleVerifyStatusInfo bundleVerificationState;
@@ -869,9 +870,9 @@ HWTEST_F(MgrServiceTest, MgrServiceQueryDomainVerifyStatusTest005, TestSize.Leve
     std::string bundleName{ "MgrServiceTest029" };
     VerifyResultInfo verifyResultInfo;
     verifyResultInfo.hostVerifyStatusMap.emplace(
-        bundleName, std::make_tuple(InnerVerifyStatus::STATE_SUCCESS, std::string(), 0));
+        bundleName, VerifyStatus({ .status = STATE_SUCCESS, .verifyTime = std::string(), .retryCnt = 0 }));
     verifyResultInfo.hostVerifyStatusMap.emplace(
-        "test", std::make_tuple(InnerVerifyStatus::STATE_SUCCESS, std::string(), 0));
+        "test", VerifyStatus({ .status = STATE_SUCCESS, .verifyTime = std::string(), .retryCnt = 0 }));
     DelayedSingleton<AppDomainVerifyDataMgr>::GetInstance()->InsertVerifyStatus(bundleName, verifyResultInfo);
 
     auto mocPermissionManager = std::make_shared<MocPermissionManager>();
@@ -892,10 +893,10 @@ HWTEST_F(MgrServiceTest, MgrServiceSaveDomainVerifyStatusTest001, TestSize.Level
     std::string bundleName{ "MgrServiceTest033" };
     VerifyResultInfo verifyResultInfo;
     verifyResultInfo.hostVerifyStatusMap.emplace(
-        bundleName, std::make_tuple(InnerVerifyStatus::STATE_FAIL, std::string(), 0));
+        bundleName, VerifyStatus({ .status = STATE_FAIL, .verifyTime = std::string(), .retryCnt = 0 }));
     DelayedSingleton<AppDomainVerifyDataMgr>::GetInstance()->InsertVerifyStatus(bundleName, verifyResultInfo);
     verifyResultInfo.hostVerifyStatusMap.insert_or_assign(
-        bundleName, std::make_tuple(InnerVerifyStatus::STATE_SUCCESS, std::string(), 0));
+        bundleName, VerifyStatus({ .status = STATE_SUCCESS, .verifyTime = std::string(), .retryCnt = 0 }));
     EXPECT_TRUE(appDomainVerifyMgrService->SaveDomainVerifyStatus(bundleName, verifyResultInfo));
     VerifyResultInfo getVerifyResultInfo;
     auto dataMgr = DelayedSingleton<AppDomainVerifyDataMgr>::GetInstance();
@@ -913,7 +914,7 @@ HWTEST_F(MgrServiceTest, MgrServiceSaveDomainVerifyStatusTest002, TestSize.Level
     std::string bundleName{ "" };
     VerifyResultInfo verifyResultInfo;
     verifyResultInfo.hostVerifyStatusMap.emplace(
-        bundleName, std::make_tuple(InnerVerifyStatus::STATE_FAIL, std::string(), 0));
+        bundleName, VerifyStatus({ .status = STATE_FAIL, .verifyTime = std::string(), .retryCnt = 0 }));
     EXPECT_FALSE(appDomainVerifyMgrService->SaveDomainVerifyStatus(bundleName, verifyResultInfo));
 }
 /**
@@ -927,10 +928,10 @@ HWTEST_F(MgrServiceTest, MgrServiceSaveDomainVerifyStatusTest003, TestSize.Level
     std::string bundleName{ "MgrServiceTest033" };
     VerifyResultInfo verifyResultInfo;
     verifyResultInfo.hostVerifyStatusMap.emplace(
-        bundleName, std::make_tuple(InnerVerifyStatus::STATE_FAIL, std::string(), 0));
+        bundleName, VerifyStatus({ .status = STATE_FAIL, .verifyTime = std::string(), .retryCnt = 0 }));
     DelayedSingleton<AppDomainVerifyDataMgr>::GetInstance()->InsertVerifyStatus(bundleName, verifyResultInfo);
     verifyResultInfo.hostVerifyStatusMap.insert_or_assign(
-        bundleName, std::make_tuple(InnerVerifyStatus::STATE_SUCCESS, std::string(), 0));
+        bundleName, VerifyStatus({ .status = STATE_SUCCESS, .verifyTime = std::string(), .retryCnt = 0 }));
     EXPECT_TRUE(appDomainVerifyMgrService->SaveDomainVerifyStatus(bundleName, verifyResultInfo));
 }
 
@@ -944,7 +945,7 @@ HWTEST_F(MgrServiceTest, QueryAssociatedDomains001, TestSize.Level0)
     ASSERT_TRUE(appDomainVerifyMgrService);
     VerifyResultInfo verifyResultInfo;
     verifyResultInfo.hostVerifyStatusMap.insert_or_assign(
-        BUNDLE_NAME, std::make_tuple(InnerVerifyStatus::STATE_SUCCESS, std::string(), 0));
+        BUNDLE_NAME, VerifyStatus({ .status = STATE_SUCCESS, .verifyTime = std::string(), .retryCnt = 0 }));
     DelayedSingleton<AppDomainVerifyDataMgr>::GetInstance()->InsertVerifyStatus(BUNDLE_NAME, verifyResultInfo);
     std::vector<std::string> domains;
     EXPECT_EQ(appDomainVerifyMgrService->QueryAssociatedDomains(BUNDLE_NAME, domains), ErrorCode::E_OK);
@@ -1126,17 +1127,11 @@ HWTEST_F(MgrServiceTest, PopDeferredLink001, TestSize.Level0)
     // empty app identifier
     auto mocBundleMgrService3 = std::make_shared<OHOS::AppExecFwk::MocBundleMgrService>();
     EXPECT_CALL(*mocBundleMgrService3, GetBundleNameForUid(_, _)).WillRepeatedly(InvokeGetBundleNameForUid);
-    EXPECT_CALL(*mocBundleMgrService3, GetBundleInfoV9(_, _, _, _)).WillOnce(Return(true));
+    EXPECT_CALL(*mocBundleMgrService3, GetBundleInfoV9(_, _, _, _)).WillRepeatedly(Return(true));
     g_mockBundleMgrService->impl = mocBundleMgrService3;
 
     error = appDomainVerifyMgrService->PopDeferredLink(link);
     ASSERT_TRUE(error != ERR_OK);
-
-    auto mocDeferredLinkMgr = std::make_shared<MocDeferredLinkMgr>();
-    EXPECT_CALL(*mocDeferredLinkMgr, GetDeferredLink(_, _, _)).Times(1).WillOnce(Return(""));
-    DoMocDeferredLinkMgr(mocDeferredLinkMgr);
-    error = appDomainVerifyMgrService->PopDeferredLink(link);
-    ASSERT_TRUE(error == ERR_OK);
 }
 
 /**
@@ -1179,7 +1174,7 @@ HWTEST_F(MgrServiceTest, PopDeferredLink002, TestSize.Level0)
 
     // empty success empty status map
     verifyResultInfo.hostVerifyStatusMap.insert_or_assign(
-        BUNDLE_NAME, std::make_tuple(InnerVerifyStatus::STATE_FAIL, std::string(), 0));
+        BUNDLE_NAME, VerifyStatus({ .status = STATE_FAIL, .verifyTime = std::string(), .retryCnt = 0 }));
     DelayedSingleton<AppDomainVerifyDataMgr>::GetInstance()->DeleteVerifyStatus(BUNDLE_NAME);
     DelayedSingleton<AppDomainVerifyDataMgr>::GetInstance()->InsertVerifyStatus(BUNDLE_NAME, verifyResultInfo);
     error = appDomainVerifyMgrService->PopDeferredLink(link);
@@ -1187,9 +1182,9 @@ HWTEST_F(MgrServiceTest, PopDeferredLink002, TestSize.Level0)
 
     // empty success empty status map
     verifyResultInfo.hostVerifyStatusMap.insert_or_assign(
-        BUNDLE_NAME, std::make_tuple(InnerVerifyStatus::STATE_FAIL, std::string(), 0));
+        BUNDLE_NAME, VerifyStatus({ .status = STATE_FAIL, .verifyTime = std::string(), .retryCnt = 0 }));
     verifyResultInfo.hostVerifyStatusMap.insert_or_assign(
-        BUNDLE_NAME + "1", std::make_tuple(InnerVerifyStatus::STATE_FAIL, std::string(), 0));
+        BUNDLE_NAME + "1", VerifyStatus({ .status = STATE_FAIL, .verifyTime = std::string(), .retryCnt = 0 }));
     DelayedSingleton<AppDomainVerifyDataMgr>::GetInstance()->DeleteVerifyStatus(BUNDLE_NAME);
     DelayedSingleton<AppDomainVerifyDataMgr>::GetInstance()->InsertVerifyStatus(BUNDLE_NAME, verifyResultInfo);
     error = appDomainVerifyMgrService->PopDeferredLink(link);
@@ -1197,12 +1192,41 @@ HWTEST_F(MgrServiceTest, PopDeferredLink002, TestSize.Level0)
 
     // 1 success empty status map
     verifyResultInfo.hostVerifyStatusMap.insert_or_assign(
-        BUNDLE_NAME, std::make_tuple(InnerVerifyStatus::STATE_SUCCESS, std::string(), 0));
+        BUNDLE_NAME, VerifyStatus({ .status = STATE_SUCCESS, .verifyTime = std::string(), .retryCnt = 0 }));
     verifyResultInfo.hostVerifyStatusMap.insert_or_assign(
-        BUNDLE_NAME + "1", std::make_tuple(InnerVerifyStatus::STATE_FAIL, std::string(), 0));
+        BUNDLE_NAME + "1", VerifyStatus({ .status = STATE_FAIL, .verifyTime = std::string(), .retryCnt = 0 }));
     DelayedSingleton<AppDomainVerifyDataMgr>::GetInstance()->DeleteVerifyStatus(BUNDLE_NAME);
     DelayedSingleton<AppDomainVerifyDataMgr>::GetInstance()->InsertVerifyStatus(BUNDLE_NAME, verifyResultInfo);
     error = appDomainVerifyMgrService->PopDeferredLink(link);
+    ASSERT_TRUE(error == ERR_OK);
+}
+/**
+ * @tc.name: PopDeferredLink003
+ * @tc.desc: PopDeferredLink
+ * @tc.type: FUNC
+ */
+HWTEST_F(MgrServiceTest, PopDeferredLink003, TestSize.Level0)
+{
+    auto mocBundleMgrService4 = std::make_shared<OHOS::AppExecFwk::MocBundleMgrService>();
+    EXPECT_CALL(*mocBundleMgrService4, GetBundleNameForUid(_, _)).WillRepeatedly(InvokeGetBundleNameForUid);
+    EXPECT_CALL(*mocBundleMgrService4, GetBundleInfoV9(_, _, _, _)).WillRepeatedly(InvokeGetBundleInfoV9);
+    g_mockBundleMgrService->impl = mocBundleMgrService4;
+    VerifyResultInfo verifyResultInfo;
+    verifyResultInfo.appIdentifier = AppDomainVerify::APP_IDENTIFIER;
+    std::string link;
+
+    // 1 success empty status map
+    verifyResultInfo.hostVerifyStatusMap.insert_or_assign(
+        BUNDLE_NAME, VerifyStatus({ .status = STATE_SUCCESS, .verifyTime = std::string(), .retryCnt = 0 }));
+    verifyResultInfo.hostVerifyStatusMap.insert_or_assign(
+        BUNDLE_NAME + "1", VerifyStatus({ .status = STATE_FAIL, .verifyTime = std::string(), .retryCnt = 0 }));
+    DelayedSingleton<AppDomainVerifyDataMgr>::GetInstance()->DeleteVerifyStatus(BUNDLE_NAME);
+    DelayedSingleton<AppDomainVerifyDataMgr>::GetInstance()->InsertVerifyStatus(BUNDLE_NAME, verifyResultInfo);
+
+    auto mocDeferredLinkMgr = std::make_shared<MocDeferredLinkMgr>();
+    EXPECT_CALL(*mocDeferredLinkMgr, GetDeferredLink(_, _, _)).Times(1).WillOnce(Return(""));
+    DoMocDeferredLinkMgr(mocDeferredLinkMgr);
+    auto error = appDomainVerifyMgrService->PopDeferredLink(link);
     ASSERT_TRUE(error == ERR_OK);
 }
 
@@ -1469,5 +1493,140 @@ HWTEST_F(MgrServiceTest, MgrServiceQueryAbilityInfosTest004, TestSize.Level0)
     int32_t error = appDomainVerifyMgrService->OnRemoteRequest(
         AppDomainVerifyMgrInterfaceCode::CONVERT_FROM_SHORT_URL, data, reply, option);
     ASSERT_TRUE(error == ERR_OK);
+}
+
+/**
+ * @tc.name: MgrServiceFilterAbilitiesByPriorityTest001
+ * @tc.desc: fileter none abilities
+ * @tc.type: FUNC
+ */
+HWTEST_F(MgrServiceTest, MgrServiceFilterAbilitiesByPriorityTest001, TestSize.Level0)
+{
+    auto domain = "https://" + HOST;
+
+    std::unordered_map<std::string, VerifyResultInfo> verifyMap;
+    VerifyResultInfo verifyResultInfo1;
+    verifyResultInfo1.hostVerifyStatusMap.insert(
+        std::make_pair(domain, VerifyStatus{ .status = STATE_SUCCESS, .priority = PRIORITY_UNSET }));
+    verifyMap.emplace(BUNDLE_NAME, verifyResultInfo1);
+    VerifyResultInfo verifyResultInfo2;
+    verifyResultInfo2.hostVerifyStatusMap.insert(
+        std::make_pair(domain, VerifyStatus{ .status = STATE_SUCCESS, .priority = PRIORITY_UNSET }));
+    verifyMap.emplace(BUNDLE_NAME1, verifyResultInfo2);
+    DelayedSingleton<AppDomainVerifyDataMgr>::GetInstance()->verifyMap_->swap(verifyMap);
+
+    std::vector<OHOS::AppExecFwk::AbilityInfo> originAbilityInfos;
+    OHOS::AppExecFwk::AbilityInfo abilityInfo1;
+    abilityInfo1.bundleName = BUNDLE_NAME;
+    OHOS::AppExecFwk::AbilityInfo abilityInfo2;
+    abilityInfo2.bundleName = BUNDLE_NAME1;
+    originAbilityInfos.push_back(abilityInfo1);
+    originAbilityInfos.push_back(abilityInfo2);
+    std::vector<OHOS::AppExecFwk::AbilityInfo> filtedAbilityInfos;
+
+    appDomainVerifyMgrService->FilterAbilitiesInner(domain, originAbilityInfos, filtedAbilityInfos);
+    ASSERT_EQ(originAbilityInfos.size(), filtedAbilityInfos.size());
+    DelayedSingleton<AppDomainVerifyDataMgr>::GetInstance()->verifyMap_->clear();
+}
+/**
+ * @tc.name: MgrServiceFilterAbilitiesByPriorityTest002
+ * @tc.desc: 1 priority and unset
+ * @tc.type: FUNC
+ */
+HWTEST_F(MgrServiceTest, MgrServiceFilterAbilitiesByPriorityTest002, TestSize.Level0)
+{
+    auto domain = "https://" + HOST;
+
+    std::unordered_map<std::string, VerifyResultInfo> verifyMap;
+    VerifyResultInfo verifyResultInfo1;
+    verifyResultInfo1.hostVerifyStatusMap.insert(
+        std::make_pair(domain, VerifyStatus{ .status = STATE_SUCCESS, .priority = 0 }));
+    verifyMap.emplace(BUNDLE_NAME, verifyResultInfo1);
+    VerifyResultInfo verifyResultInfo2;
+    verifyResultInfo2.hostVerifyStatusMap.insert(
+        std::make_pair(domain, VerifyStatus{ .status = STATE_SUCCESS, .priority = PRIORITY_UNSET }));
+    verifyMap.emplace(BUNDLE_NAME1, verifyResultInfo2);
+    DelayedSingleton<AppDomainVerifyDataMgr>::GetInstance()->verifyMap_->swap(verifyMap);
+
+    std::vector<OHOS::AppExecFwk::AbilityInfo> originAbilityInfos;
+    OHOS::AppExecFwk::AbilityInfo abilityInfo1;
+    abilityInfo1.bundleName = BUNDLE_NAME;
+    OHOS::AppExecFwk::AbilityInfo abilityInfo2;
+    abilityInfo2.bundleName = BUNDLE_NAME1;
+    originAbilityInfos.push_back(abilityInfo1);
+    originAbilityInfos.push_back(abilityInfo2);
+    std::vector<OHOS::AppExecFwk::AbilityInfo> filtedAbilityInfos;
+
+    appDomainVerifyMgrService->FilterAbilitiesInner(domain, originAbilityInfos, filtedAbilityInfos);
+    ASSERT_EQ(1, filtedAbilityInfos.size());
+    ASSERT_EQ(filtedAbilityInfos[0].bundleName, BUNDLE_NAME);
+    DelayedSingleton<AppDomainVerifyDataMgr>::GetInstance()->verifyMap_->clear();
+}
+/**
+ * @tc.name: MgrServiceFilterAbilitiesByPriorityTest003
+ * @tc.desc: 2 priority equal
+ * @tc.type: FUNC
+ */
+HWTEST_F(MgrServiceTest, MgrServiceFilterAbilitiesByPriorityTest003, TestSize.Level0)
+{
+    auto domain = "https://" + HOST;
+
+    std::unordered_map<std::string, VerifyResultInfo> verifyMap;
+    VerifyResultInfo verifyResultInfo1;
+    verifyResultInfo1.hostVerifyStatusMap.insert(
+        std::make_pair(domain, VerifyStatus{ .status = STATE_SUCCESS, .priority = 50 }));
+    verifyMap.emplace(BUNDLE_NAME, verifyResultInfo1);
+    VerifyResultInfo verifyResultInfo2;
+    verifyResultInfo2.hostVerifyStatusMap.insert(
+        std::make_pair(domain, VerifyStatus{ .status = STATE_SUCCESS, .priority = 50 }));
+    verifyMap.emplace(BUNDLE_NAME1, verifyResultInfo2);
+    DelayedSingleton<AppDomainVerifyDataMgr>::GetInstance()->verifyMap_->swap(verifyMap);
+
+    std::vector<OHOS::AppExecFwk::AbilityInfo> originAbilityInfos;
+    OHOS::AppExecFwk::AbilityInfo abilityInfo1;
+    abilityInfo1.bundleName = BUNDLE_NAME;
+    OHOS::AppExecFwk::AbilityInfo abilityInfo2;
+    abilityInfo2.bundleName = BUNDLE_NAME1;
+    originAbilityInfos.push_back(abilityInfo1);
+    originAbilityInfos.push_back(abilityInfo2);
+    std::vector<OHOS::AppExecFwk::AbilityInfo> filtedAbilityInfos;
+
+    appDomainVerifyMgrService->FilterAbilitiesInner(domain, originAbilityInfos, filtedAbilityInfos);
+    ASSERT_EQ(2, filtedAbilityInfos.size());
+    DelayedSingleton<AppDomainVerifyDataMgr>::GetInstance()->verifyMap_->clear();
+}
+/**
+ * @tc.name: MgrServiceFilterAbilitiesByPriorityTest004
+ * @tc.desc: 2 priority not equal
+ * @tc.type: FUNC
+ */
+HWTEST_F(MgrServiceTest, MgrServiceFilterAbilitiesByPriorityTest004, TestSize.Level0)
+{
+    auto domain = "https://" + HOST;
+
+    std::unordered_map<std::string, VerifyResultInfo> verifyMap;
+    VerifyResultInfo verifyResultInfo1;
+    verifyResultInfo1.hostVerifyStatusMap.insert(
+        std::make_pair(domain, VerifyStatus{ .status = STATE_SUCCESS, .priority = 50 }));
+    verifyMap.emplace(BUNDLE_NAME, verifyResultInfo1);
+    VerifyResultInfo verifyResultInfo2;
+    verifyResultInfo2.hostVerifyStatusMap.insert(
+        std::make_pair(domain, VerifyStatus{ .status = STATE_SUCCESS, .priority = -50 }));
+    verifyMap.emplace(BUNDLE_NAME1, verifyResultInfo2);
+    DelayedSingleton<AppDomainVerifyDataMgr>::GetInstance()->verifyMap_->swap(verifyMap);
+
+    std::vector<OHOS::AppExecFwk::AbilityInfo> originAbilityInfos;
+    OHOS::AppExecFwk::AbilityInfo abilityInfo1;
+    abilityInfo1.bundleName = BUNDLE_NAME;
+    OHOS::AppExecFwk::AbilityInfo abilityInfo2;
+    abilityInfo2.bundleName = BUNDLE_NAME1;
+    originAbilityInfos.push_back(abilityInfo1);
+    originAbilityInfos.push_back(abilityInfo2);
+    std::vector<OHOS::AppExecFwk::AbilityInfo> filtedAbilityInfos;
+
+    appDomainVerifyMgrService->FilterAbilitiesInner(domain, originAbilityInfos, filtedAbilityInfos);
+    ASSERT_EQ(1, filtedAbilityInfos.size());
+    ASSERT_EQ(filtedAbilityInfos[0].bundleName, BUNDLE_NAME);
+    DelayedSingleton<AppDomainVerifyDataMgr>::GetInstance()->verifyMap_->clear();
 }
 }

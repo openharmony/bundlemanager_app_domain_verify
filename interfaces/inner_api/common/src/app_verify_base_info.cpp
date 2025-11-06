@@ -15,6 +15,7 @@
 
 #include "app_verify_base_info.h"
 #include "app_domain_verify_parcel_util.h"
+#include "bundle_verify_status_info.h"
 
 namespace OHOS {
 namespace AppDomainVerify {
@@ -23,6 +24,7 @@ AppVerifyBaseInfo::AppVerifyBaseInfo()
     appIdentifier = "";
     bundleName = "";
     fingerprint = "";
+    priority = PRIORITY_UNSET;
 }
 
 AppVerifyBaseInfo::AppVerifyBaseInfo(const AppVerifyBaseInfo &appVerifyBaseInfo)
@@ -30,12 +32,14 @@ AppVerifyBaseInfo::AppVerifyBaseInfo(const AppVerifyBaseInfo &appVerifyBaseInfo)
     appIdentifier = appVerifyBaseInfo.appIdentifier;
     bundleName = appVerifyBaseInfo.bundleName;
     fingerprint = appVerifyBaseInfo.fingerprint;
+    priority = appVerifyBaseInfo.priority;
 }
 bool AppVerifyBaseInfo::Marshalling(Parcel &parcel) const
 {
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String, parcel, appIdentifier);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String, parcel, bundleName);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String, parcel, fingerprint);
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, priority);
     return true;
 }
 bool AppVerifyBaseInfo::ReadFromParcel(Parcel &parcel)
@@ -43,6 +47,7 @@ bool AppVerifyBaseInfo::ReadFromParcel(Parcel &parcel)
     READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(String, parcel, appIdentifier);
     READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(String, parcel, bundleName);
     READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(String, parcel, fingerprint);
+    READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, priority);
     return true;
 }
 

@@ -25,11 +25,13 @@ bool VerifyResultInfo::Marshalling(Parcel& parcel) const
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Uint32, parcel, hostVerifyStatusMap.size());
     for (auto& it : hostVerifyStatusMap) {
         std::string domain = it.first;
-        auto [status, verifyTime, cnt] = it.second;
         WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String, parcel, domain);
-        WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, status);
-        WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String, parcel, verifyTime);
-        WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, cnt);
+        WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, it.second.status);
+        WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String, parcel, it.second.verifyTime);
+        WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, it.second.retryCnt);
+        WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, it.second.priority);
+        APP_DOMAIN_VERIFY_HILOGD(
+            APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "write parcelable status:%{public}d.", it.second.status);
     }
     return true;
 }
@@ -57,15 +59,20 @@ bool VerifyResultInfo::ReadFromParcel(Parcel& parcel)
     hostVerifyStatusMap.clear();
     for (uint32_t index = 0; index < size; ++index) {
         std::string url;
-        int verifyStatus = 0;
-        std::string verifyTs;
-        int count = 0;
+        VerifyStatus verifyStatus{
+            .verifyTime = "", .retryCnt = 0, .priority = -1000, .status = InnerVerifyStatus::UNKNOWN
+        };
+
+        int status = 0;
         READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(String, parcel, url);
-        READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, verifyStatus);
-        READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(String, parcel, verifyTs);
-        READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, count);
-        hostVerifyStatusMap.insert(std::make_pair(
-            url, std::make_tuple(static_cast<InnerVerifyStatus>(verifyStatus), verifyTs, count)));
+        READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, status);
+        READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(String, parcel, verifyStatus.verifyTime);
+        READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, verifyStatus.retryCnt);
+        READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, verifyStatus.priority);
+        verifyStatus.status = static_cast<InnerVerifyStatus>(status);
+        APP_DOMAIN_VERIFY_HILOGD(
+            APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "read parcelable status:%{public}d.", verifyStatus.status);
+        hostVerifyStatusMap.insert(std::make_pair(url, verifyStatus));
     }
     return true;
 }
@@ -74,12 +81,9 @@ std::string VerifyResultInfo::Dump() const
 {
     std::string dumpStr = "appIdentifier:" + appIdentifier + "\n";
     for (const auto& hostVerifyStatus : hostVerifyStatusMap) {
-        InnerVerifyStatus status;
-        std::string verifyTime;
-        int count = 0;
-        std::tie(status, verifyTime, count) = hostVerifyStatus.second;
         dumpStr = dumpStr + "    " + "domain:" + hostVerifyStatus.first +
-            " status:" + std::to_string(status) + " verifyTime:" + verifyTime + ";\n";
+            " status:" + std::to_string(hostVerifyStatus.second.status) +
+            " verifyTime:" + hostVerifyStatus.second.verifyTime + ";\n";
     }
     return dumpStr;
 }
@@ -104,16 +108,15 @@ bool BundleVerifyStatusInfo::WriteHostVerifyStatusMap(
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Uint32, parcel, hostVerifyStatusMap.size());
     for (auto& it : hostVerifyStatusMap) {
         WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String, parcel, it.first);
-        auto [status, verifyTime, cnt] = it.second;
-        WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, status);
-        WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String, parcel, verifyTime);
-        WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, cnt);
+        WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, it.second.status);
+        WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String, parcel, it.second.verifyTime);
+        WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, it.second.retryCnt);
+        WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, it.second.priority);
     }
     return true;
 }
 
-bool BundleVerifyStatusInfo::ReadHostVerifyStatusMap(
-    HostVerifyStatusMap& hostVerifyStatusMap, Parcel& parcel)
+bool BundleVerifyStatusInfo::ReadHostVerifyStatusMap(HostVerifyStatusMap& hostVerifyStatusMap, Parcel& parcel)
 {
     uint32_t size = 0;
     READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(Uint32, parcel, size);
@@ -124,15 +127,17 @@ bool BundleVerifyStatusInfo::ReadHostVerifyStatusMap(
     hostVerifyStatusMap.clear();
     for (uint32_t index = 0; index < size; ++index) {
         std::string url;
-        int verifyStatus = 0;
-        std::string verifyTs;
-        int verifyCnt = 0;
+        VerifyStatus verifyStatus{
+            .verifyTime = "", .retryCnt = 0, .priority = -1000, .status = InnerVerifyStatus::UNKNOWN
+        };
+        int status = 0;
         READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(String, parcel, url);
-        READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, verifyStatus);
-        READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(String, parcel, verifyTs);
-        READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, verifyCnt);
-        hostVerifyStatusMap.insert(
-            std::make_pair(url, std::make_tuple(static_cast<InnerVerifyStatus>(verifyStatus), verifyTs, verifyCnt)));
+        READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, status);
+        READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(String, parcel, verifyStatus.verifyTime);
+        READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, verifyStatus.retryCnt);
+        READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, verifyStatus.priority);
+        verifyStatus.status = static_cast<InnerVerifyStatus>(status);
+        hostVerifyStatusMap.insert(std::make_pair(url, verifyStatus));
     }
     return true;
 }

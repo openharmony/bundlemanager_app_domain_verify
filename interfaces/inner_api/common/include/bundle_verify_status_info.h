@@ -21,7 +21,18 @@
 
 namespace OHOS {
 namespace AppDomainVerify {
-using HostVerifyStatusMap = std::unordered_map<std::string, std::tuple<InnerVerifyStatus, std::string, int>>;
+constexpr int PRIORITY_UNSET = -1000;
+constexpr int PRIORITY_MIN = -100;
+constexpr int PRIORITY_MAX = 100;
+
+struct VerifyStatus {
+    InnerVerifyStatus status;
+    int retryCnt;
+    std::string verifyTime;
+    int priority;
+};
+
+using HostVerifyStatusMap = std::unordered_map<std::string, VerifyStatus>;
 
 struct VerifyResultInfo : public Parcelable {
 public:

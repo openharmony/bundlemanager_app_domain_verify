@@ -121,7 +121,7 @@ HWTEST_F(AppDomainVerifyMgrClientTest, AppDomainVerifyMgrClientTest003, TestSize
     BundleVerifyStatusInfo bundleVerifyStatusInfo;
     VerifyResultInfo verifyResultInfo;
     verifyResultInfo.hostVerifyStatusMap.insert_or_assign(
-        "https://" + HOST, std::make_tuple(InnerVerifyStatus::STATE_SUCCESS, std::string(), 0));
+        "https://" + HOST, VerifyStatus({.status = STATE_SUCCESS, .verifyTime = std::string(), .retryCnt = 0}));
     bundleVerifyStatusInfo.bundleVerifyStatusInfoMap_.insert_or_assign(BUNDLE_NAME, verifyResultInfo);
     auto queryRes = AppDomainVerifyMgrClient::GetInstance()->QueryAllDomainVerifyStatus(bundleVerifyStatusInfo);
     ASSERT_TRUE(queryRes);
@@ -165,7 +165,7 @@ HWTEST_F(AppDomainVerifyMgrClientTest, AppDomainVerifyMgrClientTest005, TestSize
     std::string bundleName = BUNDLE_NAME;
     VerifyResultInfo verifyResultInfo;
     verifyResultInfo.hostVerifyStatusMap.insert_or_assign(
-        "https://" + HOST, std::make_tuple(InnerVerifyStatus::STATE_SUCCESS, std::string(), 0));
+        "https://" + HOST, VerifyStatus({.status = STATE_SUCCESS, .verifyTime = std::string(), .retryCnt = 0}));
     AppDomainVerifyMgrClient::GetInstance()->SaveDomainVerifyStatus(BUNDLE_NAME, verifyResultInfo);
     ASSERT_TRUE(g_mgrInvokeOK);
     AppDomainVerifyMgrClient::GetInstance()->ClearDomainVerifyStatus(APP_IDENTIFIER, BUNDLE_NAME);

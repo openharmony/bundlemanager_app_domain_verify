@@ -85,6 +85,45 @@ bool AppDomainVerifyMgrService::ClearDomainVerifyStatus(const std::string& appId
     return res;
 }
 
+void AppDomainVerifyMgrService::FilterAbilitiesInner(std::string hostVerifyKey,
+    const std::vector<OHOS::AppExecFwk::AbilityInfo>& originAbilityInfos,
+    std::vector<OHOS::AppExecFwk::AbilityInfo>& filteredAbilityInfos)
+{
+    std::vector<std::tuple<OHOS::AppExecFwk::AbilityInfo, int>> priorityList;
+    for (auto it = originAbilityInfos.begin(); it != originAbilityInfos.end(); ++it) {
+        VerifyResultInfo verifyResultInfo;
+        // get from emory variable, non-IO operation.
+        if (!DelayedSingleton<AppDomainVerifyDataMgr>::GetInstance()->GetVerifyStatus(
+            it->bundleName, verifyResultInfo)) {
+            continue;
+        }
+        auto itr = verifyResultInfo.hostVerifyStatusMap.find(hostVerifyKey);
+        if (itr == verifyResultInfo.hostVerifyStatusMap.end()) {
+            continue;
+        }
+
+        if (itr->second.status == InnerVerifyStatus::STATE_SUCCESS) {
+            auto ability = *it;
+            auto priority = itr->second.priority;
+            auto tuple = std::make_tuple(ability, priority);
+            priorityList.push_back(tuple);
+        } else {
+            APP_DOMAIN_VERIFY_HILOGD(
+                APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "find unverified status:%{public}d", itr->second.status);
+        }
+    }
+    int max = PRIORITY_UNSET;
+    for (const auto& iter : priorityList) {
+        int currentPriority = std::get<1>(iter);
+        if (currentPriority > max) {
+            max = currentPriority;
+            filteredAbilityInfos.clear();
+            filteredAbilityInfos.push_back(std::get<0>(iter));
+        } else if (currentPriority == max) {
+            filteredAbilityInfos.push_back(std::get<0>(iter));
+        }
+    }
+}
 bool AppDomainVerifyMgrService::FilterAbilities(const OHOS::AAFwk::Want& want,
     const std::vector<OHOS::AppExecFwk::AbilityInfo>& originAbilityInfos,
     std::vector<OHOS::AppExecFwk::AbilityInfo>& filteredAbilityInfos)
@@ -107,25 +146,7 @@ bool AppDomainVerifyMgrService::FilterAbilities(const OHOS::AAFwk::Want& want,
         return false;
     }
     std::string hostVerifyKey = scheme + "://" + host;
-    for (auto it = originAbilityInfos.begin(); it != originAbilityInfos.end(); ++it) {
-        VerifyResultInfo verifyResultInfo;
-        // get from emory variable, non-IO operation.
-        if (!DelayedSingleton<AppDomainVerifyDataMgr>::GetInstance()->GetVerifyStatus(
-                it->bundleName, verifyResultInfo)) {
-            continue;
-        }
-        auto itr = verifyResultInfo.hostVerifyStatusMap.find(hostVerifyKey);
-        if (itr == verifyResultInfo.hostVerifyStatusMap.end()) {
-            continue;
-        }
-
-        if (std::get<0>(itr->second) == InnerVerifyStatus::STATE_SUCCESS) {
-            filteredAbilityInfos.emplace_back(*it);
-        } else {
-            APP_DOMAIN_VERIFY_HILOGI(
-                APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "find unverified status:%{public}d", std::get<0>(itr->second));
-        }
-    }
+    FilterAbilitiesInner(hostVerifyKey, originAbilityInfos, filteredAbilityInfos);
     if (filteredAbilityInfos.empty()) {
         !IsUrlInBlackList(hostVerifyKey) ?
             deferredLinkMgr_->PutDeferredLink(
@@ -154,7 +175,7 @@ bool AppDomainVerifyMgrService::QueryDomainVerifyStatus(
     domainVerificationState = DomainVerifyStatus::STATE_NONE;
     for (auto it = verifyResultInfo.hostVerifyStatusMap.begin();
         res && it != verifyResultInfo.hostVerifyStatusMap.end(); ++it) {
-        if (std::get<0>(it->second) == InnerVerifyStatus::STATE_SUCCESS) {
+        if (it->second.status == InnerVerifyStatus::STATE_SUCCESS) {
             domainVerificationState = DomainVerifyStatus::STATE_VERIFIED;
             break;
         }
@@ -195,7 +216,7 @@ void AppDomainVerifyMgrService::SendVerifiedEvent(
 {
     std::vector<std::string> domains;
     for (auto [fst, snd] : verifyResultInfo.hostVerifyStatusMap) {
-        if (std::get<0>(snd) == InnerVerifyStatus::STATE_SUCCESS) {
+        if (snd.status == InnerVerifyStatus::STATE_SUCCESS) {
             domains.push_back(fst);
         }
     }
@@ -359,7 +380,11 @@ void AppDomainVerifyMgrService::DumpAllVerifyInfos(std::string& dumpString)
         dumpString.append("  domain verify status:\n");
         for (const auto& hostVerifyStatus : verifyResultInfo.hostVerifyStatusMap) {
             dumpString.append(
-                "    " + hostVerifyStatus.first + ":" + InnerVerifyStatusMap[std::get<0>(hostVerifyStatus.second)]);
+                "    " + hostVerifyStatus.first + ":" + InnerVerifyStatusMap[hostVerifyStatus.second.status]);
+            if (hostVerifyStatus.second.status == InnerVerifyStatus::STATE_SUCCESS &&
+                hostVerifyStatus.second.priority != PRIORITY_UNSET) {
+                dumpString.append("(" + std::to_string(hostVerifyStatus.second.priority) + ")");
+            }
             dumpString.append("\n");
         }
     }
@@ -402,7 +427,9 @@ void AppDomainVerifyMgrService::CollectDomains(
             APP_DOMAIN_VERIFY_HILOGW(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "invalid skillUri skip.");
             continue;
         }
-
+        VerifyStatus verify_status = {
+            .status = InnerVerifyStatus::UNKNOWN, .retryCnt = 0, .verifyTime = std::string(), .priority = PRIORITY_UNSET
+        };
         std::string host = it->host;
         if (it->host.substr(0, FUZZY_HOST_START.size()) == FUZZY_HOST_START) {
             // Hosts with *.
@@ -410,8 +437,7 @@ void AppDomainVerifyMgrService::CollectDomains(
         }
         // validUris remove duplicates
         auto uri = it->scheme + "://" + host;
-        verifyResultInfo.hostVerifyStatusMap.insert(
-            make_pair(uri, std::make_tuple(InnerVerifyStatus::UNKNOWN, std::string(), 0)));
+        verifyResultInfo.hostVerifyStatusMap.insert(make_pair(uri, verify_status));
     }
 }
 int AppDomainVerifyMgrService::QueryVerifiedBundleWithDomains(
@@ -446,7 +472,7 @@ int AppDomainVerifyMgrService::QueryVerifiedBundleWithDomains(
     }
     std::for_each(std::begin(verifyResultInfo.hostVerifyStatusMap), std::end(verifyResultInfo.hostVerifyStatusMap),
         [&domains](const auto& item) {
-            if (std::get<0>(item.second) == InnerVerifyStatus::STATE_SUCCESS) {
+            if (item.second.status == InnerVerifyStatus::STATE_SUCCESS) {
                 domains.push_back(item.first);
             }
         });
@@ -464,7 +490,7 @@ int AppDomainVerifyMgrService::QueryVerifiedBundleWithDomainsByAppIdentifer(
 
     std::for_each(std::begin(verifyResultInfo.hostVerifyStatusMap), std::end(verifyResultInfo.hostVerifyStatusMap),
         [&domains](const auto& item) {
-            if (std::get<0>(item.second) == InnerVerifyStatus::STATE_SUCCESS) {
+            if (item.second.status == InnerVerifyStatus::STATE_SUCCESS) {
                 domains.push_back(item.first);
             }
         });

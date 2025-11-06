@@ -33,12 +33,19 @@ namespace AppDomainVerify {
 const std::string HTTPS = "https";
 const std::set<std::string> SCHEME_WHITE_SET = { HTTPS };
 const std::string FUZZY_HOST_START = "*.";
-const static int CLIENT_ERR_MAX_RETRY_COUNTS = 7; // 7 times for max retry count
-const static int CLIENT_ERR_BASE_RETRY_DURATION_S = 3600; // 1h for base duration
+const static int CLIENT_ERR_MAX_RETRY_COUNTS = 7;          // 7 times for max retry count
+const static int CLIENT_ERR_BASE_RETRY_DURATION_S = 3600;  // 1h for base duration
 void VerifyTask::OnPostVerify(const std::string& uri, const OHOS::NetStack::HttpClient::HttpClientResponse& response)
 {
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "called");
     auto status = DomainVerifier::VerifyHost(response.GetResponseCode(), response.GetResult(), appVerifyBaseInfo_);
+    if (appVerifyBaseInfo_.priority != PRIORITY_UNSET &&
+        (appVerifyBaseInfo_.priority < PRIORITY_MIN || appVerifyBaseInfo_.priority > PRIORITY_MAX)) {
+        status = InnerVerifyStatus::FAILURE_CLIENT_ERROR;
+    }
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE,
+        "OnPostVerify status %{public}d appId:%{public}s, priority:%{public}d", status,
+        appVerifyBaseInfo_.appIdentifier.c_str(), appVerifyBaseInfo_.priority);
     UpdateVerifyResultInfo(uri, status);
     unVerifiedSet_.erase(uri);
     if (unVerifiedSet_.empty()) {
@@ -86,13 +93,11 @@ VerifyTask::VerifyTask(OHOS::AppDomainVerify::TaskType type, const AppVerifyBase
     const VerifyResultInfo& verifyResultInfo)
     : type_(type), appVerifyBaseInfo_(appVerifyBaseInfo), verifyResultInfo_(verifyResultInfo)
 {
-    staHandlerMap[STATE_SUCCESS] = [this](std::string time, int cnt)->bool {
-        return HandleStateSuccess(time, cnt);
-    };
-    staHandlerMap[FAILURE_CLIENT_ERROR] = [this](std::string time, int cnt)->bool {
+    staHandlerMap[STATE_SUCCESS] = [this](std::string time, int cnt) -> bool { return HandleStateSuccess(time, cnt); };
+    staHandlerMap[FAILURE_CLIENT_ERROR] = [this](std::string time, int cnt) -> bool {
         return HandleFailureClientError(time, cnt);
     };
-    staHandlerMap[FORBIDDEN_FOREVER] = [this](std::string time, int cnt)->bool {
+    staHandlerMap[FORBIDDEN_FOREVER] = [this](std::string time, int cnt) -> bool {
         return HandleForbiddenForever(time, cnt);
     };
     InitUriUnVerifySetMap(verifyResultInfo);
@@ -122,19 +127,18 @@ void VerifyTask::Execute()
     }
 }
 
-bool VerifyTask::IsNeedRetry(const std::tuple<InnerVerifyStatus, std::string, int>& info)
+bool VerifyTask::IsNeedRetry(const VerifyStatus& info)
 {
-    auto [status, verifyTime, verifyCnt] = info;
-    auto iter = staHandlerMap.find(status);
+    auto iter = staHandlerMap.find(info.status);
     if (iter != staHandlerMap.end()) {
-        return iter->second(verifyTime, verifyCnt);
+        return iter->second(info.verifyTime, info.retryCnt);
     }
     return true;
 }
 
 int64_t VerifyTask::CalcRetryDuration(int verifyCnt)
 {
-    int64_t duration = pow(2, verifyCnt) * CLIENT_ERR_BASE_RETRY_DURATION_S; // base * 2 ^ verifyCnt
+    int64_t duration = pow(2, verifyCnt) * CLIENT_ERR_BASE_RETRY_DURATION_S;  // base * 2 ^ verifyCnt
     return duration;
 }
 
@@ -157,9 +161,7 @@ bool VerifyTask::HandleFailureClientError(std::string verifyTime, int verifyCnt)
                 "last time:%{public}s, curr time:%{public}s, "
                 "duration:%{public}s "
                 "is less than max retry duration:%{public}s, not retry",
-                std::to_string(lastTs).c_str(),
-                std::to_string(currTs).c_str(),
-                std::to_string(duration).c_str(),
+                std::to_string(lastTs).c_str(), std::to_string(currTs).c_str(), std::to_string(duration).c_str(),
                 std::to_string(currRetryDuration).c_str());
             return false;
         }
@@ -181,26 +183,23 @@ bool VerifyTask::HandleForbiddenForever(std::string verifyTime, int verifyCnt)
 
 void VerifyTask::UpdateVerifyResultInfo(const std::string& uri, InnerVerifyStatus status)
 {
-    auto verifyStatus = status;
-    auto currTs = GetSecondsSince1970ToNow();
-    std::string verifyTs = std::to_string(currTs);
-    int verifyCnt = 0;
+    VerifyStatus verifyStatus = { .status = status,
+        .retryCnt = 0,
+        .verifyTime = std::to_string(GetSecondsSince1970ToNow()),
+        .priority = appVerifyBaseInfo_.priority };
     auto& hostVerifyStatusMap = verifyResultInfo_.hostVerifyStatusMap;
     auto iter = hostVerifyStatusMap.find(uri);
     if (iter == hostVerifyStatusMap.end()) {
-        hostVerifyStatusMap.insert_or_assign(uri, std::make_tuple(verifyStatus, verifyTs, verifyCnt));
+        hostVerifyStatusMap.insert_or_assign(uri, verifyStatus);
         return;
     }
-    if (verifyStatus == InnerVerifyStatus::FAILURE_CLIENT_ERROR) {
-        std::tie(std::ignore, std::ignore, verifyCnt) = iter->second;
-        verifyCnt++;
-        if (verifyCnt >= CLIENT_ERR_MAX_RETRY_COUNTS) {
-            verifyStatus = InnerVerifyStatus::FORBIDDEN_FOREVER;
+    if (verifyStatus.status == InnerVerifyStatus::FAILURE_CLIENT_ERROR) {
+        verifyStatus.retryCnt++;
+        if (verifyStatus.retryCnt >= CLIENT_ERR_MAX_RETRY_COUNTS) {
+            verifyStatus.status = InnerVerifyStatus::FORBIDDEN_FOREVER;
         }
     }
-    std::get<0>(iter->second) = verifyStatus;
-    std::get<1>(iter->second) = verifyTs;
-    std::get<2>(iter->second) = verifyCnt; // 2 is cnt
+    hostVerifyStatusMap.insert_or_assign(uri, verifyStatus);
 }
 
 }
