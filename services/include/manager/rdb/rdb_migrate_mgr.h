@@ -34,6 +34,7 @@ private:
     int QueryInnerVersion(NativeRdb::RdbStore& store);
     void UpgradeFromV1ToV2(NativeRdb::RdbStore& rdbStore);
     int UpgradeFromV2ToV3(NativeRdb::RdbStore& rdbStore);
+    int UpgradeFromV3ToV4(NativeRdb::RdbStore& rdbStore);
     int ExecSqlWithTrans(NativeRdb::RdbStore& store, const TransFunc& func);
 };
 }

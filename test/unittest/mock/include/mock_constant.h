@@ -19,6 +19,7 @@
 namespace OHOS::AppDomainVerify {
 const std::string APP_IDENTIFIER = "appIdentifier";
 const std::string BUNDLE_NAME = "com.openHarmony.test";
+const std::string BUNDLE_NAME1 = "com.openHarmony.test1";
 const std::string FINGERPRINT = "fingerprint";
 const std::string HOST = "test.openharmony.com";
 }

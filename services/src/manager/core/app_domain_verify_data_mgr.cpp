@@ -78,13 +78,13 @@ bool AppDomainVerifyDataMgr::VerifyResultInfoToDB(
     }
     for (auto it : verifyResultInfo.hostVerifyStatusMap) {
         std::string domain = it.first;
-        auto [status, verifyTime, cnt] = it.second;
         RdbDataItem item = { .bundleName = bundleName,
             .appIdentifier = verifyResultInfo.appIdentifier,
             .domain = domain,
-            .status = status,
-            .verifyTs = verifyTime,
-            .count = cnt };
+            .status = it.second.status,
+            .verifyTs = it.second.verifyTime,
+            .count = it.second.retryCnt,
+            .priority = it.second.priority };
         if (!rdbDataManager_->InsertData(item)) {
             UNIVERSAL_ERROR_EVENT(WRITE_DB_IN_WRITE_BACK_FAULT);
             APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "insert to db failed!");
@@ -101,9 +101,13 @@ bool AppDomainVerifyDataMgr::DBToVerifyResultInfo(
         return false;
     }
     verifyResultInfo.appIdentifier = items[0].appIdentifier;
+
     for (auto it : items) {
-        verifyResultInfo.hostVerifyStatusMap.insert(
-            std::make_pair(it.domain, std::make_tuple(InnerVerifyStatus(it.status), it.verifyTs, it.count)));
+        VerifyStatus verify_status = { .status = static_cast<InnerVerifyStatus>(it.status),
+            .retryCnt = it.count,
+            .verifyTime = it.verifyTs,
+            .priority = it.priority };
+        verifyResultInfo.hostVerifyStatusMap.insert(std::make_pair(it.domain, verify_status));
     }
     return true;
 }
@@ -174,6 +178,9 @@ void AppDomainVerifyDataMgr::UpdateVerifyMap(const std::string& bundleName, cons
         for (const auto& updateVerifyStatus : updateHostVerifyStatusMap) {
             if (hostVerifyStatusMapTarget.count(updateVerifyStatus.first) != 0) {
                 hostVerifyStatusMapTarget.insert_or_assign(updateVerifyStatus.first, updateVerifyStatus.second);
+                APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE,
+                    "UpdateVerifyMap url:%{public}s, status:%{public}d", updateVerifyStatus.first.c_str(),
+                    updateVerifyStatus.second.status);
             }
         }
     }

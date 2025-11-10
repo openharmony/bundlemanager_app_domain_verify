@@ -21,7 +21,7 @@ namespace OHOS {
 namespace AppDomainVerify {
 namespace Constants {
 constexpr const char *SERVICE_PATH = "/data/service/el1/public/app_domain_verify_mgr_service";
-const int32_t RDB_VERSION = 3;
+const int32_t RDB_VERSION = 4;
 
 constexpr const char *RDB_NAME = "/advdb.db";
 constexpr const char *RDB_TABLE_NAME = "verified_domain";

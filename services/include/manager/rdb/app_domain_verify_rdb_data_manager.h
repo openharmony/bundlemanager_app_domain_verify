@@ -33,6 +33,7 @@ struct RdbDataItem {
     int status = 0;
     std::string verifyTs;
     int count = 0;
+    int priority = 0;
 };
 
 class AppDomainVerifyRdbDataManager : public std::enable_shared_from_this<AppDomainVerifyRdbDataManager> {

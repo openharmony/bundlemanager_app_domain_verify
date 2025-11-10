@@ -48,7 +48,7 @@ protected:
     bool HandleFailureClientError(std::string verifyTime, int verifyCnt);
     bool HandleStateSuccess(std::string verifyTime, int verifyCnt);
     bool HandleForbiddenForever(std::string verifyTime, int verifyCnt);
-    bool IsNeedRetry(const std::tuple<InnerVerifyStatus, std::string, int>& info);
+    bool IsNeedRetry(const VerifyStatus& info);
     OHOS::AppDomainVerify::TaskType& GetTaskType();
     AppVerifyBaseInfo& GetAppVerifyBaseInfo();
 private:
