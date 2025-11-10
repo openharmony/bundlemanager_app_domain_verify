@@ -25,6 +25,7 @@ const std::string APPS = "apps";
 const std::string BUNDLE_NAME = "bundleName";
 const std::string APP_IDENTIFIER = "appIdentifier";
 const std::string FINGERPRINT = "fingerprint";
+const std::string PRIORITY = "index";
 const std::string ASSET_PATH = "/.well-known/";
 const std::string ASSET_NAME = "applinking.json";
 }  // namespace ApplinkingAssetKeys

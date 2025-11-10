@@ -199,19 +199,19 @@ HWTEST_F(DomainVerifierTaskTest, DomainVerifierTaskTest005, TestSize.Level0)
     InnerVerifyStatus status;
     std::string verifyTime;
     int verifyCnt = 0;
-    std::tie(status, verifyTime, verifyCnt) = hostVerifyStatusMap.at(url);
-    ASSERT_EQ(status, FAILURE_CLIENT_ERROR);
-    ASSERT_EQ(verifyCnt, 0);
+    auto& verifyStatus = hostVerifyStatusMap.at(url);
+    ASSERT_EQ(verifyStatus.status, FAILURE_CLIENT_ERROR);
+    ASSERT_EQ(verifyStatus.retryCnt, 0);
     task.UpdateVerifyResultInfo(url, FAILURE_CLIENT_ERROR);
     hostVerifyStatusMap = task.GetUriVerifyMap();
-    std::tie(status, verifyTime, verifyCnt) = hostVerifyStatusMap.at(url);
-    ASSERT_EQ(status, FAILURE_CLIENT_ERROR);
-    ASSERT_EQ(verifyCnt, 1);
+    verifyStatus = hostVerifyStatusMap.at(url);
+    ASSERT_EQ(verifyStatus.status, FAILURE_CLIENT_ERROR);
+    ASSERT_EQ(verifyStatus.retryCnt, 1);
     task.UpdateVerifyResultInfo(url, FAILURE_HTTP_UNKNOWN);
     hostVerifyStatusMap = task.GetUriVerifyMap();
-    std::tie(status, verifyTime, verifyCnt) = hostVerifyStatusMap.at(url);
-    ASSERT_EQ(status, FAILURE_HTTP_UNKNOWN);
-    ASSERT_EQ(verifyCnt, 0);
+    verifyStatus = hostVerifyStatusMap.at(url);
+    ASSERT_EQ(verifyStatus.status, FAILURE_HTTP_UNKNOWN);
+    ASSERT_EQ(verifyStatus.retryCnt, 0);
 }
 
 /**
@@ -230,23 +230,23 @@ HWTEST_F(DomainVerifierTaskTest, DomainVerifierTaskTest006, TestSize.Level0)
     uri1.host = "e";
     VerifyResultInfo verifyResultInfo;
     VerifyTask task(TaskType::IMMEDIATE_TASK, appVerifyBaseInfo, verifyResultInfo);
-    std::tuple<InnerVerifyStatus, std::string, int> info;
-    std::get<0>(info) = FAILURE_CLIENT_ERROR;
-    std::get<1>(info) = std::to_string(GetSecondsSince1970ToNow());
-    std::get<2>(info) = 1;
+    VerifyStatus info;
+    info.status = FAILURE_CLIENT_ERROR;
+    info.verifyTime = std::to_string(GetSecondsSince1970ToNow());
+    info.retryCnt = 1;
     ASSERT_FALSE(task.IsNeedRetry(info));
-    std::get<1>(info) = std::to_string(GetSecondsSince1970ToNow() - 3600 * 5);
+    info.verifyTime = std::to_string(GetSecondsSince1970ToNow() - 3600 * 5);
     ASSERT_TRUE(task.IsNeedRetry(info));
-    std::get<1>(info) = std::to_string(GetSecondsSince1970ToNow() - 3600 * 1);
+    info.verifyTime = std::to_string(GetSecondsSince1970ToNow() - 3600 * 1);
     ASSERT_FALSE(task.IsNeedRetry(info));
-    std::get<1>(info) = std::to_string(GetSecondsSince1970ToNow() - 3600 * 3);
-    std::get<2>(info) = 2;
+    info.verifyTime = std::to_string(GetSecondsSince1970ToNow() - 3600 * 3);
+    info.retryCnt = 2;
     ASSERT_FALSE(task.IsNeedRetry(info));
-    std::get<0>(info) = FAILURE_HTTP_UNKNOWN;
+    info.status = FAILURE_HTTP_UNKNOWN;
     ASSERT_TRUE(task.IsNeedRetry(info));
-    std::get<0>(info) = STATE_SUCCESS;
+    info.status = STATE_SUCCESS;
     ASSERT_FALSE(task.IsNeedRetry(info));
-    std::get<0>(info) = FORBIDDEN_FOREVER;
+    info.status = FORBIDDEN_FOREVER;
     ASSERT_FALSE(task.IsNeedRetry(info));
 }
 

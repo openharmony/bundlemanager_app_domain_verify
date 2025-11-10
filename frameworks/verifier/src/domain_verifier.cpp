@@ -20,7 +20,7 @@
 namespace OHOS {
 namespace AppDomainVerify {
 InnerVerifyStatus DomainVerifier::VerifyHost(OHOS::NetStack::HttpClient::ResponseCode responseCode,
-    const std::string &assetJsonsStr, const AppVerifyBaseInfo &appVerifyBaseInfo)
+    const std::string& assetJsonsStr, AppVerifyBaseInfo& appVerifyBaseInfo)
 {
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "called");
     if (responseCode != OHOS::NetStack::HttpClient::ResponseCode::OK) {
@@ -58,8 +58,8 @@ InnerVerifyStatus DomainVerifier::GetVerifyStatusFromHttpError(OHOS::NetStack::H
     return InnerVerifyStatus::FAILURE_HTTP_UNKNOWN;
 }
 
-InnerVerifyStatus DomainVerifier::VerifyHostWithAppIdentifier(const AssetJsonObj &assetJsonObj,
-    const AppVerifyBaseInfo &appVerifyBaseInfo)
+InnerVerifyStatus DomainVerifier::VerifyHostWithAppIdentifier(
+    const AssetJsonObj& assetJsonObj, AppVerifyBaseInfo& appVerifyBaseInfo)
 {
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "called");
     if (appVerifyBaseInfo.appIdentifier.empty()) {
@@ -79,6 +79,7 @@ InnerVerifyStatus DomainVerifier::VerifyHostWithAppIdentifier(const AssetJsonObj
                 appVerifyBaseInfo.fingerprint != itr->fingerprint) {
                 return InnerVerifyStatus::STATE_FAIL;
             }
+            appVerifyBaseInfo.priority = itr->priority;
             return InnerVerifyStatus::STATE_SUCCESS;
         }
         // if appIdentifier not equal, bundleName must not equal
@@ -89,8 +90,8 @@ InnerVerifyStatus DomainVerifier::VerifyHostWithAppIdentifier(const AssetJsonObj
     return InnerVerifyStatus::UNKNOWN;
 }
 
-InnerVerifyStatus DomainVerifier::VerifyHostWithBundleName(const AssetJsonObj &assetJsonObj,
-    const AppVerifyBaseInfo &appVerifyBaseInfo)
+InnerVerifyStatus DomainVerifier::VerifyHostWithBundleName(
+    const AssetJsonObj& assetJsonObj, AppVerifyBaseInfo& appVerifyBaseInfo)
 {
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "called");
     if (appVerifyBaseInfo.bundleName.empty() || appVerifyBaseInfo.fingerprint.empty()) {
@@ -99,9 +100,10 @@ InnerVerifyStatus DomainVerifier::VerifyHostWithBundleName(const AssetJsonObj &a
 
     for (auto itr = assetJsonObj.applinking.apps.begin(); itr != assetJsonObj.applinking.apps.end(); ++itr) {
         if (appVerifyBaseInfo.bundleName == itr->bundleName) {
-            return appVerifyBaseInfo.fingerprint == itr->fingerprint ?
-                InnerVerifyStatus::STATE_SUCCESS :
-                InnerVerifyStatus::STATE_FAIL;
+            if (appVerifyBaseInfo.fingerprint == itr->fingerprint) {
+                appVerifyBaseInfo.priority = itr->priority;
+                return InnerVerifyStatus::STATE_SUCCESS;
+            }
         }
     }
     return InnerVerifyStatus::STATE_FAIL;

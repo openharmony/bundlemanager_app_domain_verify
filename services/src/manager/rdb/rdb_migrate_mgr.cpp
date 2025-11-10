@@ -24,6 +24,7 @@ constexpr int INNER_VERSION_1_0 = 1;
 constexpr int INNER_VERSION_1_0_COL_CNT = 2;
 constexpr int RDB_VERSION_1 = 1;
 constexpr int RDB_VERSION_2 = 2;
+constexpr int RDB_VERSION_3 = 3;
 
 int RdbMigrateMgr::Upgrade(NativeRdb::RdbStore& rdbStore, int currVersion, int targetVersion)
 {
@@ -37,6 +38,8 @@ int RdbMigrateMgr::Upgrade(NativeRdb::RdbStore& rdbStore, int currVersion, int t
         ret = UpgradeFromV2ToV3(rdbStore);
     } else if (currVersion == RDB_VERSION_2) {
         ret = UpgradeFromV2ToV3(rdbStore);
+    } else if (currVersion == RDB_VERSION_3) {
+        ret = UpgradeFromV3ToV4(rdbStore);
     } else {
         APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE,
             "current version:%d is not support", currVersion);
@@ -136,7 +139,28 @@ int RdbMigrateMgr::UpgradeFromV2ToV3(NativeRdb::RdbStore& rdbStore)
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "called end, ret:%{public}d", ret);
     return ret;
 }
-
+int RdbMigrateMgr::UpgradeFromV3ToV4(NativeRdb::RdbStore& rdbStore)
+{
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "called");
+    const std::string migrateSqls[] = {
+        R"(ALTER TABLE verified_domain ADD COLUMN VERIFY_PRIORITY INTERGER NOT NULL DEFAULT -1000;)",
+    };
+    int ret = ExecSqlWithTrans(rdbStore, [&](NativeRdb::RdbStore& rdbStore)->bool {
+        for (const auto& sql : migrateSqls) {
+            auto ret = rdbStore.ExecuteSql(sql);
+            if (ret != NativeRdb::E_OK) {
+                APP_DOMAIN_VERIFY_HILOGE(
+                    APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE,
+                    "UpgradeFromV3ToV4 executeSql failed, ret: %{public}d, reason: exec %{public}s fail.",
+                    ret, sql.c_str());
+                return false;
+            }
+        }
+        return true;
+    });
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "called end, ret:%{public}d", ret);
+    return ret;
+}
 int RdbMigrateMgr::ExecSqlWithTrans(NativeRdb::RdbStore& rdbStore, const TransFunc& func)
 {
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "called");

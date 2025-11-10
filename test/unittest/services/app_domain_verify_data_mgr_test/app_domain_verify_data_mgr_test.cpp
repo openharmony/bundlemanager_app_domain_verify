@@ -128,7 +128,7 @@ HWTEST_F(MgrDataMgrTest, MgrDataMgrVerifyResultInfoToDBTest001, TestSize.Level0)
     VerifyResultInfo verifyResultInfo;
     verifyResultInfo.appIdentifier = APP_IDENTIFIER;
     verifyResultInfo.hostVerifyStatusMap.insert_or_assign(
-        "www.openharmony.com", std::make_tuple(InnerVerifyStatus::STATE_SUCCESS, std::string(), 0));
+        "www.openharmony.com", VerifyStatus({ .status = STATE_SUCCESS, .verifyTime = std::string(), .retryCnt = 0 }));
     EXPECT_FALSE(appDomainVerifyDataMgr->VerifyResultInfoToDB(bundleName, verifyResultInfo));
 }
 /**
@@ -148,7 +148,7 @@ HWTEST_F(MgrDataMgrTest, MgrDataMgrVerifyResultInfoToDBTest002, TestSize.Level0)
     VerifyResultInfo verifyResultInfo;
     verifyResultInfo.appIdentifier = APP_IDENTIFIER;
     verifyResultInfo.hostVerifyStatusMap.insert_or_assign(
-        "www.openharmony.com", std::make_tuple(InnerVerifyStatus::STATE_SUCCESS, std::string(), 0));
+        "www.openharmony.com", VerifyStatus({ .status = STATE_SUCCESS, .verifyTime = std::string(), .retryCnt = 0 }));
     EXPECT_TRUE(appDomainVerifyDataMgr->VerifyResultInfoToDB(bundleName, verifyResultInfo));
 }
 /**
@@ -181,7 +181,7 @@ HWTEST_F(MgrDataMgrTest, MgrDataMgrInsertVerifyStatusTest002, TestSize.Level0)
     VerifyResultInfo verifyResultInfo;
     verifyResultInfo.appIdentifier = APP_IDENTIFIER;
     verifyResultInfo.hostVerifyStatusMap.insert_or_assign(
-        "www.openharmony.com", std::make_tuple(InnerVerifyStatus::STATE_SUCCESS, std::string(), 0));
+        "www.openharmony.com", VerifyStatus({ .status = STATE_SUCCESS, .verifyTime = std::string(), .retryCnt = 0 }));
     ASSERT_FALSE(appDomainVerifyDataMgr->InsertVerifyStatus(bundleName, verifyResultInfo));
 }
 /**
@@ -201,7 +201,7 @@ HWTEST_F(MgrDataMgrTest, MgrDataMgrInsertVerifyStatusTest003, TestSize.Level0)
     VerifyResultInfo verifyResultInfo;
     verifyResultInfo.appIdentifier = APP_IDENTIFIER;
     verifyResultInfo.hostVerifyStatusMap.insert_or_assign(
-        "www.openharmony.com", std::make_tuple(InnerVerifyStatus::STATE_SUCCESS, std::string(), 0));
+        "www.openharmony.com", VerifyStatus({ .status = STATE_SUCCESS, .verifyTime = std::string(), .retryCnt = 0 }));
     ASSERT_TRUE(appDomainVerifyDataMgr->InsertVerifyStatus(bundleName, verifyResultInfo));
 }
 /**
@@ -270,12 +270,12 @@ HWTEST_F(MgrDataMgrTest, MgrDataMgrUpdateVerifyStatusTest002, TestSize.Level0)
     VerifyResultInfo verifyResultInfo1;
     verifyResultInfo1.appIdentifier = APP_IDENTIFIER;
     verifyResultInfo1.hostVerifyStatusMap.insert_or_assign(
-        bundleName, std::make_tuple(InnerVerifyStatus::STATE_FAIL, std::string(), 0));
+        bundleName, VerifyStatus({ .status = STATE_SUCCESS, .verifyTime = std::string(), .retryCnt = 0 }));
     ASSERT_TRUE(appDomainVerifyDataMgr->InsertVerifyStatus(bundleName, verifyResultInfo1));
     VerifyResultInfo verifyResultInfo2;
     verifyResultInfo2.appIdentifier = APP_IDENTIFIER;
     verifyResultInfo2.hostVerifyStatusMap.insert_or_assign(
-        bundleName, std::make_tuple(InnerVerifyStatus::STATE_SUCCESS, std::string(), 0));
+        bundleName, VerifyStatus({ .status = STATE_SUCCESS, .verifyTime = std::string(), .retryCnt = 0 }));
     ASSERT_FALSE(appDomainVerifyDataMgr->UpdateVerifyStatus(bundleName, verifyResultInfo2));
 }
 
@@ -295,7 +295,7 @@ HWTEST_F(MgrDataMgrTest, MgrDataMgrUpdateVerifyStatusTest003, TestSize.Level0)
     VerifyResultInfo verifyResultInfo;
     verifyResultInfo.appIdentifier = APP_IDENTIFIER;
     verifyResultInfo.hostVerifyStatusMap.insert_or_assign(
-        bundleName, std::make_tuple(InnerVerifyStatus::STATE_SUCCESS, std::string(), 0));
+        bundleName, VerifyStatus({ .status = STATE_SUCCESS, .verifyTime = std::string(), .retryCnt = 0 }));
     ASSERT_FALSE(appDomainVerifyDataMgr->UpdateVerifyStatus(bundleName, verifyResultInfo));
 }
 /**
@@ -316,12 +316,12 @@ HWTEST_F(MgrDataMgrTest, MgrDataMgrUpdateVerifyStatusTest004, TestSize.Level0)
     VerifyResultInfo verifyResultInfo1;
     verifyResultInfo1.appIdentifier = APP_IDENTIFIER;
     verifyResultInfo1.hostVerifyStatusMap.insert_or_assign(
-        bundleName, std::make_tuple(InnerVerifyStatus::STATE_FAIL, std::string(), 0));
+        bundleName, VerifyStatus({ .status = STATE_SUCCESS, .verifyTime = std::string(), .retryCnt = 0 }));
     ASSERT_TRUE(appDomainVerifyDataMgr->InsertVerifyStatus(bundleName, verifyResultInfo1));
     VerifyResultInfo verifyResultInfo2;
     verifyResultInfo2.appIdentifier = APP_IDENTIFIER;
     verifyResultInfo2.hostVerifyStatusMap.insert_or_assign(
-        bundleName, std::make_tuple(InnerVerifyStatus::STATE_SUCCESS, std::string(), 0));
+        bundleName, VerifyStatus({ .status = STATE_SUCCESS, .verifyTime = std::string(), .retryCnt = 0 }));
     ASSERT_TRUE(appDomainVerifyDataMgr->UpdateVerifyStatus(bundleName, verifyResultInfo2));
 }
 /**
