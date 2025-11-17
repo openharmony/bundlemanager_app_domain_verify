@@ -23,26 +23,25 @@ constexpr int INNER_VERSION_UNKNOWN = 0;
 constexpr int INNER_VERSION_1_0 = 1;
 constexpr int INNER_VERSION_1_0_COL_CNT = 2;
 constexpr int RDB_VERSION_1 = 1;
-constexpr int RDB_VERSION_2 = 2;
-constexpr int RDB_VERSION_3 = 3;
 
 int RdbMigrateMgr::Upgrade(NativeRdb::RdbStore& rdbStore, int currVersion, int targetVersion)
 {
-    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "called");
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "currVersion:%{public}d to targetVersion:%{public}d",
+        currVersion, targetVersion);
     int ret = NativeRdb::E_OK;
-    if (currVersion == RDB_VERSION_1) {
-        int innerVersion = QueryInnerVersion(rdbStore);
-        if (innerVersion == INNER_VERSION_1_0) {
-            UpgradeFromV1ToV2(rdbStore);
+    if (currVersion < RDB_VERSION_1) {
+        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "unlikely branch");
+        return -1;
+    }
+
+    for (int i = currVersion - RDB_VERSION_1; i < targetVersion - RDB_VERSION_1 && i < upgradeFuncs_.size(); i++) {
+        ret = (this->*upgradeFuncs_[i])(rdbStore);
+        if (ret != 0) {
+            APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE,
+                "upgrade failed currVersion:%{public}d to targetVersion:%{public}d, i:%{public}d", currVersion,
+                targetVersion, i);
+            break;
         }
-        ret = UpgradeFromV2ToV3(rdbStore);
-    } else if (currVersion == RDB_VERSION_2) {
-        ret = UpgradeFromV2ToV3(rdbStore);
-    } else if (currVersion == RDB_VERSION_3) {
-        ret = UpgradeFromV3ToV4(rdbStore);
-    } else {
-        APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE,
-            "current version:%d is not support", currVersion);
     }
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "called, end");
     return ret;
@@ -51,6 +50,11 @@ int RdbMigrateMgr::Upgrade(NativeRdb::RdbStore& rdbStore, int currVersion, int t
 RdbMigrateMgr::RdbMigrateMgr(const AppDomainVerifyRdbConfig& appDomainVerifyRdbConfig)
 {
     appDomainVerifyRdbConfig_ = appDomainVerifyRdbConfig;
+    upgradeFuncs_ = {
+        &RdbMigrateMgr::UpgradeFromV1ToV2,
+        &RdbMigrateMgr::UpgradeFromV2ToV3,
+        &RdbMigrateMgr::UpgradeFromV3ToV4,
+    };
 }
 int RdbMigrateMgr::QueryInnerVersion(NativeRdb::RdbStore& rdbStore)
 {
@@ -74,9 +78,14 @@ int RdbMigrateMgr::QueryInnerVersion(NativeRdb::RdbStore& rdbStore)
     return innerVersion;
 }
 
-void RdbMigrateMgr::UpgradeFromV1ToV2(NativeRdb::RdbStore& rdbStore)
+int RdbMigrateMgr::UpgradeFromV1ToV2(NativeRdb::RdbStore& rdbStore)
 {
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "called");
+    int innerVersion = QueryInnerVersion(rdbStore);
+    if (innerVersion != INNER_VERSION_1_0) {
+        APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "rdbStore no need upgrade in UpgradeFromV1ToV2");
+        return 0;
+    }
     const std::string migrateSqls[] = { R"(drop table IF EXISTS temp_table;)", R"(drop table IF EXISTS final_table;)",
         R"(CREATE TEMPORARY TABLE temp_table AS
             SELECT
@@ -100,20 +109,22 @@ void RdbMigrateMgr::UpgradeFromV1ToV2(NativeRdb::RdbStore& rdbStore)
             DOMAIN TEXT NOT NULL, VERIFY_STATUES INTEGER);)",
         R"(INSERT INTO verified_domain (BUNDLE_NAME,APP_IDENTIFIER,DOMAIN,VERIFY_STATUES) select * from final_table;)",
         R"(drop table IF EXISTS final_table;)" };
+    int ret = 0;
     for (const auto& sql : migrateSqls) {
-        auto ret = rdbStore.ExecuteSql(sql);
+        ret = rdbStore.ExecuteSql(sql);
         if (ret != NativeRdb::E_OK) {
             APP_DOMAIN_VERIFY_HILOGE(
                 APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "execute sql %{public}s failed.", sql.c_str());
             UNIVERSAL_ERROR_EVENT(UPDATE_DB_FAULT);
             auto dropTableSql = R"(drop table IF EXISTS verified_domain;)";
-            (void)rdbStore.ExecuteSql(dropTableSql);
+            ret = rdbStore.ExecuteSql(dropTableSql);
             APP_DOMAIN_VERIFY_HILOGE(
                 APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "UpgradeFromV1_0 executeSql failed, ret: %{public}d", ret);
             break;
         }
     }
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "called");
+    return ret;
 }
 
 int RdbMigrateMgr::UpgradeFromV2ToV3(NativeRdb::RdbStore& rdbStore)
@@ -123,14 +134,13 @@ int RdbMigrateMgr::UpgradeFromV2ToV3(NativeRdb::RdbStore& rdbStore)
         R"(ALTER TABLE verified_domain ADD COLUMN VERIFY_TIME TEXT NOT NULL DEFAULT '';)",
         R"(ALTER TABLE verified_domain ADD COLUMN VERIFY_COUNT INTERGER NULL DEFAULT 0;)",
     };
-    int ret = ExecSqlWithTrans(rdbStore, [&](NativeRdb::RdbStore& rdbStore)->bool {
+    int ret = ExecSqlWithTrans(rdbStore, [&](NativeRdb::RdbStore& rdbStore) -> bool {
         for (const auto& sql : migrateSqls) {
             auto ret = rdbStore.ExecuteSql(sql);
             if (ret != NativeRdb::E_OK) {
-                APP_DOMAIN_VERIFY_HILOGE(
-                    APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE,
-                    "UpgradeFromV2ToV3 executeSql failed, ret: %{public}d, reason: exec %{public}s fail.",
-                    ret, sql.c_str());
+                APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE,
+                    "UpgradeFromV2ToV3 executeSql failed, ret: %{public}d, reason: exec %{public}s fail.", ret,
+                    sql.c_str());
                 return false;
             }
         }
@@ -145,14 +155,13 @@ int RdbMigrateMgr::UpgradeFromV3ToV4(NativeRdb::RdbStore& rdbStore)
     const std::string migrateSqls[] = {
         R"(ALTER TABLE verified_domain ADD COLUMN VERIFY_PRIORITY INTERGER NOT NULL DEFAULT -1000;)",
     };
-    int ret = ExecSqlWithTrans(rdbStore, [&](NativeRdb::RdbStore& rdbStore)->bool {
+    int ret = ExecSqlWithTrans(rdbStore, [&](NativeRdb::RdbStore& rdbStore) -> bool {
         for (const auto& sql : migrateSqls) {
             auto ret = rdbStore.ExecuteSql(sql);
             if (ret != NativeRdb::E_OK) {
-                APP_DOMAIN_VERIFY_HILOGE(
-                    APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE,
-                    "UpgradeFromV3ToV4 executeSql failed, ret: %{public}d, reason: exec %{public}s fail.",
-                    ret, sql.c_str());
+                APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE,
+                    "UpgradeFromV3ToV4 executeSql failed, ret: %{public}d, reason: exec %{public}s fail.", ret,
+                    sql.c_str());
                 return false;
             }
         }
@@ -179,5 +188,4 @@ int RdbMigrateMgr::ExecSqlWithTrans(NativeRdb::RdbStore& rdbStore, const TransFu
     }
     return NativeRdb::E_ERROR;
 }
-
 }

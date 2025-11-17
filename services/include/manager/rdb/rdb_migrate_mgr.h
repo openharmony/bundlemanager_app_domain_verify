@@ -32,10 +32,12 @@ public:
 private:
     AppDomainVerifyRdbConfig appDomainVerifyRdbConfig_;
     int QueryInnerVersion(NativeRdb::RdbStore& store);
-    void UpgradeFromV1ToV2(NativeRdb::RdbStore& rdbStore);
+    int UpgradeFromV1ToV2(NativeRdb::RdbStore& rdbStore);
     int UpgradeFromV2ToV3(NativeRdb::RdbStore& rdbStore);
     int UpgradeFromV3ToV4(NativeRdb::RdbStore& rdbStore);
     int ExecSqlWithTrans(NativeRdb::RdbStore& store, const TransFunc& func);
+    using UpgradeFunc = int (RdbMigrateMgr::*)(NativeRdb::RdbStore& rdbStore);
+    std::vector<UpgradeFunc> upgradeFuncs_;
 };
 }
 #endif  // APP_DOMAIN_VERIFY_RDB_MIGRATE_MGR_H
