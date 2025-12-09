@@ -29,7 +29,9 @@
 #include "sa_interface/app_domain_verify_mgr_service.h"
 #include "common_event_manager.h"
 #include "common_event_support.h"
-
+#include "policycoreutils.h"
+#include <sys/stat.h>
+#include <unistd.h>
 namespace OHOS {
 namespace AppDomainVerify {
 constexpr const char* GET_DOMAIN_VERIFY_INFO = "ohos.permission.GET_APP_DOMAIN_BUNDLE_INFO";
@@ -43,7 +45,35 @@ const int32_t SUBSCRIBER_UID = 7996;
 AppDomainVerifyMgrService::AppDomainVerifyMgrService() : SystemAbility(APP_DOMAIN_VERIFY_MANAGER_SA_ID, true)
 {
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "new instance create.");
+    ResetDBSecurityByPath();
     appDetailsDataMgr_ = std::make_shared<AppDetailsDataMgr>();
+}
+bool AppDomainVerifyMgrService::IsExistDir(const std::string& dirPath)
+{
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "IsExistDir.");
+    if (dirPath.empty()) {
+        return false;
+    }
+
+    struct stat result = {};
+    if (stat(dirPath.c_str(), &result) != 0) {
+        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "fail stat errno %{public}d", errno);
+        return false;
+    }
+
+    return S_ISDIR(result.st_mode);
+}
+bool AppDomainVerifyMgrService::ResetDBSecurityByPath()
+{
+    if (!IsExistDir(Constants::SERVICE_PATH)) {
+        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE,
+            "ResetDBSecurityByPath %{public}s does not existed", Constants::SERVICE_PATH);
+        return false;
+    }
+
+    auto ret = RestoreconRecurse(Constants::SERVICE_PATH);
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "RestoreconRecurse %{public}d.", ret);
+    return ERR_OK;
 }
 
 AppDomainVerifyMgrService::~AppDomainVerifyMgrService()

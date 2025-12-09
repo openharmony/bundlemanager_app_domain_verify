@@ -97,6 +97,7 @@ ohos_unittest("app_domain_verify_mgr_service_test") {
     "samgr:dynamic_cache",
     "samgr:samgr_common",
     "samgr:samgr_proxy",
+    "selinux_adapter:librestorecon",
   ]
 
   defines = [ "API_EXPORT=__attribute__((visibility (\"default\")))" ]

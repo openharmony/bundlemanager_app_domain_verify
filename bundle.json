@@ -50,7 +50,8 @@
         "netmanager_base",
         "memmgr",
         "runtime_core",
-        "common_event_service"
+        "common_event_service",
+        "selinux_adapter"
       ],
       "third_party": [
         "openssl"
