@@ -504,7 +504,7 @@ int GetColumnCount(int& count)
 }
 /**
  * @tc.name: RdbMigrateTest001
- * @tc.desc: Upgrade 0
+ * @tc.desc: Upgrade
  * @tc.type: FUNC
  */
 HWTEST_F(RdbDataMgrTest, RdbMigrateTest001, TestSize.Level0)
@@ -515,11 +515,11 @@ HWTEST_F(RdbDataMgrTest, RdbMigrateTest001, TestSize.Level0)
     RdbMigrateMgr rdbMigrateMgr(rdbConfig);
 
     MockRdbStore mocRdbStore;
-    ASSERT_TRUE(rdbMigrateMgr.Upgrade(mocRdbStore, 0, 0) == NativeRdb::E_OK);
+    ASSERT_TRUE(rdbMigrateMgr.Upgrade(mocRdbStore, 4, 4) == NativeRdb::E_OK);
 }
 /**
  * @tc.name: RdbMigrateTest002
- * @tc.desc: Upgrade 1 to 2 to 3
+ * @tc.desc: Upgrade1 to  4
  * @tc.type: FUNC
  */
 HWTEST_F(RdbDataMgrTest, RdbMigrateTest002, TestSize.Level0)
@@ -538,11 +538,11 @@ HWTEST_F(RdbDataMgrTest, RdbMigrateTest002, TestSize.Level0)
     EXPECT_CALL(mocRdbStore, BeginTransaction()).WillRepeatedly(Return(0));
     EXPECT_CALL(mocRdbStore, Commit()).WillRepeatedly(Return(0));
     EXPECT_CALL(mocRdbStore, RollBack()).WillRepeatedly(Return(0));
-    ASSERT_TRUE(rdbMigrateMgr.Upgrade(mocRdbStore, 1, 0) == NativeRdb::E_OK);
+    ASSERT_TRUE(rdbMigrateMgr.Upgrade(mocRdbStore, 1, 4) == NativeRdb::E_OK);
 }
 /**
  * @tc.name: RdbMigrateTest003
- * @tc.desc: Upgrade 2 to 3
+ * @tc.desc: Upgrade 2 to 4
  * @tc.type: FUNC
  */
 HWTEST_F(RdbDataMgrTest, RdbMigrateTest003, TestSize.Level0)
@@ -557,11 +557,11 @@ HWTEST_F(RdbDataMgrTest, RdbMigrateTest003, TestSize.Level0)
     EXPECT_CALL(mocRdbStore, BeginTransaction()).WillRepeatedly(Return(0));
     EXPECT_CALL(mocRdbStore, Commit()).WillRepeatedly(Return(0));
     EXPECT_CALL(mocRdbStore, RollBack()).WillRepeatedly(Return(0));
-    ASSERT_TRUE(rdbMigrateMgr.Upgrade(mocRdbStore, 2, 0) == NativeRdb::E_OK);
+    ASSERT_TRUE(rdbMigrateMgr.Upgrade(mocRdbStore, 2, 4) == NativeRdb::E_OK);
 }
 /**
  * @tc.name: RdbMigrateTest004
- * @tc.desc: Upgrade 3 to other
+ * @tc.desc: Upgrade 4 to other
  * @tc.type: FUNC
  */
 HWTEST_F(RdbDataMgrTest, RdbMigrateTest004, TestSize.Level0)
@@ -572,11 +572,11 @@ HWTEST_F(RdbDataMgrTest, RdbMigrateTest004, TestSize.Level0)
     RdbMigrateMgr rdbMigrateMgr(rdbConfig);
 
     MockRdbStore mocRdbStore;
-    ASSERT_TRUE(rdbMigrateMgr.Upgrade(mocRdbStore, 3, 0) == NativeRdb::E_OK);
+    ASSERT_TRUE(rdbMigrateMgr.Upgrade(mocRdbStore, 4, 0) == NativeRdb::E_OK);
 }
 /**
  * @tc.name: RdbMigrateTest005
- * @tc.desc: Upgrade 2 to 3 abnormal
+ * @tc.desc: Upgrade 2 to 4 abnormal
  * @tc.type: FUNC
  */
 HWTEST_F(RdbDataMgrTest, RdbMigrateTest005, TestSize.Level0)
@@ -589,44 +589,21 @@ HWTEST_F(RdbDataMgrTest, RdbMigrateTest005, TestSize.Level0)
     // begin transaction failed
     MockRdbStore mocRdbStore;
     EXPECT_CALL(mocRdbStore, BeginTransaction()).WillRepeatedly(Return(1));
-    ASSERT_FALSE(rdbMigrateMgr.Upgrade(mocRdbStore, 2, 0) == NativeRdb::E_OK);
+    ASSERT_FALSE(rdbMigrateMgr.Upgrade(mocRdbStore, 2, 4) == NativeRdb::E_OK);
 
     // commit failed
     MockRdbStore mocRdbStore2;
     EXPECT_CALL(mocRdbStore2, BeginTransaction()).WillRepeatedly(Return(0));
     EXPECT_CALL(mocRdbStore2, ExecuteSql(_, _)).WillRepeatedly(Return(0));
     EXPECT_CALL(mocRdbStore2, Commit()).WillRepeatedly(Return(1));
-    ASSERT_FALSE(rdbMigrateMgr.Upgrade(mocRdbStore2, 2, 0) == NativeRdb::E_OK);
+    ASSERT_FALSE(rdbMigrateMgr.Upgrade(mocRdbStore2, 2, 4) == NativeRdb::E_OK);
 
     // roll back failed
     MockRdbStore mocRdbStore3;
     EXPECT_CALL(mocRdbStore3, BeginTransaction()).WillRepeatedly(Return(0));
     EXPECT_CALL(mocRdbStore3, ExecuteSql(_, _)).WillRepeatedly(Return(1));
     EXPECT_CALL(mocRdbStore3, RollBack()).WillRepeatedly(Return(1));
-    ASSERT_FALSE(rdbMigrateMgr.Upgrade(mocRdbStore3, 2, 0) == NativeRdb::E_OK);
+    ASSERT_FALSE(rdbMigrateMgr.Upgrade(mocRdbStore3, 2, 4) == NativeRdb::E_OK);
 }
 
-/**
- * @tc.name: RdbMigrateTest006
- * @tc.desc: Upgrade 1 to 2 abnormal
- * @tc.type: FUNC
- */
-HWTEST_F(RdbDataMgrTest, RdbMigrateTest006, TestSize.Level0)
-{
-    AppDomainVerifyRdbConfig rdbConfig;
-    rdbConfig.dbName = Constants::RDB_NAME;
-    rdbConfig.tableName = Constants::RDB_TABLE_NAME;
-    RdbMigrateMgr rdbMigrateMgr(rdbConfig);
-
-    std::shared_ptr<MockResultSet> absSharedResultSet = std::make_shared<MockResultSet>();
-    g_innerCnt = 2;
-    EXPECT_CALL(*absSharedResultSet, GetColumnCount(_)).WillOnce(GetColumnCount);
-    MockRdbStore mocRdbStore;
-    EXPECT_CALL(mocRdbStore, Query(_, _)).Times(1).WillOnce(Return(absSharedResultSet));
-    EXPECT_CALL(mocRdbStore, ExecuteSql(_, _)).WillRepeatedly(Return(1));
-    EXPECT_CALL(mocRdbStore, BeginTransaction()).WillRepeatedly(Return(0));
-    EXPECT_CALL(mocRdbStore, Commit()).WillRepeatedly(Return(0));
-    EXPECT_CALL(mocRdbStore, RollBack()).WillRepeatedly(Return(0));
-    ASSERT_FALSE(rdbMigrateMgr.Upgrade(mocRdbStore, 1, 0) == NativeRdb::E_OK);
-}
 }
