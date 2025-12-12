@@ -81,7 +81,8 @@ private:
     void FilterAbilitiesInner(std::string hostVerifyKey,
         const std::vector<OHOS::AppExecFwk::AbilityInfo>& originAbilityInfos,
         std::vector<OHOS::AppExecFwk::AbilityInfo>& filteredAbilityInfos);
-
+    bool ResetDBSecurityByPath();
+    bool IsExistDir(const std::string& dirPath);
 private:
     std::shared_ptr<AppDetailsDataMgr> appDetailsDataMgr_ = nullptr;
     bool InitConfigMgr();
