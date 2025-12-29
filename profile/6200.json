@@ -6,6 +6,7 @@
       "libpath": "libapp_domain_verify_mgr_service.z.so",
       "run-on-create": true,
       "distributed": false,
+      "min_hdi_proxy_version": [],
       "dump_level": 1
     }
   ]
