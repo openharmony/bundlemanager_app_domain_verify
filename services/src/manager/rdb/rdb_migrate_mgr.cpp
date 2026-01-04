@@ -34,7 +34,8 @@ int RdbMigrateMgr::Upgrade(NativeRdb::RdbStore& rdbStore, int currVersion, int t
         return -1;
     }
 
-    for (int i = currVersion - RDB_VERSION_1; i < targetVersion - RDB_VERSION_1 && i < upgradeFuncs_.size(); i++) {
+    for (int i = currVersion - RDB_VERSION_1;
+        i < targetVersion - RDB_VERSION_1 && i < static_cast<int>(upgradeFuncs_.size()); i++) {
         ret = (this->*upgradeFuncs_[i])(rdbStore);
         if (ret != 0) {
             APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE,

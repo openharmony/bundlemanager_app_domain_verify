@@ -209,7 +209,7 @@ bool AppDomainVerifyDataMgr::DeleteVerifyStatus(const std::string& bundleName)
     return true;
 }
 
-const std::unordered_map<std::string, VerifyResultInfo>& AppDomainVerifyDataMgr::GetAllVerifyStatus()
+const std::unordered_map<std::string, VerifyResultInfo> AppDomainVerifyDataMgr::GetAllVerifyStatus()
 {
     std::lock_guard<std::mutex> lock(verifyMapMutex_);
     return *verifyMap_;
