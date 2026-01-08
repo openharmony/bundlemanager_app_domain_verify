@@ -60,9 +60,8 @@ bool VerifyResultInfo::ReadFromParcel(Parcel& parcel)
     for (uint32_t index = 0; index < size; ++index) {
         std::string url;
         VerifyStatus verifyStatus{
-            .verifyTime = "", .retryCnt = 0, .priority = -1000, .status = InnerVerifyStatus::UNKNOWN
+            .status = InnerVerifyStatus::UNKNOWN, .retryCnt = 0, .verifyTime = "", .priority = -1000
         };
-
         int status = 0;
         READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(String, parcel, url);
         READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, status);
