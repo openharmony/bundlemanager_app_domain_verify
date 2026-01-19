@@ -142,7 +142,7 @@ bool AppDetailsRdbDataMgr::InsertDataBatch(const std::string& tableName, std::ve
     }
     int64_t num = 0;
     CriticalLock criticalLock;
-    return CheckRdbReturnIfOk(rdbStore_->BatchInsert(num, tableName, rows));
+    return CheckRdbReturnIfOk(rdbStore->BatchInsert(num, tableName, rows));
 };
 
 bool AppDetailsRdbDataMgr::CreateMetaData()
