@@ -48,11 +48,9 @@ private:
 
 std::shared_ptr<AppDomainVerifyTaskMgr> AppDomainVerifyTaskMgr::GetInstance()
 {
+    std::lock_guard<ffrt::mutex> lock(instanceMutex_);
     if (instance_ == nullptr) {
-        std::lock_guard<ffrt::mutex> lock(instanceMutex_);
-        if (instance_ == nullptr) {
-            instance_ = std::make_shared<AppDomainVerifyTaskMgr>();
-        }
+        instance_ = std::make_shared<AppDomainVerifyTaskMgr>();
     }
     return instance_;
 }
