@@ -28,6 +28,8 @@
 #include "app_domain_verify_mgr_client.h"
 #include "i_http_task.h"
 
+#include <cpp/mutex.h>
+
 namespace OHOS {
 namespace AppDomainVerify {
 using StatusHandleFunc  = std::function<bool(std::string, int)>;
@@ -56,6 +58,7 @@ private:
     virtual bool SaveDomainVerifyStatus(const std::string& bundleName, const VerifyResultInfo& verifyResultInfo);
     OHOS::AppDomainVerify::TaskType type_;
     AppVerifyBaseInfo appVerifyBaseInfo_;
+    ffrt::mutex unVerifiedSetMutex_;
     std::unordered_set<std::string> unVerifiedSet_;
     VerifyResultInfo verifyResultInfo_;
     std::unordered_map<InnerVerifyStatus, StatusHandleFunc> staHandlerMap;
