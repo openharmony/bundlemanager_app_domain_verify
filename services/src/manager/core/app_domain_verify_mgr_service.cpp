@@ -132,7 +132,8 @@ void AppDomainVerifyMgrService::FilterAbilitiesInner(std::string hostVerifyKey,
             continue;
         }
 
-        if (itr->second.status == InnerVerifyStatus::STATE_SUCCESS) {
+        if (itr->second.status == InnerVerifyStatus::STATE_SUCCESS ||
+            itr->second.status == InnerVerifyStatus::PRE_INSTALLED) {
             auto ability = *it;
             auto priority = itr->second.priority;
             auto tuple = std::make_tuple(ability, priority);

@@ -26,14 +26,14 @@ namespace AppDomainVerify {
 class DomainVerifier {
 public:
     static InnerVerifyStatus VerifyHost(OHOS::NetStack::HttpClient::ResponseCode responseCode,
-        const std::string &assetJsonsStr, AppVerifyBaseInfo &appVerifyBaseInfo);
+        const std::string& assetJsonsStr, AppVerifyBaseInfo& appVerifyBaseInfo);
 
 private:
     static InnerVerifyStatus GetVerifyStatusFromHttpError(OHOS::NetStack::HttpClient::ResponseCode responseCode);
-    static InnerVerifyStatus VerifyHostWithAppIdentifier(const AssetJsonObj &assetJsonObj,
-        AppVerifyBaseInfo &appVerifyBaseInfo);
-    static InnerVerifyStatus VerifyHostWithBundleName(const AssetJsonObj &assetJsonObj,
-        AppVerifyBaseInfo &appVerifyBaseInfo);
+    static InnerVerifyStatus VerifyHostWithAppIdentifier(
+        const AssetJsonObj& assetJsonObj, AppVerifyBaseInfo& appVerifyBaseInfo);
+    static InnerVerifyStatus VerifyHostWithBundleName(
+        const AssetJsonObj& assetJsonObj, AppVerifyBaseInfo& appVerifyBaseInfo);
 };
 }
 }

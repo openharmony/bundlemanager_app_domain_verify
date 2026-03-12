@@ -16,6 +16,7 @@
 #include "domain_verifier.h"
 #include "app_domain_verify_hilog.h"
 #include "domain_json_util.h"
+#include "bundle_info_query.h"
 
 namespace OHOS {
 namespace AppDomainVerify {
@@ -24,7 +25,15 @@ InnerVerifyStatus DomainVerifier::VerifyHost(OHOS::NetStack::HttpClient::Respons
 {
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "called");
     if (responseCode != OHOS::NetStack::HttpClient::ResponseCode::OK) {
-        return GetVerifyStatusFromHttpError(responseCode);
+        InnerVerifyStatus status = GetVerifyStatusFromHttpError(responseCode);
+        if (status == InnerVerifyStatus::FAILURE_HTTP_UNKNOWN &&
+            BundleInfoQuery::IsPreInstalledApp(appVerifyBaseInfo.bundleName)) {
+            APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE,
+                "pre installed app, bundleName: %{public}s", appVerifyBaseInfo.bundleName.c_str());
+            return InnerVerifyStatus::PRE_INSTALLED;
+        } else {
+            return status;
+        }
     }
     AssetJsonObj assetJsonObj;
     if (JsonUtil::Parse(assetJsonsStr, assetJsonObj)) {
