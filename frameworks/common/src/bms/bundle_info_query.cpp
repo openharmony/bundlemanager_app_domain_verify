@@ -175,5 +175,31 @@ bool BundleInfoQuery::QueryAbilityInfos(
         abilityInfos.size(), findDefaultApp);
     return ret;
 }
+
+bool BundleInfoQuery::IsPreInstalledApp(const std::string& bundleName)
+{
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MODULE_COMMON, "called");
+    sptr<AppExecFwk::IBundleMgr> bundleMgrProxy = BundleInfoQuery::GetBundleMgrProxy();
+    if (bundleMgrProxy == nullptr) {
+        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MODULE_COMMON, "bundleMgrProxy is nullptr.");
+        return false;
+    }
+    int32_t userId = BundleInfoQuery::GetCurrentAccountId();
+    if (userId < 0) {
+        return false;
+    }
+    OHOS::AppExecFwk::BundleInfo bundleInfo;
+    // use sa identity
+    std::string identity = IPCSkeleton::ResetCallingIdentity();
+    auto ret = bundleMgrProxy->GetBundleInfoV9(bundleName,
+        static_cast<int32_t>(AppExecFwk::GetBundleInfoFlag::GET_BUNDLE_INFO_WITH_SIGNATURE_INFO), bundleInfo, userId);
+    IPCSkeleton::SetCallingIdentity(identity);
+    if (ret != ERR_OK) {
+        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MODULE_COMMON, "GetBundleInfo failed, ret: %{public}d.", ret);
+        return false;
+    }
+    // Check if the app is pre-installed (system app)
+    return bundleInfo.isPreInstallApp;
+}
 }
 }
