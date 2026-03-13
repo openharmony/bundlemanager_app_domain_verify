@@ -30,6 +30,7 @@ public:
     static bool GetBundleAbilityInfos(const std::string& bundleName, std::vector<AbilityInfo>& abilityInfos);
     static bool QueryAbilityInfos(
         const std::string& url, bool withDefault, std::vector<AbilityInfo>& abilityInfos, bool& findDefaultApp);
+    static bool IsPreInstalledApp(const std::string& bundleName);
 
 private:
     static sptr<AppExecFwk::IBundleMgr> GetBundleMgrProxy();

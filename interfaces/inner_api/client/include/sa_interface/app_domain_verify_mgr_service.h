@@ -76,13 +76,14 @@ private:
     // with check caller's bundleName and appIdentifier
     int QueryVerifiedBundleWithDomains(std::string& bundleName, std::vector<std::string>& domains);
     void SendVerifiedEvent(const std::string& bundleName, const VerifyResultInfo& verifyResultInfo);
-    int QueryVerifiedBundleWithDomainsByAppIdentifer(const std::string& appIdentifer,
-        std::string& bundleName, std::vector<std::string>& domains);
+    int QueryVerifiedBundleWithDomainsByAppIdentifer(
+        const std::string& appIdentifer, std::string& bundleName, std::vector<std::string>& domains);
     void FilterAbilitiesInner(std::string hostVerifyKey,
         const std::vector<OHOS::AppExecFwk::AbilityInfo>& originAbilityInfos,
         std::vector<OHOS::AppExecFwk::AbilityInfo>& filteredAbilityInfos);
     bool ResetDBSecurityByPath();
     bool IsExistDir(const std::string& dirPath);
+
 private:
     std::shared_ptr<AppDetailsDataMgr> appDetailsDataMgr_ = nullptr;
     bool InitConfigMgr();
