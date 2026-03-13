@@ -39,7 +39,9 @@ enum InnerVerifyStatus {
 
     FAILURE_CONFIG = 8,
 
-    FORBIDDEN_FOREVER = 9
+    FORBIDDEN_FOREVER = 9,
+
+    PRE_INSTALLED = 10
 };
 
 static std::unordered_map<InnerVerifyStatus, std::string> InnerVerifyStatusMap = {
@@ -52,7 +54,8 @@ static std::unordered_map<InnerVerifyStatus, std::string> InnerVerifyStatusMap =
     { FAILURE_HTTP_UNKNOWN, "http_unknown" },
     { FAILURE_TIMEOUT, "timeout" },
     { FAILURE_CONFIG, "config_error" },
-    { FORBIDDEN_FOREVER, "forbidden_forever" }
+    { FORBIDDEN_FOREVER, "forbidden_forever" },
+    { PRE_INSTALLED, "pre_installed" }
 };
 }
 }  // namespace OHOS
