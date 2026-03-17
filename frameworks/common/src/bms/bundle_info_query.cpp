@@ -184,22 +184,28 @@ bool BundleInfoQuery::IsPreInstalledApp(const std::string& bundleName)
         APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MODULE_COMMON, "bundleMgrProxy is nullptr.");
         return false;
     }
-    int32_t userId = BundleInfoQuery::GetCurrentAccountId();
-    if (userId < 0) {
-        return false;
-    }
-    OHOS::AppExecFwk::BundleInfo bundleInfo;
-    // use sa identity
+    std::vector<AppExecFwk::PreinstalledApplicationInfo> preinstalledApplicationInfos;
     std::string identity = IPCSkeleton::ResetCallingIdentity();
-    auto ret = bundleMgrProxy->GetBundleInfoV9(bundleName,
-        static_cast<int32_t>(AppExecFwk::GetBundleInfoFlag::GET_BUNDLE_INFO_WITH_SIGNATURE_INFO), bundleInfo, userId);
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MODULE_COMMON, "GetAllPreinstalledApplicationInfos called");
+    auto ret = bundleMgrProxy->GetAllPreinstalledApplicationInfos(preinstalledApplicationInfos);
+    APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MODULE_COMMON, "GetAllPreinstalledApplicationInfos called end");
     IPCSkeleton::SetCallingIdentity(identity);
     if (ret != ERR_OK) {
-        APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MODULE_COMMON, "GetBundleInfo failed, ret: %{public}d.", ret);
+        APP_DOMAIN_VERIFY_HILOGE(
+            APP_DOMAIN_VERIFY_MODULE_COMMON, "GetAllPreinstalledApplicationInfos failed, ret: %{public}d.", ret);
         return false;
     }
-    // Check if the app is pre-installed (system app)
-    return bundleInfo.isPreInstallApp;
+    auto it = find_if(preinstalledApplicationInfos.begin(), preinstalledApplicationInfos.end(),
+        [&](const AppExecFwk::PreinstalledApplicationInfo& obj) { return obj.bundleName == bundleName; });
+    if (it != preinstalledApplicationInfos.end()) {
+        APP_DOMAIN_VERIFY_HILOGI(
+            APP_DOMAIN_VERIFY_MODULE_COMMON, "bundle:%{public}s isPreInstallApp:%{public}d", bundleName.c_str(), true);
+        return true;
+    } else {
+        APP_DOMAIN_VERIFY_HILOGI(
+            APP_DOMAIN_VERIFY_MODULE_COMMON, "bundle:%{public}s isPreInstallApp:%{public}d", bundleName.c_str(), false);
+        return false;
+    }
 }
 }
 }

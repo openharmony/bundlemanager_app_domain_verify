@@ -97,6 +97,10 @@ void AppDomainVerifyMgrService::VerifyDomain(const std::string& appIdentifier, c
     VerifyResultInfo verifyResultInfo;
     verifyResultInfo.appIdentifier = appIdentifier;
 
+    // Check if app is pre-installed
+    bool isPreInstalled = BundleInfoQuery::IsPreInstalledApp(bundleName);
+    appVerifyBaseInfo.isPreinstalled = isPreInstalled;
+
     CollectDomains(skillUris, verifyResultInfo);
     DelayedSingleton<AppDomainVerifyDataMgr>::GetInstance()->InsertVerifyStatus(bundleName, verifyResultInfo);
     AppDomainVerifyAgentClient::GetInstance()->SingleVerify(appVerifyBaseInfo, verifyResultInfo);
