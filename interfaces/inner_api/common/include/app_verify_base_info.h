@@ -24,6 +24,7 @@ struct AppVerifyBaseInfo : public Parcelable {
     std::string bundleName{};
     std::string fingerprint{};
     int priority{};
+    bool isPreinstalled{};
     AppVerifyBaseInfo();
     AppVerifyBaseInfo(const AppVerifyBaseInfo &appVerifyBaseInfo);
 
