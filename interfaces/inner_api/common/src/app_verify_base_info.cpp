@@ -25,6 +25,7 @@ AppVerifyBaseInfo::AppVerifyBaseInfo()
     bundleName = "";
     fingerprint = "";
     priority = PRIORITY_UNSET;
+    isPreinstalled = false;
 }
 
 AppVerifyBaseInfo::AppVerifyBaseInfo(const AppVerifyBaseInfo &appVerifyBaseInfo)
@@ -33,6 +34,7 @@ AppVerifyBaseInfo::AppVerifyBaseInfo(const AppVerifyBaseInfo &appVerifyBaseInfo)
     bundleName = appVerifyBaseInfo.bundleName;
     fingerprint = appVerifyBaseInfo.fingerprint;
     priority = appVerifyBaseInfo.priority;
+    isPreinstalled = appVerifyBaseInfo.isPreinstalled;
 }
 bool AppVerifyBaseInfo::Marshalling(Parcel &parcel) const
 {
@@ -40,6 +42,7 @@ bool AppVerifyBaseInfo::Marshalling(Parcel &parcel) const
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String, parcel, bundleName);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(String, parcel, fingerprint);
     WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, priority);
+    WRITE_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, isPreinstalled);
     return true;
 }
 bool AppVerifyBaseInfo::ReadFromParcel(Parcel &parcel)
@@ -48,6 +51,7 @@ bool AppVerifyBaseInfo::ReadFromParcel(Parcel &parcel)
     READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(String, parcel, bundleName);
     READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(String, parcel, fingerprint);
     READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(Int32, parcel, priority);
+    READ_PARCEL_AND_RETURN_FALSE_IF_FAIL(Bool, parcel, isPreinstalled);
     return true;
 }
 

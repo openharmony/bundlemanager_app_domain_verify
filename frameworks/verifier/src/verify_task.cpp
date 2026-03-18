@@ -27,6 +27,7 @@
 #include "domain_url_util.h"
 #include "app_domain_verify_task_mgr.h"
 #include "verify_http_task.h"
+#include "bundle_info_query.h"
 
 namespace OHOS {
 namespace AppDomainVerify {
@@ -42,6 +43,9 @@ void VerifyTask::OnPostVerify(const std::string& uri, const OHOS::NetStack::Http
     if (appVerifyBaseInfo_.priority != PRIORITY_UNSET &&
         (appVerifyBaseInfo_.priority < PRIORITY_MIN || appVerifyBaseInfo_.priority > PRIORITY_MAX)) {
         status = InnerVerifyStatus::FAILURE_CLIENT_ERROR;
+    }
+    if (status == InnerVerifyStatus::FAILURE_HTTP_UNKNOWN && appVerifyBaseInfo_.isPreinstalled) {
+        status = InnerVerifyStatus::PRE_INSTALLED;
     }
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE,
         "OnPostVerify status %{public}d appId:%{public}s, priority:%{public}d", status,
