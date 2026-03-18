@@ -23,6 +23,9 @@ bool g_mockWriteInt32 = true;
 bool g_mockReadUint32 = true;
 bool g_mockReadInt32 = true;
 
+bool g_mockWriteBool = true;
+bool g_mockReadBool = true;
+
 bool g_mockWriteString = true;
 bool g_mockWriteParcelable = true;
 bool g_mockReadParcelable = true;
@@ -38,6 +41,11 @@ void MockWriteUint32(bool state)
     g_mockWriteUint32 = state;
 }
 
+void MockWriteBool(bool state)
+{
+    g_mockWriteBool = state;
+}
+
 void MockWriteInt32(bool state)
 {
     g_mockWriteInt32 = state;
@@ -46,6 +54,11 @@ void MockWriteInt32(bool state)
 void MockReadUint32(int state)
 {
     g_mockReadUint32 = state;
+}
+
+void MockReadBool(bool state)
+{
+    g_mockReadBool = state;
 }
 
 void MockReadInt32(bool state)
@@ -137,6 +150,14 @@ bool Parcel::WriteInt32(int32_t value)
 bool Parcel::ReadInt32(int32_t& value)
 {
     return g_mockReadInt32;
+}
+bool Parcel::WriteBool(bool value)
+{
+    return g_mockWriteBool;
+}
+bool Parcel::ReadBool(bool& value)
+{
+    return g_mockReadBool;
 }
 
 }  // namespace OHOS

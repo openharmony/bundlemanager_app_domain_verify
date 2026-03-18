@@ -21,8 +21,10 @@
 namespace OHOS {
 void MockWriteUint32(bool state);
 void MockWriteInt32(bool state);
+void MockWriteBool(bool state);
 void MockReadUint32(int state);
 void MockReadInt32(bool state);
+void MockReadBool(bool state);
 
 void MockWriteString(bool state, uint8_t count);
 
@@ -51,6 +53,10 @@ public:
     bool WriteInt32(int32_t value);
 
     bool ReadInt32(int32_t& value);
+
+    bool WriteBool(bool value);
+
+    bool ReadBool(bool& value);
 
     bool WriteString(const std::string&) const;
 
