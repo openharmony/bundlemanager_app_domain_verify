@@ -37,6 +37,7 @@ public:
     AppDetailsDataMgr();
     virtual ~AppDetailsDataMgr();
     int QueryAppDetailsWant(const std::string& url, AAFwk::Want& want, std::string& bundleName);
+
 private:
     bool QueryAppDetailsWantByCache(const std::string& url, std::string& bundleName);
     bool QueryAppDetailsWantByRdb(const std::string& url, std::string& bundleName);
@@ -44,8 +45,9 @@ private:
     std::shared_ptr<LruCacheUtil<std::string, std::string>> lruCache_;
     std::shared_ptr<AppDetailsRdbDataMgr> rdbMgr_;
     std::shared_ptr<AppDetailsFilter> detailsFilter_;
-    int64_t cacheBeginTime_ = 0;
-    std::mutex agWantUrlMutex;
+    int64_t cacheBeginTime_{0};
+    std::mutex cacheMutex_;
+    std::mutex agWantUrlMutex_;
     std::string agWantUrl_;
 };
 }  // namespace AppDomainVerify

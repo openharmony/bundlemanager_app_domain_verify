@@ -41,7 +41,7 @@ AppDetailsDataMgr::AppDetailsDataMgr()
     rdbMgr_ = std::make_shared<AppDetailsRdbDataMgr>(false);
 };
 
-AppDetailsDataMgr::~AppDetailsDataMgr(){};
+AppDetailsDataMgr::~AppDetailsDataMgr() {};
 
 int AppDetailsDataMgr::QueryAppDetailsWant(const std::string& url, AAFwk::Want& want, std::string& bundleName)
 {
@@ -68,15 +68,18 @@ bool AppDetailsDataMgr::QueryAppDetailsWantByCache(const std::string& url, std::
 {
     int64_t currTime =
         std::chrono::time_point_cast<std::chrono::seconds>(std::chrono::system_clock::now()).time_since_epoch().count();
-    if (currTime - cacheBeginTime_ > CACHE_TIME_S) {
-        cacheBeginTime_ = currTime;
-        lruCache_->Clear();
-        return false;
-    }
-    std::string value;
-    if (lruCache_->Get(url, value)) {
-        bundleName = value;
-        return true;
+    {
+        std::lock_guard<std::mutex> lock(cacheMutex_);
+        if (currTime - cacheBeginTime_ > CACHE_TIME_S) {
+            cacheBeginTime_ = currTime;
+            lruCache_->Clear();
+            return false;
+        }
+        std::string value;
+        if (lruCache_->Get(url, value)) {
+            bundleName = value;
+            return true;
+        }
     }
     return false;
 };
@@ -118,7 +121,7 @@ bool AppDetailsDataMgr::QueryAppDetailsWantByRdb(const std::string& url, std::st
 void AppDetailsDataMgr::AddInfoToWant(AAFwk::Want& want, const std::string& bundleName)
 {
     {
-        std::lock_guard<std::mutex> lock(agWantUrlMutex);
+        std::lock_guard<std::mutex> lock(agWantUrlMutex_);
         if (agWantUrl_.empty()) {
             MetaItem info;
             rdbMgr_->QueryMetaData(APP_DETAILS_TABLE, info);

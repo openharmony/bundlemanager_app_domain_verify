@@ -39,6 +39,8 @@ WhiteListConfigMgr::~WhiteListConfigMgr()
 }
 void WhiteListConfigMgr::LoadDefault()
 {
+    APP_DOMAIN_VERIFY_HILOGI(
+        APP_DOMAIN_VERIFY_MODULE_COMMON, "[AppDomainVerifyIO] operation:read default whitelist");
     preferences_ = GetPreference(DEFAULT_WHITE_LIST_PRE_PATH);
     if (preferences_ == nullptr) {
         UNIVERSAL_ERROR_EVENT(READ_DEFAULT_WHITE_LIST_FAULT);
@@ -54,6 +56,8 @@ void WhiteListConfigMgr::LoadDefault()
 }
 void WhiteListConfigMgr::LoadDynamic()
 {
+    APP_DOMAIN_VERIFY_HILOGI(
+        APP_DOMAIN_VERIFY_MODULE_COMMON, "[AppDomainVerifyIO] operation:read dynamic whitelist");
     preferences_ = GetPreference(DYNAMIC_WHITE_LIST_PRE_PATH);
     if (preferences_ == nullptr) {
         UNIVERSAL_ERROR_EVENT(READ_DYNAMIC_WHITE_LIST_FAULT);
@@ -107,6 +111,8 @@ std::shared_ptr<NativePreferences::Preferences> WhiteListConfigMgr::GetPreferenc
 }
 bool WhiteListConfigMgr::Save()
 {
+    APP_DOMAIN_VERIFY_HILOGI(
+        APP_DOMAIN_VERIFY_MODULE_COMMON, "[AppDomainVerifyIO] operation:write dynamic whitelist");
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MODULE_COMMON, "called");
     if (preferences_ == nullptr) {
         APP_DOMAIN_VERIFY_HILOGW(APP_DOMAIN_VERIFY_MODULE_COMMON, "preferences null");
