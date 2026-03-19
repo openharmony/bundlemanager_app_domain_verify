@@ -38,6 +38,7 @@ private:
     std::atomic<size_t> maxCap_ = 10;
     std::list<std::pair<K, V>> cache_;
     std::unordered_map<K, typename std::list<std::pair<K, V>>::iterator> lruMap_;
+    std::mutex mutex_;
 };
 
 template<typename K, typename V>
@@ -49,6 +50,7 @@ bool LruCacheUtil<K, V>::SetMaxCap(size_t cap)
 template<typename K, typename V>
 bool LruCacheUtil<K, V>::Get(const K& key, V& value)
 {
+    std::lock_guard<std::mutex> lock(mutex_);
     if (lruMap_.find(key) == lruMap_.end()) {
         return false;
     }
@@ -62,6 +64,7 @@ bool LruCacheUtil<K, V>::Get(const K& key, V& value)
 template<typename K, typename V>
 void LruCacheUtil<K, V>::Put(const K& key, const V& value)
 {
+    std::lock_guard<std::mutex> lock(mutex_);
     auto iter = lruMap_.find(key);
     if (iter != lruMap_.end()) {
         V val = lruMap_[key]->second;
@@ -82,6 +85,7 @@ void LruCacheUtil<K, V>::Put(const K& key, const V& value)
 template<typename K, typename V>
 void LruCacheUtil<K, V>::Clear()
 {
+    std::lock_guard<std::mutex> lock(mutex_);
     cache_.clear();
     lruMap_.clear();
 };
@@ -89,6 +93,7 @@ void LruCacheUtil<K, V>::Clear()
 template<typename K, typename V>
 bool LruCacheUtil<K, V>::IsEmpty()
 {
+    std::lock_guard<std::mutex> lock(mutex_);
     return lruMap_.empty();
 };
 }
