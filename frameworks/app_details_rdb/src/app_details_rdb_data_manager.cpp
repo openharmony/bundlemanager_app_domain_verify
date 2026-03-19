@@ -83,13 +83,14 @@ bool AppDetailsRdbDataMgr::ExecWithTrans(TransCallback cb)
 }
 
 bool AppDetailsRdbDataMgr::QueryDataByDomain(
-    const std::string& tableName, const std::string &domain, std::vector<AppDetailsRdbItem> &itemVec)
+    const std::string& tableName, const std::string& domain, std::vector<AppDetailsRdbItem>& itemVec)
 {
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "call.");
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "[AppDomainVerifyIO] QueryDataByDomain.");
     NativeRdb::AbsRdbPredicates absRdbPred(tableName);
     absRdbPred.EqualTo(DETAILS_DOMAIN, domain);
     std::vector<std::string> columns = {};
-    RdbForEachRetCb eachCb = [&itemVec](std::shared_ptr<AbsSharedResultSet> retSet)->bool {
+    RdbForEachRetCb eachCb = [&itemVec](std::shared_ptr<AbsSharedResultSet> retSet) -> bool {
         AppDetailsRdbItem item;
         if (!item.GetRdbItem(retSet)) {
             return false;
@@ -129,6 +130,7 @@ void AppDetailsRdbDataMgr::PostDelayCloseTask(int32_t delayTime)
 bool AppDetailsRdbDataMgr::InsertDataBatch(const std::string& tableName, std::vector<AppDetailsRdbItem>& infoVec)
 {
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "called");
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "[AppDomainVerifyIO] InsertDataBatch.");
     auto rdbStore = GetRdbStore();
     if (!rdbStore) {
         APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "get rdbStore fail.");
@@ -169,9 +171,10 @@ bool AppDetailsRdbDataMgr::CreateMetaData()
     return true;
 };
 
-bool AppDetailsRdbDataMgr::UpdateMetaData(std::vector<MetaItem> &itemVec)
+bool AppDetailsRdbDataMgr::UpdateMetaData(std::vector<MetaItem>& itemVec)
 {
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "called");
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "[AppDomainVerifyIO] UpdateMetaData.");
     auto rdbStore = GetRdbStore();
     if (!rdbStore) {
         APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "get rdbStore fail.");
@@ -191,9 +194,10 @@ bool AppDetailsRdbDataMgr::UpdateMetaData(std::vector<MetaItem> &itemVec)
     return true;
 };
 
-bool AppDetailsRdbDataMgr::QueryMetaData(const std::string &tableName, MetaItem &info)
+bool AppDetailsRdbDataMgr::QueryMetaData(const std::string& tableName, MetaItem& info)
 {
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "call.");
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "[AppDomainVerifyIO] QueryMetaData.");
     NativeRdb::AbsRdbPredicates absRdbPred(META_DATA);
     absRdbPred.EqualTo(META_TABLE_NAME, tableName);
     std::vector<std::string> columns = {};
@@ -203,7 +207,7 @@ bool AppDetailsRdbDataMgr::QueryMetaData(const std::string &tableName, MetaItem 
         return false;
     }
     std::vector<MetaItem> itemVec;
-    RdbForEachRetCb eachCb = [&itemVec](std::shared_ptr<AbsSharedResultSet> retSet)->bool {
+    RdbForEachRetCb eachCb = [&itemVec](std::shared_ptr<AbsSharedResultSet> retSet) -> bool {
         MetaItem item;
         if (!item.GetRdbItem(retSet)) {
             return false;
@@ -218,7 +222,7 @@ bool AppDetailsRdbDataMgr::QueryMetaData(const std::string &tableName, MetaItem 
     return false;
 };
 
-bool AppDetailsRdbDataMgr::CreateTable(const std::string &tableName)
+bool AppDetailsRdbDataMgr::CreateTable(const std::string& tableName)
 {
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "called");
     std::string sql = "CREATE TABLE IF NOT EXISTS " + tableName
@@ -262,7 +266,7 @@ bool AppDetailsRdbDataMgr::CreateRegularIndex(const std::string& tableName, cons
     return true;
 };
 
-bool AppDetailsRdbDataMgr::DeleteTable(const std::string &tableName)
+bool AppDetailsRdbDataMgr::DeleteTable(const std::string& tableName)
 {
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "Called");
     std::string sql = "DROP TABLE IF EXISTS " + tableName + ";";
@@ -295,7 +299,7 @@ std::string AppDetailsRdbDataMgr::GetDbVersion()
     return "";
 };
 
-bool AppDetailsRdbDataMgr::RenameTable(const std::string &oldName, const std::string &newName)
+bool AppDetailsRdbDataMgr::RenameTable(const std::string& oldName, const std::string& newName)
 {
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "called");
     std::string sql = "ALTER TABLE " + oldName + " RENAME TO " + newName + ";";
@@ -349,6 +353,7 @@ bool AppDetailsRdbDataMgr::Query(const NativeRdb::AbsRdbPredicates& predicates,
     const std::vector<std::string>& columns, RdbForEachRetCb cb)
 {
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "called");
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "[AppDomainVerifyIO] Query.");
     auto rdbStore = GetRdbStore();
     if (!rdbStore) {
         APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "rdb store is null");
@@ -359,10 +364,8 @@ bool AppDetailsRdbDataMgr::Query(const NativeRdb::AbsRdbPredicates& predicates,
         APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "rdbStore query absSharedResultSet failed");
         return false;
     }
-    auto guard = std::unique_ptr<void, std::function<void(void*)>>(nullptr,
-        [&](void*) {
-            absSharedResultSet->Close();
-        });
+    auto guard = std::unique_ptr<void, std::function<void(void*)>>(
+        nullptr, [&](void*) { absSharedResultSet->Close(); });
     if (!absSharedResultSet->HasBlock()) {
         APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "absSharedResultSet has no block");
         return false;

@@ -64,6 +64,7 @@ AppDomainVerifyRdbDataManager::~AppDomainVerifyRdbDataManager()
 bool AppDomainVerifyRdbDataManager::InsertData(const RdbDataItem& rdbDataItem)
 {
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "called");
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "[AppDomainVerifyIO] InsertData.");
     auto rdbStore = GetRdbStore();
     if (!CheckRdbStoreExist(rdbStore)) {
         return false;
@@ -108,6 +109,7 @@ bool AppDomainVerifyRdbDataManager::Query(const NativeRdb::AbsRdbPredicates& pre
     if (!CheckRdbStoreExist(rdbStore)) {
         return false;
     }
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "[AppDomainVerifyIO] Query.");
     auto absSharedResultSet = rdbStore->Query(predicates, columns);
     if (absSharedResultSet == nullptr) {
         APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "rdbStore query absSharedResultSet failed");
@@ -142,6 +144,7 @@ bool AppDomainVerifyRdbDataManager::Query(const NativeRdb::AbsRdbPredicates& pre
 bool AppDomainVerifyRdbDataManager::DeleteData(const std::string& bundleName)
 {
     APP_DOMAIN_VERIFY_HILOGD(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "called");
+    APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_MGR_MODULE_SERVICE, "[AppDomainVerifyIO] DeleteData.");
     auto rdbStore = GetRdbStore();
     if (!CheckRdbStoreExist(rdbStore)) {
         return false;
