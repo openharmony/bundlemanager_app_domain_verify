@@ -51,7 +51,8 @@
         "memmgr",
         "runtime_core",
         "common_event_service",
-        "selinux_adapter"
+        "selinux_adapter",
+        "taihe_ffi_gen"
       ],
       "third_party": [
         "openssl"
