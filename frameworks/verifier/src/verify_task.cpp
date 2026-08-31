@@ -14,7 +14,9 @@
  */
 
 #include <algorithm>
+#include <charconv>
 #include <cstdint>
+#include <system_error>
 #include <tuple>
 #include "app_domain_verify_mgr_client.h"
 #include "datetime_ex.h"
@@ -36,6 +38,25 @@ const std::set<std::string> SCHEME_WHITE_SET = { HTTPS };
 const std::string FUZZY_HOST_START = "*.";
 const static int CLIENT_ERR_MAX_RETRY_COUNTS = 7;          // 7 times for max retry count
 const static int CLIENT_ERR_BASE_RETRY_DURATION_S = 3600;  // 1h for base duration
+
+namespace {
+bool ParseVerifyTimeInt64(const std::string &text, int64_t &out)
+{
+    if (text.empty()) {
+        return false;
+    }
+    int64_t value = 0;
+    const char *first = text.data();
+    const char *last = first + text.size();
+    auto [ptr, ec] = std::from_chars(first, last, value);
+    if (ec != std::errc() || ptr != last) {
+        return false;
+    }
+    out = value;
+    return true;
+}
+}
+
 void VerifyTask::OnPostVerify(const std::string& uri, const OHOS::NetStack::HttpClient::HttpClientResponse& response)
 {
     APP_DOMAIN_VERIFY_HILOGI(APP_DOMAIN_VERIFY_AGENT_MODULE_SERVICE, "called");
@@ -161,10 +182,9 @@ bool VerifyTask::HandleFailureClientError(std::string verifyTime, int verifyCnt)
     if (!verifyTime.empty()) {
         int64_t currTs = GetSecondsSince1970ToNow();
         int64_t lastTs{};
-        try {
-            lastTs = static_cast<int64_t>(std::stoll(verifyTime));
-        } catch (...) {
-            APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MODULE_EXTENSION, "get verifyTime error");
+        if (!ParseVerifyTimeInt64(verifyTime, lastTs)) {
+            APP_DOMAIN_VERIFY_HILOGE(APP_DOMAIN_VERIFY_MODULE_EXTENSION,
+                "get verifyTime error: %{public}s", verifyTime.c_str());
             return false;
         }
         int64_t duration = currTs - lastTs;
